@@ -1,0 +1,346 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		B8131CEF149BB19B00F1CCBB /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B8131CEE149BB19B00F1CCBB /* Foundation.framework */; };
+		B8131CF2149BB19B00F1CCBB /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = B8131CF1149BB19B00F1CCBB /* main.m */; };
+		B8131CF6149BB19B00F1CCBB /* BasicChrismasTree.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = B8131CF5149BB19B00F1CCBB /* BasicChrismasTree.1 */; };
+		B8131CFD149BB1FC00F1CCBB /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B8131CFC149BB1FC00F1CCBB /* IOKit.framework */; };
+		B8131D03149BB26400F1CCBB /* yocto_api.m in Sources */ = {isa = PBXBuildFile; fileRef = B8131D00149BB26400F1CCBB /* yocto_api.m */; };
+		B8131D04149BB26400F1CCBB /* yocto_colorled.m in Sources */ = {isa = PBXBuildFile; fileRef = B8131D02149BB26400F1CCBB /* yocto_colorled.m */; };
+		B8131D1B149BB45900F1CCBB /* yapi.c in Sources */ = {isa = PBXBuildFile; fileRef = B8131D06149BB45900F1CCBB /* yapi.c */; };
+		B8131D1C149BB45900F1CCBB /* yfifo.c in Sources */ = {isa = PBXBuildFile; fileRef = B8131D09149BB45900F1CCBB /* yfifo.c */; };
+		B8131D1D149BB45900F1CCBB /* yhash.c in Sources */ = {isa = PBXBuildFile; fileRef = B8131D0B149BB45900F1CCBB /* yhash.c */; };
+		B8131D1E149BB45900F1CCBB /* yjson.c in Sources */ = {isa = PBXBuildFile; fileRef = B8131D0D149BB45900F1CCBB /* yjson.c */; };
+		B8131D1F149BB45900F1CCBB /* ymemory.c in Sources */ = {isa = PBXBuildFile; fileRef = B8131D0F149BB45900F1CCBB /* ymemory.c */; };
+		B8131D20149BB45900F1CCBB /* ypkt_lin.c in Sources */ = {isa = PBXBuildFile; fileRef = B8131D11149BB45900F1CCBB /* ypkt_lin.c */; };
+		B8131D21149BB45900F1CCBB /* ypkt_osx.c in Sources */ = {isa = PBXBuildFile; fileRef = B8131D12149BB45900F1CCBB /* ypkt_osx.c */; };
+		B8131D22149BB45900F1CCBB /* ypkt_win.c in Sources */ = {isa = PBXBuildFile; fileRef = B8131D13149BB45900F1CCBB /* ypkt_win.c */; };
+		B8131D23149BB45900F1CCBB /* yprog.c in Sources */ = {isa = PBXBuildFile; fileRef = B8131D14149BB45900F1CCBB /* yprog.c */; };
+		B8131D24149BB45900F1CCBB /* ystream.c in Sources */ = {isa = PBXBuildFile; fileRef = B8131D17149BB45900F1CCBB /* ystream.c */; };
+		B8131D25149BB45900F1CCBB /* ytcp.c in Sources */ = {isa = PBXBuildFile; fileRef = B8131D18149BB45900F1CCBB /* ytcp.c */; };
+		B82CC8C7161B3BE300AD6FC8 /* ykey.c in Sources */ = {isa = PBXBuildFile; fileRef = B82CC8C5161B3BE300AD6FC8 /* ykey.c */; };
+		B8E13A2514E0A3A100E0B135 /* ythread.c in Sources */ = {isa = PBXBuildFile; fileRef = B8E13A2314E0A3A100E0B135 /* ythread.c */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		B8131CE8149BB19B00F1CCBB /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+				B8131CF6149BB19B00F1CCBB /* BasicChrismasTree.1 in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		B8131CEA149BB19B00F1CCBB /* BasicChrismasTree */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = BasicChrismasTree; sourceTree = BUILT_PRODUCTS_DIR; };
+		B8131CEE149BB19B00F1CCBB /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		B8131CF1149BB19B00F1CCBB /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		B8131CF4149BB19B00F1CCBB /* BasicChrismasTree-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "BasicChrismasTree-Prefix.pch"; sourceTree = "<group>"; };
+		B8131CF5149BB19B00F1CCBB /* BasicChrismasTree.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = BasicChrismasTree.1; sourceTree = "<group>"; };
+		B8131CFC149BB1FC00F1CCBB /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
+		B8131CFF149BB26400F1CCBB /* yocto_api.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yocto_api.h; path = ../../../Sources/yocto_api.h; sourceTree = "<group>"; };
+		B8131D00149BB26400F1CCBB /* yocto_api.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = yocto_api.m; path = ../../../Sources/yocto_api.m; sourceTree = "<group>"; };
+		B8131D01149BB26400F1CCBB /* yocto_colorled.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yocto_colorled.h; path = ../../../Sources/yocto_colorled.h; sourceTree = "<group>"; };
+		B8131D02149BB26400F1CCBB /* yocto_colorled.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = yocto_colorled.m; path = ../../../Sources/yocto_colorled.m; sourceTree = "<group>"; };
+		B8131D06149BB45900F1CCBB /* yapi.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = yapi.c; path = ../../../Sources/yapi/yapi.c; sourceTree = "<group>"; };
+		B8131D07149BB45900F1CCBB /* yapi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yapi.h; path = ../../../Sources/yapi/yapi.h; sourceTree = "<group>"; };
+		B8131D08149BB45900F1CCBB /* ydef.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ydef.h; path = ../../../Sources/yapi/ydef.h; sourceTree = "<group>"; };
+		B8131D09149BB45900F1CCBB /* yfifo.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = yfifo.c; path = ../../../Sources/yapi/yfifo.c; sourceTree = "<group>"; };
+		B8131D0A149BB45900F1CCBB /* yfifo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yfifo.h; path = ../../../Sources/yapi/yfifo.h; sourceTree = "<group>"; };
+		B8131D0B149BB45900F1CCBB /* yhash.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = yhash.c; path = ../../../Sources/yapi/yhash.c; sourceTree = "<group>"; };
+		B8131D0C149BB45900F1CCBB /* yhash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yhash.h; path = ../../../Sources/yapi/yhash.h; sourceTree = "<group>"; };
+		B8131D0D149BB45900F1CCBB /* yjson.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = yjson.c; path = ../../../Sources/yapi/yjson.c; sourceTree = "<group>"; };
+		B8131D0E149BB45900F1CCBB /* yjson.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yjson.h; path = ../../../Sources/yapi/yjson.h; sourceTree = "<group>"; };
+		B8131D0F149BB45900F1CCBB /* ymemory.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ymemory.c; path = ../../../Sources/yapi/ymemory.c; sourceTree = "<group>"; };
+		B8131D10149BB45900F1CCBB /* ymemory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ymemory.h; path = ../../../Sources/yapi/ymemory.h; sourceTree = "<group>"; };
+		B8131D11149BB45900F1CCBB /* ypkt_lin.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ypkt_lin.c; path = ../../../Sources/yapi/ypkt_lin.c; sourceTree = "<group>"; };
+		B8131D12149BB45900F1CCBB /* ypkt_osx.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ypkt_osx.c; path = ../../../Sources/yapi/ypkt_osx.c; sourceTree = "<group>"; };
+		B8131D13149BB45900F1CCBB /* ypkt_win.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ypkt_win.c; path = ../../../Sources/yapi/ypkt_win.c; sourceTree = "<group>"; };
+		B8131D14149BB45900F1CCBB /* yprog.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = yprog.c; path = ../../../Sources/yapi/yprog.c; sourceTree = "<group>"; };
+		B8131D15149BB45900F1CCBB /* yprog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yprog.h; path = ../../../Sources/yapi/yprog.h; sourceTree = "<group>"; };
+		B8131D16149BB45900F1CCBB /* yproto.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yproto.h; path = ../../../Sources/yapi/yproto.h; sourceTree = "<group>"; };
+		B8131D17149BB45900F1CCBB /* ystream.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ystream.c; path = ../../../Sources/yapi/ystream.c; sourceTree = "<group>"; };
+		B8131D18149BB45900F1CCBB /* ytcp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ytcp.c; path = ../../../Sources/yapi/ytcp.c; sourceTree = "<group>"; };
+		B8131D19149BB45900F1CCBB /* ytcp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ytcp.h; path = ../../../Sources/yapi/ytcp.h; sourceTree = "<group>"; };
+		B8131D1A149BB45900F1CCBB /* yversion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yversion.h; path = ../../../Sources/yapi/yversion.h; sourceTree = "<group>"; };
+		B82CC8C5161B3BE300AD6FC8 /* ykey.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ykey.c; path = ../../../Sources/yapi/ykey.c; sourceTree = "<group>"; };
+		B82CC8C6161B3BE300AD6FC8 /* ykey.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ykey.h; path = ../../../Sources/yapi/ykey.h; sourceTree = "<group>"; };
+		B8B8A1F414E1186A00F22046 /* ythread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ythread.h; path = ../../../Sources/yapi/ythread.h; sourceTree = "<group>"; };
+		B8E13A2314E0A3A100E0B135 /* ythread.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ythread.c; path = ../../../Sources/yapi/ythread.c; sourceTree = "<group>"; };
+		B8E13A2414E0A3A100E0B135 /* ythread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ythread.h; path = ../../../Sources/yapi/ythread.h; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		B8131CE7149BB19B00F1CCBB /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B8131CFD149BB1FC00F1CCBB /* IOKit.framework in Frameworks */,
+				B8131CEF149BB19B00F1CCBB /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		B8131CDF149BB19B00F1CCBB = {
+			isa = PBXGroup;
+			children = (
+				B8131CF0149BB19B00F1CCBB /* BasicChrismasTree */,
+				B8131CED149BB19B00F1CCBB /* Frameworks */,
+				B8131CEB149BB19B00F1CCBB /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		B8131CEB149BB19B00F1CCBB /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				B8131CEA149BB19B00F1CCBB /* BasicChrismasTree */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		B8131CED149BB19B00F1CCBB /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				B8131CFC149BB1FC00F1CCBB /* IOKit.framework */,
+				B8131CEE149BB19B00F1CCBB /* Foundation.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		B8131CF0149BB19B00F1CCBB /* BasicChrismasTree */ = {
+			isa = PBXGroup;
+			children = (
+				B8131CFE149BB24700F1CCBB /* yoctoAPI */,
+				B8131CF1149BB19B00F1CCBB /* main.m */,
+				B8131CF5149BB19B00F1CCBB /* BasicChrismasTree.1 */,
+				B8131CF3149BB19B00F1CCBB /* Supporting Files */,
+			);
+			path = BasicChrismasTree;
+			sourceTree = "<group>";
+		};
+		B8131CF3149BB19B00F1CCBB /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				B8131CF4149BB19B00F1CCBB /* BasicChrismasTree-Prefix.pch */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		B8131CFE149BB24700F1CCBB /* yoctoAPI */ = {
+			isa = PBXGroup;
+			children = (
+				B8131D05149BB26F00F1CCBB /* yapi */,
+				B8131CFF149BB26400F1CCBB /* yocto_api.h */,
+				B8131D00149BB26400F1CCBB /* yocto_api.m */,
+				B8131D01149BB26400F1CCBB /* yocto_colorled.h */,
+				B8131D02149BB26400F1CCBB /* yocto_colorled.m */,
+			);
+			name = yoctoAPI;
+			sourceTree = "<group>";
+		};
+		B8131D05149BB26F00F1CCBB /* yapi */ = {
+			isa = PBXGroup;
+			children = (
+				B82CC8C5161B3BE300AD6FC8 /* ykey.c */,
+				B82CC8C6161B3BE300AD6FC8 /* ykey.h */,
+				B8131D06149BB45900F1CCBB /* yapi.c */,
+				B8131D07149BB45900F1CCBB /* yapi.h */,
+				B8131D08149BB45900F1CCBB /* ydef.h */,
+				B8131D09149BB45900F1CCBB /* yfifo.c */,
+				B8131D0A149BB45900F1CCBB /* yfifo.h */,
+				B8131D0B149BB45900F1CCBB /* yhash.c */,
+				B8131D0C149BB45900F1CCBB /* yhash.h */,
+				B8131D0D149BB45900F1CCBB /* yjson.c */,
+				B8131D0E149BB45900F1CCBB /* yjson.h */,
+				B8131D0F149BB45900F1CCBB /* ymemory.c */,
+				B8131D10149BB45900F1CCBB /* ymemory.h */,
+				B8131D11149BB45900F1CCBB /* ypkt_lin.c */,
+				B8E13A2314E0A3A100E0B135 /* ythread.c */,
+				B8E13A2414E0A3A100E0B135 /* ythread.h */,
+				B8B8A1F414E1186A00F22046 /* ythread.h */,
+				B8131D12149BB45900F1CCBB /* ypkt_osx.c */,
+				B8131D13149BB45900F1CCBB /* ypkt_win.c */,
+				B8131D14149BB45900F1CCBB /* yprog.c */,
+				B8131D15149BB45900F1CCBB /* yprog.h */,
+				B8131D16149BB45900F1CCBB /* yproto.h */,
+				B8131D17149BB45900F1CCBB /* ystream.c */,
+				B8131D18149BB45900F1CCBB /* ytcp.c */,
+				B8131D19149BB45900F1CCBB /* ytcp.h */,
+				B8131D1A149BB45900F1CCBB /* yversion.h */,
+			);
+			name = yapi;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		B8131CE9149BB19B00F1CCBB /* BasicChrismasTree */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B8131CF9149BB19B00F1CCBB /* Build configuration list for PBXNativeTarget "BasicChrismasTree" */;
+			buildPhases = (
+				B8131CE6149BB19B00F1CCBB /* Sources */,
+				B8131CE7149BB19B00F1CCBB /* Frameworks */,
+				B8131CE8149BB19B00F1CCBB /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = BasicChrismasTree;
+			productName = BasicChrismasTree;
+			productReference = B8131CEA149BB19B00F1CCBB /* BasicChrismasTree */;
+			productType = "com.apple.product-type.tool";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		B8131CE1149BB19B00F1CCBB /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0420;
+				ORGANIZATIONNAME = "Yoctopuce Sàrl";
+			};
+			buildConfigurationList = B8131CE4149BB19B00F1CCBB /* Build configuration list for PBXProject "BasicChrismasTree" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = B8131CDF149BB19B00F1CCBB;
+			productRefGroup = B8131CEB149BB19B00F1CCBB /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				B8131CE9149BB19B00F1CCBB /* BasicChrismasTree */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		B8131CE6149BB19B00F1CCBB /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B8131CF2149BB19B00F1CCBB /* main.m in Sources */,
+				B8131D03149BB26400F1CCBB /* yocto_api.m in Sources */,
+				B8131D04149BB26400F1CCBB /* yocto_colorled.m in Sources */,
+				B8131D1B149BB45900F1CCBB /* yapi.c in Sources */,
+				B8131D1C149BB45900F1CCBB /* yfifo.c in Sources */,
+				B8131D1D149BB45900F1CCBB /* yhash.c in Sources */,
+				B8131D1E149BB45900F1CCBB /* yjson.c in Sources */,
+				B8131D1F149BB45900F1CCBB /* ymemory.c in Sources */,
+				B8131D20149BB45900F1CCBB /* ypkt_lin.c in Sources */,
+				B8131D21149BB45900F1CCBB /* ypkt_osx.c in Sources */,
+				B8131D22149BB45900F1CCBB /* ypkt_win.c in Sources */,
+				B8131D23149BB45900F1CCBB /* yprog.c in Sources */,
+				B8131D24149BB45900F1CCBB /* ystream.c in Sources */,
+				B8131D25149BB45900F1CCBB /* ytcp.c in Sources */,
+				B8E13A2514E0A3A100E0B135 /* ythread.c in Sources */,
+				B82CC8C7161B3BE300AD6FC8 /* ykey.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		B8131CF7149BB19B00F1CCBB /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		B8131CF8149BB19B00F1CCBB /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		B8131CFA149BB19B00F1CCBB /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "BasicChrismasTree/BasicChrismasTree-Prefix.pch";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		B8131CFB149BB19B00F1CCBB /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "BasicChrismasTree/BasicChrismasTree-Prefix.pch";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		B8131CE4149BB19B00F1CCBB /* Build configuration list for PBXProject "BasicChrismasTree" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B8131CF7149BB19B00F1CCBB /* Debug */,
+				B8131CF8149BB19B00F1CCBB /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B8131CF9149BB19B00F1CCBB /* Build configuration list for PBXNativeTarget "BasicChrismasTree" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B8131CFA149BB19B00F1CCBB /* Debug */,
+				B8131CFB149BB19B00F1CCBB /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = B8131CE1149BB19B00F1CCBB /* Project object */;
+}

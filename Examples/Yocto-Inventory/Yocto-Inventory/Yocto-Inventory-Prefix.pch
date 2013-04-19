@@ -1,0 +1,7 @@
+//
+// Prefix header for all source files of the 'Yocto-Inventory' target in the 'Yocto-Inventory' project
+//
+
+#ifdef __OBJC__
+    #import <Cocoa/Cocoa.h>
+#endif
