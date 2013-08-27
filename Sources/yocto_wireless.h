@@ -1,46 +1,46 @@
 /*********************************************************************
  *
- * $Id: yocto_wireless.h 9945 2013-02-20 21:46:06Z seb $
+ * $Id: yocto_wireless.h 12337 2013-08-14 15:22:22Z mvuilleu $
  *
  * Declares yFindWireless(), the high-level API for Wireless functions
  *
  * - - - - - - - - - License information: - - - - - - - - - 
  *
- * Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
+ *  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
  *
- * 1) If you have obtained this file from www.yoctopuce.com,
- *    Yoctopuce Sarl licenses to you (hereafter Licensee) the
- *    right to use, modify, copy, and integrate this source file
- *    into your own solution for the sole purpose of interfacing
- *    a Yoctopuce product with Licensee's solution.
+ *  Yoctopuce Sarl (hereafter Licensor) grants to you a perpetual
+ *  non-exclusive license to use, modify, copy and integrate this
+ *  file into your software for the sole purpose of interfacing 
+ *  with Yoctopuce products. 
  *
- *    The use of this file and all relationship between Yoctopuce 
- *    and Licensee are governed by Yoctopuce General Terms and 
- *    Conditions.
+ *  You may reproduce and distribute copies of this file in 
+ *  source or object form, as long as the sole purpose of this
+ *  code is to interface with Yoctopuce products. You must retain 
+ *  this notice in the distributed source file.
  *
- *    THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
- *    WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
- *    WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS 
- *    FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
- *    EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
- *    INDIRECT OR CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA, 
- *    COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY OR 
- *    SERVICES, ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT 
- *    LIMITED TO ANY DEFENSE THEREOF), ANY CLAIMS FOR INDEMNITY OR
- *    CONTRIBUTION, OR OTHER SIMILAR COSTS, WHETHER ASSERTED ON THE
- *    BASIS OF CONTRACT, TORT (INCLUDING NEGLIGENCE), BREACH OF
- *    WARRANTY, OR OTHERWISE.
+ *  You should refer to Yoctopuce General Terms and Conditions
+ *  for additional information regarding your rights and 
+ *  obligations.
  *
- * 2) If your intent is not to interface with Yoctopuce products,
- *    you are not entitled to use, read or create any derived
- *    material from this source file.
+ *  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED "AS IS" WITHOUT
+ *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
+ *  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS 
+ *  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
+ *  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
+ *  INDIRECT OR CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA, 
+ *  COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY OR 
+ *  SERVICES, ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT 
+ *  LIMITED TO ANY DEFENSE THEREOF), ANY CLAIMS FOR INDEMNITY OR
+ *  CONTRIBUTION, OR OTHER SIMILAR COSTS, WHETHER ASSERTED ON THE
+ *  BASIS OF CONTRACT, TORT (INCLUDING NEGLIGENCE), BREACH OF
+ *  WARRANTY, OR OTHERWISE.
  *
  *********************************************************************/
 
 #include "yocto_api.h"
 CF_EXTERN_C_BEGIN
 
-//--- (YWireless definitions)
+//--- (generated code: YWireless definitions)
 typedef enum {
     Y_SECURITY_UNKNOWN = 0,
     Y_SECURITY_OPEN = 1,
@@ -57,7 +57,51 @@ typedef enum {
 #define Y_CHANNEL_INVALID               (0xffffffff)
 #define Y_MESSAGE_INVALID               [YAPI  INVALID_STRING]
 #define Y_WLANCONFIG_INVALID            [YAPI  INVALID_STRING]
-//--- (end of YWireless definitions)
+//--- (end of generated code: YWireless definitions)
+
+
+
+//--- (generated code: YWlanRecord definitions)
+//--- (end of generated code: YWlanRecord definitions)
+
+@interface YWlanRecord : NSObject
+{
+@protected
+    NSString *_ssid;
+    NSString *_sec;
+    int       _channel;
+    int       _rssi;
+    //--- (generated code: YWlanRecord attributes)
+//--- (end of generated code: YWlanRecord attributes)
+}
+
+// internal function to send a command for this layer
+-(id)    initWith:(NSString*)jsondata;
+
+//--- (generated code: YWlanRecord declaration)
+//--- (end of generated code: YWlanRecord declaration)
+//--- (generated code: YWlanRecord accessors declaration)
+
+
+-(NSString*)     get_ssid;
+
+-(int)     get_channel;
+
+-(NSString*)     get_security;
+
+-(int)     get_linkQuality;
+
+
+//--- (end of generated code: YWlanRecord accessors declaration)
+@end
+
+//--- (generated code: WlanRecord functions declaration)
+
+//--- (end of generated code: WlanRecord functions declaration)
+
+
+
+
 
 /**
  * YWireless Class: Wireless function interface
@@ -69,7 +113,7 @@ typedef enum {
 @protected
 
 // Attributes (function value cache)
-//--- (YWireless attributes)
+//--- (generated code: YWireless attributes)
     NSString*       _logicalName;
     NSString*       _advertisedValue;
     int             _linkQuality;
@@ -78,9 +122,9 @@ typedef enum {
     Y_SECURITY_enum _security;
     NSString*       _message;
     NSString*       _wlanConfig;
-//--- (end of YWireless attributes)
+//--- (end of generated code: YWireless attributes)
 }
-//--- (YWireless declaration)
+//--- (generated code: YWireless declaration)
 // Constructor is protected, use yFindWireless factory function to instantiate
 -(id)    initWithFunction:(NSString*) func;
 
@@ -106,8 +150,8 @@ typedef enum {
 -(void)     setObjectCallback:(id) object :(SEL)selector;
 -(void)     setObjectCallback:(id) object withSelector:(SEL)selector;
 
-//--- (end of YWireless declaration)
-//--- (YWireless accessors declaration)
+//--- (end of generated code: YWireless declaration)
+//--- (generated code: YWireless accessors declaration)
 
 /**
  * Continues the enumeration of wireless lan interfaces started using yFirstWireless().
@@ -261,7 +305,7 @@ typedef enum {
 /**
  * Changes the configuration of the wireless lan interface to create an ad-hoc
  * wireless network, without using an access point. If a security key is specified,
- * the network will be protected by WEP128, since WPA is not standardized for
+ * the network is protected by WEP128, since WPA is not standardized for
  * ad-hoc networks.
  * Remember to call the saveToFlash() method and then to reboot the module to apply this setting.
  * 
@@ -274,11 +318,24 @@ typedef enum {
  */
 -(int)     adhocNetwork :(NSString*)ssid :(NSString*)securityKey;
 
+/**
+ * Returns a list of YWlanRecord objects which describe detected Wireless networks.
+ * This list is not updated when the module is already connected to an acces point (infrastructure mode).
+ * To force an update of this list, adhocNetwork() must be called to disconnect
+ * the module from the current network. The returned list must be unallocated by caller,
+ * 
+ * @return a list of YWlanRecord objects, containing the SSID, channel,
+ *         link quality and the type of security of the wireless network.
+ * 
+ * On failure, throws an exception or returns an empty list.
+ */
+-(NSMutableArray*)     get_detectedWlans;
 
-//--- (end of YWireless accessors declaration)
+
+//--- (end of generated code: YWireless accessors declaration)
 @end
 
-//--- (Wireless functions declaration)
+//--- (generated code: Wireless functions declaration)
 
 /**
  * Retrieves a wireless lan interface for a given identifier.
@@ -315,6 +372,6 @@ YWireless* yFindWireless(NSString* func);
  */
 YWireless* yFirstWireless(void);
 
-//--- (end of Wireless functions declaration)
+//--- (end of generated code: Wireless functions declaration)
 CF_EXTERN_C_END
 

@@ -1,39 +1,39 @@
 /*********************************************************************
  *
- * $Id: pic24config.php 8610 2012-11-07 08:54:50Z mvuilleu $
+ * $Id: yocto_display.m 12326 2013-08-13 15:52:20Z mvuilleu $
  *
  * Implements yFindDisplay(), the high-level API for Display functions
  *
  * - - - - - - - - - License information: - - - - - - - - - 
  *
- * Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
+ *  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
  *
- * 1) If you have obtained this file from www.yoctopuce.com,
- *    Yoctopuce Sarl licenses to you (hereafter Licensee) the
- *    right to use, modify, copy, and integrate this source file
- *    into your own solution for the sole purpose of interfacing
- *    a Yoctopuce product with Licensee's solution.
+ *  Yoctopuce Sarl (hereafter Licensor) grants to you a perpetual
+ *  non-exclusive license to use, modify, copy and integrate this
+ *  file into your software for the sole purpose of interfacing 
+ *  with Yoctopuce products. 
  *
- *    The use of this file and all relationship between Yoctopuce 
- *    and Licensee are governed by Yoctopuce General Terms and 
- *    Conditions.
+ *  You may reproduce and distribute copies of this file in 
+ *  source or object form, as long as the sole purpose of this
+ *  code is to interface with Yoctopuce products. You must retain 
+ *  this notice in the distributed source file.
  *
- *    THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
- *    WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
- *    WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS 
- *    FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
- *    EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
- *    INDIRECT OR CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA, 
- *    COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY OR 
- *    SERVICES, ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT 
- *    LIMITED TO ANY DEFENSE THEREOF), ANY CLAIMS FOR INDEMNITY OR
- *    CONTRIBUTION, OR OTHER SIMILAR COSTS, WHETHER ASSERTED ON THE
- *    BASIS OF CONTRACT, TORT (INCLUDING NEGLIGENCE), BREACH OF
- *    WARRANTY, OR OTHERWISE.
+ *  You should refer to Yoctopuce General Terms and Conditions
+ *  for additional information regarding your rights and 
+ *  obligations.
  *
- * 2) If your intent is not to interface with Yoctopuce products,
- *    you are not entitled to use, read or create any derived
- *    material from this source file.
+ *  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED "AS IS" WITHOUT
+ *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
+ *  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS 
+ *  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
+ *  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
+ *  INDIRECT OR CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA, 
+ *  COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY OR 
+ *  SERVICES, ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT 
+ *  LIMITED TO ANY DEFENSE THEREOF), ANY CLAIMS FOR INDEMNITY OR
+ *  CONTRIBUTION, OR OTHER SIMILAR COSTS, WHETHER ASSERTED ON THE
+ *  BASIS OF CONTRACT, TORT (INCLUDING NEGLIGENCE), BREACH OF
+ *  WARRANTY, OR OTHERWISE.
  *
  *********************************************************************/
 
@@ -622,7 +622,6 @@
 
 
 
-static NSMutableDictionary* _DisplayCache = nil;
 
 @implementation YDisplay
 
@@ -650,6 +649,25 @@ static NSMutableDictionary* _DisplayCache = nil;
     _allDisplayLayers =[[NSMutableArray alloc] init];
     return self;
 }
+
+
+-(void) dealloc
+{
+    //--- (generated code: YDisplay cleanup)
+    ARC_release(_logicalName);
+    _logicalName = nil;
+    ARC_release(_advertisedValue);
+    _advertisedValue = nil;
+    ARC_release(_startupSeq);
+    _startupSeq = nil;
+    ARC_release(_command);
+    _command = nil;
+//--- (end of generated code: YDisplay cleanup)
+    [super dealloc];
+}
+
+
+
 //--- (generated code: YDisplay implementation)
 
 -(int) _parse:(yJsonStateMachine*) j
@@ -1307,20 +1325,17 @@ static NSMutableDictionary* _DisplayCache = nil;
     YDisplay * retVal=nil;
     if(func==nil) return nil;
     // Search in cache
-    {
-        if (_DisplayCache == nil){
-            _DisplayCache = [[NSMutableDictionary alloc] init];
-        }
-        if(nil != [_DisplayCache objectForKey:func]){
-            retVal = [_DisplayCache objectForKey:func];
-       } else {
-           YDisplay *newDisplay = [[YDisplay alloc] initWithFunction:func];
-           [_DisplayCache setObject:newDisplay forKey:func];
-           retVal = newDisplay;
-           ARC_autorelease(retVal);
-       }
-   }
-   return retVal;
+    if ([YAPI_YFunctions objectForKey:@"YDisplay"] == nil){
+        [YAPI_YFunctions setObject:[NSMutableDictionary dictionary] forKey:@"YDisplay"];
+    }
+    if(nil != [[YAPI_YFunctions objectForKey:@"YDisplay"] objectForKey:func]){
+        retVal = [[YAPI_YFunctions objectForKey:@"YDisplay"] objectForKey:func];
+    } else {
+        retVal = [[YDisplay alloc] initWithFunction:func];
+        [[YAPI_YFunctions objectForKey:@"YDisplay"] setObject:retVal forKey:func];
+        ARC_autorelease(retVal);
+    }
+    return retVal;
 }
 
 +(YDisplay *) FirstDisplay

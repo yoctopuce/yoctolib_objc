@@ -1,39 +1,39 @@
 /*********************************************************************
  *
- * $Id: yocto_wireless.m 9801 2013-02-11 17:09:59Z seb $
+ * $Id: yocto_wireless.m 12337 2013-08-14 15:22:22Z mvuilleu $
  *
  * Implements yFindWireless(), the high-level API for Wireless functions
  *
  * - - - - - - - - - License information: - - - - - - - - - 
  *
- * Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
+ *  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
  *
- * 1) If you have obtained this file from www.yoctopuce.com,
- *    Yoctopuce Sarl licenses to you (hereafter Licensee) the
- *    right to use, modify, copy, and integrate this source file
- *    into your own solution for the sole purpose of interfacing
- *    a Yoctopuce product with Licensee's solution.
+ *  Yoctopuce Sarl (hereafter Licensor) grants to you a perpetual
+ *  non-exclusive license to use, modify, copy and integrate this
+ *  file into your software for the sole purpose of interfacing 
+ *  with Yoctopuce products. 
  *
- *    The use of this file and all relationship between Yoctopuce 
- *    and Licensee are governed by Yoctopuce General Terms and 
- *    Conditions.
+ *  You may reproduce and distribute copies of this file in 
+ *  source or object form, as long as the sole purpose of this
+ *  code is to interface with Yoctopuce products. You must retain 
+ *  this notice in the distributed source file.
  *
- *    THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
- *    WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
- *    WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS 
- *    FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
- *    EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
- *    INDIRECT OR CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA, 
- *    COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY OR 
- *    SERVICES, ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT 
- *    LIMITED TO ANY DEFENSE THEREOF), ANY CLAIMS FOR INDEMNITY OR
- *    CONTRIBUTION, OR OTHER SIMILAR COSTS, WHETHER ASSERTED ON THE
- *    BASIS OF CONTRACT, TORT (INCLUDING NEGLIGENCE), BREACH OF
- *    WARRANTY, OR OTHERWISE.
+ *  You should refer to Yoctopuce General Terms and Conditions
+ *  for additional information regarding your rights and 
+ *  obligations.
  *
- * 2) If your intent is not to interface with Yoctopuce products,
- *    you are not entitled to use, read or create any derived
- *    material from this source file.
+ *  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED "AS IS" WITHOUT
+ *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
+ *  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS 
+ *  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
+ *  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
+ *  INDIRECT OR CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA, 
+ *  COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY OR 
+ *  SERVICES, ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT 
+ *  LIMITED TO ANY DEFENSE THEREOF), ANY CLAIMS FOR INDEMNITY OR
+ *  CONTRIBUTION, OR OTHER SIMILAR COSTS, WHETHER ASSERTED ON THE
+ *  BASIS OF CONTRACT, TORT (INCLUDING NEGLIGENCE), BREACH OF
+ *  WARRANTY, OR OTHERWISE.
  *
  *********************************************************************/
 
@@ -43,14 +43,102 @@
 #include "yapi/yapi.h"
 
 
-static NSMutableDictionary* _WirelessCache = nil;
+
+@implementation YWlanRecord
+
+//--- (generated code: YWlanRecord attributes)
+//--- (end of generated code: YWlanRecord attributes)
+
+-(id)   initWith:(NSString *)json_str
+{
+    yJsonStateMachine j;
+    if(!(self = [super init]))
+        return nil;
+    
+    // Parse JSON data 
+    j.src = STR_oc2y(json_str);
+    j.end = j.src + strlen(j.src);
+    j.st = YJSON_START;
+    if(yJsonParse(&j) != YJSON_PARSE_AVAIL || j.st != YJSON_PARSE_STRUCT) {
+        return self;
+    }
+    while(yJsonParse(&j) == YJSON_PARSE_AVAIL && j.st == YJSON_PARSE_MEMBNAME) {
+        if (!strcmp(j.token, "ssid")) {
+            if (yJsonParse(&j) != YJSON_PARSE_AVAIL) {
+                return self;
+            }
+            _ssid = STR_y2oc(j.token);
+            while(j.next == YJSON_PARSE_STRINGCONT && yJsonParse(&j) == YJSON_PARSE_AVAIL) {
+                _ssid =[_ssid stringByAppendingString: STR_y2oc(j.token)];
+                ARC_retain(_ssid);
+            }
+        } else if (!strcmp(j.token, "sec")) {
+            if (yJsonParse(&j) != YJSON_PARSE_AVAIL) {
+                return self;
+            }
+            _sec = STR_y2oc(j.token);
+            while(j.next == YJSON_PARSE_STRINGCONT && yJsonParse(&j) == YJSON_PARSE_AVAIL) {
+                _sec =[_sec stringByAppendingString: STR_y2oc(j.token)];
+                ARC_retain(_sec);
+            }
+        } else if(!strcmp(j.token, "channel")) {
+            if (yJsonParse(&j) != YJSON_PARSE_AVAIL) {
+                return self;
+            }
+            _channel = atoi(j.token);;
+        } else if(!strcmp(j.token, "rssi")) {
+            if (yJsonParse(&j) != YJSON_PARSE_AVAIL) {
+                return self;
+            }
+            _rssi = atoi(j.token);;
+        } else {
+            yJsonSkip(&j, 1);
+        }
+    }
+    return self;
+}
+
+
+
+
+//--- (generated code: YWlanRecord implementation)
+
+-(NSString*) get_ssid
+{
+    return _ssid;
+}
+
+-(int) get_channel
+{
+    return _channel;
+}
+
+-(NSString*) get_security
+{
+    return _sec;
+}
+
+-(int) get_linkQuality
+{
+    return _rssi;
+}
+
+//--- (end of generated code: YWlanRecord implementation)
+
+@end
+//--- (generated code: WlanRecord functions)
+//--- (end of generated code: WlanRecord functions)
+
+
+
+
 
 @implementation YWireless
 
 // Constructor is protected, use yFindWireless factory function to instantiate
 -(id)              initWithFunction:(NSString*) func
 {
-//--- (YWireless attributes)
+//--- (generated code: YWireless attributes)
    if(!(self = [super initProtected:@"Wireless":func]))
           return nil;
     _logicalName = Y_LOGICALNAME_INVALID;
@@ -61,10 +149,27 @@ static NSMutableDictionary* _WirelessCache = nil;
     _security = Y_SECURITY_INVALID;
     _message = Y_MESSAGE_INVALID;
     _wlanConfig = Y_WLANCONFIG_INVALID;
-//--- (end of YWireless attributes)
+//--- (end of generated code: YWireless attributes)
     return self;
 }
-//--- (YWireless implementation)
+// destructor 
+-(void)  dealloc
+{
+//--- (generated code: YWireless cleanup)
+    ARC_release(_logicalName);
+    _logicalName = nil;
+    ARC_release(_advertisedValue);
+    _advertisedValue = nil;
+    ARC_release(_ssid);
+    _ssid = nil;
+    ARC_release(_message);
+    _message = nil;
+    ARC_release(_wlanConfig);
+    _wlanConfig = nil;
+//--- (end of generated code: YWireless cleanup)
+    ARC_dealloc(super);
+}
+//--- (generated code: YWireless implementation)
 
 -(int) _parse:(yJsonStateMachine*) j
 {
@@ -318,7 +423,7 @@ static NSMutableDictionary* _WirelessCache = nil;
 /**
  * Changes the configuration of the wireless lan interface to create an ad-hoc
  * wireless network, without using an access point. If a security key is specified,
- * the network will be protected by WEP128, since WPA is not standardized for
+ * the network is protected by WEP128, since WPA is not standardized for
  * ad-hoc networks.
  * Remember to call the saveToFlash() method and then to reboot the module to apply this setting.
  * 
@@ -335,6 +440,29 @@ static NSMutableDictionary* _WirelessCache = nil;
     rest_val = [NSString stringWithFormat:@"ADHOC:%@\\%@",ssid,securityKey];
     return [self _setAttr:@"wlanConfig" :rest_val];
 }
+/**
+ * Returns a list of YWlanRecord objects which describe detected Wireless networks.
+ * This list is not updated when the module is already connected to an acces point (infrastructure mode).
+ * To force an update of this list, adhocNetwork() must be called to disconnect
+ * the module from the current network. The returned list must be unallocated by caller,
+ * 
+ * @return a list of YWlanRecord objects, containing the SSID, channel,
+ *         link quality and the type of security of the wireless network.
+ * 
+ * On failure, throws an exception or returns an empty list.
+ */
+-(NSMutableArray*) get_detectedWlans
+{
+    NSData* json;
+    NSMutableArray* list = [NSMutableArray array];
+    NSMutableArray* res = [NSMutableArray array];
+    json = [self _download:@"wlan.json?by=name"];
+    list = [self _json_get_array:json];
+    for (NSString* _each  in list) { [res addObject:ARC_sendAutorelease([[YWlanRecord alloc] initWith:_each])];};
+    return res;
+    
+}
+
 
 -(YWireless*)   nextWireless
 {
@@ -379,20 +507,17 @@ static NSMutableDictionary* _WirelessCache = nil;
     YWireless * retVal=nil;
     if(func==nil) return nil;
     // Search in cache
-    {
-        if (_WirelessCache == nil){
-            _WirelessCache = [[NSMutableDictionary alloc] init];
-        }
-        if(nil != [_WirelessCache objectForKey:func]){
-            retVal = [_WirelessCache objectForKey:func];
-       } else {
-           YWireless *newWireless = [[YWireless alloc] initWithFunction:func];
-           [_WirelessCache setObject:newWireless forKey:func];
-           retVal = newWireless;
-           ARC_autorelease(retVal);
-       }
-   }
-   return retVal;
+    if ([YAPI_YFunctions objectForKey:@"YWireless"] == nil){
+        [YAPI_YFunctions setObject:[NSMutableDictionary dictionary] forKey:@"YWireless"];
+    }
+    if(nil != [[YAPI_YFunctions objectForKey:@"YWireless"] objectForKey:func]){
+        retVal = [[YAPI_YFunctions objectForKey:@"YWireless"] objectForKey:func];
+    } else {
+        retVal = [[YWireless alloc] initWithFunction:func];
+        [[YAPI_YFunctions objectForKey:@"YWireless"] setObject:retVal forKey:func];
+        ARC_autorelease(retVal);
+    }
+    return retVal;
 }
 
 +(YWireless *) FirstWireless
@@ -410,10 +535,10 @@ static NSMutableDictionary* _WirelessCache = nil;
     return nil;
 }
 
-//--- (end of YWireless implementation)
+//--- (end of generated code: YWireless implementation)
 
 @end
-//--- (Wireless functions)
+//--- (generated code: Wireless functions)
 
 YWireless *yFindWireless(NSString* func)
 {
@@ -425,4 +550,4 @@ YWireless *yFirstWireless(void)
     return [YWireless FirstWireless];
 }
 
-//--- (end of Wireless functions)
+//--- (end of generated code: Wireless functions)

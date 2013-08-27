@@ -1,39 +1,39 @@
 /*********************************************************************
  *
- * $Id: yocto_hubport.m 9489 2013-01-22 11:03:40Z seb $
+ * $Id: yocto_hubport.m 12337 2013-08-14 15:22:22Z mvuilleu $
  *
  * Implements yFindHubPort(), the high-level API for HubPort functions
  *
  * - - - - - - - - - License information: - - - - - - - - - 
  *
- * Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
+ *  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
  *
- * 1) If you have obtained this file from www.yoctopuce.com,
- *    Yoctopuce Sarl licenses to you (hereafter Licensee) the
- *    right to use, modify, copy, and integrate this source file
- *    into your own solution for the sole purpose of interfacing
- *    a Yoctopuce product with Licensee's solution.
+ *  Yoctopuce Sarl (hereafter Licensor) grants to you a perpetual
+ *  non-exclusive license to use, modify, copy and integrate this
+ *  file into your software for the sole purpose of interfacing 
+ *  with Yoctopuce products. 
  *
- *    The use of this file and all relationship between Yoctopuce 
- *    and Licensee are governed by Yoctopuce General Terms and 
- *    Conditions.
+ *  You may reproduce and distribute copies of this file in 
+ *  source or object form, as long as the sole purpose of this
+ *  code is to interface with Yoctopuce products. You must retain 
+ *  this notice in the distributed source file.
  *
- *    THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
- *    WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
- *    WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS 
- *    FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
- *    EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
- *    INDIRECT OR CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA, 
- *    COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY OR 
- *    SERVICES, ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT 
- *    LIMITED TO ANY DEFENSE THEREOF), ANY CLAIMS FOR INDEMNITY OR
- *    CONTRIBUTION, OR OTHER SIMILAR COSTS, WHETHER ASSERTED ON THE
- *    BASIS OF CONTRACT, TORT (INCLUDING NEGLIGENCE), BREACH OF
- *    WARRANTY, OR OTHERWISE.
+ *  You should refer to Yoctopuce General Terms and Conditions
+ *  for additional information regarding your rights and 
+ *  obligations.
  *
- * 2) If your intent is not to interface with Yoctopuce products,
- *    you are not entitled to use, read or create any derived
- *    material from this source file.
+ *  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
+ *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
+ *  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS 
+ *  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
+ *  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
+ *  INDIRECT OR CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA, 
+ *  COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY OR 
+ *  SERVICES, ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT 
+ *  LIMITED TO ANY DEFENSE THEREOF), ANY CLAIMS FOR INDEMNITY OR
+ *  CONTRIBUTION, OR OTHER SIMILAR COSTS, WHETHER ASSERTED ON THE
+ *  BASIS OF CONTRACT, TORT (INCLUDING NEGLIGENCE), BREACH OF
+ *  WARRANTY, OR OTHERWISE.
  *
  *********************************************************************/
 
@@ -43,7 +43,6 @@
 #include "yapi/yapi.h"
 
 
-static NSMutableDictionary* _HubPortCache = nil;
 
 @implementation YHubPort
 
@@ -60,6 +59,17 @@ static NSMutableDictionary* _HubPortCache = nil;
     _baudRate = Y_BAUDRATE_INVALID;
 //--- (end of YHubPort attributes)
     return self;
+}
+// destructor 
+-(void)  dealloc
+{
+//--- (YHubPort cleanup)
+    ARC_release(_logicalName);
+    _logicalName = nil;
+    ARC_release(_advertisedValue);
+    _advertisedValue = nil;
+//--- (end of YHubPort cleanup)
+    ARC_dealloc(super);
 }
 //--- (YHubPort implementation)
 
@@ -182,7 +192,7 @@ static NSMutableDictionary* _HubPortCache = nil;
 
 /**
  * Changes the activation of the Yocto-hub port. If the port is enabled, the
- * *      connected module will be powered. Otherwise, port power will be shut down.
+ * *      connected module is powered. Otherwise, port power is shut down.
  * 
  * @param newval : either Y_ENABLED_FALSE or Y_ENABLED_TRUE, according to the activation of the Yocto-hub port
  * 
@@ -204,8 +214,8 @@ static NSMutableDictionary* _HubPortCache = nil;
 /**
  * Returns the current state of the Yocto-hub port.
  * 
- * @return a value among Y_PORTSTATE_OFF, Y_PORTSTATE_ON and Y_PORTSTATE_RUN corresponding to the
- * current state of the Yocto-hub port
+ * @return a value among Y_PORTSTATE_OFF, Y_PORTSTATE_OVRLD, Y_PORTSTATE_ON, Y_PORTSTATE_RUN and
+ * Y_PORTSTATE_PROG corresponding to the current state of the Yocto-hub port
  * 
  * On failure, throws an exception or returns Y_PORTSTATE_INVALID.
  */
@@ -224,7 +234,7 @@ static NSMutableDictionary* _HubPortCache = nil;
 /**
  * Returns the current baud rate used by this Yocto-hub port, in kbps.
  * The default value is 1000 kbps, but a slower rate may be used if communication
- * problems are hit.
+ * problems are encountered.
  * 
  * @return an integer corresponding to the current baud rate used by this Yocto-hub port, in kbps
  * 
@@ -285,20 +295,17 @@ static NSMutableDictionary* _HubPortCache = nil;
     YHubPort * retVal=nil;
     if(func==nil) return nil;
     // Search in cache
-    {
-        if (_HubPortCache == nil){
-            _HubPortCache = [[NSMutableDictionary alloc] init];
-        }
-        if(nil != [_HubPortCache objectForKey:func]){
-            retVal = [_HubPortCache objectForKey:func];
-       } else {
-           YHubPort *newHubPort = [[YHubPort alloc] initWithFunction:func];
-           [_HubPortCache setObject:newHubPort forKey:func];
-           retVal = newHubPort;
-           ARC_autorelease(retVal);
-       }
-   }
-   return retVal;
+    if ([YAPI_YFunctions objectForKey:@"YHubPort"] == nil){
+        [YAPI_YFunctions setObject:[NSMutableDictionary dictionary] forKey:@"YHubPort"];
+    }
+    if(nil != [[YAPI_YFunctions objectForKey:@"YHubPort"] objectForKey:func]){
+        retVal = [[YAPI_YFunctions objectForKey:@"YHubPort"] objectForKey:func];
+    } else {
+        retVal = [[YHubPort alloc] initWithFunction:func];
+        [[YAPI_YFunctions objectForKey:@"YHubPort"] setObject:retVal forKey:func];
+        ARC_autorelease(retVal);
+    }
+    return retVal;
 }
 
 +(YHubPort *) FirstHubPort

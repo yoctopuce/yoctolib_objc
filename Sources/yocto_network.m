@@ -1,39 +1,39 @@
 /*********************************************************************
  *
- * $Id: yocto_network.m 9884 2013-02-19 07:49:26Z mvuilleu $
+ * $Id: yocto_network.m 12337 2013-08-14 15:22:22Z mvuilleu $
  *
  * Implements yFindNetwork(), the high-level API for Network functions
  *
  * - - - - - - - - - License information: - - - - - - - - - 
  *
- * Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
+ *  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
  *
- * 1) If you have obtained this file from www.yoctopuce.com,
- *    Yoctopuce Sarl licenses to you (hereafter Licensee) the
- *    right to use, modify, copy, and integrate this source file
- *    into your own solution for the sole purpose of interfacing
- *    a Yoctopuce product with Licensee's solution.
+ *  Yoctopuce Sarl (hereafter Licensor) grants to you a perpetual
+ *  non-exclusive license to use, modify, copy and integrate this
+ *  file into your software for the sole purpose of interfacing 
+ *  with Yoctopuce products. 
  *
- *    The use of this file and all relationship between Yoctopuce 
- *    and Licensee are governed by Yoctopuce General Terms and 
- *    Conditions.
+ *  You may reproduce and distribute copies of this file in 
+ *  source or object form, as long as the sole purpose of this
+ *  code is to interface with Yoctopuce products. You must retain 
+ *  this notice in the distributed source file.
  *
- *    THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
- *    WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
- *    WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS 
- *    FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
- *    EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
- *    INDIRECT OR CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA, 
- *    COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY OR 
- *    SERVICES, ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT 
- *    LIMITED TO ANY DEFENSE THEREOF), ANY CLAIMS FOR INDEMNITY OR
- *    CONTRIBUTION, OR OTHER SIMILAR COSTS, WHETHER ASSERTED ON THE
- *    BASIS OF CONTRACT, TORT (INCLUDING NEGLIGENCE), BREACH OF
- *    WARRANTY, OR OTHERWISE.
+ *  You should refer to Yoctopuce General Terms and Conditions
+ *  for additional information regarding your rights and 
+ *  obligations.
  *
- * 2) If your intent is not to interface with Yoctopuce products,
- *    you are not entitled to use, read or create any derived
- *    material from this source file.
+ *  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
+ *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
+ *  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS 
+ *  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
+ *  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
+ *  INDIRECT OR CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA, 
+ *  COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY OR 
+ *  SERVICES, ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT 
+ *  LIMITED TO ANY DEFENSE THEREOF), ANY CLAIMS FOR INDEMNITY OR
+ *  CONTRIBUTION, OR OTHER SIMILAR COSTS, WHETHER ASSERTED ON THE
+ *  BASIS OF CONTRACT, TORT (INCLUDING NEGLIGENCE), BREACH OF
+ *  WARRANTY, OR OTHERWISE.
  *
  *********************************************************************/
 
@@ -43,7 +43,6 @@
 #include "yapi/yapi.h"
 
 
-static NSMutableDictionary* _NetworkCache = nil;
 
 @implementation YNetwork
 
@@ -65,14 +64,50 @@ static NSMutableDictionary* _NetworkCache = nil;
     _secondaryDNS = Y_SECONDARYDNS_INVALID;
     _userPassword = Y_USERPASSWORD_INVALID;
     _adminPassword = Y_ADMINPASSWORD_INVALID;
+    _discoverable = Y_DISCOVERABLE_INVALID;
+    _wwwWatchdogDelay = Y_WWWWATCHDOGDELAY_INVALID;
     _callbackUrl = Y_CALLBACKURL_INVALID;
     _callbackMethod = Y_CALLBACKMETHOD_INVALID;
     _callbackEncoding = Y_CALLBACKENCODING_INVALID;
     _callbackCredentials = Y_CALLBACKCREDENTIALS_INVALID;
     _callbackMinDelay = Y_CALLBACKMINDELAY_INVALID;
     _callbackMaxDelay = Y_CALLBACKMAXDELAY_INVALID;
+    _poeCurrent = Y_POECURRENT_INVALID;
 //--- (end of YNetwork attributes)
     return self;
+}
+// destructor 
+-(void)  dealloc
+{
+//--- (YNetwork cleanup)
+    ARC_release(_logicalName);
+    _logicalName = nil;
+    ARC_release(_advertisedValue);
+    _advertisedValue = nil;
+    ARC_release(_macAddress);
+    _macAddress = nil;
+    ARC_release(_ipAddress);
+    _ipAddress = nil;
+    ARC_release(_subnetMask);
+    _subnetMask = nil;
+    ARC_release(_router);
+    _router = nil;
+    ARC_release(_ipConfig);
+    _ipConfig = nil;
+    ARC_release(_primaryDNS);
+    _primaryDNS = nil;
+    ARC_release(_secondaryDNS);
+    _secondaryDNS = nil;
+    ARC_release(_userPassword);
+    _userPassword = nil;
+    ARC_release(_adminPassword);
+    _adminPassword = nil;
+    ARC_release(_callbackUrl);
+    _callbackUrl = nil;
+    ARC_release(_callbackCredentials);
+    _callbackCredentials = nil;
+//--- (end of YNetwork cleanup)
+    ARC_dealloc(super);
 }
 //--- (YNetwork implementation)
 
@@ -141,6 +176,12 @@ static NSMutableDictionary* _NetworkCache = nil;
             ARC_release(_adminPassword);
             _adminPassword =  [self _parseString:j];
             ARC_retain(_adminPassword);
+        } else if(!strcmp(j->token, "discoverable")) {
+            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+            _discoverable =  (Y_DISCOVERABLE_enum)atoi(j->token);
+        } else if(!strcmp(j->token, "wwwWatchdogDelay")) {
+            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+            _wwwWatchdogDelay =  atoi(j->token);
         } else if(!strcmp(j->token, "callbackUrl")) {
             if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
             ARC_release(_callbackUrl);
@@ -163,6 +204,9 @@ static NSMutableDictionary* _NetworkCache = nil;
         } else if(!strcmp(j->token, "callbackMaxDelay")) {
             if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
             _callbackMaxDelay =  atoi(j->token);
+        } else if(!strcmp(j->token, "poeCurrent")) {
+            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+            _poeCurrent =  atoi(j->token);
         } else {
             // ignore unknown field
             yJsonSkip(j, 1);
@@ -243,13 +287,13 @@ static NSMutableDictionary* _NetworkCache = nil;
  * Level 1 (LIVE_1) is reached when the network is detected, but is not yet connected,
  * For a wireless network, this shows that the requested SSID is present.
  * Level 2 (LINK_2) is reached when the hardware connection is established.
- * For a wired network connection, level 2 means that the cable is attached on both ends.
+ * For a wired network connection, level 2 means that the cable is attached at both ends.
  * For a connection to a wireless access point, it shows that the security parameters
  * are properly configured. For an ad-hoc wireless connection, it means that there is
  * at least one other device connected on the ad-hoc network.
  * Level 3 (DHCP_3) is reached when an IP address has been obtained using DHCP.
  * Level 4 (DNS_4) is reached when the DNS server is reachable on the network.
- * Level 5 (WWW_5) is reached when global connectivity is demonstrated by properly loading
+ * Level 5 (WWW_5) is reached when global connectivity is demonstrated by properly loading the
  * current time from an NTP server.
  * 
  * @return a value among Y_READINESS_DOWN, Y_READINESS_EXISTS, Y_READINESS_LINKED, Y_READINESS_LAN_OK
@@ -373,7 +417,7 @@ static NSMutableDictionary* _NetworkCache = nil;
 /**
  * Changes the configuration of the network interface to enable the use of an
  * IP address received from a DHCP server. Until an address is received from a DHCP
- * server, the module will use the IP parameters specified to this function.
+ * server, the module uses the IP parameters specified to this function.
  * Remember to call the saveToFlash() method and then to reboot the module to apply this setting.
  * 
  * @param fallbackIpAddr : fallback IP address, to be used when no DHCP reply is received
@@ -432,7 +476,7 @@ static NSMutableDictionary* _NetworkCache = nil;
 
 /**
  * Changes the IP address of the primary name server to be used by the module.
- * When using DHCP, if a value is specified, it will override the value received from the DHCP server.
+ * When using DHCP, if a value is specified, it overrides the value received from the DHCP server.
  * Remember to call the saveToFlash() method and then to reboot the module to apply this setting.
  * 
  * @param newval : a string corresponding to the IP address of the primary name server to be used by the module
@@ -473,7 +517,7 @@ static NSMutableDictionary* _NetworkCache = nil;
 
 /**
  * Changes the IP address of the secondarz name server to be used by the module.
- * When using DHCP, if a value is specified, it will override the value received from the DHCP server.
+ * When using DHCP, if a value is specified, it overrides the value received from the DHCP server.
  * Remember to call the saveToFlash() method and then to reboot the module to apply this setting.
  * 
  * @param newval : a string corresponding to the IP address of the secondarz name server to be used by the module
@@ -494,10 +538,10 @@ static NSMutableDictionary* _NetworkCache = nil;
 }
 
 /**
- * Returns a hash string if a password has been set for user "user",
+ * Returns a hash string if a password has been set for "user" user,
  * or an empty string otherwise.
  * 
- * @return a string corresponding to a hash string if a password has been set for user "user",
+ * @return a string corresponding to a hash string if a password has been set for "user" user,
  *         or an empty string otherwise
  * 
  * On failure, throws an exception or returns Y_USERPASSWORD_INVALID.
@@ -584,6 +628,99 @@ static NSMutableDictionary* _NetworkCache = nil;
 }
 
 /**
+ * Returns the activation state of the multicast announce protocols to allow easy
+ * discovery of the module in the network neighborhood (uPnP/Bonjour protocol).
+ * 
+ * @return either Y_DISCOVERABLE_FALSE or Y_DISCOVERABLE_TRUE, according to the activation state of
+ * the multicast announce protocols to allow easy
+ *         discovery of the module in the network neighborhood (uPnP/Bonjour protocol)
+ * 
+ * On failure, throws an exception or returns Y_DISCOVERABLE_INVALID.
+ */
+-(Y_DISCOVERABLE_enum) get_discoverable
+{
+    return [self discoverable];
+}
+-(Y_DISCOVERABLE_enum) discoverable
+{
+    if(_cacheExpiration <= [YAPI  GetTickCount]) {
+        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_DISCOVERABLE_INVALID;
+    }
+    return _discoverable;
+}
+
+/**
+ * Changes the activation state of the multicast announce protocols to allow easy
+ * discovery of the module in the network neighborhood (uPnP/Bonjour protocol).
+ * 
+ * @param newval : either Y_DISCOVERABLE_FALSE or Y_DISCOVERABLE_TRUE, according to the activation
+ * state of the multicast announce protocols to allow easy
+ *         discovery of the module in the network neighborhood (uPnP/Bonjour protocol)
+ * 
+ * @return YAPI_SUCCESS if the call succeeds.
+ * 
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) set_discoverable:(Y_DISCOVERABLE_enum) newval
+{
+    return [self setDiscoverable:newval];
+}
+-(int) setDiscoverable:(Y_DISCOVERABLE_enum) newval
+{
+    NSString* rest_val;
+    rest_val = (newval ? @"1" : @"0");
+    return [self _setAttr:@"discoverable" :rest_val];
+}
+
+/**
+ * Returns the allowed downtime of the WWW link (in seconds) before triggering an automated
+ * reboot to try to recover Internet connectivity. A zero value disables automated reboot
+ * in case of Internet connectivity loss.
+ * 
+ * @return an integer corresponding to the allowed downtime of the WWW link (in seconds) before
+ * triggering an automated
+ *         reboot to try to recover Internet connectivity
+ * 
+ * On failure, throws an exception or returns Y_WWWWATCHDOGDELAY_INVALID.
+ */
+-(unsigned) get_wwwWatchdogDelay
+{
+    return [self wwwWatchdogDelay];
+}
+-(unsigned) wwwWatchdogDelay
+{
+    if(_cacheExpiration <= [YAPI  GetTickCount]) {
+        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_WWWWATCHDOGDELAY_INVALID;
+    }
+    return _wwwWatchdogDelay;
+}
+
+/**
+ * Changes the allowed downtime of the WWW link (in seconds) before triggering an automated
+ * reboot to try to recover Internet connectivity. A zero value disable automated reboot
+ * in case of Internet connectivity loss. The smallest valid non-zero timeout is
+ * 90 seconds.
+ * 
+ * @param newval : an integer corresponding to the allowed downtime of the WWW link (in seconds)
+ * before triggering an automated
+ *         reboot to try to recover Internet connectivity
+ * 
+ * @return YAPI_SUCCESS if the call succeeds.
+ * 
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) set_wwwWatchdogDelay:(unsigned) newval
+{
+    return [self setWwwWatchdogDelay:newval];
+}
+-(int) setWwwWatchdogDelay:(unsigned) newval
+{
+    NSString* rest_val;
+    rest_val = [NSString stringWithFormat:@"%u", newval];
+    return [self _setAttr:@"wwwWatchdogDelay" :rest_val];
+}
+
+/**
  * Returns the callback URL to notify of significant state changes.
  * 
  * @return a string corresponding to the callback URL to notify of significant state changes
@@ -603,10 +740,10 @@ static NSMutableDictionary* _NetworkCache = nil;
 }
 
 /**
- * Changes the callback URL to notify of significant state changes. Remember to call the
+ * Changes the callback URL to notify significant state changes. Remember to call the
  * saveToFlash() method of the module if the modification must be kept.
  * 
- * @param newval : a string corresponding to the callback URL to notify of significant state changes
+ * @param newval : a string corresponding to the callback URL to notify significant state changes
  * 
  * @return YAPI_SUCCESS if the call succeeds.
  * 
@@ -624,10 +761,10 @@ static NSMutableDictionary* _NetworkCache = nil;
 }
 
 /**
- * Returns the HTTP Method used to notify callbacks for significant state changes.
+ * Returns the HTTP method used to notify callbacks for significant state changes.
  * 
  * @return a value among Y_CALLBACKMETHOD_POST, Y_CALLBACKMETHOD_GET and Y_CALLBACKMETHOD_PUT
- * corresponding to the HTTP Method used to notify callbacks for significant state changes
+ * corresponding to the HTTP method used to notify callbacks for significant state changes
  * 
  * On failure, throws an exception or returns Y_CALLBACKMETHOD_INVALID.
  */
@@ -644,10 +781,10 @@ static NSMutableDictionary* _NetworkCache = nil;
 }
 
 /**
- * Changes the HTTP Method used to notify callbacks for significant state changes.
+ * Changes the HTTP method used to notify callbacks for significant state changes.
  * 
  * @param newval : a value among Y_CALLBACKMETHOD_POST, Y_CALLBACKMETHOD_GET and Y_CALLBACKMETHOD_PUT
- * corresponding to the HTTP Method used to notify callbacks for significant state changes
+ * corresponding to the HTTP method used to notify callbacks for significant state changes
  * 
  * @return YAPI_SUCCESS if the call succeeds.
  * 
@@ -758,8 +895,8 @@ static NSMutableDictionary* _NetworkCache = nil;
 
 /**
  * Connects to the notification callback and saves the credentials required to
- * log in to it. The password will not be stored into the module, only a hashed
- * copy of the credentials will be saved. Remember to call the
+ * log into it. The password is not stored into the module, only a hashed
+ * copy of the credentials are saved. Remember to call the
  * saveToFlash() method of the module if the modification must be kept.
  * 
  * @param username : username required to log to the callback
@@ -777,9 +914,9 @@ static NSMutableDictionary* _NetworkCache = nil;
 }
 
 /**
- * Returns the minimum wait time between two callback notifications, in seconds.
+ * Returns the minimum waiting time between two callback notifications, in seconds.
  * 
- * @return an integer corresponding to the minimum wait time between two callback notifications, in seconds
+ * @return an integer corresponding to the minimum waiting time between two callback notifications, in seconds
  * 
  * On failure, throws an exception or returns Y_CALLBACKMINDELAY_INVALID.
  */
@@ -796,9 +933,10 @@ static NSMutableDictionary* _NetworkCache = nil;
 }
 
 /**
- * Changes the minimum wait time between two callback notifications, in seconds.
+ * Changes the minimum waiting time between two callback notifications, in seconds.
  * 
- * @param newval : an integer corresponding to the minimum wait time between two callback notifications, in seconds
+ * @param newval : an integer corresponding to the minimum waiting time between two callback
+ * notifications, in seconds
  * 
  * @return YAPI_SUCCESS if the call succeeds.
  * 
@@ -816,9 +954,9 @@ static NSMutableDictionary* _NetworkCache = nil;
 }
 
 /**
- * Returns the maximum wait time between two callback notifications, in seconds.
+ * Returns the maximum waiting time between two callback notifications, in seconds.
  * 
- * @return an integer corresponding to the maximum wait time between two callback notifications, in seconds
+ * @return an integer corresponding to the maximum waiting time between two callback notifications, in seconds
  * 
  * On failure, throws an exception or returns Y_CALLBACKMAXDELAY_INVALID.
  */
@@ -835,9 +973,10 @@ static NSMutableDictionary* _NetworkCache = nil;
 }
 
 /**
- * Changes the maximum wait time between two callback notifications, in seconds.
+ * Changes the maximum waiting time between two callback notifications, in seconds.
  * 
- * @param newval : an integer corresponding to the maximum wait time between two callback notifications, in seconds
+ * @param newval : an integer corresponding to the maximum waiting time between two callback
+ * notifications, in seconds
  * 
  * @return YAPI_SUCCESS if the call succeeds.
  * 
@@ -853,6 +992,45 @@ static NSMutableDictionary* _NetworkCache = nil;
     rest_val = [NSString stringWithFormat:@"%u", newval];
     return [self _setAttr:@"callbackMaxDelay" :rest_val];
 }
+
+/**
+ * Returns the current consumed by the module from Power-over-Ethernet (PoE), in milli-amps.
+ * The current consumption is measured after converting PoE source to 5 Volt, and should
+ * never exceed 1800 mA.
+ * 
+ * @return an integer corresponding to the current consumed by the module from Power-over-Ethernet
+ * (PoE), in milli-amps
+ * 
+ * On failure, throws an exception or returns Y_POECURRENT_INVALID.
+ */
+-(unsigned) get_poeCurrent
+{
+    return [self poeCurrent];
+}
+-(unsigned) poeCurrent
+{
+    if(_cacheExpiration <= [YAPI  GetTickCount]) {
+        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_POECURRENT_INVALID;
+    }
+    return _poeCurrent;
+}
+/**
+ * Pings str_host to test the network connectivity. Sends four requests ICMP ECHO_REQUEST from the
+ * module to the target str_host. This method returns a string with the result of the
+ * 4 ICMP ECHO_REQUEST result.
+ * 
+ * @param host : the hostname or the IP address of the target
+ * 
+ * @return a string with the result of the ping.
+ */
+-(NSString*) ping :(NSString*)host
+{
+    NSData* content;
+    content = [self _download:[NSString stringWithFormat:@"ping.txt?host=%@",host]];
+    return ARC_sendAutorelease([[NSString alloc] initWithData:content encoding:NSASCIIStringEncoding]);
+    
+}
+
 
 -(YNetwork*)   nextNetwork
 {
@@ -897,20 +1075,17 @@ static NSMutableDictionary* _NetworkCache = nil;
     YNetwork * retVal=nil;
     if(func==nil) return nil;
     // Search in cache
-    {
-        if (_NetworkCache == nil){
-            _NetworkCache = [[NSMutableDictionary alloc] init];
-        }
-        if(nil != [_NetworkCache objectForKey:func]){
-            retVal = [_NetworkCache objectForKey:func];
-       } else {
-           YNetwork *newNetwork = [[YNetwork alloc] initWithFunction:func];
-           [_NetworkCache setObject:newNetwork forKey:func];
-           retVal = newNetwork;
-           ARC_autorelease(retVal);
-       }
-   }
-   return retVal;
+    if ([YAPI_YFunctions objectForKey:@"YNetwork"] == nil){
+        [YAPI_YFunctions setObject:[NSMutableDictionary dictionary] forKey:@"YNetwork"];
+    }
+    if(nil != [[YAPI_YFunctions objectForKey:@"YNetwork"] objectForKey:func]){
+        retVal = [[YAPI_YFunctions objectForKey:@"YNetwork"] objectForKey:func];
+    } else {
+        retVal = [[YNetwork alloc] initWithFunction:func];
+        [[YAPI_YFunctions objectForKey:@"YNetwork"] setObject:retVal forKey:func];
+        ARC_autorelease(retVal);
+    }
+    return retVal;
 }
 
 +(YNetwork *) FirstNetwork

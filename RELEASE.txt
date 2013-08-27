@@ -1,3 +1,7 @@
-- Fix possible crash when disconnecting a black-listed device on Mac OS X
-- Improve handling of device disconnection in the middle of a request close
-- Publish library to GitHub
+- clarify license agreement
+- Improve robustness of low-level USB stack 
+- fix 5 seconds timeout on yapiFreeAPI() when connected through the network
+- fix value notifications that were dropped on plugged devices
+- fix possible 100% CPU load when the API was connecting to an IP Hub
+- rename Windows resources files (this allow simple drag and drop into Visual Studio)
+- fix libyocto.dylib compilation (bug reported and fixed by Ludovic Rousseau)

@@ -1,39 +1,39 @@
 /*********************************************************************
  *
- * $Id: yocto_colorled.m 9801 2013-02-11 17:09:59Z seb $
+ * $Id: yocto_colorled.m 12324 2013-08-13 15:10:31Z mvuilleu $
  *
  * Implements yFindColorLed(), the high-level API for ColorLed functions
  *
  * - - - - - - - - - License information: - - - - - - - - - 
  *
- * Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
+ *  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
  *
- * 1) If you have obtained this file from www.yoctopuce.com,
- *    Yoctopuce Sarl licenses to you (hereafter Licensee) the
- *    right to use, modify, copy, and integrate this source file
- *    into your own solution for the sole purpose of interfacing
- *    a Yoctopuce product with Licensee's solution.
+ *  Yoctopuce Sarl (hereafter Licensor) grants to you a perpetual
+ *  non-exclusive license to use, modify, copy and integrate this
+ *  file into your software for the sole purpose of interfacing 
+ *  with Yoctopuce products. 
  *
- *    The use of this file and all relationship between Yoctopuce 
- *    and Licensee are governed by Yoctopuce General Terms and 
- *    Conditions.
+ *  You may reproduce and distribute copies of this file in 
+ *  source or object form, as long as the sole purpose of this
+ *  code is to interface with Yoctopuce products. You must retain 
+ *  this notice in the distributed source file.
  *
- *    THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
- *    WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
- *    WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS 
- *    FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
- *    EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
- *    INDIRECT OR CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA, 
- *    COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY OR 
- *    SERVICES, ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT 
- *    LIMITED TO ANY DEFENSE THEREOF), ANY CLAIMS FOR INDEMNITY OR
- *    CONTRIBUTION, OR OTHER SIMILAR COSTS, WHETHER ASSERTED ON THE
- *    BASIS OF CONTRACT, TORT (INCLUDING NEGLIGENCE), BREACH OF
- *    WARRANTY, OR OTHERWISE.
+ *  You should refer to Yoctopuce General Terms and Conditions
+ *  for additional information regarding your rights and 
+ *  obligations.
  *
- * 2) If your intent is not to interface with Yoctopuce products,
- *    you are not entitled to use, read or create any derived
- *    material from this source file.
+ *  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
+ *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
+ *  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS 
+ *  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
+ *  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
+ *  INDIRECT OR CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA, 
+ *  COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY OR 
+ *  SERVICES, ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT 
+ *  LIMITED TO ANY DEFENSE THEREOF), ANY CLAIMS FOR INDEMNITY OR
+ *  CONTRIBUTION, OR OTHER SIMILAR COSTS, WHETHER ASSERTED ON THE
+ *  BASIS OF CONTRACT, TORT (INCLUDING NEGLIGENCE), BREACH OF
+ *  WARRANTY, OR OTHERWISE.
  *
  *********************************************************************/
 
@@ -43,7 +43,6 @@
 #include "yapi/yapi.h"
 
 
-static NSMutableDictionary* _ColorLedCache = nil;
 
 @implementation YColorLed
 
@@ -60,6 +59,17 @@ static NSMutableDictionary* _ColorLedCache = nil;
     _rgbColorAtPowerOn = Y_RGBCOLORATPOWERON_INVALID;
 //--- (end of YColorLed attributes)
     return self;
+}
+// destructor 
+-(void)  dealloc
+{
+//--- (YColorLed cleanup)
+    ARC_release(_logicalName);
+    _logicalName = nil;
+    ARC_release(_advertisedValue);
+    _advertisedValue = nil;
+//--- (end of YColorLed cleanup)
+    ARC_dealloc(super);
 }
 //--- (YColorLed implementation)
 
@@ -427,20 +437,17 @@ static NSMutableDictionary* _ColorLedCache = nil;
     YColorLed * retVal=nil;
     if(func==nil) return nil;
     // Search in cache
-    {
-        if (_ColorLedCache == nil){
-            _ColorLedCache = [[NSMutableDictionary alloc] init];
-        }
-        if(nil != [_ColorLedCache objectForKey:func]){
-            retVal = [_ColorLedCache objectForKey:func];
-       } else {
-           YColorLed *newColorLed = [[YColorLed alloc] initWithFunction:func];
-           [_ColorLedCache setObject:newColorLed forKey:func];
-           retVal = newColorLed;
-           ARC_autorelease(retVal);
-       }
-   }
-   return retVal;
+    if ([YAPI_YFunctions objectForKey:@"YColorLed"] == nil){
+        [YAPI_YFunctions setObject:[NSMutableDictionary dictionary] forKey:@"YColorLed"];
+    }
+    if(nil != [[YAPI_YFunctions objectForKey:@"YColorLed"] objectForKey:func]){
+        retVal = [[YAPI_YFunctions objectForKey:@"YColorLed"] objectForKey:func];
+    } else {
+        retVal = [[YColorLed alloc] initWithFunction:func];
+        [[YAPI_YFunctions objectForKey:@"YColorLed"] setObject:retVal forKey:func];
+        ARC_autorelease(retVal);
+    }
+    return retVal;
 }
 
 +(YColorLed *) FirstColorLed

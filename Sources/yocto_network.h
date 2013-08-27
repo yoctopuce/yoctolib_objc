@@ -1,39 +1,39 @@
 /*********************************************************************
  *
- * $Id: yocto_network.h 9945 2013-02-20 21:46:06Z seb $
+ * $Id: yocto_network.h 12337 2013-08-14 15:22:22Z mvuilleu $
  *
  * Declares yFindNetwork(), the high-level API for Network functions
  *
  * - - - - - - - - - License information: - - - - - - - - - 
  *
- * Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
+ *  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
  *
- * 1) If you have obtained this file from www.yoctopuce.com,
- *    Yoctopuce Sarl licenses to you (hereafter Licensee) the
- *    right to use, modify, copy, and integrate this source file
- *    into your own solution for the sole purpose of interfacing
- *    a Yoctopuce product with Licensee's solution.
+ *  Yoctopuce Sarl (hereafter Licensor) grants to you a perpetual
+ *  non-exclusive license to use, modify, copy and integrate this
+ *  file into your software for the sole purpose of interfacing 
+ *  with Yoctopuce products. 
  *
- *    The use of this file and all relationship between Yoctopuce 
- *    and Licensee are governed by Yoctopuce General Terms and 
- *    Conditions.
+ *  You may reproduce and distribute copies of this file in 
+ *  source or object form, as long as the sole purpose of this
+ *  code is to interface with Yoctopuce products. You must retain 
+ *  this notice in the distributed source file.
  *
- *    THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
- *    WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
- *    WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS 
- *    FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
- *    EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
- *    INDIRECT OR CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA, 
- *    COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY OR 
- *    SERVICES, ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT 
- *    LIMITED TO ANY DEFENSE THEREOF), ANY CLAIMS FOR INDEMNITY OR
- *    CONTRIBUTION, OR OTHER SIMILAR COSTS, WHETHER ASSERTED ON THE
- *    BASIS OF CONTRACT, TORT (INCLUDING NEGLIGENCE), BREACH OF
- *    WARRANTY, OR OTHERWISE.
+ *  You should refer to Yoctopuce General Terms and Conditions
+ *  for additional information regarding your rights and 
+ *  obligations.
  *
- * 2) If your intent is not to interface with Yoctopuce products,
- *    you are not entitled to use, read or create any derived
- *    material from this source file.
+ *  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
+ *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
+ *  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS 
+ *  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
+ *  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
+ *  INDIRECT OR CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA, 
+ *  COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY OR 
+ *  SERVICES, ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT 
+ *  LIMITED TO ANY DEFENSE THEREOF), ANY CLAIMS FOR INDEMNITY OR
+ *  CONTRIBUTION, OR OTHER SIMILAR COSTS, WHETHER ASSERTED ON THE
+ *  BASIS OF CONTRACT, TORT (INCLUDING NEGLIGENCE), BREACH OF
+ *  WARRANTY, OR OTHERWISE.
  *
  *********************************************************************/
 
@@ -49,6 +49,12 @@ typedef enum {
     Y_READINESS_WWW_OK = 4,
     Y_READINESS_INVALID = -1
 } Y_READINESS_enum;
+
+typedef enum {
+    Y_DISCOVERABLE_FALSE = 0,
+    Y_DISCOVERABLE_TRUE = 1,
+    Y_DISCOVERABLE_INVALID = -1
+} Y_DISCOVERABLE_enum;
 
 typedef enum {
     Y_CALLBACKMETHOD_POST = 0,
@@ -77,10 +83,12 @@ typedef enum {
 #define Y_SECONDARYDNS_INVALID          [YAPI  INVALID_STRING]
 #define Y_USERPASSWORD_INVALID          [YAPI  INVALID_STRING]
 #define Y_ADMINPASSWORD_INVALID         [YAPI  INVALID_STRING]
+#define Y_WWWWATCHDOGDELAY_INVALID      (0xffffffff)
 #define Y_CALLBACKURL_INVALID           [YAPI  INVALID_STRING]
 #define Y_CALLBACKCREDENTIALS_INVALID   [YAPI  INVALID_STRING]
 #define Y_CALLBACKMINDELAY_INVALID      (0xffffffff)
 #define Y_CALLBACKMAXDELAY_INVALID      (0xffffffff)
+#define Y_POECURRENT_INVALID            (0xffffffff)
 //--- (end of YNetwork definitions)
 
 /**
@@ -107,12 +115,15 @@ typedef enum {
     NSString*       _secondaryDNS;
     NSString*       _userPassword;
     NSString*       _adminPassword;
+    Y_DISCOVERABLE_enum _discoverable;
+    unsigned        _wwwWatchdogDelay;
     NSString*       _callbackUrl;
     Y_CALLBACKMETHOD_enum _callbackMethod;
     Y_CALLBACKENCODING_enum _callbackEncoding;
     NSString*       _callbackCredentials;
     unsigned        _callbackMinDelay;
     unsigned        _callbackMaxDelay;
+    unsigned        _poeCurrent;
 //--- (end of YNetwork attributes)
 }
 //--- (YNetwork declaration)
@@ -232,13 +243,13 @@ typedef enum {
  * Level 1 (LIVE_1) is reached when the network is detected, but is not yet connected,
  * For a wireless network, this shows that the requested SSID is present.
  * Level 2 (LINK_2) is reached when the hardware connection is established.
- * For a wired network connection, level 2 means that the cable is attached on both ends.
+ * For a wired network connection, level 2 means that the cable is attached at both ends.
  * For a connection to a wireless access point, it shows that the security parameters
  * are properly configured. For an ad-hoc wireless connection, it means that there is
  * at least one other device connected on the ad-hoc network.
  * Level 3 (DHCP_3) is reached when an IP address has been obtained using DHCP.
  * Level 4 (DNS_4) is reached when the DNS server is reachable on the network.
- * Level 5 (WWW_5) is reached when global connectivity is demonstrated by properly loading
+ * Level 5 (WWW_5) is reached when global connectivity is demonstrated by properly loading the
  * current time from an NTP server.
  * 
  * @return a value among Y_READINESS_DOWN, Y_READINESS_EXISTS, Y_READINESS_LINKED, Y_READINESS_LAN_OK
@@ -300,7 +311,7 @@ typedef enum {
 /**
  * Changes the configuration of the network interface to enable the use of an
  * IP address received from a DHCP server. Until an address is received from a DHCP
- * server, the module will use the IP parameters specified to this function.
+ * server, the module uses the IP parameters specified to this function.
  * Remember to call the saveToFlash() method and then to reboot the module to apply this setting.
  * 
  * @param fallbackIpAddr : fallback IP address, to be used when no DHCP reply is received
@@ -340,7 +351,7 @@ typedef enum {
 
 /**
  * Changes the IP address of the primary name server to be used by the module.
- * When using DHCP, if a value is specified, it will override the value received from the DHCP server.
+ * When using DHCP, if a value is specified, it overrides the value received from the DHCP server.
  * Remember to call the saveToFlash() method and then to reboot the module to apply this setting.
  * 
  * @param newval : a string corresponding to the IP address of the primary name server to be used by the module
@@ -364,7 +375,7 @@ typedef enum {
 
 /**
  * Changes the IP address of the secondarz name server to be used by the module.
- * When using DHCP, if a value is specified, it will override the value received from the DHCP server.
+ * When using DHCP, if a value is specified, it overrides the value received from the DHCP server.
  * Remember to call the saveToFlash() method and then to reboot the module to apply this setting.
  * 
  * @param newval : a string corresponding to the IP address of the secondarz name server to be used by the module
@@ -377,10 +388,10 @@ typedef enum {
 -(int)     setSecondaryDNS:(NSString*) newval;
 
 /**
- * Returns a hash string if a password has been set for user "user",
+ * Returns a hash string if a password has been set for "user" user,
  * or an empty string otherwise.
  * 
- * @return a string corresponding to a hash string if a password has been set for user "user",
+ * @return a string corresponding to a hash string if a password has been set for "user" user,
  *         or an empty string otherwise
  * 
  * On failure, throws an exception or returns Y_USERPASSWORD_INVALID.
@@ -433,6 +444,65 @@ typedef enum {
 -(int)     setAdminPassword:(NSString*) newval;
 
 /**
+ * Returns the activation state of the multicast announce protocols to allow easy
+ * discovery of the module in the network neighborhood (uPnP/Bonjour protocol).
+ * 
+ * @return either Y_DISCOVERABLE_FALSE or Y_DISCOVERABLE_TRUE, according to the activation state of
+ * the multicast announce protocols to allow easy
+ *         discovery of the module in the network neighborhood (uPnP/Bonjour protocol)
+ * 
+ * On failure, throws an exception or returns Y_DISCOVERABLE_INVALID.
+ */
+-(Y_DISCOVERABLE_enum) get_discoverable;
+-(Y_DISCOVERABLE_enum) discoverable;
+
+/**
+ * Changes the activation state of the multicast announce protocols to allow easy
+ * discovery of the module in the network neighborhood (uPnP/Bonjour protocol).
+ * 
+ * @param newval : either Y_DISCOVERABLE_FALSE or Y_DISCOVERABLE_TRUE, according to the activation
+ * state of the multicast announce protocols to allow easy
+ *         discovery of the module in the network neighborhood (uPnP/Bonjour protocol)
+ * 
+ * @return YAPI_SUCCESS if the call succeeds.
+ * 
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     set_discoverable:(Y_DISCOVERABLE_enum) newval;
+-(int)     setDiscoverable:(Y_DISCOVERABLE_enum) newval;
+
+/**
+ * Returns the allowed downtime of the WWW link (in seconds) before triggering an automated
+ * reboot to try to recover Internet connectivity. A zero value disables automated reboot
+ * in case of Internet connectivity loss.
+ * 
+ * @return an integer corresponding to the allowed downtime of the WWW link (in seconds) before
+ * triggering an automated
+ *         reboot to try to recover Internet connectivity
+ * 
+ * On failure, throws an exception or returns Y_WWWWATCHDOGDELAY_INVALID.
+ */
+-(unsigned) get_wwwWatchdogDelay;
+-(unsigned) wwwWatchdogDelay;
+
+/**
+ * Changes the allowed downtime of the WWW link (in seconds) before triggering an automated
+ * reboot to try to recover Internet connectivity. A zero value disable automated reboot
+ * in case of Internet connectivity loss. The smallest valid non-zero timeout is
+ * 90 seconds.
+ * 
+ * @param newval : an integer corresponding to the allowed downtime of the WWW link (in seconds)
+ * before triggering an automated
+ *         reboot to try to recover Internet connectivity
+ * 
+ * @return YAPI_SUCCESS if the call succeeds.
+ * 
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     set_wwwWatchdogDelay:(unsigned) newval;
+-(int)     setWwwWatchdogDelay:(unsigned) newval;
+
+/**
  * Returns the callback URL to notify of significant state changes.
  * 
  * @return a string corresponding to the callback URL to notify of significant state changes
@@ -443,10 +513,10 @@ typedef enum {
 -(NSString*) callbackUrl;
 
 /**
- * Changes the callback URL to notify of significant state changes. Remember to call the
+ * Changes the callback URL to notify significant state changes. Remember to call the
  * saveToFlash() method of the module if the modification must be kept.
  * 
- * @param newval : a string corresponding to the callback URL to notify of significant state changes
+ * @param newval : a string corresponding to the callback URL to notify significant state changes
  * 
  * @return YAPI_SUCCESS if the call succeeds.
  * 
@@ -456,10 +526,10 @@ typedef enum {
 -(int)     setCallbackUrl:(NSString*) newval;
 
 /**
- * Returns the HTTP Method used to notify callbacks for significant state changes.
+ * Returns the HTTP method used to notify callbacks for significant state changes.
  * 
  * @return a value among Y_CALLBACKMETHOD_POST, Y_CALLBACKMETHOD_GET and Y_CALLBACKMETHOD_PUT
- * corresponding to the HTTP Method used to notify callbacks for significant state changes
+ * corresponding to the HTTP method used to notify callbacks for significant state changes
  * 
  * On failure, throws an exception or returns Y_CALLBACKMETHOD_INVALID.
  */
@@ -467,10 +537,10 @@ typedef enum {
 -(Y_CALLBACKMETHOD_enum) callbackMethod;
 
 /**
- * Changes the HTTP Method used to notify callbacks for significant state changes.
+ * Changes the HTTP method used to notify callbacks for significant state changes.
  * 
  * @param newval : a value among Y_CALLBACKMETHOD_POST, Y_CALLBACKMETHOD_GET and Y_CALLBACKMETHOD_PUT
- * corresponding to the HTTP Method used to notify callbacks for significant state changes
+ * corresponding to the HTTP method used to notify callbacks for significant state changes
  * 
  * @return YAPI_SUCCESS if the call succeeds.
  * 
@@ -539,8 +609,8 @@ typedef enum {
 
 /**
  * Connects to the notification callback and saves the credentials required to
- * log in to it. The password will not be stored into the module, only a hashed
- * copy of the credentials will be saved. Remember to call the
+ * log into it. The password is not stored into the module, only a hashed
+ * copy of the credentials are saved. Remember to call the
  * saveToFlash() method of the module if the modification must be kept.
  * 
  * @param username : username required to log to the callback
@@ -553,9 +623,9 @@ typedef enum {
 -(int)     callbackLogin :(NSString*)username :(NSString*)password;
 
 /**
- * Returns the minimum wait time between two callback notifications, in seconds.
+ * Returns the minimum waiting time between two callback notifications, in seconds.
  * 
- * @return an integer corresponding to the minimum wait time between two callback notifications, in seconds
+ * @return an integer corresponding to the minimum waiting time between two callback notifications, in seconds
  * 
  * On failure, throws an exception or returns Y_CALLBACKMINDELAY_INVALID.
  */
@@ -563,9 +633,10 @@ typedef enum {
 -(unsigned) callbackMinDelay;
 
 /**
- * Changes the minimum wait time between two callback notifications, in seconds.
+ * Changes the minimum waiting time between two callback notifications, in seconds.
  * 
- * @param newval : an integer corresponding to the minimum wait time between two callback notifications, in seconds
+ * @param newval : an integer corresponding to the minimum waiting time between two callback
+ * notifications, in seconds
  * 
  * @return YAPI_SUCCESS if the call succeeds.
  * 
@@ -575,9 +646,9 @@ typedef enum {
 -(int)     setCallbackMinDelay:(unsigned) newval;
 
 /**
- * Returns the maximum wait time between two callback notifications, in seconds.
+ * Returns the maximum waiting time between two callback notifications, in seconds.
  * 
- * @return an integer corresponding to the maximum wait time between two callback notifications, in seconds
+ * @return an integer corresponding to the maximum waiting time between two callback notifications, in seconds
  * 
  * On failure, throws an exception or returns Y_CALLBACKMAXDELAY_INVALID.
  */
@@ -585,9 +656,10 @@ typedef enum {
 -(unsigned) callbackMaxDelay;
 
 /**
- * Changes the maximum wait time between two callback notifications, in seconds.
+ * Changes the maximum waiting time between two callback notifications, in seconds.
  * 
- * @param newval : an integer corresponding to the maximum wait time between two callback notifications, in seconds
+ * @param newval : an integer corresponding to the maximum waiting time between two callback
+ * notifications, in seconds
  * 
  * @return YAPI_SUCCESS if the call succeeds.
  * 
@@ -595,6 +667,30 @@ typedef enum {
  */
 -(int)     set_callbackMaxDelay:(unsigned) newval;
 -(int)     setCallbackMaxDelay:(unsigned) newval;
+
+/**
+ * Returns the current consumed by the module from Power-over-Ethernet (PoE), in milli-amps.
+ * The current consumption is measured after converting PoE source to 5 Volt, and should
+ * never exceed 1800 mA.
+ * 
+ * @return an integer corresponding to the current consumed by the module from Power-over-Ethernet
+ * (PoE), in milli-amps
+ * 
+ * On failure, throws an exception or returns Y_POECURRENT_INVALID.
+ */
+-(unsigned) get_poeCurrent;
+-(unsigned) poeCurrent;
+
+/**
+ * Pings str_host to test the network connectivity. Sends four requests ICMP ECHO_REQUEST from the
+ * module to the target str_host. This method returns a string with the result of the
+ * 4 ICMP ECHO_REQUEST result.
+ * 
+ * @param host : the hostname or the IP address of the target
+ * 
+ * @return a string with the result of the ping.
+ */
+-(NSString*)     ping :(NSString*)host;
 
 
 //--- (end of YNetwork accessors declaration)

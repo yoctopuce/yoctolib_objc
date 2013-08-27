@@ -1,39 +1,39 @@
 /*********************************************************************
  *
- * $Id: yocto_api.m 10717 2013-03-27 11:18:20Z mvuilleu $
+ * $Id: yocto_api.m 12326 2013-08-13 15:52:20Z mvuilleu $
  *
  * High-level programming interface, common to all modules
  *
  * - - - - - - - - - License information: - - - - - - - - - 
  *
- * Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
+ *  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
  *
- * 1) If you have obtained this file from www.yoctopuce.com,
- *    Yoctopuce Sarl licenses to you (hereafter Licensee) the
- *    right to use, modify, copy, and integrate this source file
- *    into your own solution for the sole purpose of interfacing
- *    a Yoctopuce product with Licensee's solution.
+ *  Yoctopuce Sarl (hereafter Licensor) grants to you a perpetual
+ *  non-exclusive license to use, modify, copy and integrate this
+ *  file into your software for the sole purpose of interfacing 
+ *  with Yoctopuce products. 
  *
- *    The use of this file and all relationship between Yoctopuce 
- *    and Licensee are governed by Yoctopuce General Terms and 
- *    Conditions.
+ *  You may reproduce and distribute copies of this file in 
+ *  source or object form, as long as the sole purpose of this
+ *  code is to interface with Yoctopuce products. You must retain 
+ *  this notice in the distributed source file.
  *
- *    THE SOFTWARE AND DOCUMENTATION ARE PROVIDED "AS IS" WITHOUT
- *    WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
- *    WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS 
- *    FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
- *    EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
- *    INDIRECT OR CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA, 
- *    COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY OR 
- *    SERVICES, ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT 
- *    LIMITED TO ANY DEFENSE THEREOF), ANY CLAIMS FOR INDEMNITY OR
- *    CONTRIBUTION, OR OTHER SIMILAR COSTS, WHETHER ASSERTED ON THE
- *    BASIS OF CONTRACT, TORT (INCLUDING NEGLIGENCE), BREACH OF
- *    WARRANTY, OR OTHERWISE.
+ *  You should refer to Yoctopuce General Terms and Conditions
+ *  for additional information regarding your rights and 
+ *  obligations.
  *
- * 2) If your intent is not to interface with Yoctopuce products,
- *    you are not entitled to use, read or create any derived 
- *    material from this source file.
+ *  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED "AS IS" WITHOUT
+ *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
+ *  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS 
+ *  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
+ *  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
+ *  INDIRECT OR CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA, 
+ *  COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY OR 
+ *  SERVICES, ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT 
+ *  LIMITED TO ANY DEFENSE THEREOF), ANY CLAIMS FOR INDEMNITY OR
+ *  CONTRIBUTION, OR OTHER SIMILAR COSTS, WHETHER ASSERTED ON THE
+ *  BASIS OF CONTRACT, TORT (INCLUDING NEGLIGENCE), BREACH OF
+ *  WARRANTY, OR OTHERWISE.
  *
  *********************************************************************/
 
@@ -55,6 +55,9 @@
         _module    = module;
         _function  = function;
         _value = value;
+        if(_value!=nil){
+            ARC_retain(_value);
+        }
     }
     return self;
 }
@@ -80,6 +83,15 @@
 -(id) init
 {
     return [self initFull:YAPI_INVALID:nil:nil:nil];
+}
+
+
+-(void)  dealloc
+{
+    if (_value!=nil){
+        ARC_release(_value);
+    }
+    ARC_dealloc(super);
 }
 
 @end
@@ -123,8 +135,11 @@ static NSMutableArray *YAPI_plug_events = nil;
 static NSMutableArray *YAPI_data_events = nil;
 
 
-static NSMutableArray* _FunctionCache     = nil;
+//static NSMutableArray* _FunctionCache     = nil;
 static NSMutableArray* _FunctionCallbacks = nil;
+static NSMutableArray* _devCache = nil;
+NSMutableDictionary* YAPI_YFunctions=nil;
+//static NSMutableDictionary* _ModuleCache = nil;
 static id              YAPI_delegate=nil;
 
 
@@ -228,7 +243,9 @@ void yInternalPushNewVal(YAPI_FUNCTION fundescr,NSString * value)
 static void yapiFunctionUpdateCallbackFwd(YAPI_FUNCTION fundescr,const char *value)
 {
     if(value){
-        yInternalPushNewVal(fundescr,STR_y2oc(value));
+        @autoreleasepool {
+            yInternalPushNewVal(fundescr,STR_y2oc(value));
+        }
     }else {
         yInternalPushNewVal(fundescr,nil);
     }
@@ -572,9 +589,9 @@ static s16 _doubleToDecimal(double val)
         NSNumber *type = [NSNumber numberWithInt:i];
         [YAPI_calibHandlers setObject:YAPI_linearCalibration forKey:type];
     }
-    
+    YAPI_YFunctions =[[NSMutableDictionary alloc] initWithCapacity:8];
     YAPI_apiInitialized = YES;
-
+    
     return YAPI_SUCCESS;
 }
 
@@ -593,11 +610,25 @@ static s16 _doubleToDecimal(double val)
         yDeleteCriticalSection(&YAPI_updateDeviceList_CS);
         yDeleteCriticalSection(&YAPI_handleEvent_CS);
         yapiFreeAPI();
-        YAPI_delegate = nil;
-        YAPI_apiInitialized = NO;
-        YAPI_calibHandlers =nil;
-        YAPI_invalidCalibration=nil;
+        ARC_release(YAPI_plug_events);
+        YAPI_plug_events = nil;
+        ARC_release(YAPI_data_events);
+        YAPI_data_events = nil;
+        ARC_release(YAPI_linearCalibration);
         YAPI_linearCalibration=nil;
+        ARC_release(YAPI_invalidCalibration);
+        YAPI_invalidCalibration=nil;
+        ARC_release(YAPI_calibHandlers);
+        YAPI_calibHandlers =nil;
+        ARC_release(YAPI_delegate);
+        YAPI_delegate = nil;
+        ARC_release(YAPI_YFunctions);
+        YAPI_YFunctions =nil;
+        ARC_release(_FunctionCallbacks)
+        _FunctionCallbacks=nil;
+        ARC_release(_devCache);
+        _devCache = nil;
+        YAPI_apiInitialized = NO;
     }
 }
 
@@ -757,7 +788,9 @@ static s16 _doubleToDecimal(double val)
         res = [YAPI InitAPI:0:errmsg];
         if(YISERR(res)) return res;
     }
-    res = yapiRegisterHub(STR_oc2y(url), errbuf);
+    @autoreleasepool {
+        res = yapiRegisterHub(STR_oc2y(url), errbuf);
+    }
     return yFormatRetVal(errmsg, res, errbuf);
 }
 
@@ -1221,7 +1254,6 @@ static s16 _doubleToDecimal(double val)
 // This is in addition to the function-specific cache implemented in YFunction.
 //
 
-NSMutableArray* _devCache = nil;
 
 @implementation YDevice
 
@@ -1250,6 +1282,7 @@ NSMutableArray* _devCache = nil;
         free(_subpath);
         _subpath =NULL;
     }
+    ARC_release(_cacheJson);
     ARC_dealloc(super);
 }
 
@@ -1485,14 +1518,21 @@ NSMutableArray* _devCache = nil;
                                  code:YAPI_SUCCESS
                              userInfo:eDict];
 
-    if (_FunctionCache == nil){
-        _FunctionCache = [[NSMutableArray alloc] init];
+    if ([YAPI_YFunctions objectForKey:@"YFunction"] == nil){
+        [YAPI_YFunctions setObject:[NSMutableArray array] forKey:@"YFunction"];
     }
-    [_FunctionCache  addObject:self];
+    [[YAPI_YFunctions objectForKey:@"YFunction"] addObject:self];
 
     return self;
 }
 
+
+-(void)  dealloc
+{
+    ARC_release(_className);
+    ARC_release(_func);
+    ARC_dealloc(super);
+}
 
 // Method used to throw exceptions or save error type/message
 -(void)        _throw:(YRETCODE) errType withMsg:(const char*) errMsg
@@ -1791,7 +1831,7 @@ NSMutableArray* _devCache = nil;
         [self _throw:YAPI_IO_ERROR:@"http request failed"];
         return nil;
     }
-    pos.location += pos.length+[endofheader_data length];
+    pos.location += [endofheader_data length];
     pos.length = all.length -pos.location;
     return   [buffer subdataWithRange:pos];
 }
@@ -2257,16 +2297,12 @@ NSMutableArray* _devCache = nil;
 
 
 
-static NSMutableDictionary* _ModuleCache = nil;
 
 @implementation YModule
 
 // Constructor is protected, use yFindModule factory function to instantiate
 -(id)              initWithFunction:(NSString*) func
 {
-
-   if(!(self = [super initProtected:@"Module":func]))
-          return nil;
 //--- (generated code: YModule attributes)
    if(!(self = [super initProtected:@"Module":func]))
           return nil;
@@ -2287,6 +2323,20 @@ static NSMutableDictionary* _ModuleCache = nil;
     return self;
 }
 
+-(void) dealloc
+{
+//--- (generated code: YModule cleanup)
+    ARC_release(_productName);
+    _productName = nil;
+    ARC_release(_serialNumber);
+    _serialNumber = nil;
+    ARC_release(_logicalName);
+    _logicalName = nil;
+    ARC_release(_firmwareRelease);
+    _firmwareRelease = nil;
+//--- (end of generated code: YModule cleanup)
+    [super dealloc];
+}
 //--- (generated code: YModule implementation)
 
 -(int) _parse:(yJsonStateMachine*) j
@@ -2802,6 +2852,20 @@ static NSMutableDictionary* _ModuleCache = nil;
     
 }
 
+/**
+ * Returns a string with last logs of the module. This method return only
+ * logs that are still in the module.
+ * 
+ * @return a string with last logs of the module.
+ */
+-(NSString*) get_lastLogs
+{
+    NSData* content;
+    content = [self _download:@"logs.txt"];
+    return ARC_sendAutorelease([[NSString alloc] initWithData:content encoding:NSASCIIStringEncoding]);
+    
+}
+
 
 -(YModule*)   nextModule
 {
@@ -2818,20 +2882,17 @@ static NSMutableDictionary* _ModuleCache = nil;
     YModule * retVal=nil;
     if(func==nil) return nil;
     // Search in cache
-    {
-        if (_ModuleCache == nil){
-            _ModuleCache = [[NSMutableDictionary alloc] init];
-        }
-        if(nil != [_ModuleCache objectForKey:func]){
-            retVal = [_ModuleCache objectForKey:func];
-       } else {
-           YModule *newModule = [[YModule alloc] initWithFunction:func];
-           [_ModuleCache setObject:newModule forKey:func];
-           retVal = newModule;
-           ARC_autorelease(retVal);
-       }
-   }
-   return retVal;
+    if ([YAPI_YFunctions objectForKey:@"YModule"] == nil){
+        [YAPI_YFunctions setObject:[NSMutableDictionary dictionary] forKey:@"YModule"];
+    }
+    if(nil != [[YAPI_YFunctions objectForKey:@"YModule"] objectForKey:func]){
+        retVal = [[YAPI_YFunctions objectForKey:@"YModule"] objectForKey:func];
+    } else {
+        retVal = [[YModule alloc] initWithFunction:func];
+        [[YAPI_YFunctions objectForKey:@"YModule"] setObject:retVal forKey:func];
+        ARC_autorelease(retVal);
+    }
+    return retVal;
 }
 
 +(YModule *) FirstModule

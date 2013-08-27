@@ -14,31 +14,32 @@ int main (int argc, const char * argv[])
     
     @autoreleasepool {
         // Setup the API to use local USB devices
-        if(yRegisterHub(@"usb", &error) != YAPI_SUCCESS) {
+        if([YAPI RegisterHub:@"usb": &error] != YAPI_SUCCESS) {
             NSLog(@"RegisterHub error: %@", [error localizedDescription]);
             return 1;
         }
         if(argc < 2)
             usage(argv[0]);
         NSString *serial_or_name =[NSString stringWithUTF8String:argv[1]];
-        YModule *module = yFindModule(serial_or_name);  // use serial or logical name
-        if (module.isOnline) {
+        YModule *module = [YModule FindModule:serial_or_name];  // use serial or logical name
+        if ([module isOnline]) {
             if (argc > 2) {
                 if (strcmp(argv[2], "ON")==0) 
-                    module.beacon = Y_BEACON_ON;
+                    [module setBeacon:Y_BEACON_ON];
                 else  
-                    module.beacon = Y_BEACON_OFF;
+                    [module setBeacon:Y_BEACON_OFF];
             }        
-            NSLog(@"serial:       %@\n", module.serialNumber);
-            NSLog(@"logical name: %@\n", module.logicalName);
-            NSLog(@"luminosity:   %d\n", module.luminosity);
+            NSLog(@"serial:       %@\n", [module serialNumber]);
+            NSLog(@"logical name: %@\n", [module logicalName]);
+            NSLog(@"luminosity:   %d\n", [module luminosity]);
             NSLog(@"beacon:       ");
-            if (module.beacon == Y_BEACON_ON)  
+            if ([module beacon] == Y_BEACON_ON)
                NSLog(@"ON\n");
             else   
                NSLog(@"OFF\n");
-            NSLog(@"upTime:       %d sec\n", module.upTime/1000);
-            NSLog(@"USB current:  %d mA\n",  module.usbCurrent);
+            NSLog(@"upTime:       %d sec\n", [module upTime]/1000);
+            NSLog(@"USB current:  %d mA\n",  [module usbCurrent]);
+            NSLog(@"logs:  %@\n",  [module get_lastLogs]);
         } else {
             NSLog(@"%@ not connected (check identification and USB cable)\n",serial_or_name);
         }

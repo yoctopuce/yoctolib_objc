@@ -1,39 +1,39 @@
 /*********************************************************************
  *
- * $Id: yocto_carbondioxide.h 11112 2013-04-16 14:51:20Z mvuilleu $
+ * $Id: yocto_carbondioxide.h 12324 2013-08-13 15:10:31Z mvuilleu $
  *
  * Declares yFindCarbonDioxide(), the high-level API for CarbonDioxide functions
  *
  * - - - - - - - - - License information: - - - - - - - - - 
  *
- * Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
+ *  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
  *
- * 1) If you have obtained this file from www.yoctopuce.com,
- *    Yoctopuce Sarl licenses to you (hereafter Licensee) the
- *    right to use, modify, copy, and integrate this source file
- *    into your own solution for the sole purpose of interfacing
- *    a Yoctopuce product with Licensee's solution.
+ *  Yoctopuce Sarl (hereafter Licensor) grants to you a perpetual
+ *  non-exclusive license to use, modify, copy and integrate this
+ *  file into your software for the sole purpose of interfacing 
+ *  with Yoctopuce products. 
  *
- *    The use of this file and all relationship between Yoctopuce 
- *    and Licensee are governed by Yoctopuce General Terms and 
- *    Conditions.
+ *  You may reproduce and distribute copies of this file in 
+ *  source or object form, as long as the sole purpose of this
+ *  code is to interface with Yoctopuce products. You must retain 
+ *  this notice in the distributed source file.
  *
- *    THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
- *    WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
- *    WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS 
- *    FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
- *    EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
- *    INDIRECT OR CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA, 
- *    COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY OR 
- *    SERVICES, ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT 
- *    LIMITED TO ANY DEFENSE THEREOF), ANY CLAIMS FOR INDEMNITY OR
- *    CONTRIBUTION, OR OTHER SIMILAR COSTS, WHETHER ASSERTED ON THE
- *    BASIS OF CONTRACT, TORT (INCLUDING NEGLIGENCE), BREACH OF
- *    WARRANTY, OR OTHERWISE.
+ *  You should refer to Yoctopuce General Terms and Conditions
+ *  for additional information regarding your rights and 
+ *  obligations.
  *
- * 2) If your intent is not to interface with Yoctopuce products,
- *    you are not entitled to use, read or create any derived
- *    material from this source file.
+ *  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
+ *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
+ *  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS 
+ *  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
+ *  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
+ *  INDIRECT OR CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA, 
+ *  COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY OR 
+ *  SERVICES, ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT 
+ *  LIMITED TO ANY DEFENSE THEREOF), ANY CLAIMS FOR INDEMNITY OR
+ *  CONTRIBUTION, OR OTHER SIMILAR COSTS, WHETHER ASSERTED ON THE
+ *  BASIS OF CONTRACT, TORT (INCLUDING NEGLIGENCE), BREACH OF
+ *  WARRANTY, OR OTHERWISE.
  *
  *********************************************************************/
 
@@ -48,8 +48,8 @@ CF_EXTERN_C_BEGIN
 #define Y_LOWESTVALUE_INVALID           (-DBL_MAX)
 #define Y_HIGHESTVALUE_INVALID          (-DBL_MAX)
 #define Y_CURRENTRAWVALUE_INVALID       (-DBL_MAX)
-#define Y_RESOLUTION_INVALID            (-DBL_MAX)
 #define Y_CALIBRATIONPARAM_INVALID      [YAPI  INVALID_STRING]
+#define Y_RESOLUTION_INVALID            (-DBL_MAX)
 //--- (end of YCarbonDioxide definitions)
 
 /**
@@ -71,8 +71,8 @@ CF_EXTERN_C_BEGIN
     double          _lowestValue;
     double          _highestValue;
     double          _currentRawValue;
-    double          _resolution;
     NSString*       _calibrationParam;
+    double          _resolution;
     int             _calibrationOffset;
 //--- (end of YCarbonDioxide attributes)
 }
@@ -257,20 +257,6 @@ CF_EXTERN_C_BEGIN
 -(double) get_currentRawValue;
 -(double) currentRawValue;
 
--(int)     set_resolution:(double) newval;
--(int)     setResolution:(double) newval;
-
-/**
- * Returns the resolution of the measured values. The resolution corresponds to the numerical precision
- * of the values, which is not always the same as the actual precision of the sensor.
- * 
- * @return a floating point number corresponding to the resolution of the measured values
- * 
- * On failure, throws an exception or returns Y_RESOLUTION_INVALID.
- */
--(double) get_resolution;
--(double) resolution;
-
 -(NSString*) get_calibrationParam;
 -(NSString*) calibrationParam;
 
@@ -282,7 +268,7 @@ CF_EXTERN_C_BEGIN
  * a possible perturbation of the measure caused by an enclosure. It is possible
  * to configure up to five correction points. Correction points must be provided
  * in ascending order, and be in the range of the sensor. The device will automatically
- * perform a lineat interpolatation of the error correction between specified
+ * perform a linear interpolation of the error correction between specified
  * points. Remember to call the saveToFlash() method of the module if the
  * modification must be kept.
  * 
@@ -301,6 +287,17 @@ CF_EXTERN_C_BEGIN
 -(int)     calibrateFromPoints :(NSMutableArray*)rawValues :(NSMutableArray*)refValues;
 
 -(int)     loadCalibrationPoints :(NSMutableArray*)rawValues :(NSMutableArray*)refValues;
+
+/**
+ * Returns the resolution of the measured values. The resolution corresponds to the numerical precision
+ * of the values, which is not always the same as the actual precision of the sensor.
+ * 
+ * @return a floating point number corresponding to the resolution of the measured values
+ * 
+ * On failure, throws an exception or returns Y_RESOLUTION_INVALID.
+ */
+-(double) get_resolution;
+-(double) resolution;
 
 
 //--- (end of YCarbonDioxide accessors declaration)
