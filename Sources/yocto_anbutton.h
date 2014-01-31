@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_anbutton.h 12324 2013-08-13 15:10:31Z mvuilleu $
+ * $Id: yocto_anbutton.h 14325 2014-01-11 01:42:47Z seb $
  *
  * Declares yFindAnButton(), the high-level API for AnButton functions
  *
@@ -40,32 +40,40 @@
 #include "yocto_api.h"
 CF_EXTERN_C_BEGIN
 
-//--- (YAnButton definitions)
+@class YAnButton;
+
+//--- (YAnButton globals)
+typedef void (*YAnButtonValueCallback)(YAnButton *func, NSString *functionValue);
+#ifndef _Y_ANALOGCALIBRATION_ENUM
+#define _Y_ANALOGCALIBRATION_ENUM
 typedef enum {
     Y_ANALOGCALIBRATION_OFF = 0,
     Y_ANALOGCALIBRATION_ON = 1,
-    Y_ANALOGCALIBRATION_INVALID = -1
+    Y_ANALOGCALIBRATION_INVALID = -1,
 } Y_ANALOGCALIBRATION_enum;
+#endif
 
+#ifndef _Y_ISPRESSED_ENUM
+#define _Y_ISPRESSED_ENUM
 typedef enum {
     Y_ISPRESSED_FALSE = 0,
     Y_ISPRESSED_TRUE = 1,
-    Y_ISPRESSED_INVALID = -1
+    Y_ISPRESSED_INVALID = -1,
 } Y_ISPRESSED_enum;
+#endif
 
-#define Y_LOGICALNAME_INVALID           [YAPI  INVALID_STRING]
-#define Y_ADVERTISEDVALUE_INVALID       [YAPI  INVALID_STRING]
-#define Y_CALIBRATEDVALUE_INVALID       (0xffffffff)
-#define Y_RAWVALUE_INVALID              (0xffffffff)
-#define Y_CALIBRATIONMAX_INVALID        (0xffffffff)
-#define Y_CALIBRATIONMIN_INVALID        (0xffffffff)
-#define Y_SENSITIVITY_INVALID           (0xffffffff)
-#define Y_LASTTIMEPRESSED_INVALID       (0xffffffff)
-#define Y_LASTTIMERELEASED_INVALID      (0xffffffff)
-#define Y_PULSECOUNTER_INVALID          (0xffffffff)
-#define Y_PULSETIMER_INVALID            (0xffffffff)
-//--- (end of YAnButton definitions)
+#define Y_CALIBRATEDVALUE_INVALID       YAPI_INVALID_UINT
+#define Y_RAWVALUE_INVALID              YAPI_INVALID_UINT
+#define Y_CALIBRATIONMAX_INVALID        YAPI_INVALID_UINT
+#define Y_CALIBRATIONMIN_INVALID        YAPI_INVALID_UINT
+#define Y_SENSITIVITY_INVALID           YAPI_INVALID_UINT
+#define Y_LASTTIMEPRESSED_INVALID       YAPI_INVALID_LONG
+#define Y_LASTTIMERELEASED_INVALID      YAPI_INVALID_LONG
+#define Y_PULSECOUNTER_INVALID          YAPI_INVALID_LONG
+#define Y_PULSETIMER_INVALID            YAPI_INVALID_LONG
+//--- (end of YAnButton globals)
 
+//--- (YAnButton class start)
 /**
  * YAnButton Class: AnButton function interface
  * 
@@ -77,63 +85,239 @@ typedef enum {
  * potentiometer position, regardless of its total resistance.
  */
 @interface YAnButton : YFunction
+//--- (end of YAnButton class start)
 {
 @protected
-
-// Attributes (function value cache)
-//--- (YAnButton attributes)
-    NSString*       _logicalName;
-    NSString*       _advertisedValue;
-    unsigned        _calibratedValue;
-    unsigned        _rawValue;
+//--- (YAnButton attributes declaration)
+    int             _calibratedValue;
+    int             _rawValue;
     Y_ANALOGCALIBRATION_enum _analogCalibration;
-    unsigned        _calibrationMax;
-    unsigned        _calibrationMin;
-    unsigned        _sensitivity;
+    int             _calibrationMax;
+    int             _calibrationMin;
+    int             _sensitivity;
     Y_ISPRESSED_enum _isPressed;
-    unsigned        _lastTimePressed;
-    unsigned        _lastTimeReleased;
-    unsigned        _pulseCounter;
-    unsigned        _pulseTimer;
-//--- (end of YAnButton attributes)
+    s64             _lastTimePressed;
+    s64             _lastTimeReleased;
+    s64             _pulseCounter;
+    s64             _pulseTimer;
+    YAnButtonValueCallback _valueCallbackAnButton;
+//--- (end of YAnButton attributes declaration)
 }
-//--- (YAnButton declaration)
 // Constructor is protected, use yFindAnButton factory function to instantiate
--(id)    initWithFunction:(NSString*) func;
+-(id)    initWith:(NSString*) func;
 
+//--- (YAnButton private methods declaration)
 // Function-specific method for parsing of JSON output and caching result
--(int)             _parse:(yJsonStateMachine*) j;
+-(int)             _parseAttr:(yJsonStateMachine*) j;
 
+//--- (end of YAnButton private methods declaration)
+//--- (YAnButton public methods declaration)
 /**
- * Registers the callback function that is invoked on every change of advertised value.
- * The callback is invoked only during the execution of ySleep or yHandleEvents.
- * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
- * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
+ * Returns the current calibrated input value (between 0 and 1000, included).
  * 
- * @param callback : the callback function to call, or a null pointer. The callback function should take two
- *         arguments: the function object of which the value has changed, and the character string describing
- *         the new advertised value.
- * @noreturn
- */
--(void)     registerValueCallback:(YFunctionUpdateCallback) callback;   
-/**
- * comment from .yc definition
- */
--(void)     set_objectCallback:(id) object :(SEL)selector;
--(void)     setObjectCallback:(id) object :(SEL)selector;
--(void)     setObjectCallback:(id) object withSelector:(SEL)selector;
-
-//--- (end of YAnButton declaration)
-//--- (YAnButton accessors declaration)
-
-/**
- * Continues the enumeration of analog inputs started using yFirstAnButton().
+ * @return an integer corresponding to the current calibrated input value (between 0 and 1000, included)
  * 
- * @return a pointer to a YAnButton object, corresponding to
- *         an analog input currently online, or a null pointer
- *         if there are no more analog inputs to enumerate.
+ * On failure, throws an exception or returns Y_CALIBRATEDVALUE_INVALID.
  */
--(YAnButton*) nextAnButton;
+-(int)     get_calibratedValue;
+
+
+-(int) calibratedValue;
+/**
+ * Returns the current measured input value as-is (between 0 and 4095, included).
+ * 
+ * @return an integer corresponding to the current measured input value as-is (between 0 and 4095, included)
+ * 
+ * On failure, throws an exception or returns Y_RAWVALUE_INVALID.
+ */
+-(int)     get_rawValue;
+
+
+-(int) rawValue;
+/**
+ * Tells if a calibration process is currently ongoing.
+ * 
+ * @return either Y_ANALOGCALIBRATION_OFF or Y_ANALOGCALIBRATION_ON
+ * 
+ * On failure, throws an exception or returns Y_ANALOGCALIBRATION_INVALID.
+ */
+-(Y_ANALOGCALIBRATION_enum)     get_analogCalibration;
+
+
+-(Y_ANALOGCALIBRATION_enum) analogCalibration;
+/**
+ * Starts or stops the calibration process. Remember to call the saveToFlash()
+ * method of the module at the end of the calibration if the modification must be kept.
+ * 
+ * @param newval : either Y_ANALOGCALIBRATION_OFF or Y_ANALOGCALIBRATION_ON
+ * 
+ * @return YAPI_SUCCESS if the call succeeds.
+ * 
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     set_analogCalibration:(Y_ANALOGCALIBRATION_enum) newval;
+-(int)     setAnalogCalibration:(Y_ANALOGCALIBRATION_enum) newval;
+
+/**
+ * Returns the maximal value measured during the calibration (between 0 and 4095, included).
+ * 
+ * @return an integer corresponding to the maximal value measured during the calibration (between 0
+ * and 4095, included)
+ * 
+ * On failure, throws an exception or returns Y_CALIBRATIONMAX_INVALID.
+ */
+-(int)     get_calibrationMax;
+
+
+-(int) calibrationMax;
+/**
+ * Changes the maximal calibration value for the input (between 0 and 4095, included), without actually
+ * starting the automated calibration.  Remember to call the saveToFlash()
+ * method of the module if the modification must be kept.
+ * 
+ * @param newval : an integer corresponding to the maximal calibration value for the input (between 0
+ * and 4095, included), without actually
+ *         starting the automated calibration
+ * 
+ * @return YAPI_SUCCESS if the call succeeds.
+ * 
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     set_calibrationMax:(int) newval;
+-(int)     setCalibrationMax:(int) newval;
+
+/**
+ * Returns the minimal value measured during the calibration (between 0 and 4095, included).
+ * 
+ * @return an integer corresponding to the minimal value measured during the calibration (between 0
+ * and 4095, included)
+ * 
+ * On failure, throws an exception or returns Y_CALIBRATIONMIN_INVALID.
+ */
+-(int)     get_calibrationMin;
+
+
+-(int) calibrationMin;
+/**
+ * Changes the minimal calibration value for the input (between 0 and 4095, included), without actually
+ * starting the automated calibration.  Remember to call the saveToFlash()
+ * method of the module if the modification must be kept.
+ * 
+ * @param newval : an integer corresponding to the minimal calibration value for the input (between 0
+ * and 4095, included), without actually
+ *         starting the automated calibration
+ * 
+ * @return YAPI_SUCCESS if the call succeeds.
+ * 
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     set_calibrationMin:(int) newval;
+-(int)     setCalibrationMin:(int) newval;
+
+/**
+ * Returns the sensibility for the input (between 1 and 1000) for triggering user callbacks.
+ * 
+ * @return an integer corresponding to the sensibility for the input (between 1 and 1000) for
+ * triggering user callbacks
+ * 
+ * On failure, throws an exception or returns Y_SENSITIVITY_INVALID.
+ */
+-(int)     get_sensitivity;
+
+
+-(int) sensitivity;
+/**
+ * Changes the sensibility for the input (between 1 and 1000) for triggering user callbacks.
+ * The sensibility is used to filter variations around a fixed value, but does not preclude the
+ * transmission of events when the input value evolves constantly in the same direction.
+ * Special case: when the value 1000 is used, the callback will only be thrown when the logical state
+ * of the input switches from pressed to released and back.
+ * Remember to call the saveToFlash() method of the module if the modification must be kept.
+ * 
+ * @param newval : an integer corresponding to the sensibility for the input (between 1 and 1000) for
+ * triggering user callbacks
+ * 
+ * @return YAPI_SUCCESS if the call succeeds.
+ * 
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     set_sensitivity:(int) newval;
+-(int)     setSensitivity:(int) newval;
+
+/**
+ * Returns true if the input (considered as binary) is active (closed contact), and false otherwise.
+ * 
+ * @return either Y_ISPRESSED_FALSE or Y_ISPRESSED_TRUE, according to true if the input (considered as
+ * binary) is active (closed contact), and false otherwise
+ * 
+ * On failure, throws an exception or returns Y_ISPRESSED_INVALID.
+ */
+-(Y_ISPRESSED_enum)     get_isPressed;
+
+
+-(Y_ISPRESSED_enum) isPressed;
+/**
+ * Returns the number of elapsed milliseconds between the module power on and the last time
+ * the input button was pressed (the input contact transitionned from open to closed).
+ * 
+ * @return an integer corresponding to the number of elapsed milliseconds between the module power on
+ * and the last time
+ *         the input button was pressed (the input contact transitionned from open to closed)
+ * 
+ * On failure, throws an exception or returns Y_LASTTIMEPRESSED_INVALID.
+ */
+-(s64)     get_lastTimePressed;
+
+
+-(s64) lastTimePressed;
+/**
+ * Returns the number of elapsed milliseconds between the module power on and the last time
+ * the input button was released (the input contact transitionned from closed to open).
+ * 
+ * @return an integer corresponding to the number of elapsed milliseconds between the module power on
+ * and the last time
+ *         the input button was released (the input contact transitionned from closed to open)
+ * 
+ * On failure, throws an exception or returns Y_LASTTIMERELEASED_INVALID.
+ */
+-(s64)     get_lastTimeReleased;
+
+
+-(s64) lastTimeReleased;
+/**
+ * Returns the pulse counter value
+ * 
+ * @return an integer corresponding to the pulse counter value
+ * 
+ * On failure, throws an exception or returns Y_PULSECOUNTER_INVALID.
+ */
+-(s64)     get_pulseCounter;
+
+
+-(s64) pulseCounter;
+-(int)     set_pulseCounter:(s64) newval;
+-(int)     setPulseCounter:(s64) newval;
+
+/**
+ * Returns the pulse counter value as well as his timer
+ * 
+ * @return YAPI_SUCCESS if the call succeeds.
+ * 
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     resetCounter;
+
+/**
+ * Returns the timer of the pulses counter (ms)
+ * 
+ * @return an integer corresponding to the timer of the pulses counter (ms)
+ * 
+ * On failure, throws an exception or returns Y_PULSETIMER_INVALID.
+ */
+-(s64)     get_pulseTimer;
+
+
+-(s64) pulseTimer;
 /**
  * Retrieves an analog input for a given identifier.
  * The identifier can be specified using several formats:
@@ -157,7 +341,32 @@ typedef enum {
  * 
  * @return a YAnButton object allowing you to drive the analog input.
  */
-+(YAnButton*) FindAnButton:(NSString*) func;
++(YAnButton*)     FindAnButton:(NSString*)func;
+
+/**
+ * Registers the callback function that is invoked on every change of advertised value.
+ * The callback is invoked only during the execution of ySleep or yHandleEvents.
+ * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
+ * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
+ * 
+ * @param callback : the callback function to call, or a null pointer. The callback function should take two
+ *         arguments: the function object of which the value has changed, and the character string describing
+ *         the new advertised value.
+ * @noreturn
+ */
+-(int)     registerValueCallback:(YAnButtonValueCallback)callback;
+
+-(int)     _invokeValueCallback:(NSString*)value;
+
+
+/**
+ * Continues the enumeration of analog inputs started using yFirstAnButton().
+ * 
+ * @return a pointer to a YAnButton object, corresponding to
+ *         an analog input currently online, or a null pointer
+ *         if there are no more analog inputs to enumerate.
+ */
+-(YAnButton*) nextAnButton;
 /**
  * Starts the enumeration of analog inputs currently accessible.
  * Use the method YAnButton.nextAnButton() to iterate on
@@ -168,243 +377,11 @@ typedef enum {
  *         if there are none.
  */
 +(YAnButton*) FirstAnButton;
+//--- (end of YAnButton public methods declaration)
 
-/**
- * Returns the logical name of the analog input.
- * 
- * @return a string corresponding to the logical name of the analog input
- * 
- * On failure, throws an exception or returns Y_LOGICALNAME_INVALID.
- */
--(NSString*) get_logicalName;
--(NSString*) logicalName;
-
-/**
- * Changes the logical name of the analog input. You can use yCheckLogicalName()
- * prior to this call to make sure that your parameter is valid.
- * Remember to call the saveToFlash() method of the module if the
- * modification must be kept.
- * 
- * @param newval : a string corresponding to the logical name of the analog input
- * 
- * @return YAPI_SUCCESS if the call succeeds.
- * 
- * On failure, throws an exception or returns a negative error code.
- */
--(int)     set_logicalName:(NSString*) newval;
--(int)     setLogicalName:(NSString*) newval;
-
-/**
- * Returns the current value of the analog input (no more than 6 characters).
- * 
- * @return a string corresponding to the current value of the analog input (no more than 6 characters)
- * 
- * On failure, throws an exception or returns Y_ADVERTISEDVALUE_INVALID.
- */
--(NSString*) get_advertisedValue;
--(NSString*) advertisedValue;
-
-/**
- * Returns the current calibrated input value (between 0 and 1000, included).
- * 
- * @return an integer corresponding to the current calibrated input value (between 0 and 1000, included)
- * 
- * On failure, throws an exception or returns Y_CALIBRATEDVALUE_INVALID.
- */
--(unsigned) get_calibratedValue;
--(unsigned) calibratedValue;
-
-/**
- * Returns the current measured input value as-is (between 0 and 4095, included).
- * 
- * @return an integer corresponding to the current measured input value as-is (between 0 and 4095, included)
- * 
- * On failure, throws an exception or returns Y_RAWVALUE_INVALID.
- */
--(unsigned) get_rawValue;
--(unsigned) rawValue;
-
-/**
- * Tells if a calibration process is currently ongoing.
- * 
- * @return either Y_ANALOGCALIBRATION_OFF or Y_ANALOGCALIBRATION_ON
- * 
- * On failure, throws an exception or returns Y_ANALOGCALIBRATION_INVALID.
- */
--(Y_ANALOGCALIBRATION_enum) get_analogCalibration;
--(Y_ANALOGCALIBRATION_enum) analogCalibration;
-
-/**
- * Starts or stops the calibration process. Remember to call the saveToFlash()
- * method of the module at the end of the calibration if the modification must be kept.
- * 
- * @param newval : either Y_ANALOGCALIBRATION_OFF or Y_ANALOGCALIBRATION_ON
- * 
- * @return YAPI_SUCCESS if the call succeeds.
- * 
- * On failure, throws an exception or returns a negative error code.
- */
--(int)     set_analogCalibration:(Y_ANALOGCALIBRATION_enum) newval;
--(int)     setAnalogCalibration:(Y_ANALOGCALIBRATION_enum) newval;
-
-/**
- * Returns the maximal value measured during the calibration (between 0 and 4095, included).
- * 
- * @return an integer corresponding to the maximal value measured during the calibration (between 0
- * and 4095, included)
- * 
- * On failure, throws an exception or returns Y_CALIBRATIONMAX_INVALID.
- */
--(unsigned) get_calibrationMax;
--(unsigned) calibrationMax;
-
-/**
- * Changes the maximal calibration value for the input (between 0 and 4095, included), without actually
- * starting the automated calibration.  Remember to call the saveToFlash()
- * method of the module if the modification must be kept.
- * 
- * @param newval : an integer corresponding to the maximal calibration value for the input (between 0
- * and 4095, included), without actually
- *         starting the automated calibration
- * 
- * @return YAPI_SUCCESS if the call succeeds.
- * 
- * On failure, throws an exception or returns a negative error code.
- */
--(int)     set_calibrationMax:(unsigned) newval;
--(int)     setCalibrationMax:(unsigned) newval;
-
-/**
- * Returns the minimal value measured during the calibration (between 0 and 4095, included).
- * 
- * @return an integer corresponding to the minimal value measured during the calibration (between 0
- * and 4095, included)
- * 
- * On failure, throws an exception or returns Y_CALIBRATIONMIN_INVALID.
- */
--(unsigned) get_calibrationMin;
--(unsigned) calibrationMin;
-
-/**
- * Changes the minimal calibration value for the input (between 0 and 4095, included), without actually
- * starting the automated calibration.  Remember to call the saveToFlash()
- * method of the module if the modification must be kept.
- * 
- * @param newval : an integer corresponding to the minimal calibration value for the input (between 0
- * and 4095, included), without actually
- *         starting the automated calibration
- * 
- * @return YAPI_SUCCESS if the call succeeds.
- * 
- * On failure, throws an exception or returns a negative error code.
- */
--(int)     set_calibrationMin:(unsigned) newval;
--(int)     setCalibrationMin:(unsigned) newval;
-
-/**
- * Returns the sensibility for the input (between 1 and 1000) for triggering user callbacks.
- * 
- * @return an integer corresponding to the sensibility for the input (between 1 and 1000) for
- * triggering user callbacks
- * 
- * On failure, throws an exception or returns Y_SENSITIVITY_INVALID.
- */
--(unsigned) get_sensitivity;
--(unsigned) sensitivity;
-
-/**
- * Changes the sensibility for the input (between 1 and 1000) for triggering user callbacks.
- * The sensibility is used to filter variations around a fixed value, but does not preclude the
- * transmission of events when the input value evolves constantly in the same direction.
- * Special case: when the value 1000 is used, the callback will only be thrown when the logical state
- * of the input switches from pressed to released and back.
- * Remember to call the saveToFlash() method of the module if the modification must be kept.
- * 
- * @param newval : an integer corresponding to the sensibility for the input (between 1 and 1000) for
- * triggering user callbacks
- * 
- * @return YAPI_SUCCESS if the call succeeds.
- * 
- * On failure, throws an exception or returns a negative error code.
- */
--(int)     set_sensitivity:(unsigned) newval;
--(int)     setSensitivity:(unsigned) newval;
-
-/**
- * Returns true if the input (considered as binary) is active (closed contact), and false otherwise.
- * 
- * @return either Y_ISPRESSED_FALSE or Y_ISPRESSED_TRUE, according to true if the input (considered as
- * binary) is active (closed contact), and false otherwise
- * 
- * On failure, throws an exception or returns Y_ISPRESSED_INVALID.
- */
--(Y_ISPRESSED_enum) get_isPressed;
--(Y_ISPRESSED_enum) isPressed;
-
-/**
- * Returns the number of elapsed milliseconds between the module power on and the last time
- * the input button was pressed (the input contact transitionned from open to closed).
- * 
- * @return an integer corresponding to the number of elapsed milliseconds between the module power on
- * and the last time
- *         the input button was pressed (the input contact transitionned from open to closed)
- * 
- * On failure, throws an exception or returns Y_LASTTIMEPRESSED_INVALID.
- */
--(unsigned) get_lastTimePressed;
--(unsigned) lastTimePressed;
-
-/**
- * Returns the number of elapsed milliseconds between the module power on and the last time
- * the input button was released (the input contact transitionned from closed to open).
- * 
- * @return an integer corresponding to the number of elapsed milliseconds between the module power on
- * and the last time
- *         the input button was released (the input contact transitionned from closed to open)
- * 
- * On failure, throws an exception or returns Y_LASTTIMERELEASED_INVALID.
- */
--(unsigned) get_lastTimeReleased;
--(unsigned) lastTimeReleased;
-
-/**
- * Returns the pulse counter value
- * 
- * @return an integer corresponding to the pulse counter value
- * 
- * On failure, throws an exception or returns Y_PULSECOUNTER_INVALID.
- */
--(unsigned) get_pulseCounter;
--(unsigned) pulseCounter;
-
--(int)     set_pulseCounter:(unsigned) newval;
--(int)     setPulseCounter:(unsigned) newval;
-
-/**
- * Returns the pulse counter value as well as his timer
- * 
- * @return YAPI_SUCCESS if the call succeeds.
- * 
- * On failure, throws an exception or returns a negative error code.
- */
--(int)     resetCounter;
-
-/**
- * Returns the timer of the pulses counter (ms)
- * 
- * @return an integer corresponding to the timer of the pulses counter (ms)
- * 
- * On failure, throws an exception or returns Y_PULSETIMER_INVALID.
- */
--(unsigned) get_pulseTimer;
--(unsigned) pulseTimer;
-
-
-//--- (end of YAnButton accessors declaration)
 @end
 
 //--- (AnButton functions declaration)
-
 /**
  * Retrieves an analog input for a given identifier.
  * The identifier can be specified using several formats:

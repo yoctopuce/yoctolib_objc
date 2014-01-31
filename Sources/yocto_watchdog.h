@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_watchdog.h 12324 2013-08-13 15:10:31Z mvuilleu $
+ * $Id: yocto_watchdog.h 14325 2014-01-11 01:42:47Z seb $
  *
  * Declares yFindWatchdog(), the high-level API for Watchdog functions
  *
@@ -40,39 +40,74 @@
 #include "yocto_api.h"
 CF_EXTERN_C_BEGIN
 
-//--- (YWatchdog definitions)
+@class YWatchdog;
+
+//--- (YWatchdog globals)
+typedef void (*YWatchdogValueCallback)(YWatchdog *func, NSString *functionValue);
+#ifndef _Y_STATE_ENUM
+#define _Y_STATE_ENUM
 typedef enum {
     Y_STATE_A = 0,
     Y_STATE_B = 1,
-    Y_STATE_INVALID = -1
+    Y_STATE_INVALID = -1,
 } Y_STATE_enum;
+#endif
 
+#ifndef _Y_STATEATPOWERON_ENUM
+#define _Y_STATEATPOWERON_ENUM
+typedef enum {
+    Y_STATEATPOWERON_UNCHANGED = 0,
+    Y_STATEATPOWERON_A = 1,
+    Y_STATEATPOWERON_B = 2,
+    Y_STATEATPOWERON_INVALID = -1,
+} Y_STATEATPOWERON_enum;
+#endif
+
+#ifndef _Y_OUTPUT_ENUM
+#define _Y_OUTPUT_ENUM
 typedef enum {
     Y_OUTPUT_OFF = 0,
     Y_OUTPUT_ON = 1,
-    Y_OUTPUT_INVALID = -1
+    Y_OUTPUT_INVALID = -1,
 } Y_OUTPUT_enum;
+#endif
 
+#ifndef _STRUCT_DELAYEDPULSE
+#define _STRUCT_DELAYEDPULSE
+typedef struct _YDelayedPulse {
+    int             target;
+    int             ms;
+    int             moving;
+} YDelayedPulse;
+#endif
+#define Y_DELAYEDPULSETIMER_INVALID (YDelayedPulse){YAPI_INVALID_INT,YAPI_INVALID_INT,YAPI_INVALID_UINT}
+#ifndef _Y_AUTOSTART_ENUM
+#define _Y_AUTOSTART_ENUM
 typedef enum {
     Y_AUTOSTART_OFF = 0,
     Y_AUTOSTART_ON = 1,
-    Y_AUTOSTART_INVALID = -1
+    Y_AUTOSTART_INVALID = -1,
 } Y_AUTOSTART_enum;
+#endif
 
+#ifndef _Y_RUNNING_ENUM
+#define _Y_RUNNING_ENUM
 typedef enum {
     Y_RUNNING_OFF = 0,
     Y_RUNNING_ON = 1,
-    Y_RUNNING_INVALID = -1
+    Y_RUNNING_INVALID = -1,
 } Y_RUNNING_enum;
+#endif
 
-#define Y_LOGICALNAME_INVALID           [YAPI  INVALID_STRING]
-#define Y_ADVERTISEDVALUE_INVALID       [YAPI  INVALID_STRING]
-#define Y_PULSETIMER_INVALID            (0xffffffff)
-#define Y_COUNTDOWN_INVALID             (0xffffffff)
-#define Y_TRIGGERDELAY_INVALID          (0xffffffff)
-#define Y_TRIGGERDURATION_INVALID       (0xffffffff)
-//--- (end of YWatchdog definitions)
+#define Y_MAXTIMEONSTATEA_INVALID       YAPI_INVALID_LONG
+#define Y_MAXTIMEONSTATEB_INVALID       YAPI_INVALID_LONG
+#define Y_PULSETIMER_INVALID            YAPI_INVALID_LONG
+#define Y_COUNTDOWN_INVALID             YAPI_INVALID_LONG
+#define Y_TRIGGERDELAY_INVALID          YAPI_INVALID_LONG
+#define Y_TRIGGERDURATION_INVALID       YAPI_INVALID_LONG
+//--- (end of YWatchdog globals)
 
+//--- (YWatchdog class start)
 /**
  * YWatchdog Class: Watchdog function interface
  * 
@@ -84,135 +119,34 @@ typedef enum {
  * off an appliance for a given duration.
  */
 @interface YWatchdog : YFunction
+//--- (end of YWatchdog class start)
 {
 @protected
-
-// Attributes (function value cache)
-//--- (YWatchdog attributes)
-    NSString*       _logicalName;
-    NSString*       _advertisedValue;
+//--- (YWatchdog attributes declaration)
     Y_STATE_enum    _state;
+    Y_STATEATPOWERON_enum _stateAtPowerOn;
+    s64             _maxTimeOnStateA;
+    s64             _maxTimeOnStateB;
     Y_OUTPUT_enum   _output;
-    unsigned        _pulseTimer;
-    struct {
-        s32             target;
-        s32             ms;
-        u8              moving;
-    }  _delayedPulseTimer;
-    unsigned        _countdown;
+    s64             _pulseTimer;
+    YDelayedPulse   _delayedPulseTimer;
+    s64             _countdown;
     Y_AUTOSTART_enum _autoStart;
     Y_RUNNING_enum  _running;
-    unsigned        _triggerDelay;
-    unsigned        _triggerDuration;
-//--- (end of YWatchdog attributes)
+    s64             _triggerDelay;
+    s64             _triggerDuration;
+    YWatchdogValueCallback _valueCallbackWatchdog;
+//--- (end of YWatchdog attributes declaration)
 }
-//--- (YWatchdog declaration)
 // Constructor is protected, use yFindWatchdog factory function to instantiate
--(id)    initWithFunction:(NSString*) func;
+-(id)    initWith:(NSString*) func;
 
+//--- (YWatchdog private methods declaration)
 // Function-specific method for parsing of JSON output and caching result
--(int)             _parse:(yJsonStateMachine*) j;
+-(int)             _parseAttr:(yJsonStateMachine*) j;
 
-/**
- * Registers the callback function that is invoked on every change of advertised value.
- * The callback is invoked only during the execution of ySleep or yHandleEvents.
- * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
- * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
- * 
- * @param callback : the callback function to call, or a null pointer. The callback function should take two
- *         arguments: the function object of which the value has changed, and the character string describing
- *         the new advertised value.
- * @noreturn
- */
--(void)     registerValueCallback:(YFunctionUpdateCallback) callback;   
-/**
- * comment from .yc definition
- */
--(void)     set_objectCallback:(id) object :(SEL)selector;
--(void)     setObjectCallback:(id) object :(SEL)selector;
--(void)     setObjectCallback:(id) object withSelector:(SEL)selector;
-
-//--- (end of YWatchdog declaration)
-//--- (YWatchdog accessors declaration)
-
-/**
- * Continues the enumeration of watchdog started using yFirstWatchdog().
- * 
- * @return a pointer to a YWatchdog object, corresponding to
- *         a watchdog currently online, or a null pointer
- *         if there are no more watchdog to enumerate.
- */
--(YWatchdog*) nextWatchdog;
-/**
- * Retrieves a watchdog for a given identifier.
- * The identifier can be specified using several formats:
- * <ul>
- * <li>FunctionLogicalName</li>
- * <li>ModuleSerialNumber.FunctionIdentifier</li>
- * <li>ModuleSerialNumber.FunctionLogicalName</li>
- * <li>ModuleLogicalName.FunctionIdentifier</li>
- * <li>ModuleLogicalName.FunctionLogicalName</li>
- * </ul>
- * 
- * This function does not require that the watchdog is online at the time
- * it is invoked. The returned object is nevertheless valid.
- * Use the method YWatchdog.isOnline() to test if the watchdog is
- * indeed online at a given time. In case of ambiguity when looking for
- * a watchdog by logical name, no error is notified: the first instance
- * found is returned. The search is performed first by hardware name,
- * then by logical name.
- * 
- * @param func : a string that uniquely characterizes the watchdog
- * 
- * @return a YWatchdog object allowing you to drive the watchdog.
- */
-+(YWatchdog*) FindWatchdog:(NSString*) func;
-/**
- * Starts the enumeration of watchdog currently accessible.
- * Use the method YWatchdog.nextWatchdog() to iterate on
- * next watchdog.
- * 
- * @return a pointer to a YWatchdog object, corresponding to
- *         the first watchdog currently online, or a null pointer
- *         if there are none.
- */
-+(YWatchdog*) FirstWatchdog;
-
-/**
- * Returns the logical name of the watchdog.
- * 
- * @return a string corresponding to the logical name of the watchdog
- * 
- * On failure, throws an exception or returns Y_LOGICALNAME_INVALID.
- */
--(NSString*) get_logicalName;
--(NSString*) logicalName;
-
-/**
- * Changes the logical name of the watchdog. You can use yCheckLogicalName()
- * prior to this call to make sure that your parameter is valid.
- * Remember to call the saveToFlash() method of the module if the
- * modification must be kept.
- * 
- * @param newval : a string corresponding to the logical name of the watchdog
- * 
- * @return YAPI_SUCCESS if the call succeeds.
- * 
- * On failure, throws an exception or returns a negative error code.
- */
--(int)     set_logicalName:(NSString*) newval;
--(int)     setLogicalName:(NSString*) newval;
-
-/**
- * Returns the current value of the watchdog (no more than 6 characters).
- * 
- * @return a string corresponding to the current value of the watchdog (no more than 6 characters)
- * 
- * On failure, throws an exception or returns Y_ADVERTISEDVALUE_INVALID.
- */
--(NSString*) get_advertisedValue;
--(NSString*) advertisedValue;
-
+//--- (end of YWatchdog private methods declaration)
+//--- (YWatchdog public methods declaration)
 /**
  * Returns the state of the watchdog (A for the idle position, B for the active position).
  * 
@@ -221,9 +155,10 @@ typedef enum {
  * 
  * On failure, throws an exception or returns Y_STATE_INVALID.
  */
--(Y_STATE_enum) get_state;
--(Y_STATE_enum) state;
+-(Y_STATE_enum)     get_state;
 
+
+-(Y_STATE_enum) state;
 /**
  * Changes the state of the watchdog (A for the idle position, B for the active position).
  * 
@@ -238,6 +173,84 @@ typedef enum {
 -(int)     setState:(Y_STATE_enum) newval;
 
 /**
+ * Returns the state of the watchdog at device startup (A for the idle position, B for the active
+ * position, UNCHANGED for no change).
+ * 
+ * @return a value among Y_STATEATPOWERON_UNCHANGED, Y_STATEATPOWERON_A and Y_STATEATPOWERON_B
+ * corresponding to the state of the watchdog at device startup (A for the idle position, B for the
+ * active position, UNCHANGED for no change)
+ * 
+ * On failure, throws an exception or returns Y_STATEATPOWERON_INVALID.
+ */
+-(Y_STATEATPOWERON_enum)     get_stateAtPowerOn;
+
+
+-(Y_STATEATPOWERON_enum) stateAtPowerOn;
+/**
+ * Preset the state of the watchdog at device startup (A for the idle position,
+ * B for the active position, UNCHANGED for no modification). Remember to call the matching module saveToFlash()
+ * method, otherwise this call will have no effect.
+ * 
+ * @param newval : a value among Y_STATEATPOWERON_UNCHANGED, Y_STATEATPOWERON_A and Y_STATEATPOWERON_B
+ * 
+ * @return YAPI_SUCCESS if the call succeeds.
+ * 
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     set_stateAtPowerOn:(Y_STATEATPOWERON_enum) newval;
+-(int)     setStateAtPowerOn:(Y_STATEATPOWERON_enum) newval;
+
+/**
+ * Retourne the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state A before automatically
+ * switching back in to B state. Zero means no maximum time.
+ * 
+ * @return an integer
+ * 
+ * On failure, throws an exception or returns Y_MAXTIMEONSTATEA_INVALID.
+ */
+-(s64)     get_maxTimeOnStateA;
+
+
+-(s64) maxTimeOnStateA;
+/**
+ * Sets the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state A before automatically
+ * switching back in to B state. Use zero for no maximum time.
+ * 
+ * @param newval : an integer
+ * 
+ * @return YAPI_SUCCESS if the call succeeds.
+ * 
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     set_maxTimeOnStateA:(s64) newval;
+-(int)     setMaxTimeOnStateA:(s64) newval;
+
+/**
+ * Retourne the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state B before automatically
+ * switching back in to A state. Zero means no maximum time.
+ * 
+ * @return an integer
+ * 
+ * On failure, throws an exception or returns Y_MAXTIMEONSTATEB_INVALID.
+ */
+-(s64)     get_maxTimeOnStateB;
+
+
+-(s64) maxTimeOnStateB;
+/**
+ * Sets the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state B before automatically
+ * switching back in to A state. Use zero for no maximum time.
+ * 
+ * @param newval : an integer
+ * 
+ * @return YAPI_SUCCESS if the call succeeds.
+ * 
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     set_maxTimeOnStateB:(s64) newval;
+-(int)     setMaxTimeOnStateB:(s64) newval;
+
+/**
  * Returns the output state of the watchdog, when used as a simple switch (single throw).
  * 
  * @return either Y_OUTPUT_OFF or Y_OUTPUT_ON, according to the output state of the watchdog, when
@@ -245,9 +258,10 @@ typedef enum {
  * 
  * On failure, throws an exception or returns Y_OUTPUT_INVALID.
  */
--(Y_OUTPUT_enum) get_output;
--(Y_OUTPUT_enum) output;
+-(Y_OUTPUT_enum)     get_output;
 
+
+-(Y_OUTPUT_enum) output;
 /**
  * Changes the output state of the watchdog, when used as a simple switch (single throw).
  * 
@@ -271,11 +285,12 @@ typedef enum {
  * 
  * On failure, throws an exception or returns Y_PULSETIMER_INVALID.
  */
--(unsigned) get_pulseTimer;
--(unsigned) pulseTimer;
+-(s64)     get_pulseTimer;
 
--(int)     set_pulseTimer:(unsigned) newval;
--(int)     setPulseTimer:(unsigned) newval;
+
+-(s64) pulseTimer;
+-(int)     set_pulseTimer:(s64) newval;
+-(int)     setPulseTimer:(s64) newval;
 
 /**
  * Sets the relay to output B (active) for a specified duration, then brings it
@@ -287,11 +302,14 @@ typedef enum {
  * 
  * On failure, throws an exception or returns a negative error code.
  */
--(int)     pulse :(int)ms_duration;
+-(int)     pulse:(int)ms_duration;
 
--(YRETCODE) get_delayedPulseTimer :(s32*)target :(s32*)ms :(u8*)moving;
+-(YDelayedPulse)     get_delayedPulseTimer;
 
--(YRETCODE)     set_delayedPulseTimer :(s32)target :(s32)ms :(u8)moving;
+
+-(YDelayedPulse) delayedPulseTimer;
+-(int)     set_delayedPulseTimer:(YDelayedPulse) newval;
+-(int)     setDelayedPulseTimer:(YDelayedPulse) newval;
 
 /**
  * Schedules a pulse.
@@ -303,7 +321,7 @@ typedef enum {
  * 
  * On failure, throws an exception or returns a negative error code.
  */
--(int)     delayedPulse :(int)ms_delay :(int)ms_duration;
+-(int)     delayedPulse:(int)ms_delay :(int)ms_duration;
 
 /**
  * Returns the number of milliseconds remaining before a pulse (delayedPulse() call)
@@ -314,9 +332,10 @@ typedef enum {
  * 
  * On failure, throws an exception or returns Y_COUNTDOWN_INVALID.
  */
--(unsigned) get_countdown;
--(unsigned) countdown;
+-(s64)     get_countdown;
 
+
+-(s64) countdown;
 /**
  * Returns the watchdog runing state at module power up.
  * 
@@ -324,9 +343,10 @@ typedef enum {
  * 
  * On failure, throws an exception or returns Y_AUTOSTART_INVALID.
  */
--(Y_AUTOSTART_enum) get_autoStart;
--(Y_AUTOSTART_enum) autoStart;
+-(Y_AUTOSTART_enum)     get_autoStart;
 
+
+-(Y_AUTOSTART_enum) autoStart;
 /**
  * Changes the watchdog runningsttae at module power up. Remember to call the
  * saveToFlash() method and then to reboot the module to apply this setting.
@@ -348,9 +368,10 @@ typedef enum {
  * 
  * On failure, throws an exception or returns Y_RUNNING_INVALID.
  */
--(Y_RUNNING_enum) get_running;
--(Y_RUNNING_enum) running;
+-(Y_RUNNING_enum)     get_running;
 
+
+-(Y_RUNNING_enum) running;
 /**
  * Changes the running state of the watchdog.
  * 
@@ -382,9 +403,10 @@ typedef enum {
  * 
  * On failure, throws an exception or returns Y_TRIGGERDELAY_INVALID.
  */
--(unsigned) get_triggerDelay;
--(unsigned) triggerDelay;
+-(s64)     get_triggerDelay;
 
+
+-(s64) triggerDelay;
 /**
  * Changes the waiting delay before a reset is triggered by the watchdog, in milliseconds.
  * 
@@ -395,8 +417,8 @@ typedef enum {
  * 
  * On failure, throws an exception or returns a negative error code.
  */
--(int)     set_triggerDelay:(unsigned) newval;
--(int)     setTriggerDelay:(unsigned) newval;
+-(int)     set_triggerDelay:(s64) newval;
+-(int)     setTriggerDelay:(s64) newval;
 
 /**
  * Returns the duration of resets caused by the watchdog, in milliseconds.
@@ -405,9 +427,10 @@ typedef enum {
  * 
  * On failure, throws an exception or returns Y_TRIGGERDURATION_INVALID.
  */
--(unsigned) get_triggerDuration;
--(unsigned) triggerDuration;
+-(s64)     get_triggerDuration;
 
+
+-(s64) triggerDuration;
 /**
  * Changes the duration of resets caused by the watchdog, in milliseconds.
  * 
@@ -417,15 +440,73 @@ typedef enum {
  * 
  * On failure, throws an exception or returns a negative error code.
  */
--(int)     set_triggerDuration:(unsigned) newval;
--(int)     setTriggerDuration:(unsigned) newval;
+-(int)     set_triggerDuration:(s64) newval;
+-(int)     setTriggerDuration:(s64) newval;
+
+/**
+ * Retrieves a watchdog for a given identifier.
+ * The identifier can be specified using several formats:
+ * <ul>
+ * <li>FunctionLogicalName</li>
+ * <li>ModuleSerialNumber.FunctionIdentifier</li>
+ * <li>ModuleSerialNumber.FunctionLogicalName</li>
+ * <li>ModuleLogicalName.FunctionIdentifier</li>
+ * <li>ModuleLogicalName.FunctionLogicalName</li>
+ * </ul>
+ * 
+ * This function does not require that the watchdog is online at the time
+ * it is invoked. The returned object is nevertheless valid.
+ * Use the method YWatchdog.isOnline() to test if the watchdog is
+ * indeed online at a given time. In case of ambiguity when looking for
+ * a watchdog by logical name, no error is notified: the first instance
+ * found is returned. The search is performed first by hardware name,
+ * then by logical name.
+ * 
+ * @param func : a string that uniquely characterizes the watchdog
+ * 
+ * @return a YWatchdog object allowing you to drive the watchdog.
+ */
++(YWatchdog*)     FindWatchdog:(NSString*)func;
+
+/**
+ * Registers the callback function that is invoked on every change of advertised value.
+ * The callback is invoked only during the execution of ySleep or yHandleEvents.
+ * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
+ * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
+ * 
+ * @param callback : the callback function to call, or a null pointer. The callback function should take two
+ *         arguments: the function object of which the value has changed, and the character string describing
+ *         the new advertised value.
+ * @noreturn
+ */
+-(int)     registerValueCallback:(YWatchdogValueCallback)callback;
+
+-(int)     _invokeValueCallback:(NSString*)value;
 
 
-//--- (end of YWatchdog accessors declaration)
+/**
+ * Continues the enumeration of watchdog started using yFirstWatchdog().
+ * 
+ * @return a pointer to a YWatchdog object, corresponding to
+ *         a watchdog currently online, or a null pointer
+ *         if there are no more watchdog to enumerate.
+ */
+-(YWatchdog*) nextWatchdog;
+/**
+ * Starts the enumeration of watchdog currently accessible.
+ * Use the method YWatchdog.nextWatchdog() to iterate on
+ * next watchdog.
+ * 
+ * @return a pointer to a YWatchdog object, corresponding to
+ *         the first watchdog currently online, or a null pointer
+ *         if there are none.
+ */
++(YWatchdog*) FirstWatchdog;
+//--- (end of YWatchdog public methods declaration)
+
 @end
 
 //--- (Watchdog functions declaration)
-
 /**
  * Retrieves a watchdog for a given identifier.
  * The identifier can be specified using several formats:

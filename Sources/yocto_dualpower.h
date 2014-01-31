@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_dualpower.h 12324 2013-08-13 15:10:31Z mvuilleu $
+ * $Id: yocto_dualpower.h 14325 2014-01-11 01:42:47Z seb $
  *
  * Declares yFindDualPower(), the high-level API for DualPower functions
  *
@@ -40,27 +40,35 @@
 #include "yocto_api.h"
 CF_EXTERN_C_BEGIN
 
-//--- (YDualPower definitions)
+@class YDualPower;
+
+//--- (YDualPower globals)
+typedef void (*YDualPowerValueCallback)(YDualPower *func, NSString *functionValue);
+#ifndef _Y_POWERSTATE_ENUM
+#define _Y_POWERSTATE_ENUM
 typedef enum {
     Y_POWERSTATE_OFF = 0,
     Y_POWERSTATE_FROM_USB = 1,
     Y_POWERSTATE_FROM_EXT = 2,
-    Y_POWERSTATE_INVALID = -1
+    Y_POWERSTATE_INVALID = -1,
 } Y_POWERSTATE_enum;
+#endif
 
+#ifndef _Y_POWERCONTROL_ENUM
+#define _Y_POWERCONTROL_ENUM
 typedef enum {
     Y_POWERCONTROL_AUTO = 0,
     Y_POWERCONTROL_FROM_USB = 1,
     Y_POWERCONTROL_FROM_EXT = 2,
     Y_POWERCONTROL_OFF = 3,
-    Y_POWERCONTROL_INVALID = -1
+    Y_POWERCONTROL_INVALID = -1,
 } Y_POWERCONTROL_enum;
+#endif
 
-#define Y_LOGICALNAME_INVALID           [YAPI  INVALID_STRING]
-#define Y_ADVERTISEDVALUE_INVALID       [YAPI  INVALID_STRING]
-#define Y_EXTVOLTAGE_INVALID            (0xffffffff)
-//--- (end of YDualPower definitions)
+#define Y_EXTVOLTAGE_INVALID            YAPI_INVALID_UINT
+//--- (end of YDualPower globals)
 
+//--- (YDualPower class start)
 /**
  * YDualPower Class: External power supply control interface
  * 
@@ -71,55 +79,74 @@ typedef enum {
  * (external battery running out of power).
  */
 @interface YDualPower : YFunction
+//--- (end of YDualPower class start)
 {
 @protected
-
-// Attributes (function value cache)
-//--- (YDualPower attributes)
-    NSString*       _logicalName;
-    NSString*       _advertisedValue;
+//--- (YDualPower attributes declaration)
     Y_POWERSTATE_enum _powerState;
     Y_POWERCONTROL_enum _powerControl;
-    unsigned        _extVoltage;
-//--- (end of YDualPower attributes)
+    int             _extVoltage;
+    YDualPowerValueCallback _valueCallbackDualPower;
+//--- (end of YDualPower attributes declaration)
 }
-//--- (YDualPower declaration)
 // Constructor is protected, use yFindDualPower factory function to instantiate
--(id)    initWithFunction:(NSString*) func;
+-(id)    initWith:(NSString*) func;
 
+//--- (YDualPower private methods declaration)
 // Function-specific method for parsing of JSON output and caching result
--(int)             _parse:(yJsonStateMachine*) j;
+-(int)             _parseAttr:(yJsonStateMachine*) j;
 
+//--- (end of YDualPower private methods declaration)
+//--- (YDualPower public methods declaration)
 /**
- * Registers the callback function that is invoked on every change of advertised value.
- * The callback is invoked only during the execution of ySleep or yHandleEvents.
- * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
- * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
+ * Returns the current power source for module functions that require lots of current.
  * 
- * @param callback : the callback function to call, or a null pointer. The callback function should take two
- *         arguments: the function object of which the value has changed, and the character string describing
- *         the new advertised value.
- * @noreturn
- */
--(void)     registerValueCallback:(YFunctionUpdateCallback) callback;   
-/**
- * comment from .yc definition
- */
--(void)     set_objectCallback:(id) object :(SEL)selector;
--(void)     setObjectCallback:(id) object :(SEL)selector;
--(void)     setObjectCallback:(id) object withSelector:(SEL)selector;
-
-//--- (end of YDualPower declaration)
-//--- (YDualPower accessors declaration)
-
-/**
- * Continues the enumeration of dual power controls started using yFirstDualPower().
+ * @return a value among Y_POWERSTATE_OFF, Y_POWERSTATE_FROM_USB and Y_POWERSTATE_FROM_EXT
+ * corresponding to the current power source for module functions that require lots of current
  * 
- * @return a pointer to a YDualPower object, corresponding to
- *         a dual power control currently online, or a null pointer
- *         if there are no more dual power controls to enumerate.
+ * On failure, throws an exception or returns Y_POWERSTATE_INVALID.
  */
--(YDualPower*) nextDualPower;
+-(Y_POWERSTATE_enum)     get_powerState;
+
+
+-(Y_POWERSTATE_enum) powerState;
+/**
+ * Returns the selected power source for module functions that require lots of current.
+ * 
+ * @return a value among Y_POWERCONTROL_AUTO, Y_POWERCONTROL_FROM_USB, Y_POWERCONTROL_FROM_EXT and
+ * Y_POWERCONTROL_OFF corresponding to the selected power source for module functions that require lots of current
+ * 
+ * On failure, throws an exception or returns Y_POWERCONTROL_INVALID.
+ */
+-(Y_POWERCONTROL_enum)     get_powerControl;
+
+
+-(Y_POWERCONTROL_enum) powerControl;
+/**
+ * Changes the selected power source for module functions that require lots of current.
+ * 
+ * @param newval : a value among Y_POWERCONTROL_AUTO, Y_POWERCONTROL_FROM_USB, Y_POWERCONTROL_FROM_EXT
+ * and Y_POWERCONTROL_OFF corresponding to the selected power source for module functions that require
+ * lots of current
+ * 
+ * @return YAPI_SUCCESS if the call succeeds.
+ * 
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     set_powerControl:(Y_POWERCONTROL_enum) newval;
+-(int)     setPowerControl:(Y_POWERCONTROL_enum) newval;
+
+/**
+ * Returns the measured voltage on the external power source, in millivolts.
+ * 
+ * @return an integer corresponding to the measured voltage on the external power source, in millivolts
+ * 
+ * On failure, throws an exception or returns Y_EXTVOLTAGE_INVALID.
+ */
+-(int)     get_extVoltage;
+
+
+-(int) extVoltage;
 /**
  * Retrieves a dual power control for a given identifier.
  * The identifier can be specified using several formats:
@@ -143,7 +170,32 @@ typedef enum {
  * 
  * @return a YDualPower object allowing you to drive the power control.
  */
-+(YDualPower*) FindDualPower:(NSString*) func;
++(YDualPower*)     FindDualPower:(NSString*)func;
+
+/**
+ * Registers the callback function that is invoked on every change of advertised value.
+ * The callback is invoked only during the execution of ySleep or yHandleEvents.
+ * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
+ * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
+ * 
+ * @param callback : the callback function to call, or a null pointer. The callback function should take two
+ *         arguments: the function object of which the value has changed, and the character string describing
+ *         the new advertised value.
+ * @noreturn
+ */
+-(int)     registerValueCallback:(YDualPowerValueCallback)callback;
+
+-(int)     _invokeValueCallback:(NSString*)value;
+
+
+/**
+ * Continues the enumeration of dual power controls started using yFirstDualPower().
+ * 
+ * @return a pointer to a YDualPower object, corresponding to
+ *         a dual power control currently online, or a null pointer
+ *         if there are no more dual power controls to enumerate.
+ */
+-(YDualPower*) nextDualPower;
 /**
  * Starts the enumeration of dual power controls currently accessible.
  * Use the method YDualPower.nextDualPower() to iterate on
@@ -154,94 +206,11 @@ typedef enum {
  *         if there are none.
  */
 +(YDualPower*) FirstDualPower;
+//--- (end of YDualPower public methods declaration)
 
-/**
- * Returns the logical name of the power control.
- * 
- * @return a string corresponding to the logical name of the power control
- * 
- * On failure, throws an exception or returns Y_LOGICALNAME_INVALID.
- */
--(NSString*) get_logicalName;
--(NSString*) logicalName;
-
-/**
- * Changes the logical name of the power control. You can use yCheckLogicalName()
- * prior to this call to make sure that your parameter is valid.
- * Remember to call the saveToFlash() method of the module if the
- * modification must be kept.
- * 
- * @param newval : a string corresponding to the logical name of the power control
- * 
- * @return YAPI_SUCCESS if the call succeeds.
- * 
- * On failure, throws an exception or returns a negative error code.
- */
--(int)     set_logicalName:(NSString*) newval;
--(int)     setLogicalName:(NSString*) newval;
-
-/**
- * Returns the current value of the power control (no more than 6 characters).
- * 
- * @return a string corresponding to the current value of the power control (no more than 6 characters)
- * 
- * On failure, throws an exception or returns Y_ADVERTISEDVALUE_INVALID.
- */
--(NSString*) get_advertisedValue;
--(NSString*) advertisedValue;
-
-/**
- * Returns the current power source for module functions that require lots of current.
- * 
- * @return a value among Y_POWERSTATE_OFF, Y_POWERSTATE_FROM_USB and Y_POWERSTATE_FROM_EXT
- * corresponding to the current power source for module functions that require lots of current
- * 
- * On failure, throws an exception or returns Y_POWERSTATE_INVALID.
- */
--(Y_POWERSTATE_enum) get_powerState;
--(Y_POWERSTATE_enum) powerState;
-
-/**
- * Returns the selected power source for module functions that require lots of current.
- * 
- * @return a value among Y_POWERCONTROL_AUTO, Y_POWERCONTROL_FROM_USB, Y_POWERCONTROL_FROM_EXT and
- * Y_POWERCONTROL_OFF corresponding to the selected power source for module functions that require lots of current
- * 
- * On failure, throws an exception or returns Y_POWERCONTROL_INVALID.
- */
--(Y_POWERCONTROL_enum) get_powerControl;
--(Y_POWERCONTROL_enum) powerControl;
-
-/**
- * Changes the selected power source for module functions that require lots of current.
- * 
- * @param newval : a value among Y_POWERCONTROL_AUTO, Y_POWERCONTROL_FROM_USB, Y_POWERCONTROL_FROM_EXT
- * and Y_POWERCONTROL_OFF corresponding to the selected power source for module functions that require
- * lots of current
- * 
- * @return YAPI_SUCCESS if the call succeeds.
- * 
- * On failure, throws an exception or returns a negative error code.
- */
--(int)     set_powerControl:(Y_POWERCONTROL_enum) newval;
--(int)     setPowerControl:(Y_POWERCONTROL_enum) newval;
-
-/**
- * Returns the measured voltage on the external power source, in millivolts.
- * 
- * @return an integer corresponding to the measured voltage on the external power source, in millivolts
- * 
- * On failure, throws an exception or returns Y_EXTVOLTAGE_INVALID.
- */
--(unsigned) get_extVoltage;
--(unsigned) extVoltage;
-
-
-//--- (end of YDualPower accessors declaration)
 @end
 
 //--- (DualPower functions declaration)
-
 /**
  * Retrieves a dual power control for a given identifier.
  * The identifier can be specified using several formats:

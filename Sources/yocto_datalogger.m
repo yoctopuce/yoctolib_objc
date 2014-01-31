@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_datalogger.m 12326 2013-08-13 15:52:20Z mvuilleu $
+ * $Id: yocto_datalogger.m 14721 2014-01-24 17:58:44Z seb $
  *
  * Implements yFindDataLogger(), the high-level API for DataLogger functions
  *
@@ -41,9 +41,6 @@
 #import "yocto_datalogger.h"
 #include "yapi/yjson.h"
 #include "yapi/yapi.h"
-double _decimalToDouble(s16 val);
-
-
 
 /**
  * YDataStream Class: Sequence of measured data, returned by the data logger
@@ -53,7 +50,7 @@ double _decimalToDouble(s16 val);
  * (they are preloaded at instantiation time), while most other properties and
  * the actual data are loaded on demand when accessed for the first time.
  */
-@implementation YDataStream
+@implementation YOldDataStream
 
 
 -(id) initWithDataLogger:(YDataLogger *)parrent :(unsigned int)run :(unsigned int)stamp :(unsigned int)utc :(unsigned int)itv
@@ -61,9 +58,8 @@ double _decimalToDouble(s16 val);
     self = [super init];
     if(self){
         _dataLogger     = parrent;
-        _runIndex       = run;
+        _runNo       = run;
         _startTime      = stamp;
-        _startTimeUTC   = utc, 
         _interval       = itv;
         _columnNames    = [[NSMutableArray alloc ] init] ;
         _values         = [[NSMutableArray alloc ] init] ;
@@ -95,7 +91,7 @@ double _decimalToDouble(s16 val);
     NSMutableArray      *calraw=nil;
     NSMutableArray      *calref=nil;
   
-    if((res = [_dataLogger _getData:_runIndex:_startTime:&buffer:&j]) != YAPI_SUCCESS) {
+    if((res = [_dataLogger _getData:_runNo:_startTime:&buffer:&j]) != YAPI_SUCCESS) {
         return res;
     }
     coldiv = [[NSMutableArray alloc] init];
@@ -135,7 +131,7 @@ double _decimalToDouble(s16 val);
         } else if(!strcmp(j.token, "UTC")) {
             if(yJsonParse(&j) != YJSON_PARSE_AVAIL) 
                 goto fail;
-            _startTimeUTC = atoi(j.token); 
+            _utcStamp = atoi(j.token);
         } else if(!strcmp(j.token, "interval")) {
             if(yJsonParse(&j) != YJSON_PARSE_AVAIL) 
                 goto fail;
@@ -211,17 +207,9 @@ double _decimalToDouble(s16 val);
             calref = [[NSMutableArray alloc] initWithCapacity:_nCols];
             int c = 0;
             while(yJsonParse(&j) == YJSON_PARSE_AVAIL && j.st == YJSON_PARSE_STRING) {
-                NSString * calibration_str = [_dataLogger _parseString:&j];
-                NSMutableArray * cur_calpar = [NSMutableArray array];
                 NSMutableArray * cur_calraw = [NSMutableArray array];
                 NSMutableArray * cur_calref = [NSMutableArray array];
-                int calibType = [YAPI _decodeCalibrationPoints:calibration_str
-                                                                   :cur_calpar
-                                                                   :cur_calraw
-                                                                   :cur_calref
-                                                     withResolution:[[coldiv objectAtIndex:c] intValue]
-                                                          andOffset:[[colscl objectAtIndex:c] intValue]];
-                
+                int calibType = 0;
                 [caltyp addObject:[NSNumber numberWithInt:calibType]];
                 [calpar addObject:cur_calraw];
                 [calraw addObject:cur_calraw];
@@ -283,7 +271,7 @@ double _decimalToDouble(s16 val);
                 if([[coltyp objectAtIndex:c] intValue] < 2) {
                     newval = ([val intValue] + [[colofs objectAtIndex:c] doubleValue]) * [[colscl objectAtIndex:c] doubleValue];
                 } else {
-                    newval = _decimalToDouble([val intValue]-32767);
+                    newval = [YAPI _decimalToDouble:[val intValue]-32767];
                 }
 
                 [dat addObject:[NSNumber numberWithDouble:newval]];
@@ -311,26 +299,13 @@ double _decimalToDouble(s16 val);
 
 
 /**
- * Returns the run index of the data stream. A run can be made of
- * multiple datastreams, for different time intervals.
- * 
- * This method does not cause any access to the device, as the value
- * is preloaded in the object at instantiation time.
- * 
- * @return an unsigned number corresponding to the run index.
- */
--(unsigned)                   get_runIndex
-{
-    return self.runIndex;
-}
-@synthesize runIndex = _runIndex;
-
-/**
- * Returns the start time of the data stream, relative to the beginning
- * of the run. If you need an absolute time, use get_startTimeUTC().
- * 
- * This method does not cause any access to the device, as the value
- * is preloaded in the object at instantiation time.
+ * Returns the relative start time of the data stream, measured in seconds.
+ * For recent firmwares, the value is relative to the present time,
+ * which means the value is always negative.
+ * If the device uses a firmware older than version 13000, value is
+ * relative to the start of the time the device was powered on, and
+ * is always positive.
+ * If you need an absolute UTC timestamp, use get_startTimeUTC().
  * 
  * @return an unsigned number corresponding to the number of seconds
  *         between the start of the run and the beginning of this data
@@ -339,24 +314,6 @@ double _decimalToDouble(s16 val);
 -(unsigned)       get_startTime
 { return self.startTime;}
 @synthesize startTime = _startTime;
-
-/**
- * Returns the start time of the data stream, relative to the Jan 1, 1970.
- * If the UTC time was not set in the datalogger at the time of the recording
- * of this data stream, this method returns 0.
- * 
- * This method does not cause any access to the device, as the value
- * is preloaded in the object at instantiation time.
- * 
- * @return an unsigned number corresponding to the number of seconds
- *         between the Jan 1, 1970 and the beginning of this data
- *         stream (i.e. Unix time representation of the absolute time).
- */
--(time_t)    get_startTimeUTC
-{
-    return self.startTimeUTC;
-}
-@synthesize startTimeUTC = _startTimeUTC;
 
 /**
  * Returns the number of seconds elapsed between  two consecutive
@@ -375,131 +332,6 @@ double _decimalToDouble(s16 val);
 }
 @synthesize dataSamplesInterval =_interval;
 
-/**
- * Returns the number of data rows present in this stream.
- * 
- * This method fetches the whole data stream from the device,
- * if not yet done.
- * 
- * @return an unsigned number corresponding to the number of rows.
- * 
- * On failure, throws an exception or returns zero.
- */
--(unsigned)        get_rowCount
-{
-    return self.rowCount;
-}
-
--(unsigned)        rowCount
-{
-    if(_nRows == 0) {
-        [self _loadStream];
-    }
-    return _nRows;
-}
-
-/**
- * Returns the number of data columns present in this stream.
- * The meaning of the values present in each column can be obtained
- * using the method get_columnNames().
- * 
- * This method fetches the whole data stream from the device,
- * if not yet done.
- * 
- * @return an unsigned number corresponding to the number of rows.
- * 
- * On failure, throws an exception or returns zero.
- */
--(unsigned)        get_columnCount
-{
-    return self.columnCount;
-}
--(unsigned)        columnCount
-{
-    if(_nCols == 0) [self _loadStream];
-    return _nCols;
-}
-
-/**
- * Returns the title (or meaning) of each data column present in this stream.
- * In most case, the title of the data column is the hardware identifier
- * of the sensor that produced the data. For archived streams created by
- * summarizing a high-resolution data stream, there can be a suffix appended
- * to the sensor identifier, such as _min for the minimum value, _avg for the
- * average value and _max for the maximal value.
- * 
- * This method fetches the whole data stream from the device,
- * if not yet done.
- * 
- * @return a list containing as many strings as there are columns in the
- *         data stream.
- * 
- * On failure, throws an exception or returns an empty array.
- */
--(NSArray*) get_columnNames
-{
-    return self.columnNames;
-}
--(NSArray*) columnNames
-{
-    if([_columnNames count] == 0) [self _loadStream];
-    return _columnNames;
-}
-
-/**
- * Returns the whole data set contained in the stream, as a bidimensional
- * table of numbers.
- * The meaning of the values present in each column can be obtained
- * using the method get_columnNames().
- * 
- * This method fetches the whole data stream from the device,
- * if not yet done.
- * 
- * @return a list containing as many elements as there are rows in the
- *         data stream. Each row itself is a list of floating-point
- *         numbers.
- * 
- * On failure, throws an exception or returns an empty array.
- */
--(NSArray*) get_dataRows
-{
-    return self.dataRows;
-}
--(NSArray*) dataRows
-{
-    if([_values count] == 0) [self _loadStream];
-    return _values;
-}
-
-/**
- * Returns a single measure from the data stream, specified by its
- * row and column index.
- * The meaning of the values present in each column can be obtained
- * using the method get_columnNames().
- * 
- * This method fetches the whole data stream from the device,
- * if not yet done.
- * 
- * @param row : row index
- * @param col : column index
- * 
- * @return a floating-point number
- * 
- * On failure, throws an exception or returns Y_DATA_INVALID.
- */
--(NSNumber*) get_data:(unsigned)row  :(unsigned) col
-{
-    return [self data:row:col];
-}
--(NSNumber*) data:(unsigned)row  :(unsigned) col
-{
-    if([_values count] == 0) [self _loadStream] ;
-    if(row >= [_values count]) return nil;
-    if(col >= [[_values objectAtIndex:row] count]) return nil;
-    return [[_values objectAtIndex:row] objectAtIndex:col];
-}
-
-
 @end
 
 
@@ -507,21 +339,19 @@ double _decimalToDouble(s16 val);
 @implementation YDataLogger
 
 // Constructor is protected, use yFindDataLogger factory function to instantiate
--(id)              initWithFunction:(NSString*) func
+-(id)              initWith:(NSString*) func
 {
-//--- (generated code: YDataLogger attributes)
-   if(!(self = [super initProtected:@"DataLogger":func]))
-          return nil;
-    _logicalName = Y_LOGICALNAME_INVALID;
-    _advertisedValue = Y_ADVERTISEDVALUE_INVALID;
-    _oldestRunIndex = Y_OLDESTRUNINDEX_INVALID;
+    if(!(self = [super initWith:func]))
+        return nil;
+    _className = @"DataLogger";
+//--- (generated code: YDataLogger attributes initialization)
     _currentRunIndex = Y_CURRENTRUNINDEX_INVALID;
-    _samplingInterval = Y_SAMPLINGINTERVAL_INVALID;
     _timeUTC = Y_TIMEUTC_INVALID;
     _recording = Y_RECORDING_INVALID;
     _autoStart = Y_AUTOSTART_INVALID;
     _clearHistory = Y_CLEARHISTORY_INVALID;
-//--- (end of generated code: YDataLogger attributes)
+    _valueCallbackDataLogger = NULL;
+//--- (end of generated code: YDataLogger attributes initialization)
     _dataLoggerURL =  @"/logger.json";
     return self;
 }
@@ -530,408 +360,42 @@ double _decimalToDouble(s16 val);
 
 -(void) dealloc
 {
-    //--- (generated code: YDataLogger cleanup)
-    ARC_release(_logicalName);
-    _logicalName = nil;
-    ARC_release(_advertisedValue);
-    _advertisedValue = nil;
+//--- (generated code: YDataLogger cleanup)
+    ARC_dealloc(super);
 //--- (end of generated code: YDataLogger cleanup)
-    [super dealloc];
 }
+//--- (generated code: YDataLogger private methods implementation)
 
-//--- (generated code: YDataLogger implementation)
-
--(int) _parse:(yJsonStateMachine*) j
+-(int) _parseAttr:(yJsonStateMachine*) j
 {
-    if(yJsonParse(j) != YJSON_PARSE_AVAIL || j->st != YJSON_PARSE_STRUCT) {
-    failed:
-        return -1;
+    if(!strcmp(j->token, "currentRunIndex")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _currentRunIndex =  atoi(j->token);
+        return 1;
     }
-    while(yJsonParse(j) == YJSON_PARSE_AVAIL && j->st == YJSON_PARSE_MEMBNAME) {
-        if(!strcmp(j->token, "logicalName")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            ARC_release(_logicalName);
-            _logicalName =  [self _parseString:j];
-            ARC_retain(_logicalName);
-        } else if(!strcmp(j->token, "advertisedValue")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            ARC_release(_advertisedValue);
-            _advertisedValue =  [self _parseString:j];
-            ARC_retain(_advertisedValue);
-        } else if(!strcmp(j->token, "oldestRunIndex")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            _oldestRunIndex =  atoi(j->token);
-        } else if(!strcmp(j->token, "currentRunIndex")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            _currentRunIndex =  atoi(j->token);
-        } else if(!strcmp(j->token, "samplingInterval")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            _samplingInterval =  atoi(j->token);
-        } else if(!strcmp(j->token, "timeUTC")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            _timeUTC =  atoi(j->token);
-        } else if(!strcmp(j->token, "recording")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            _recording =  (Y_RECORDING_enum)atoi(j->token);
-        } else if(!strcmp(j->token, "autoStart")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            _autoStart =  (Y_AUTOSTART_enum)atoi(j->token);
-        } else if(!strcmp(j->token, "clearHistory")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            _clearHistory =  (Y_CLEARHISTORY_enum)atoi(j->token);
-        } else {
-            // ignore unknown field
-            yJsonSkip(j, 1);
-        }
+    if(!strcmp(j->token, "timeUTC")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _timeUTC =  atol(j->token);
+        return 1;
     }
-    if(j->st != YJSON_PARSE_STRUCT) goto failed;
-    return 0;
-}
-
-/**
- * Returns the logical name of the data logger.
- * 
- * @return a string corresponding to the logical name of the data logger
- * 
- * On failure, throws an exception or returns Y_LOGICALNAME_INVALID.
- */
--(NSString*) get_logicalName
-{
-    return [self logicalName];
-}
--(NSString*) logicalName
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_LOGICALNAME_INVALID;
+    if(!strcmp(j->token, "recording")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _recording =  (Y_RECORDING_enum)atoi(j->token);
+        return 1;
     }
-    return _logicalName;
-}
-
-/**
- * Changes the logical name of the data logger. You can use yCheckLogicalName()
- * prior to this call to make sure that your parameter is valid.
- * Remember to call the saveToFlash() method of the module if the
- * modification must be kept.
- * 
- * @param newval : a string corresponding to the logical name of the data logger
- * 
- * @return YAPI_SUCCESS if the call succeeds.
- * 
- * On failure, throws an exception or returns a negative error code.
- */
--(int) set_logicalName:(NSString*) newval
-{
-    return [self setLogicalName:newval];
-}
--(int) setLogicalName:(NSString*) newval
-{
-    NSString* rest_val;
-    rest_val = newval;
-    return [self _setAttr:@"logicalName" :rest_val];
-}
-
-/**
- * Returns the current value of the data logger (no more than 6 characters).
- * 
- * @return a string corresponding to the current value of the data logger (no more than 6 characters)
- * 
- * On failure, throws an exception or returns Y_ADVERTISEDVALUE_INVALID.
- */
--(NSString*) get_advertisedValue
-{
-    return [self advertisedValue];
-}
--(NSString*) advertisedValue
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_ADVERTISEDVALUE_INVALID;
+    if(!strcmp(j->token, "autoStart")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _autoStart =  (Y_AUTOSTART_enum)atoi(j->token);
+        return 1;
     }
-    return _advertisedValue;
-}
-
-/**
- * Returns the index of the oldest run for which the non-volatile memory still holds recorded data.
- * 
- * @return an integer corresponding to the index of the oldest run for which the non-volatile memory
- * still holds recorded data
- * 
- * On failure, throws an exception or returns Y_OLDESTRUNINDEX_INVALID.
- */
--(unsigned) get_oldestRunIndex
-{
-    return [self oldestRunIndex];
-}
--(unsigned) oldestRunIndex
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_OLDESTRUNINDEX_INVALID;
+    if(!strcmp(j->token, "clearHistory")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _clearHistory =  (Y_CLEARHISTORY_enum)atoi(j->token);
+        return 1;
     }
-    return _oldestRunIndex;
+    return [super _parseAttr:j];
 }
-
-/**
- * Returns the current run number, corresponding to the number of times the module was
- * powered on with the dataLogger enabled at some point.
- * 
- * @return an integer corresponding to the current run number, corresponding to the number of times the module was
- *         powered on with the dataLogger enabled at some point
- * 
- * On failure, throws an exception or returns Y_CURRENTRUNINDEX_INVALID.
- */
--(unsigned) get_currentRunIndex
-{
-    return [self currentRunIndex];
-}
--(unsigned) currentRunIndex
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_CURRENTRUNINDEX_INVALID;
-    }
-    return _currentRunIndex;
-}
-
--(unsigned) get_samplingInterval
-{
-    return [self samplingInterval];
-}
--(unsigned) samplingInterval
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_SAMPLINGINTERVAL_INVALID;
-    }
-    return _samplingInterval;
-}
-
--(int) set_samplingInterval:(unsigned) newval
-{
-    return [self setSamplingInterval:newval];
-}
--(int) setSamplingInterval:(unsigned) newval
-{
-    NSString* rest_val;
-    rest_val = [NSString stringWithFormat:@"%u", newval];
-    return [self _setAttr:@"samplingInterval" :rest_val];
-}
-
-/**
- * Returns the Unix timestamp for current UTC time, if known.
- * 
- * @return an integer corresponding to the Unix timestamp for current UTC time, if known
- * 
- * On failure, throws an exception or returns Y_TIMEUTC_INVALID.
- */
--(unsigned) get_timeUTC
-{
-    return [self timeUTC];
-}
--(unsigned) timeUTC
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_TIMEUTC_INVALID;
-    }
-    return _timeUTC;
-}
-
-/**
- * Changes the current UTC time reference used for recorded data.
- * 
- * @param newval : an integer corresponding to the current UTC time reference used for recorded data
- * 
- * @return YAPI_SUCCESS if the call succeeds.
- * 
- * On failure, throws an exception or returns a negative error code.
- */
--(int) set_timeUTC:(unsigned) newval
-{
-    return [self setTimeUTC:newval];
-}
--(int) setTimeUTC:(unsigned) newval
-{
-    NSString* rest_val;
-    rest_val = [NSString stringWithFormat:@"%u", newval];
-    return [self _setAttr:@"timeUTC" :rest_val];
-}
-
-/**
- * Returns the current activation state of the data logger.
- * 
- * @return either Y_RECORDING_OFF or Y_RECORDING_ON, according to the current activation state of the data logger
- * 
- * On failure, throws an exception or returns Y_RECORDING_INVALID.
- */
--(Y_RECORDING_enum) get_recording
-{
-    return [self recording];
-}
--(Y_RECORDING_enum) recording
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_RECORDING_INVALID;
-    }
-    return _recording;
-}
-
-/**
- * Changes the activation state of the data logger to start/stop recording data.
- * 
- * @param newval : either Y_RECORDING_OFF or Y_RECORDING_ON, according to the activation state of the
- * data logger to start/stop recording data
- * 
- * @return YAPI_SUCCESS if the call succeeds.
- * 
- * On failure, throws an exception or returns a negative error code.
- */
--(int) set_recording:(Y_RECORDING_enum) newval
-{
-    return [self setRecording:newval];
-}
--(int) setRecording:(Y_RECORDING_enum) newval
-{
-    NSString* rest_val;
-    rest_val = (newval ? @"1" : @"0");
-    return [self _setAttr:@"recording" :rest_val];
-}
-
-/**
- * Returns the default activation state of the data logger on power up.
- * 
- * @return either Y_AUTOSTART_OFF or Y_AUTOSTART_ON, according to the default activation state of the
- * data logger on power up
- * 
- * On failure, throws an exception or returns Y_AUTOSTART_INVALID.
- */
--(Y_AUTOSTART_enum) get_autoStart
-{
-    return [self autoStart];
-}
--(Y_AUTOSTART_enum) autoStart
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_AUTOSTART_INVALID;
-    }
-    return _autoStart;
-}
-
-/**
- * Changes the default activation state of the data logger on power up.
- * Remember to call the saveToFlash() method of the module if the
- * modification must be kept.
- * 
- * @param newval : either Y_AUTOSTART_OFF or Y_AUTOSTART_ON, according to the default activation state
- * of the data logger on power up
- * 
- * @return YAPI_SUCCESS if the call succeeds.
- * 
- * On failure, throws an exception or returns a negative error code.
- */
--(int) set_autoStart:(Y_AUTOSTART_enum) newval
-{
-    return [self setAutoStart:newval];
-}
--(int) setAutoStart:(Y_AUTOSTART_enum) newval
-{
-    NSString* rest_val;
-    rest_val = (newval ? @"1" : @"0");
-    return [self _setAttr:@"autoStart" :rest_val];
-}
-
--(Y_CLEARHISTORY_enum) get_clearHistory
-{
-    return [self clearHistory];
-}
--(Y_CLEARHISTORY_enum) clearHistory
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_CLEARHISTORY_INVALID;
-    }
-    return _clearHistory;
-}
-
--(int) set_clearHistory:(Y_CLEARHISTORY_enum) newval
-{
-    return [self setClearHistory:newval];
-}
--(int) setClearHistory:(Y_CLEARHISTORY_enum) newval
-{
-    NSString* rest_val;
-    rest_val = (newval ? @"1" : @"0");
-    return [self _setAttr:@"clearHistory" :rest_val];
-}
-
--(YDataLogger*)   nextDataLogger
-{
-    NSString  *hwid;
-    
-    if(YISERR([self _nextFunction:&hwid]) || [hwid isEqualToString:@""]) {
-        return NULL;
-    }
-    return yFindDataLogger(hwid);
-}
--(void )    registerValueCallback:(YFunctionUpdateCallback)callback
-{ 
-    _callback = callback;
-    if (callback != NULL) {
-        [self _registerFuncCallback];
-    } else {
-        [self _unregisterFuncCallback];
-    }
-}
--(void )    set_objectCallback:(id)object :(SEL)selector
-{ [self setObjectCallback:object withSelector:selector];}
--(void )    setObjectCallback:(id)object :(SEL)selector
-{ [self setObjectCallback:object withSelector:selector];}
--(void )    setObjectCallback:(id)object withSelector:(SEL)selector
-{ 
-    _callbackObject = object;
-    _callbackSel    = selector;
-    if (object != nil) {
-        [self _registerFuncCallback];
-        if([self isOnline]) {
-           yapiLockFunctionCallBack(NULL);
-           yInternalPushNewVal([self functionDescriptor],[self advertisedValue]);
-           yapiUnlockFunctionCallBack(NULL);
-        }
-    } else {
-        [self _unregisterFuncCallback];
-    }
-}
-
-+(YDataLogger*) FindDataLogger:(NSString*) func
-{
-    YDataLogger * retVal=nil;
-    if(func==nil) return nil;
-    // Search in cache
-    if ([YAPI_YFunctions objectForKey:@"YDataLogger"] == nil){
-        [YAPI_YFunctions setObject:[NSMutableDictionary dictionary] forKey:@"YDataLogger"];
-    }
-    if(nil != [[YAPI_YFunctions objectForKey:@"YDataLogger"] objectForKey:func]){
-        retVal = [[YAPI_YFunctions objectForKey:@"YDataLogger"] objectForKey:func];
-    } else {
-        retVal = [[YDataLogger alloc] initWithFunction:func];
-        [[YAPI_YFunctions objectForKey:@"YDataLogger"] setObject:retVal forKey:func];
-        ARC_autorelease(retVal);
-    }
-    return retVal;
-}
-
-+(YDataLogger *) FirstDataLogger
-{
-    NSMutableArray    *ar_fundescr;
-    YDEV_DESCR        ydevice;
-    NSString          *serial, *funcId, *funcName, *funcVal;
-    
-    if(!YISERR([YapiWrapper getFunctionsByClass:@"DataLogger":0:&ar_fundescr:NULL]) && [ar_fundescr count] > 0){
-        NSNumber*  ns_devdescr = [ar_fundescr objectAtIndex:0];
-        if (!YISERR([YapiWrapper getFunctionInfo:[ns_devdescr intValue] :&ydevice :&serial :&funcId :&funcName :&funcVal :NULL])) {
-            return  [YDataLogger FindDataLogger:[NSString stringWithFormat:@"%@.%@",serial,funcId]];
-        }
-    }
-    return nil;
-}
-
-//--- (end of generated code: YDataLogger implementation)
-
-
+//--- (end of generated code: YDataLogger private methods implementation)
 
 // DataLogger-specific method to retrieve and pre-parse recorded data
 //
@@ -981,7 +445,7 @@ double _decimalToDouble(s16 val);
         return YAPI_IO_ERROR;
     }
     if(![STR_y2oc(j->token) isEqualToString:@"200"]) {
-        if([STR_y2oc(j->token) isEqualToString:@"400"] &&
+        if([STR_y2oc(j->token) isEqualToString:@"404"] &&
            ![_dataLoggerURL isEqualToString:@"/dataLogger.json"]) {
             // retry using backward-compatible datalogger URL
             _dataLoggerURL =@"/dataLogger.json";
@@ -1005,26 +469,16 @@ double _decimalToDouble(s16 val);
     return YAPI_SUCCESS;
 }
 
-
-
 /**
- * Clears the data logger memory and discards all recorded data streams.
- * This method also resets the current run index to zero.
- * 
- * @return YAPI_SUCCESS if the call succeeds.
- * 
- * On failure, throws an exception or returns a negative error code.
- */
--(int)             forgetAllDataStreams
-{
-    return [self set_clearHistory:Y_CLEARHISTORY_TRUE];
-}
-
-/**
- * Builds a list of all data streams hold by the data logger.
+ * Builds a list of all data streams hold by the data logger (legacy method).
  * The caller must pass by reference an empty array to hold YDataStream
  * objects, and the function fills it with objects describing available
  * data sequences.
+ * 
+ * This is the old way to retrieve data from the DataLogger.
+ * For new applications, you should rather use get_dataSets()
+ * method, or call directly get_recordedData() on the
+ * sensor object.
  * 
  * @param v : an array of YDataStream objects to be filled in
  * 
@@ -1057,18 +511,34 @@ double _decimalToDouble(s16 val);
     }
     v = [[NSMutableArray alloc] init];
     // expect arrays in array
-    while(yJsonParse(&j) == YJSON_PARSE_AVAIL && j.token[0] == '[') {
-        // get four number
-        for(i = 0; i < 4; i++) {
-            if(yJsonParse(&j) != YJSON_PARSE_AVAIL || j.st != YJSON_PARSE_NUM) break;
-            arr[i] = atoi(j.token);
-        }
-        if(i < 4) break;
-        // skip any extra item in array
-        while(yJsonParse(&j) != YJSON_PARSE_AVAIL && j.token[0] != ']');
-        // instantiate a data stream
-        YDataStream *stream =[[YDataStream alloc] initWithDataLogger:self :arr[0] :arr[1] :arr[2] :arr[3]];
-        [v addObject:stream];
+    while(yJsonParse(&j) == YJSON_PARSE_AVAIL) {
+        if (j.token[0] == '[') {
+            // get four number
+            for(i = 0; i < 4; i++) {
+                if(yJsonParse(&j) != YJSON_PARSE_AVAIL || j.st != YJSON_PARSE_NUM) break;
+                arr[i] = atoi(j.token);
+            }
+            if(i < 4) break;
+            // skip any extra item in array
+            while(yJsonParse(&j) != YJSON_PARSE_AVAIL && j.token[0] != ']');
+            // instantiate a data stream
+            YDataStream *stream =[[YOldDataStream alloc] initWithDataLogger:self :arr[0] :arr[1] :arr[2] :arr[3]];
+            [v addObject:stream];
+        }else if(j.token[0] == '{') {
+            // new datalogger format: {"id":"...","unit":"...","streams":["...",...]}
+            NSRange range = [buffer rangeOfString:@"\r\n\r\n"];
+            buffer = [buffer substringFromIndex:NSMaxRange(range)];
+            NSData* buffer_bin = [buffer dataUsingEncoding:NSUTF8StringEncoding];
+            NSMutableArray* sets = [self parse_dataSets:buffer_bin];
+            for (i=0; i < [sets count]; i++) {
+                YDataSet *dset = [sets objectAtIndex:i];
+                NSMutableArray* ds = [dset get_privateDataStreams];
+                for (int si=0; si < [ds count]; si++) {
+                    [v addObject:[ds objectAtIndex:si]];
+                }
+            }
+            break;
+        } else break;
     }
     *param =v;
     return YAPI_SUCCESS;
@@ -1076,8 +546,332 @@ double _decimalToDouble(s16 val);
     
 }
 
+//--- (generated code: YDataLogger public methods implementation)
+/**
+ * Returns the current run number, corresponding to the number of times the module was
+ * powered on with the dataLogger enabled at some point.
+ * 
+ * @return an integer corresponding to the current run number, corresponding to the number of times the module was
+ *         powered on with the dataLogger enabled at some point
+ * 
+ * On failure, throws an exception or returns Y_CURRENTRUNINDEX_INVALID.
+ */
+-(int) get_currentRunIndex
+{
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_CURRENTRUNINDEX_INVALID;
+        }
+    }
+    return _currentRunIndex;
+}
 
 
+-(int) currentRunIndex
+{
+    return [self get_currentRunIndex];
+}
+/**
+ * Returns the Unix timestamp for current UTC time, if known.
+ * 
+ * @return an integer corresponding to the Unix timestamp for current UTC time, if known
+ * 
+ * On failure, throws an exception or returns Y_TIMEUTC_INVALID.
+ */
+-(s64) get_timeUTC
+{
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_TIMEUTC_INVALID;
+        }
+    }
+    return _timeUTC;
+}
+
+
+-(s64) timeUTC
+{
+    return [self get_timeUTC];
+}
+
+/**
+ * Changes the current UTC time reference used for recorded data.
+ * 
+ * @param newval : an integer corresponding to the current UTC time reference used for recorded data
+ * 
+ * @return YAPI_SUCCESS if the call succeeds.
+ * 
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) set_timeUTC:(s64) newval
+{
+    return [self setTimeUTC:newval];
+}
+-(int) setTimeUTC:(s64) newval
+{
+    NSString* rest_val;
+    rest_val = [NSString stringWithFormat:@"%u", (u32)newval];
+    return [self _setAttr:@"timeUTC" :rest_val];
+}
+/**
+ * Returns the current activation state of the data logger.
+ * 
+ * @return either Y_RECORDING_OFF or Y_RECORDING_ON, according to the current activation state of the data logger
+ * 
+ * On failure, throws an exception or returns Y_RECORDING_INVALID.
+ */
+-(Y_RECORDING_enum) get_recording
+{
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_RECORDING_INVALID;
+        }
+    }
+    return _recording;
+}
+
+
+-(Y_RECORDING_enum) recording
+{
+    return [self get_recording];
+}
+
+/**
+ * Changes the activation state of the data logger to start/stop recording data.
+ * 
+ * @param newval : either Y_RECORDING_OFF or Y_RECORDING_ON, according to the activation state of the
+ * data logger to start/stop recording data
+ * 
+ * @return YAPI_SUCCESS if the call succeeds.
+ * 
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) set_recording:(Y_RECORDING_enum) newval
+{
+    return [self setRecording:newval];
+}
+-(int) setRecording:(Y_RECORDING_enum) newval
+{
+    NSString* rest_val;
+    rest_val = (newval ? @"1" : @"0");
+    return [self _setAttr:@"recording" :rest_val];
+}
+/**
+ * Returns the default activation state of the data logger on power up.
+ * 
+ * @return either Y_AUTOSTART_OFF or Y_AUTOSTART_ON, according to the default activation state of the
+ * data logger on power up
+ * 
+ * On failure, throws an exception or returns Y_AUTOSTART_INVALID.
+ */
+-(Y_AUTOSTART_enum) get_autoStart
+{
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_AUTOSTART_INVALID;
+        }
+    }
+    return _autoStart;
+}
+
+
+-(Y_AUTOSTART_enum) autoStart
+{
+    return [self get_autoStart];
+}
+
+/**
+ * Changes the default activation state of the data logger on power up.
+ * Remember to call the saveToFlash() method of the module if the
+ * modification must be kept.
+ * 
+ * @param newval : either Y_AUTOSTART_OFF or Y_AUTOSTART_ON, according to the default activation state
+ * of the data logger on power up
+ * 
+ * @return YAPI_SUCCESS if the call succeeds.
+ * 
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) set_autoStart:(Y_AUTOSTART_enum) newval
+{
+    return [self setAutoStart:newval];
+}
+-(int) setAutoStart:(Y_AUTOSTART_enum) newval
+{
+    NSString* rest_val;
+    rest_val = (newval ? @"1" : @"0");
+    return [self _setAttr:@"autoStart" :rest_val];
+}
+-(Y_CLEARHISTORY_enum) get_clearHistory
+{
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_CLEARHISTORY_INVALID;
+        }
+    }
+    return _clearHistory;
+}
+
+
+-(Y_CLEARHISTORY_enum) clearHistory
+{
+    return [self get_clearHistory];
+}
+
+-(int) set_clearHistory:(Y_CLEARHISTORY_enum) newval
+{
+    return [self setClearHistory:newval];
+}
+-(int) setClearHistory:(Y_CLEARHISTORY_enum) newval
+{
+    NSString* rest_val;
+    rest_val = (newval ? @"1" : @"0");
+    return [self _setAttr:@"clearHistory" :rest_val];
+}
+/**
+ * Retrieves a data logger for a given identifier.
+ * The identifier can be specified using several formats:
+ * <ul>
+ * <li>FunctionLogicalName</li>
+ * <li>ModuleSerialNumber.FunctionIdentifier</li>
+ * <li>ModuleSerialNumber.FunctionLogicalName</li>
+ * <li>ModuleLogicalName.FunctionIdentifier</li>
+ * <li>ModuleLogicalName.FunctionLogicalName</li>
+ * </ul>
+ * 
+ * This function does not require that the data logger is online at the time
+ * it is invoked. The returned object is nevertheless valid.
+ * Use the method YDataLogger.isOnline() to test if the data logger is
+ * indeed online at a given time. In case of ambiguity when looking for
+ * a data logger by logical name, no error is notified: the first instance
+ * found is returned. The search is performed first by hardware name,
+ * then by logical name.
+ * 
+ * @param func : a string that uniquely characterizes the data logger
+ * 
+ * @return a YDataLogger object allowing you to drive the data logger.
+ */
++(YDataLogger*) FindDataLogger:(NSString*)func
+{
+    YDataLogger* obj;
+    obj = (YDataLogger*) [YFunction _FindFromCache:@"DataLogger" :func];
+    if (obj == nil) {
+        obj = ARC_sendAutorelease([[YDataLogger alloc] initWith:func]);
+        [YFunction _AddToCache:@"DataLogger" : func :obj];
+    }
+    return obj;
+}
+
+/**
+ * Registers the callback function that is invoked on every change of advertised value.
+ * The callback is invoked only during the execution of ySleep or yHandleEvents.
+ * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
+ * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
+ * 
+ * @param callback : the callback function to call, or a null pointer. The callback function should take two
+ *         arguments: the function object of which the value has changed, and the character string describing
+ *         the new advertised value.
+ * @noreturn
+ */
+-(int) registerValueCallback:(YDataLoggerValueCallback)callback
+{
+    NSString* val;
+    if (callback != NULL) {
+        [YFunction _UpdateValueCallbackList:self :YES];
+    } else {
+        [YFunction _UpdateValueCallbackList:self :NO];
+    }
+    _valueCallbackDataLogger = callback;
+    // Immediately invoke value callback with current value
+    if (callback != NULL && [self isOnline]) {
+        val = _advertisedValue;
+        if (!([val isEqualToString:@""])) {
+            [self _invokeValueCallback:val];
+        }
+    }
+    return 0;
+}
+
+-(int) _invokeValueCallback:(NSString*)value
+{
+    if (_valueCallbackDataLogger != NULL) {
+        _valueCallbackDataLogger(self, value);
+    } else {
+        [super _invokeValueCallback:value];
+    }
+    return 0;
+}
+
+/**
+ * Clears the data logger memory and discards all recorded data streams.
+ * This method also resets the current run index to zero.
+ * 
+ * @return YAPI_SUCCESS if the call succeeds.
+ * 
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) forgetAllDataStreams
+{
+    return [self set_clearHistory:Y_CLEARHISTORY_TRUE];
+}
+
+/**
+ * Returns a list of YDataSet objects that can be used to retrieve
+ * all measures stored by the data logger.
+ * 
+ * This function only works if the device uses a recent firmware,
+ * as YDataSet objects are not supported by firmwares older than
+ * version 13000.
+ * 
+ * @return a list of YDataSet object.
+ * 
+ * On failure, throws an exception or returns an empty list.
+ */
+-(NSMutableArray*) get_dataSets
+{
+    return [self parse_dataSets:[self _download:@"logger.json"]];
+}
+
+-(NSMutableArray*) parse_dataSets:(NSData*)json
+{
+    NSMutableArray* dslist = [NSMutableArray array];
+    NSMutableArray* res = [NSMutableArray array];
+    // may throw an exception
+    dslist = [self _json_get_array:json];
+    [res removeAllObjects];
+    for (NSString* _each  in dslist) {
+        [res addObject:ARC_sendAutorelease([[YDataSet alloc] initWith:self :_each])];
+    }
+    return res;
+}
+
+
+-(YDataLogger*)   nextDataLogger
+{
+    NSString  *hwid;
+    
+    if(YISERR([self _nextFunction:&hwid]) || [hwid isEqualToString:@""]) {
+        return NULL;
+    }
+    return [YDataLogger FindDataLogger:hwid];
+}
+
++(YDataLogger *) FirstDataLogger
+{
+    NSMutableArray    *ar_fundescr;
+    YDEV_DESCR        ydevice;
+    NSString          *serial, *funcId, *funcName, *funcVal;
+    
+    if(!YISERR([YapiWrapper getFunctionsByClass:@"DataLogger":0:&ar_fundescr:NULL]) && [ar_fundescr count] > 0){
+        NSNumber*  ns_devdescr = [ar_fundescr objectAtIndex:0];
+        if (!YISERR([YapiWrapper getFunctionInfo:[ns_devdescr intValue] :&ydevice :&serial :&funcId :&funcName :&funcVal :NULL])) {
+            return  [YDataLogger FindDataLogger:[NSString stringWithFormat:@"%@.%@",serial,funcId]];
+        }
+    }
+    return nil;
+}
+
+//--- (end of generated code: YDataLogger public methods implementation)
 
 @end
 

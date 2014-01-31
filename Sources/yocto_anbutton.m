@@ -1,8 +1,8 @@
 /*********************************************************************
  *
- * $Id: yocto_anbutton.m 12324 2013-08-13 15:10:31Z mvuilleu $
+ * $Id: yocto_anbutton.m 14721 2014-01-24 17:58:44Z seb $
  *
- * Implements yFindAnButton(), the high-level API for AnButton functions
+ * Implements the high-level API for AnButton functions
  *
  * - - - - - - - - - License information: - - - - - - - - - 
  *
@@ -47,13 +47,12 @@
 @implementation YAnButton
 
 // Constructor is protected, use yFindAnButton factory function to instantiate
--(id)              initWithFunction:(NSString*) func
+-(id)              initWith:(NSString*) func
 {
-//--- (YAnButton attributes)
-   if(!(self = [super initProtected:@"AnButton":func]))
+   if(!(self = [super initWith:func]))
           return nil;
-    _logicalName = Y_LOGICALNAME_INVALID;
-    _advertisedValue = Y_ADVERTISEDVALUE_INVALID;
+    _className = @"AnButton";
+//--- (YAnButton attributes initialization)
     _calibratedValue = Y_CALIBRATEDVALUE_INVALID;
     _rawValue = Y_RAWVALUE_INVALID;
     _analogCalibration = Y_ANALOGCALIBRATION_INVALID;
@@ -65,142 +64,80 @@
     _lastTimeReleased = Y_LASTTIMERELEASED_INVALID;
     _pulseCounter = Y_PULSECOUNTER_INVALID;
     _pulseTimer = Y_PULSETIMER_INVALID;
-//--- (end of YAnButton attributes)
+    _valueCallbackAnButton = NULL;
+//--- (end of YAnButton attributes initialization)
     return self;
 }
 // destructor 
 -(void)  dealloc
 {
 //--- (YAnButton cleanup)
-    ARC_release(_logicalName);
-    _logicalName = nil;
-    ARC_release(_advertisedValue);
-    _advertisedValue = nil;
-//--- (end of YAnButton cleanup)
     ARC_dealloc(super);
+//--- (end of YAnButton cleanup)
 }
-//--- (YAnButton implementation)
+//--- (YAnButton private methods implementation)
 
--(int) _parse:(yJsonStateMachine*) j
+-(int) _parseAttr:(yJsonStateMachine*) j
 {
-    if(yJsonParse(j) != YJSON_PARSE_AVAIL || j->st != YJSON_PARSE_STRUCT) {
-    failed:
-        return -1;
+    if(!strcmp(j->token, "calibratedValue")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _calibratedValue =  atoi(j->token);
+        return 1;
     }
-    while(yJsonParse(j) == YJSON_PARSE_AVAIL && j->st == YJSON_PARSE_MEMBNAME) {
-        if(!strcmp(j->token, "logicalName")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            ARC_release(_logicalName);
-            _logicalName =  [self _parseString:j];
-            ARC_retain(_logicalName);
-        } else if(!strcmp(j->token, "advertisedValue")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            ARC_release(_advertisedValue);
-            _advertisedValue =  [self _parseString:j];
-            ARC_retain(_advertisedValue);
-        } else if(!strcmp(j->token, "calibratedValue")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            _calibratedValue =  atoi(j->token);
-        } else if(!strcmp(j->token, "rawValue")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            _rawValue =  atoi(j->token);
-        } else if(!strcmp(j->token, "analogCalibration")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            _analogCalibration =  (Y_ANALOGCALIBRATION_enum)atoi(j->token);
-        } else if(!strcmp(j->token, "calibrationMax")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            _calibrationMax =  atoi(j->token);
-        } else if(!strcmp(j->token, "calibrationMin")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            _calibrationMin =  atoi(j->token);
-        } else if(!strcmp(j->token, "sensitivity")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            _sensitivity =  atoi(j->token);
-        } else if(!strcmp(j->token, "isPressed")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            _isPressed =  (Y_ISPRESSED_enum)atoi(j->token);
-        } else if(!strcmp(j->token, "lastTimePressed")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            _lastTimePressed =  atoi(j->token);
-        } else if(!strcmp(j->token, "lastTimeReleased")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            _lastTimeReleased =  atoi(j->token);
-        } else if(!strcmp(j->token, "pulseCounter")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            _pulseCounter =  atoi(j->token);
-        } else if(!strcmp(j->token, "pulseTimer")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            _pulseTimer =  atoi(j->token);
-        } else {
-            // ignore unknown field
-            yJsonSkip(j, 1);
-        }
+    if(!strcmp(j->token, "rawValue")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _rawValue =  atoi(j->token);
+        return 1;
     }
-    if(j->st != YJSON_PARSE_STRUCT) goto failed;
-    return 0;
-}
-
-/**
- * Returns the logical name of the analog input.
- * 
- * @return a string corresponding to the logical name of the analog input
- * 
- * On failure, throws an exception or returns Y_LOGICALNAME_INVALID.
- */
--(NSString*) get_logicalName
-{
-    return [self logicalName];
-}
--(NSString*) logicalName
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_LOGICALNAME_INVALID;
+    if(!strcmp(j->token, "analogCalibration")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _analogCalibration =  (Y_ANALOGCALIBRATION_enum)atoi(j->token);
+        return 1;
     }
-    return _logicalName;
-}
-
-/**
- * Changes the logical name of the analog input. You can use yCheckLogicalName()
- * prior to this call to make sure that your parameter is valid.
- * Remember to call the saveToFlash() method of the module if the
- * modification must be kept.
- * 
- * @param newval : a string corresponding to the logical name of the analog input
- * 
- * @return YAPI_SUCCESS if the call succeeds.
- * 
- * On failure, throws an exception or returns a negative error code.
- */
--(int) set_logicalName:(NSString*) newval
-{
-    return [self setLogicalName:newval];
-}
--(int) setLogicalName:(NSString*) newval
-{
-    NSString* rest_val;
-    rest_val = newval;
-    return [self _setAttr:@"logicalName" :rest_val];
-}
-
-/**
- * Returns the current value of the analog input (no more than 6 characters).
- * 
- * @return a string corresponding to the current value of the analog input (no more than 6 characters)
- * 
- * On failure, throws an exception or returns Y_ADVERTISEDVALUE_INVALID.
- */
--(NSString*) get_advertisedValue
-{
-    return [self advertisedValue];
-}
--(NSString*) advertisedValue
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_ADVERTISEDVALUE_INVALID;
+    if(!strcmp(j->token, "calibrationMax")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _calibrationMax =  atoi(j->token);
+        return 1;
     }
-    return _advertisedValue;
+    if(!strcmp(j->token, "calibrationMin")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _calibrationMin =  atoi(j->token);
+        return 1;
+    }
+    if(!strcmp(j->token, "sensitivity")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _sensitivity =  atoi(j->token);
+        return 1;
+    }
+    if(!strcmp(j->token, "isPressed")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _isPressed =  (Y_ISPRESSED_enum)atoi(j->token);
+        return 1;
+    }
+    if(!strcmp(j->token, "lastTimePressed")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _lastTimePressed =  atol(j->token);
+        return 1;
+    }
+    if(!strcmp(j->token, "lastTimeReleased")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _lastTimeReleased =  atol(j->token);
+        return 1;
+    }
+    if(!strcmp(j->token, "pulseCounter")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _pulseCounter =  atol(j->token);
+        return 1;
+    }
+    if(!strcmp(j->token, "pulseTimer")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _pulseTimer =  atol(j->token);
+        return 1;
+    }
+    return [super _parseAttr:j];
 }
-
+//--- (end of YAnButton private methods implementation)
+//--- (YAnButton public methods implementation)
 /**
  * Returns the current calibrated input value (between 0 and 1000, included).
  * 
@@ -208,18 +145,21 @@
  * 
  * On failure, throws an exception or returns Y_CALIBRATEDVALUE_INVALID.
  */
--(unsigned) get_calibratedValue
+-(int) get_calibratedValue
 {
-    return [self calibratedValue];
-}
--(unsigned) calibratedValue
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_CALIBRATEDVALUE_INVALID;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_CALIBRATEDVALUE_INVALID;
+        }
     }
     return _calibratedValue;
 }
 
+
+-(int) calibratedValue
+{
+    return [self get_calibratedValue];
+}
 /**
  * Returns the current measured input value as-is (between 0 and 4095, included).
  * 
@@ -227,18 +167,21 @@
  * 
  * On failure, throws an exception or returns Y_RAWVALUE_INVALID.
  */
--(unsigned) get_rawValue
+-(int) get_rawValue
 {
-    return [self rawValue];
-}
--(unsigned) rawValue
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_RAWVALUE_INVALID;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_RAWVALUE_INVALID;
+        }
     }
     return _rawValue;
 }
 
+
+-(int) rawValue
+{
+    return [self get_rawValue];
+}
 /**
  * Tells if a calibration process is currently ongoing.
  * 
@@ -248,14 +191,18 @@
  */
 -(Y_ANALOGCALIBRATION_enum) get_analogCalibration
 {
-    return [self analogCalibration];
-}
--(Y_ANALOGCALIBRATION_enum) analogCalibration
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_ANALOGCALIBRATION_INVALID;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_ANALOGCALIBRATION_INVALID;
+        }
     }
     return _analogCalibration;
+}
+
+
+-(Y_ANALOGCALIBRATION_enum) analogCalibration
+{
+    return [self get_analogCalibration];
 }
 
 /**
@@ -278,7 +225,6 @@
     rest_val = (newval ? @"1" : @"0");
     return [self _setAttr:@"analogCalibration" :rest_val];
 }
-
 /**
  * Returns the maximal value measured during the calibration (between 0 and 4095, included).
  * 
@@ -287,16 +233,20 @@
  * 
  * On failure, throws an exception or returns Y_CALIBRATIONMAX_INVALID.
  */
--(unsigned) get_calibrationMax
+-(int) get_calibrationMax
 {
-    return [self calibrationMax];
-}
--(unsigned) calibrationMax
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_CALIBRATIONMAX_INVALID;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_CALIBRATIONMAX_INVALID;
+        }
     }
     return _calibrationMax;
+}
+
+
+-(int) calibrationMax
+{
+    return [self get_calibrationMax];
 }
 
 /**
@@ -312,17 +262,16 @@
  * 
  * On failure, throws an exception or returns a negative error code.
  */
--(int) set_calibrationMax:(unsigned) newval
+-(int) set_calibrationMax:(int) newval
 {
     return [self setCalibrationMax:newval];
 }
--(int) setCalibrationMax:(unsigned) newval
+-(int) setCalibrationMax:(int) newval
 {
     NSString* rest_val;
-    rest_val = [NSString stringWithFormat:@"%u", newval];
+    rest_val = [NSString stringWithFormat:@"%d", newval];
     return [self _setAttr:@"calibrationMax" :rest_val];
 }
-
 /**
  * Returns the minimal value measured during the calibration (between 0 and 4095, included).
  * 
@@ -331,16 +280,20 @@
  * 
  * On failure, throws an exception or returns Y_CALIBRATIONMIN_INVALID.
  */
--(unsigned) get_calibrationMin
+-(int) get_calibrationMin
 {
-    return [self calibrationMin];
-}
--(unsigned) calibrationMin
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_CALIBRATIONMIN_INVALID;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_CALIBRATIONMIN_INVALID;
+        }
     }
     return _calibrationMin;
+}
+
+
+-(int) calibrationMin
+{
+    return [self get_calibrationMin];
 }
 
 /**
@@ -356,17 +309,16 @@
  * 
  * On failure, throws an exception or returns a negative error code.
  */
--(int) set_calibrationMin:(unsigned) newval
+-(int) set_calibrationMin:(int) newval
 {
     return [self setCalibrationMin:newval];
 }
--(int) setCalibrationMin:(unsigned) newval
+-(int) setCalibrationMin:(int) newval
 {
     NSString* rest_val;
-    rest_val = [NSString stringWithFormat:@"%u", newval];
+    rest_val = [NSString stringWithFormat:@"%d", newval];
     return [self _setAttr:@"calibrationMin" :rest_val];
 }
-
 /**
  * Returns the sensibility for the input (between 1 and 1000) for triggering user callbacks.
  * 
@@ -375,16 +327,20 @@
  * 
  * On failure, throws an exception or returns Y_SENSITIVITY_INVALID.
  */
--(unsigned) get_sensitivity
+-(int) get_sensitivity
 {
-    return [self sensitivity];
-}
--(unsigned) sensitivity
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_SENSITIVITY_INVALID;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_SENSITIVITY_INVALID;
+        }
     }
     return _sensitivity;
+}
+
+
+-(int) sensitivity
+{
+    return [self get_sensitivity];
 }
 
 /**
@@ -402,17 +358,16 @@
  * 
  * On failure, throws an exception or returns a negative error code.
  */
--(int) set_sensitivity:(unsigned) newval
+-(int) set_sensitivity:(int) newval
 {
     return [self setSensitivity:newval];
 }
--(int) setSensitivity:(unsigned) newval
+-(int) setSensitivity:(int) newval
 {
     NSString* rest_val;
-    rest_val = [NSString stringWithFormat:@"%u", newval];
+    rest_val = [NSString stringWithFormat:@"%d", newval];
     return [self _setAttr:@"sensitivity" :rest_val];
 }
-
 /**
  * Returns true if the input (considered as binary) is active (closed contact), and false otherwise.
  * 
@@ -423,16 +378,19 @@
  */
 -(Y_ISPRESSED_enum) get_isPressed
 {
-    return [self isPressed];
-}
--(Y_ISPRESSED_enum) isPressed
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_ISPRESSED_INVALID;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_ISPRESSED_INVALID;
+        }
     }
     return _isPressed;
 }
 
+
+-(Y_ISPRESSED_enum) isPressed
+{
+    return [self get_isPressed];
+}
 /**
  * Returns the number of elapsed milliseconds between the module power on and the last time
  * the input button was pressed (the input contact transitionned from open to closed).
@@ -443,18 +401,21 @@
  * 
  * On failure, throws an exception or returns Y_LASTTIMEPRESSED_INVALID.
  */
--(unsigned) get_lastTimePressed
+-(s64) get_lastTimePressed
 {
-    return [self lastTimePressed];
-}
--(unsigned) lastTimePressed
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_LASTTIMEPRESSED_INVALID;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_LASTTIMEPRESSED_INVALID;
+        }
     }
     return _lastTimePressed;
 }
 
+
+-(s64) lastTimePressed
+{
+    return [self get_lastTimePressed];
+}
 /**
  * Returns the number of elapsed milliseconds between the module power on and the last time
  * the input button was released (the input contact transitionned from closed to open).
@@ -465,18 +426,21 @@
  * 
  * On failure, throws an exception or returns Y_LASTTIMERELEASED_INVALID.
  */
--(unsigned) get_lastTimeReleased
+-(s64) get_lastTimeReleased
 {
-    return [self lastTimeReleased];
-}
--(unsigned) lastTimeReleased
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_LASTTIMERELEASED_INVALID;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_LASTTIMERELEASED_INVALID;
+        }
     }
     return _lastTimeReleased;
 }
 
+
+-(s64) lastTimeReleased
+{
+    return [self get_lastTimeReleased];
+}
 /**
  * Returns the pulse counter value
  * 
@@ -484,26 +448,30 @@
  * 
  * On failure, throws an exception or returns Y_PULSECOUNTER_INVALID.
  */
--(unsigned) get_pulseCounter
+-(s64) get_pulseCounter
 {
-    return [self pulseCounter];
-}
--(unsigned) pulseCounter
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_PULSECOUNTER_INVALID;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_PULSECOUNTER_INVALID;
+        }
     }
     return _pulseCounter;
 }
 
--(int) set_pulseCounter:(unsigned) newval
+
+-(s64) pulseCounter
+{
+    return [self get_pulseCounter];
+}
+
+-(int) set_pulseCounter:(s64) newval
 {
     return [self setPulseCounter:newval];
 }
--(int) setPulseCounter:(unsigned) newval
+-(int) setPulseCounter:(s64) newval
 {
     NSString* rest_val;
-    rest_val = [NSString stringWithFormat:@"%u", newval];
+    rest_val = [NSString stringWithFormat:@"%u", (u32)newval];
     return [self _setAttr:@"pulseCounter" :rest_val];
 }
 
@@ -520,7 +488,6 @@
     rest_val = @"0";
     return [self _setAttr:@"pulseCounter" :rest_val];
 }
-
 /**
  * Returns the timer of the pulses counter (ms)
  * 
@@ -528,17 +495,95 @@
  * 
  * On failure, throws an exception or returns Y_PULSETIMER_INVALID.
  */
--(unsigned) get_pulseTimer
+-(s64) get_pulseTimer
 {
-    return [self pulseTimer];
-}
--(unsigned) pulseTimer
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_PULSETIMER_INVALID;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_PULSETIMER_INVALID;
+        }
     }
     return _pulseTimer;
 }
+
+
+-(s64) pulseTimer
+{
+    return [self get_pulseTimer];
+}
+/**
+ * Retrieves $AFUNCTION$ for a given identifier.
+ * The identifier can be specified using several formats:
+ * <ul>
+ * <li>FunctionLogicalName</li>
+ * <li>ModuleSerialNumber.FunctionIdentifier</li>
+ * <li>ModuleSerialNumber.FunctionLogicalName</li>
+ * <li>ModuleLogicalName.FunctionIdentifier</li>
+ * <li>ModuleLogicalName.FunctionLogicalName</li>
+ * </ul>
+ * 
+ * This function does not require that $THEFUNCTION$ is online at the time
+ * it is invoked. The returned object is nevertheless valid.
+ * Use the method YAnButton.isOnline() to test if $THEFUNCTION$ is
+ * indeed online at a given time. In case of ambiguity when looking for
+ * $AFUNCTION$ by logical name, no error is notified: the first instance
+ * found is returned. The search is performed first by hardware name,
+ * then by logical name.
+ * 
+ * @param func : a string that uniquely characterizes $THEFUNCTION$
+ * 
+ * @return a YAnButton object allowing you to drive $THEFUNCTION$.
+ */
++(YAnButton*) FindAnButton:(NSString*)func
+{
+    YAnButton* obj;
+    obj = (YAnButton*) [YFunction _FindFromCache:@"AnButton" :func];
+    if (obj == nil) {
+        obj = ARC_sendAutorelease([[YAnButton alloc] initWith:func]);
+        [YFunction _AddToCache:@"AnButton" : func :obj];
+    }
+    return obj;
+}
+
+/**
+ * Registers the callback function that is invoked on every change of advertised value.
+ * The callback is invoked only during the execution of ySleep or yHandleEvents.
+ * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
+ * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
+ * 
+ * @param callback : the callback function to call, or a null pointer. The callback function should take two
+ *         arguments: the function object of which the value has changed, and the character string describing
+ *         the new advertised value.
+ * @noreturn
+ */
+-(int) registerValueCallback:(YAnButtonValueCallback)callback
+{
+    NSString* val;
+    if (callback != NULL) {
+        [YFunction _UpdateValueCallbackList:self :YES];
+    } else {
+        [YFunction _UpdateValueCallbackList:self :NO];
+    }
+    _valueCallbackAnButton = callback;
+    // Immediately invoke value callback with current value
+    if (callback != NULL && [self isOnline]) {
+        val = _advertisedValue;
+        if (!([val isEqualToString:@""])) {
+            [self _invokeValueCallback:val];
+        }
+    }
+    return 0;
+}
+
+-(int) _invokeValueCallback:(NSString*)value
+{
+    if (_valueCallbackAnButton != NULL) {
+        _valueCallbackAnButton(self, value);
+    } else {
+        [super _invokeValueCallback:value];
+    }
+    return 0;
+}
+
 
 -(YAnButton*)   nextAnButton
 {
@@ -547,53 +592,7 @@
     if(YISERR([self _nextFunction:&hwid]) || [hwid isEqualToString:@""]) {
         return NULL;
     }
-    return yFindAnButton(hwid);
-}
--(void )    registerValueCallback:(YFunctionUpdateCallback)callback
-{ 
-    _callback = callback;
-    if (callback != NULL) {
-        [self _registerFuncCallback];
-    } else {
-        [self _unregisterFuncCallback];
-    }
-}
--(void )    set_objectCallback:(id)object :(SEL)selector
-{ [self setObjectCallback:object withSelector:selector];}
--(void )    setObjectCallback:(id)object :(SEL)selector
-{ [self setObjectCallback:object withSelector:selector];}
--(void )    setObjectCallback:(id)object withSelector:(SEL)selector
-{ 
-    _callbackObject = object;
-    _callbackSel    = selector;
-    if (object != nil) {
-        [self _registerFuncCallback];
-        if([self isOnline]) {
-           yapiLockFunctionCallBack(NULL);
-           yInternalPushNewVal([self functionDescriptor],[self advertisedValue]);
-           yapiUnlockFunctionCallBack(NULL);
-        }
-    } else {
-        [self _unregisterFuncCallback];
-    }
-}
-
-+(YAnButton*) FindAnButton:(NSString*) func
-{
-    YAnButton * retVal=nil;
-    if(func==nil) return nil;
-    // Search in cache
-    if ([YAPI_YFunctions objectForKey:@"YAnButton"] == nil){
-        [YAPI_YFunctions setObject:[NSMutableDictionary dictionary] forKey:@"YAnButton"];
-    }
-    if(nil != [[YAPI_YFunctions objectForKey:@"YAnButton"] objectForKey:func]){
-        retVal = [[YAPI_YFunctions objectForKey:@"YAnButton"] objectForKey:func];
-    } else {
-        retVal = [[YAnButton alloc] initWithFunction:func];
-        [[YAPI_YFunctions objectForKey:@"YAnButton"] setObject:retVal forKey:func];
-        ARC_autorelease(retVal);
-    }
-    return retVal;
+    return [YAnButton FindAnButton:hwid];
 }
 
 +(YAnButton *) FirstAnButton
@@ -611,7 +610,7 @@
     return nil;
 }
 
-//--- (end of YAnButton implementation)
+//--- (end of YAnButton public methods implementation)
 
 @end
 //--- (AnButton functions)

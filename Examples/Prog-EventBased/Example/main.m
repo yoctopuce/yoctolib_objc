@@ -5,59 +5,50 @@
 #import "yocto_lightsensor.h"
 
 
-static void CustomLog(NSString * log)
+static void anButtonValueChangeCallBack(YAnButton* fct, NSString* value)
 {
-    NSLog(@"LOG:%@",log);
+     NSLog(@"%@ : %@ (new value)", [fct get_hardwareId], value);
 }
 
-static void anButtonChangeCallBack(YAnButton *fct, NSString* value)
+static void sensorValueChangeCallBack(YSensor* fct, NSString* value)
 {
-    NSLog(@"Position change    :%@ = %@",fct,value);
+    NSLog(@"%@ : %@ %@ (new value)", [fct get_hardwareId], value, [fct get_unit]);
 }
 
-static void temperatureChangeCallBack(YTemperature *fct, NSString* value)
+static void sensorTimedReportCallBack(YSensor* fct, YMeasure* measure)
 {
-    NSLog(@"Temperature change :%@ = %@ °C",fct,value);
+    NSLog(@"%@ : %f %@ (timed report)", [fct get_hardwareId], [measure get_averageValue], [fct get_unit]);
 }
-
-static void lightSensorChangeCallBack(YLightSensor *fct, NSString* value)
-{
-    NSLog(@"Light change       :%@ = %@ lx",fct,value);
-}
-
 
 static void deviceArrival(YModule *m)
 {
-    NSLog(@"Device arrival          : %@",m);
-    int fctcount = [m functionCount];
-    NSString *fctName, *fctFullName;
+    NSString *fctName, *serial, *hardwareId;
+    serial = [m get_serialNumber];
+    NSLog(@"Device arrival          : %@",serial);
     
+    // First solution: look for a specific type of function (eg. anButton)
+    int fctcount = [m functionCount];
     for (int i = 0; i < fctcount; i++) {
         fctName = [m functionId:i];
-        fctFullName = [NSString stringWithFormat:@"%@.%@", m.serialNumber ,fctName];
+        hardwareId = [NSString stringWithFormat:@"%@.%@", serial ,fctName];
         
-        // register call back for anbuttons
-        if ([fctName hasPrefix:@"anButton"]) { 
-            YAnButton *bt = [YAnButton FindAnButton:fctFullName];
-            //fixme: registerValueCallback should call callback with first value?
-            [bt registerValueCallback:anButtonChangeCallBack];
-            NSLog(@"Callback registered for : %@", fctFullName);
+        if ([fctName hasPrefix:@"anButton"]) {
+            NSLog(@"- %@", hardwareId);
+            YAnButton *bt = [YAnButton FindAnButton:hardwareId];
+            [bt registerValueCallback:anButtonValueChangeCallBack];
         }
-        
-        // register call back for temperature sensors
-        if ([fctName hasPrefix:@"temperature"]) { 
-            YTemperature *t = [YTemperature FindTemperature:fctFullName];
-            [t registerValueCallback:temperatureChangeCallBack];
-            NSLog(@"Callback registered for : %@", fctFullName);
+    }
+    
+    // Alternate solution: register any kind of sensor on the device
+    YSensor *sensor = [YSensor FirstSensor];
+    while(sensor) {
+        if([[[sensor get_module]  get_serialNumber] isEqualToString:serial]) {
+            hardwareId = [sensor get_hardwareId];
+            NSLog(@"- %@", hardwareId);
+            [sensor registerValueCallback:sensorValueChangeCallBack];
+            [sensor registerTimedReportCallback:sensorTimedReportCallBack];
         }
-        
-        // register call back for light sensors
-        if ([fctName hasPrefix:@"lightSensor"]) { 
-            YLightSensor *l = [YLightSensor FindLightSensor:fctFullName];
-            [l registerValueCallback:lightSensorChangeCallBack];
-            NSLog(@"Callback registered for : %@", fctFullName);
-        }
-        // and so on for other sensor type.....
+        sensor = [sensor nextSensor];
     }
 }
 
@@ -66,28 +57,28 @@ static void deviceRemoval(YModule *m)
     NSLog(@"Device removal          : %@",m.serialNumber);
 }
 
+
 static void customLog(NSString *val)
 {
     NSLog(@"%@",val);
 }
 
+
 int main (int argc, const char * argv[])
 {
     NSError    *error;
-
     @autoreleasepool {
-      
         [YAPI RegisterLogFunction:customLog];
         [YAPI RegisterDeviceArrivalCallback:deviceArrival];
         [YAPI RegisterDeviceRemovalCallback:deviceRemoval];
         [YAPI DisableExceptions];
     
         // Setup the API to use local USB devices
-        if(yRegisterHub(@"usb", &error) != YAPI_SUCCESS) {
+        if([YAPI RegisterHub:@"usb" :&error] != YAPI_SUCCESS) {
             NSLog(@"RegisterHub error: %@", [error localizedDescription]);
             return 1;
         }
-        
+
         NSLog(@"Hit Ctrl-C to Stop ");
         
         while (true) {

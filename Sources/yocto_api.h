@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.h 12326 2013-08-13 15:52:20Z mvuilleu $
+ * $Id: yocto_api.h 14799 2014-01-31 14:59:44Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -63,40 +63,6 @@ NSMutableDictionary* YAPI_YFunctions;
 
 #define YOCTO_API_REVISION          "PATCH_WITH_BUILD"
 
-
-
-//--- (generated code: YModule definitions)
-typedef enum {
-    Y_PERSISTENTSETTINGS_LOADED = 0,
-    Y_PERSISTENTSETTINGS_SAVED = 1,
-    Y_PERSISTENTSETTINGS_MODIFIED = 2,
-    Y_PERSISTENTSETTINGS_INVALID = -1
-} Y_PERSISTENTSETTINGS_enum;
-
-typedef enum {
-    Y_BEACON_OFF = 0,
-    Y_BEACON_ON = 1,
-    Y_BEACON_INVALID = -1
-} Y_BEACON_enum;
-
-typedef enum {
-    Y_USBBANDWIDTH_SIMPLE = 0,
-    Y_USBBANDWIDTH_DOUBLE = 1,
-    Y_USBBANDWIDTH_INVALID = -1
-} Y_USBBANDWIDTH_enum;
-
-#define Y_PRODUCTNAME_INVALID           [YAPI  INVALID_STRING]
-#define Y_SERIALNUMBER_INVALID          [YAPI  INVALID_STRING]
-#define Y_LOGICALNAME_INVALID           [YAPI  INVALID_STRING]
-#define Y_PRODUCTID_INVALID             (-1)
-#define Y_PRODUCTRELEASE_INVALID        (-1)
-#define Y_FIRMWARERELEASE_INVALID       [YAPI  INVALID_STRING]
-#define Y_LUMINOSITY_INVALID            (-1)
-#define Y_UPTIME_INVALID                (0xffffffff)
-#define Y_USBCURRENT_INVALID            (0xffffffff)
-#define Y_REBOOTCOUNTDOWN_INVALID       (0x80000000)
-//--- (end of generated code: YModule definitions)
-
 // yInitAPI argument
 #define Y_DETECT_NONE  0
 #define Y_DETECT_USB   1
@@ -106,6 +72,12 @@ typedef enum {
 // Forward-declaration
 @class YModule;
 @class YFunction;
+@class YSensor;
+@class YDataLogger;
+@class YMeasure;
+@class YDataStream;
+@class YDataSet;
+
 
 /// prototype of log callback
 typedef void    (*yLogCallback)(NSString * log);
@@ -113,16 +85,95 @@ typedef void    (*yLogCallback)(NSString * log);
 /// prototype of the device arrival/update/removal callback
 typedef void    (*yDeviceUpdateCallback)(YModule * module);
 
-/// prototype of functions change callback
-typedef void (*YFunctionUpdateCallback)(YFunction *function, NSString * functionValue);
+/// prototype of hub discovery callback
+typedef void (*YHubDiscoveryCallback)(NSString * serial, NSString * url);
 
 
 typedef YAPI_DEVICE     YDEV_DESCR;
 typedef YAPI_FUNCTION   YFUN_DESCR;
 #define Y_FUNCTIONDESCRIPTOR_INVALID      (-1)
-#define Y_HARDWAREID_INVALID              [YAPI  INVALID_STRING]
-#define Y_FUNCTIONID_INVALID              [YAPI  INVALID_STRING]
-#define Y_FRIENDLYNAME_INVALID            [YAPI  INVALID_STRING]
+
+extern NSString *           YAPI_INVALID_STRING;
+#define YAPI_INVALID_INT                  (0x7fffffff)
+#define YAPI_INVALID_UINT                 (-1)
+#define YAPI_INVALID_LONG                 (0x7fffffffffffffff)
+#define YAPI_INVALID_DOUBLE               (-DBL_MAX)
+
+#define Y_HARDWAREID_INVALID              YAPI_INVALID_STRING
+#define Y_FUNCTIONID_INVALID              YAPI_INVALID_STRING
+#define Y_FRIENDLYNAME_INVALID            YAPI_INVALID_STRING
+
+
+//--- (generated code: YFunction globals)
+typedef void (*YFunctionValueCallback)(YFunction *func, NSString *functionValue);
+#define Y_LOGICALNAME_INVALID           YAPI_INVALID_STRING
+#define Y_ADVERTISEDVALUE_INVALID       YAPI_INVALID_STRING
+//--- (end of generated code: YFunction globals)
+
+//--- (generated code: YModule globals)
+typedef void (*YModuleValueCallback)(YModule *func, NSString *functionValue);
+#ifndef _Y_PERSISTENTSETTINGS_ENUM
+#define _Y_PERSISTENTSETTINGS_ENUM
+typedef enum {
+    Y_PERSISTENTSETTINGS_LOADED = 0,
+    Y_PERSISTENTSETTINGS_SAVED = 1,
+    Y_PERSISTENTSETTINGS_MODIFIED = 2,
+    Y_PERSISTENTSETTINGS_INVALID = -1,
+} Y_PERSISTENTSETTINGS_enum;
+#endif
+
+#ifndef _Y_BEACON_ENUM
+#define _Y_BEACON_ENUM
+typedef enum {
+    Y_BEACON_OFF = 0,
+    Y_BEACON_ON = 1,
+    Y_BEACON_INVALID = -1,
+} Y_BEACON_enum;
+#endif
+
+#ifndef _Y_USBBANDWIDTH_ENUM
+#define _Y_USBBANDWIDTH_ENUM
+typedef enum {
+    Y_USBBANDWIDTH_SIMPLE = 0,
+    Y_USBBANDWIDTH_DOUBLE = 1,
+    Y_USBBANDWIDTH_INVALID = -1,
+} Y_USBBANDWIDTH_enum;
+#endif
+
+#define Y_PRODUCTNAME_INVALID           YAPI_INVALID_STRING
+#define Y_SERIALNUMBER_INVALID          YAPI_INVALID_STRING
+#define Y_PRODUCTID_INVALID             YAPI_INVALID_UINT
+#define Y_PRODUCTRELEASE_INVALID        YAPI_INVALID_UINT
+#define Y_FIRMWARERELEASE_INVALID       YAPI_INVALID_STRING
+#define Y_LUMINOSITY_INVALID            YAPI_INVALID_UINT
+#define Y_UPTIME_INVALID                YAPI_INVALID_LONG
+#define Y_USBCURRENT_INVALID            YAPI_INVALID_UINT
+#define Y_REBOOTCOUNTDOWN_INVALID       YAPI_INVALID_INT
+//--- (end of generated code: YModule globals)
+
+//--- (generated code: YSensor globals)
+typedef void (*YSensorValueCallback)(YSensor *func, NSString *functionValue);
+typedef void (*YSensorTimedReportCallback)(YSensor *func, YMeasure *measure);
+#define Y_UNIT_INVALID                  YAPI_INVALID_STRING
+#define Y_CURRENTVALUE_INVALID          YAPI_INVALID_DOUBLE
+#define Y_LOWESTVALUE_INVALID           YAPI_INVALID_DOUBLE
+#define Y_HIGHESTVALUE_INVALID          YAPI_INVALID_DOUBLE
+#define Y_CURRENTRAWVALUE_INVALID       YAPI_INVALID_DOUBLE
+#define Y_LOGFREQUENCY_INVALID          YAPI_INVALID_STRING
+#define Y_REPORTFREQUENCY_INVALID       YAPI_INVALID_STRING
+#define Y_CALIBRATIONPARAM_INVALID      YAPI_INVALID_STRING
+#define Y_RESOLUTION_INVALID            YAPI_INVALID_DOUBLE
+//--- (end of generated code: YSensor globals)
+
+//--- (generated code: YDataStream globals)
+//--- (end of generated code: YDataStream globals)
+
+//--- (generated code: YMeasure globals)
+//--- (end of generated code: YMeasure globals)
+
+//--- (generated code: YDataSet globals)
+//--- (end of generated code: YDataSet globals)
+
 
 
 // 
@@ -143,21 +194,27 @@ typedef enum {
     YAPI_DEV_CHANGE,
     YAPI_FUN_UPDATE,
     YAPI_FUN_VALUE,
+    YAPI_FUN_TIMEDREPORT,
     YAPI_FUN_REFRESH,
+    YAPI_HUB_DISCOVERY,
     YAPI_INVALID
 } yapiEventType;
 
 @interface  YapiEvent : NSObject
 {
-    unsigned        _type;
-    YModule*        __unsafe_unretained _module;
-    YFunction*      __unsafe_unretained _function;
-    NSString*        _value;
+    yapiEventType            _type;
+    YModule*            _module;
+    YFunction*          _function;
+    YSensor*            _sensor;
+    double              _timestamp;
+    NSMutableArray*     _report;
+    NSString*           _value;
+    NSString*           _serial;
+    NSString*           _url;
 }
-@property (readwrite,assign)            unsigned         type;
-@property (readwrite,unsafe_unretained) YModule          *module;
-@property (readwrite,unsafe_unretained) YFunction        *function;
-@property (readwrite,copy)              NSString         *value;
+
+-(void) invokeFunctionEvent;
+-(void) invokePlugEvent;
 @end
 
 YRETCODE yFormatRetVal(NSError** error,YRETCODE errCode,const char *message);
@@ -178,6 +235,9 @@ YRETCODE yFormatRetVal(NSError** error,YRETCODE errCode,const char *message);
                              :(NSArray*) refValues;
 @end
 
+// internal helper function
+int _ystrpos(NSString* haystack, NSString* needle);
+
 
 // 
 // YAPI Context
@@ -187,14 +247,10 @@ YRETCODE yFormatRetVal(NSError** error,YRETCODE errCode,const char *message);
 @interface YAPI : NSObject
 
 // internal methode do not call directly
-+(id) _getCalibrationHandler:(int) calibType;
-
-+(double) _applyCalibration:(double) rawValue :(NSString*)calibration_str :(int)calibOffset :(double)resolution;
-// Method used to encode calibration points into fixed-point 16-bit integers or decimal floating-point
-+(NSString*) _encodeCalibrationPoints:(NSArray*)rawValues :(NSArray*)refValues :(double)resolution :(int)calibrationOffset :(NSString*)actualCparams;
-// Method used to decode calibration points given as 16-bit fixed-point or decimal floating-point
-+(int) _decodeCalibrationPoints:(NSString*)calibParams :(NSMutableArray*)intPt :(NSMutableArray*)rawPt :(NSMutableArray*)calPt withResolution:(double) resolution andOffset:(int)calibrationOffset;
-
++(id)       _getCalibrationHandler:(int) calibType;
++(double)   _decimalToDouble:(s16) val;
++(s16)      _doubleToDecimal:(double) val;
++(NSMutableArray*) _decodeWords:(NSString*)s;
 
 // declare defaultCacheValidity,exceptionsDisabled, and INVALID_STRING as "static" methode since
 // there is no "static" data member in Objective-C
@@ -279,7 +335,7 @@ YRETCODE yFormatRetVal(NSError** error,YRETCODE errCode,const char *message);
 
 /**
  * Registers a log callback function. This callback will be called each time
- * the API have something to say. Quite usefull to debug the API.
+ * the API have something to say. Quite useful to debug the API.
  * 
  * @param logfun : a procedure taking a string parameter, or null
  *         to unregister a previously registered  callback.
@@ -288,7 +344,7 @@ YRETCODE yFormatRetVal(NSError** error,YRETCODE errCode,const char *message);
 
 /**
  * Register a callback function, to be called each time
- * a device is pluged. This callback will be invoked while yUpdateDeviceList
+ * a device is plugged. This callback will be invoked while yUpdateDeviceList
  * is running. You will have to call this function on a regular basis.
  * 
  * @param arrivalCallback : a procedure taking a YModule parameter, or null
@@ -297,11 +353,11 @@ YRETCODE yFormatRetVal(NSError** error,YRETCODE errCode,const char *message);
  +(void)        RegisterDeviceArrivalCallback:(yDeviceUpdateCallback) arrivalCallback;
 
 /**
- * (Objective-C only) Register an object that must follow the procol YDeviceHotPlug. The methodes
+ * (Objective-C only) Register an object that must follow the protocol YDeviceHotPlug. The methods
  * yDeviceArrival and yDeviceRemoval  will be invoked while yUpdateDeviceList
  * is running. You will have to call this function on a regular basis.
  * 
- * @param object : an object that must follow the procol YAPIDelegate, or nil
+ * @param object : an object that must follow the protocol YAPIDelegate, or nil
  *         to unregister a previously registered  object.
  */
  +(void)        SetDelegate:(id)object;
@@ -309,7 +365,7 @@ YRETCODE yFormatRetVal(NSError** error,YRETCODE errCode,const char *message);
 
 /**
  * Register a callback function, to be called each time
- * a device is unpluged. This callback will be invoked while yUpdateDeviceList
+ * a device is unplugged. This callback will be invoked while yUpdateDeviceList
  * is running. You will have to call this function on a regular basis.
  * 
  * @param removalCallback : a procedure taking a YModule parameter, or null
@@ -317,19 +373,41 @@ YRETCODE yFormatRetVal(NSError** error,YRETCODE errCode,const char *message);
  */
  +(void)        RegisterDeviceRemovalCallback:(yDeviceUpdateCallback) removalCallback;
 
-/**
- *
- */
  +(void)        RegisterDeviceChangeCallback:(yDeviceUpdateCallback) removalCallback;
 
 /**
- * Setup the Yoctopuce library to use modules connected on a given machine.
- * When using Yoctopuce modules through the VirtualHub gateway,
- * you should provide as parameter the address of the machine on which the
- * VirtualHub software is running (typically "http://127.0.0.1:4444",
- * which represents the local machine).
- * When you use a language which has direct access to the USB hardware,
- * you can use the pseudo-URL "usb" instead.
+ * Register a callback function, to be called each time an Network Hub send
+ * an SSDP message. The callback has two string parameter, the first one
+ * contain the serial number of the hub and the second contain the URL of the
+ * network hub (this URL can be passed to RegisterHub). This callback will be invoked
+ * while yUpdateDeviceList is running. You will have to call this function on a regular basis.
+ * 
+ * @param hubDiscoveryCallback : a procedure taking two string parameter, or null
+ *         to unregister a previously registered  callback.
+ */
+ +(void)        RegisterHubDiscoveryCallback:(YHubDiscoveryCallback) hubDiscoveryCallback;
+
+
+/**
+ * Setup the Yoctopuce library to use modules connected on a given machine. The
+ * parameter will determine how the API will work. Use the following values:
+ * 
+ * <b>usb</b>: When the usb keyword is used, the API will work with
+ * devices connected directly to the USB bus. Some programming languages such a Javascript,
+ * PHP, and Java don't provide direct access to USB hardware, so usb will
+ * not work with these. In this case, use a VirtualHub or a networked YoctoHub (see below).
+ * 
+ * <b><i>x.x.x.x</i></b> or <b><i>hostname</i></b>: The API will use the devices connected to the
+ * host with the given IP address or hostname. That host can be a regular computer
+ * running a VirtualHub, or a networked YoctoHub such as YoctoHub-Ethernet or
+ * YoctoHub-Wireless. If you want to use the VirtualHub running on you local
+ * computer, use the IP address 127.0.0.1.
+ * 
+ * <b>callback</b>: that keyword make the API run in "<i>HTTP Callback</i>" mode.
+ * This a special mode allowing to take control of Yoctopuce devices
+ * through a NAT filter when using a VirtualHub or a networked YoctoHub. You only
+ * need to configure your hub to call your server script on a regular basis.
+ * This mode is currently available for PHP and Node.JS only.
  * 
  * Be aware that only one application can use direct USB access at a
  * given time on a machine. Multiple access would cause conflicts
@@ -339,12 +417,14 @@ YRETCODE yFormatRetVal(NSError** error,YRETCODE errCode,const char *message);
  * for this limitation is to setup the library to use the VirtualHub
  * rather than direct USB access.
  * 
- * If acces control has been activated on the VirtualHub you want to
+ * If access control has been activated on the hub, virtual or not, you want to
  * reach, the URL parameter should look like:
  * 
  * http://username:password@adresse:port
  * 
- * @param url : a string containing either "usb" or the
+ * You can call <i>RegisterHub</i> several times to connect to several machines.
+ * 
+ * @param url : a string containing either "usb","callback" or the
  *         root URL of the hub to monitor
  * @param errmsg : a string passed by reference to receive any error message.
  * 
@@ -355,7 +435,19 @@ YRETCODE yFormatRetVal(NSError** error,YRETCODE errCode,const char *message);
  +(YRETCODE)    RegisterHub:(NSString *) rooturl :(NSError**) error;
 
 /**
- *
+ * Fault-tolerant alternative to RegisterHub(). This function has the same
+ * purpose and same arguments as RegisterHub(), but does not trigger
+ * an error when the selected hub is not available at the time of the function call.
+ * This makes it possible to register a network hub independently of the current
+ * connectivity, and to try to contact it only when a device is actively needed.
+ * 
+ * @param url : a string containing either "usb","callback" or the
+ *         root URL of the hub to monitor
+ * @param errmsg : a string passed by reference to receive any error message.
+ * 
+ * @return YAPI_SUCCESS when the call succeeds.
+ * 
+ * On failure, throws an exception or returns a negative error code.
  */
 +(YRETCODE)         PreregisterHub:(NSString*) rooturl :(NSError**) error;
 
@@ -408,7 +500,7 @@ YRETCODE yFormatRetVal(NSError** error,YRETCODE errCode,const char *message);
 /**
  * Pauses the execution flow for a specified duration.
  * This function implements a passive waiting loop, meaning that it does not
- * consume CPU cycles significatively. The processor is left available for
+ * consume CPU cycles significantly. The processor is left available for
  * other threads and processes. During the pause, the library nevertheless
  * reads from time to time information from the Yoctopuce modules by
  * calling yHandleEvents(), in order to stay up-to-date.
@@ -427,9 +519,20 @@ YRETCODE yFormatRetVal(NSError** error,YRETCODE errCode,const char *message);
  +(YRETCODE)    Sleep:(unsigned)ms_duration :(NSError**)error;
 
 /**
+ * Force a hub discovery, if a callback as been registered with yRegisterDeviceRemovalCallback it
+ * will be called for each net work hub that will respond to the discovery
+ * 
+ * @param errmsg : a string passed by reference to receive any error message.
+ * 
+ * @return YAPI_SUCCESS when the call succeeds.
+ *         On failure, throws an exception or returns a negative error code.
+ */
+ +(YRETCODE)    TriggerHubDiscovery:(NSError**) error;
+
+/**
  * Returns the current value of a monotone millisecond-based time counter.
  * This counter can be used to compute delays in relation with
- * Yoctopuce devices, which also uses the milisecond as timebase.
+ * Yoctopuce devices, which also uses the millisecond as timebase.
  * 
  * @return a long integer corresponding to the millisecond counter.
  */
@@ -466,12 +569,6 @@ YRETCODE yFormatRetVal(NSError** error,YRETCODE errCode,const char *message);
 +(YRETCODE)    handleEvents:(NSError**) error;
 
 @end
-
-
-
-// internal function for callback
-//void yapiDeviceChangeCallbackFwd(YAPI_DEVICE devdescr);
-void yInternalPushNewVal(YAPI_FUNCTION fundescr,NSString *value);
 
 
 
@@ -512,46 +609,47 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
 -(YRETCODE)     getFunctions:(NSArray**)functions :(NSError**)error;
 @end
 
-
+//--- (generated code: YFunction class start)
 /**
- * YFunction Class (virtual class, used internally)
- *
+ * YFunction Class: Common function interface
+ * 
  * This is the parent class for all public objects representing device functions documented in
- * the high-level programming API. This abstract class does all the real job, but without 
+ * the high-level programming API. This abstract class does all the real job, but without
  * knowledge of the specific function attributes.
- *
+ * 
  * Instantiating a child class of YFunction does not cause any communication.
  * The instance simply keeps track of its function identifier, and will dynamically bind
- * to a matching device at the time it is really beeing used to read or set an attribute.
+ * to a matching device at the time it is really being used to read or set an attribute.
  * In order to allow true hot-plug replacement of one device by another, the binding stay
  * dynamic through the life of the object.
- *
+ * 
  * The YFunction class implements a generic high-level cache for the attribute values of
- * the specified function, pre-parsed from the REST API string. For strongly typed languages
- * the cache variable is defined in the concrete subclass.
+ * the specified function, pre-parsed from the REST API string.
  */
-
-
 @interface YFunction : NSObject
+//--- (end of generated code: YFunction class start)
 {   
 @protected    
     // Protected attributes
     NSString    *_className;
     NSString    *_func;
     NSError     *_lastError;
-    u64         _cacheExpiration;
     YFUN_DESCR  _fundescr;
     void*                   _userData;
-    YFunctionUpdateCallback _callback;
-    id                      _callbackObject;
-    SEL                     _callbackSel;
-
-}   
+    NSMutableDictionary*    _dataStreams;
+//--- (generated code: YFunction attributes declaration)
+    NSString*       _logicalName;
+    NSString*       _advertisedValue;
+    YFunctionValueCallback _valueCallbackFunction;
+    u64             _cacheExpiration;
+    NSString*       _serial;
+    NSString*       _funId;
+    NSString*       _hwId;
+//--- (end of generated code: YFunction attributes declaration)
+}
 
 // Constructor is protected. Use the device-specific factory function to instantiate
--(id) initProtected:(NSString*)classname :(NSString*) func;
-
-
+-(id) initWith:(NSString*) func;
 
 // Method used to throw exceptions or save error type/message
 -(void)        _throw:(YRETCODE) errType withMsg:(const char*) errMsg;
@@ -581,6 +679,113 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
 -(YRETCODE)    _upload:(NSString*)path :(NSData*)content;
 -(NSString*)   _json_get_key:(NSData*)json :(NSString*)data;
 -(NSMutableArray*) _json_get_array:(NSData*)json;
+-(NSString*)   _json_get_string:(NSData*)json;
+
+// Method used to cache DataStream objects (new DataLogger)
+-(YDataStream*) _findDataStream:(YDataSet*)dataset :(NSString*)def;
+
++(id) _FindFromCache:(NSString*)classname :(NSString*)func;
++(void) _AddToCache:(NSString*)classname :(NSString*)func :(id)obj;
++(void) _ClearCache;
++(void) _UpdateValueCallbackList:(YFunction*) function :(BOOL) add;
++(void) _UpdateTimedReportCallbackList:(YFunction*) function :(BOOL) add;
+
+//--- (generated code: YFunction private methods declaration)
+// Function-specific method for parsing of JSON output and caching result
+-(int)             _parseAttr:(yJsonStateMachine*) j;
+
+//--- (end of generated code: YFunction private methods declaration)
+
+//--- (generated code: YFunction public methods declaration)
+/**
+ * Returns the logical name of the function.
+ * 
+ * @return a string corresponding to the logical name of the function
+ * 
+ * On failure, throws an exception or returns Y_LOGICALNAME_INVALID.
+ */
+-(NSString*)     get_logicalName;
+
+
+-(NSString*) logicalName;
+/**
+ * Changes the logical name of the function. You can use yCheckLogicalName()
+ * prior to this call to make sure that your parameter is valid.
+ * Remember to call the saveToFlash() method of the module if the
+ * modification must be kept.
+ * 
+ * @param newval : a string corresponding to the logical name of the function
+ * 
+ * @return YAPI_SUCCESS if the call succeeds.
+ * 
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     set_logicalName:(NSString*) newval;
+-(int)     setLogicalName:(NSString*) newval;
+
+/**
+ * Returns the current value of the function (no more than 6 characters).
+ * 
+ * @return a string corresponding to the current value of the function (no more than 6 characters)
+ * 
+ * On failure, throws an exception or returns Y_ADVERTISEDVALUE_INVALID.
+ */
+-(NSString*)     get_advertisedValue;
+
+
+-(NSString*) advertisedValue;
+/**
+ * Retrieves a function for a given identifier.
+ * The identifier can be specified using several formats:
+ * <ul>
+ * <li>FunctionLogicalName</li>
+ * <li>ModuleSerialNumber.FunctionIdentifier</li>
+ * <li>ModuleSerialNumber.FunctionLogicalName</li>
+ * <li>ModuleLogicalName.FunctionIdentifier</li>
+ * <li>ModuleLogicalName.FunctionLogicalName</li>
+ * </ul>
+ * 
+ * This function does not require that the function is online at the time
+ * it is invoked. The returned object is nevertheless valid.
+ * Use the method YFunction.isOnline() to test if the function is
+ * indeed online at a given time. In case of ambiguity when looking for
+ * a function by logical name, no error is notified: the first instance
+ * found is returned. The search is performed first by hardware name,
+ * then by logical name.
+ * 
+ * @param func : a string that uniquely characterizes the function
+ * 
+ * @return a YFunction object allowing you to drive the function.
+ */
++(YFunction*)     FindFunction:(NSString*)func;
+
+/**
+ * Registers the callback function that is invoked on every change of advertised value.
+ * The callback is invoked only during the execution of ySleep or yHandleEvents.
+ * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
+ * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
+ * 
+ * @param callback : the callback function to call, or a null pointer. The callback function should take two
+ *         arguments: the function object of which the value has changed, and the character string describing
+ *         the new advertised value.
+ * @noreturn
+ */
+-(int)     registerValueCallback:(YFunctionValueCallback)callback;
+
+-(int)     _invokeValueCallback:(NSString*)value;
+
+-(int)     _parserHelper;
+
+
+/**
+ * comment from .yc definition
+ */
+-(YFunction*) nextFunction;
+/**
+ * comment from .yc definition
+ */
++(YFunction*) FirstFunction;
+//--- (end of generated code: YFunction public methods declaration)
 
 /**
  * Returns a descriptive text that identifies the function.
@@ -623,7 +828,7 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
 -(NSString*)    friendlyName;
 
 /**
- * Returns the unique hardware identifier of the function in the form SERIAL&#46;FUNCTIONID.
+ * Returns the unique hardware identifier of the function in the form SERIAL.FUNCTIONID.
  * The unique hardware identifier is composed of the device serial
  * number and of the hardware identifier of the function. (for example RELAYLO1-123456.relay1)
  * 
@@ -660,12 +865,12 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
 
 
 /**
- * Returns the error message of the latest error with this function.
+ * Returns the error message of the latest error with the function.
  * This method is mostly useful when using the Yoctopuce library with
  * exceptions disabled.
  * 
  * @return a string corresponding to the latest error message that occured while
- *         using this function object
+ *         using the function object
  */
 -(NSString*)   get_errorMessage;
 -(NSString*)   errorMessage;
@@ -675,7 +880,7 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
  * If there is a cached value for the function in cache, that has not yet
  * expired, the device is considered reachable.
  * No exception is raised if there is an error while trying to contact the
- * device hosting the requested function.
+ * device hosting the function.
  * 
  * @return true if the function can be reached, and false otherwise
  */
@@ -742,16 +947,13 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
 -(void)     set_userData:(void*) data;
 -(void)     setUserData:(void*) data;
 
--(void) _registerFuncCallback;
--(void) _unregisterFuncCallback;
-
-
--(void)     notifyValue:(NSString*) value;
 
 
 
 @end
 
+
+//--- (generated code: YModule class start)
 /**
  * YModule Class: Module control interface
  * 
@@ -760,345 +962,35 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
  * to enumerate the functions provided by each module.
  */
 @interface YModule : YFunction
+//--- (end of generated code: YModule class start)
 {
 @protected
-
-//--- (generated code: YModule attributes)
+//--- (generated code: YModule attributes declaration)
     NSString*       _productName;
     NSString*       _serialNumber;
-    NSString*       _logicalName;
     int             _productId;
     int             _productRelease;
     NSString*       _firmwareRelease;
     Y_PERSISTENTSETTINGS_enum _persistentSettings;
     int             _luminosity;
     Y_BEACON_enum   _beacon;
-    unsigned        _upTime;
-    unsigned        _usbCurrent;
+    s64             _upTime;
+    int             _usbCurrent;
     int             _rebootCountdown;
     Y_USBBANDWIDTH_enum _usbBandwidth;
-//--- (end of generated code: YModule attributes)
+    YModuleValueCallback _valueCallbackModule;
+//--- (end of generated code: YModule attributes declaration)
 }
-//--- (generated code: YModule declaration)
-// Constructor is protected, use yFindModule factory function to instantiate
--(id)    initWithFunction:(NSString*) func;
-
-// Function-specific method for parsing of JSON output and caching result
--(int)             _parse:(yJsonStateMachine*) j;
-
-//--- (end of generated code: YModule declaration)
-//--- (generated code: YModule accessors declaration)
-
-/**
- * Continues the module enumeration started using yFirstModule().
- * 
- * @return a pointer to a YModule object, corresponding to
- *         the next module found, or a null pointer
- *         if there are no more modules to enumerate.
- */
--(YModule*) nextModule;
-/**
- * Allows you to find a module from its serial number or from its logical name.
- * 
- * This function does not require that the module is online at the time
- * it is invoked. The returned object is nevertheless valid.
- * Use the method YModule.isOnline() to test if the module is
- * indeed online at a given time. In case of ambiguity when looking for
- * a module by logical name, no error is notified: the first instance
- * found is returned. The search is performed first by hardware name,
- * then by logical name.
- * 
- * @param func : a string containing either the serial number or
- *         the logical name of the desired module
- * 
- * @return a YModule object allowing you to drive the module
- *         or get additional information on the module.
- */
-+(YModule*) FindModule:(NSString*) func;
-/**
- * Starts the enumeration of modules currently accessible.
- * Use the method YModule.nextModule() to iterate on the
- * next modules.
- * 
- * @return a pointer to a YModule object, corresponding to
- *         the first module currently online, or a null pointer
- *         if there are none.
- */
-+(YModule*) FirstModule;
-
-/**
- * Returns the commercial name of the module, as set by the factory.
- * 
- * @return a string corresponding to the commercial name of the module, as set by the factory
- * 
- * On failure, throws an exception or returns Y_PRODUCTNAME_INVALID.
- */
--(NSString*) get_productName;
--(NSString*) productName;
-
-/**
- * Returns the serial number of the module, as set by the factory.
- * 
- * @return a string corresponding to the serial number of the module, as set by the factory
- * 
- * On failure, throws an exception or returns Y_SERIALNUMBER_INVALID.
- */
--(NSString*) get_serialNumber;
--(NSString*) serialNumber;
-
-/**
- * Returns the logical name of the module.
- * 
- * @return a string corresponding to the logical name of the module
- * 
- * On failure, throws an exception or returns Y_LOGICALNAME_INVALID.
- */
--(NSString*) get_logicalName;
--(NSString*) logicalName;
-
-/**
- * Changes the logical name of the module. You can use yCheckLogicalName()
- * prior to this call to make sure that your parameter is valid.
- * Remember to call the saveToFlash() method of the module if the
- * modification must be kept.
- * 
- * @param newval : a string corresponding to the logical name of the module
- * 
- * @return YAPI_SUCCESS if the call succeeds.
- * 
- * On failure, throws an exception or returns a negative error code.
- */
--(int)     set_logicalName:(NSString*) newval;
--(int)     setLogicalName:(NSString*) newval;
-
-/**
- * Returns the USB device identifier of the module.
- * 
- * @return an integer corresponding to the USB device identifier of the module
- * 
- * On failure, throws an exception or returns Y_PRODUCTID_INVALID.
- */
--(int) get_productId;
--(int) productId;
-
-/**
- * Returns the hardware release version of the module.
- * 
- * @return an integer corresponding to the hardware release version of the module
- * 
- * On failure, throws an exception or returns Y_PRODUCTRELEASE_INVALID.
- */
--(int) get_productRelease;
--(int) productRelease;
-
-/**
- * Returns the version of the firmware embedded in the module.
- * 
- * @return a string corresponding to the version of the firmware embedded in the module
- * 
- * On failure, throws an exception or returns Y_FIRMWARERELEASE_INVALID.
- */
--(NSString*) get_firmwareRelease;
--(NSString*) firmwareRelease;
-
-/**
- * Returns the current state of persistent module settings.
- * 
- * @return a value among Y_PERSISTENTSETTINGS_LOADED, Y_PERSISTENTSETTINGS_SAVED and
- * Y_PERSISTENTSETTINGS_MODIFIED corresponding to the current state of persistent module settings
- * 
- * On failure, throws an exception or returns Y_PERSISTENTSETTINGS_INVALID.
- */
--(Y_PERSISTENTSETTINGS_enum) get_persistentSettings;
--(Y_PERSISTENTSETTINGS_enum) persistentSettings;
-
--(int)     set_persistentSettings:(Y_PERSISTENTSETTINGS_enum) newval;
--(int)     setPersistentSettings:(Y_PERSISTENTSETTINGS_enum) newval;
-
-/**
- * Saves current settings in the nonvolatile memory of the module.
- * Warning: the number of allowed save operations during a module life is
- * limited (about 100000 cycles). Do not call this function within a loop.
- * 
- * @return YAPI_SUCCESS if the call succeeds.
- * 
- * On failure, throws an exception or returns a negative error code.
- */
--(int)     saveToFlash;
-
-/**
- * Reloads the settings stored in the nonvolatile memory, as
- * when the module is powered on.
- * 
- * @return YAPI_SUCCESS if the call succeeds.
- * 
- * On failure, throws an exception or returns a negative error code.
- */
--(int)     revertFromFlash;
-
-/**
- * Returns the luminosity of the  module informative leds (from 0 to 100).
- * 
- * @return an integer corresponding to the luminosity of the  module informative leds (from 0 to 100)
- * 
- * On failure, throws an exception or returns Y_LUMINOSITY_INVALID.
- */
--(int) get_luminosity;
--(int) luminosity;
-
-/**
- * Changes the luminosity of the module informative leds. The parameter is a
- * value between 0 and 100.
- * Remember to call the saveToFlash() method of the module if the
- * modification must be kept.
- * 
- * @param newval : an integer corresponding to the luminosity of the module informative leds
- * 
- * @return YAPI_SUCCESS if the call succeeds.
- * 
- * On failure, throws an exception or returns a negative error code.
- */
--(int)     set_luminosity:(int) newval;
--(int)     setLuminosity:(int) newval;
-
-/**
- * Returns the state of the localization beacon.
- * 
- * @return either Y_BEACON_OFF or Y_BEACON_ON, according to the state of the localization beacon
- * 
- * On failure, throws an exception or returns Y_BEACON_INVALID.
- */
--(Y_BEACON_enum) get_beacon;
--(Y_BEACON_enum) beacon;
-
-/**
- * Turns on or off the module localization beacon.
- * 
- * @param newval : either Y_BEACON_OFF or Y_BEACON_ON
- * 
- * @return YAPI_SUCCESS if the call succeeds.
- * 
- * On failure, throws an exception or returns a negative error code.
- */
--(int)     set_beacon:(Y_BEACON_enum) newval;
--(int)     setBeacon:(Y_BEACON_enum) newval;
-
-/**
- * Returns the number of milliseconds spent since the module was powered on.
- * 
- * @return an integer corresponding to the number of milliseconds spent since the module was powered on
- * 
- * On failure, throws an exception or returns Y_UPTIME_INVALID.
- */
--(unsigned) get_upTime;
--(unsigned) upTime;
-
-/**
- * Returns the current consumed by the module on the USB bus, in milli-amps.
- * 
- * @return an integer corresponding to the current consumed by the module on the USB bus, in milli-amps
- * 
- * On failure, throws an exception or returns Y_USBCURRENT_INVALID.
- */
--(unsigned) get_usbCurrent;
--(unsigned) usbCurrent;
-
-/**
- * Returns the remaining number of seconds before the module restarts, or zero when no
- * reboot has been scheduled.
- * 
- * @return an integer corresponding to the remaining number of seconds before the module restarts, or zero when no
- *         reboot has been scheduled
- * 
- * On failure, throws an exception or returns Y_REBOOTCOUNTDOWN_INVALID.
- */
--(int) get_rebootCountdown;
--(int) rebootCountdown;
-
--(int)     set_rebootCountdown:(int) newval;
--(int)     setRebootCountdown:(int) newval;
-
-/**
- * Schedules a simple module reboot after the given number of seconds.
- * 
- * @param secBeforeReboot : number of seconds before rebooting
- * 
- * @return YAPI_SUCCESS if the call succeeds.
- * 
- * On failure, throws an exception or returns a negative error code.
- */
--(int)     reboot :(int)secBeforeReboot;
-
-/**
- * Schedules a module reboot into special firmware update mode.
- * 
- * @param secBeforeReboot : number of seconds before rebooting
- * 
- * @return YAPI_SUCCESS if the call succeeds.
- * 
- * On failure, throws an exception or returns a negative error code.
- */
--(int)     triggerFirmwareUpdate :(int)secBeforeReboot;
-
-/**
- * Returns the number of USB interfaces used by the module.
- * 
- * @return either Y_USBBANDWIDTH_SIMPLE or Y_USBBANDWIDTH_DOUBLE, according to the number of USB
- * interfaces used by the module
- * 
- * On failure, throws an exception or returns Y_USBBANDWIDTH_INVALID.
- */
--(Y_USBBANDWIDTH_enum) get_usbBandwidth;
--(Y_USBBANDWIDTH_enum) usbBandwidth;
-
-/**
- * Changes the number of USB interfaces used by the module. You must reboot the module
- * after changing this setting.
- * 
- * @param newval : either Y_USBBANDWIDTH_SIMPLE or Y_USBBANDWIDTH_DOUBLE, according to the number of
- * USB interfaces used by the module
- * 
- * @return YAPI_SUCCESS if the call succeeds.
- * 
- * On failure, throws an exception or returns a negative error code.
- */
--(int)     set_usbBandwidth:(Y_USBBANDWIDTH_enum) newval;
--(int)     setUsbBandwidth:(Y_USBBANDWIDTH_enum) newval;
-
-/**
- * Downloads the specified built-in file and returns a binary buffer with its content.
- * 
- * @param pathname : name of the new file to load
- * 
- * @return a binary buffer with the file content
- * 
- * On failure, throws an exception or returns an empty content.
- */
--(NSData*)     download :(NSString*)pathname;
-
-/**
- * Returns the icon of the module. The icon is a PNG image and does not
- * exceeds 1536 bytes.
- * 
- * @return a binary buffer with module icon, in png format.
- */
--(NSData*)     get_icon2d;
-
-/**
- * Returns a string with last logs of the module. This method return only
- * logs that are still in the module.
- * 
- * @return a string with last logs of the module.
- */
--(NSString*)     get_lastLogs;
-
-
-//--- (end of generated code: YModule accessors declaration)
 
 
 // Method used to retrieve details of the nth function of our device
 -(YRETCODE)        _getFunction:(int) idx  :(NSString**)serial  :(NSString**)funcId :(NSString**)funcName :(NSString**)funcVal :(NSError**)error;
 
+//--- (generated code: YModule private methods declaration)
+// Function-specific method for parsing of JSON output and caching result
+-(int)             _parseAttr:(yJsonStateMachine*) j;
+
+//--- (end of generated code: YModule private methods declaration)
 
 /**
  * Returns the number of functions (beside the "module" interface) available on the module.
@@ -1146,9 +1038,1227 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
  */
 -(NSString*)           functionValue:(int) functionIndex;
 
+//--- (generated code: YModule public methods declaration)
+/**
+ * Returns the commercial name of the module, as set by the factory.
+ * 
+ * @return a string corresponding to the commercial name of the module, as set by the factory
+ * 
+ * On failure, throws an exception or returns Y_PRODUCTNAME_INVALID.
+ */
+-(NSString*)     get_productName;
+
+
+-(NSString*) productName;
+/**
+ * Returns the serial number of the module, as set by the factory.
+ * 
+ * @return a string corresponding to the serial number of the module, as set by the factory
+ * 
+ * On failure, throws an exception or returns Y_SERIALNUMBER_INVALID.
+ */
+-(NSString*)     get_serialNumber;
+
+
+-(NSString*) serialNumber;
+/**
+ * Returns the USB device identifier of the module.
+ * 
+ * @return an integer corresponding to the USB device identifier of the module
+ * 
+ * On failure, throws an exception or returns Y_PRODUCTID_INVALID.
+ */
+-(int)     get_productId;
+
+
+-(int) productId;
+/**
+ * Returns the hardware release version of the module.
+ * 
+ * @return an integer corresponding to the hardware release version of the module
+ * 
+ * On failure, throws an exception or returns Y_PRODUCTRELEASE_INVALID.
+ */
+-(int)     get_productRelease;
+
+
+-(int) productRelease;
+/**
+ * Returns the version of the firmware embedded in the module.
+ * 
+ * @return a string corresponding to the version of the firmware embedded in the module
+ * 
+ * On failure, throws an exception or returns Y_FIRMWARERELEASE_INVALID.
+ */
+-(NSString*)     get_firmwareRelease;
+
+
+-(NSString*) firmwareRelease;
+/**
+ * Returns the current state of persistent module settings.
+ * 
+ * @return a value among Y_PERSISTENTSETTINGS_LOADED, Y_PERSISTENTSETTINGS_SAVED and
+ * Y_PERSISTENTSETTINGS_MODIFIED corresponding to the current state of persistent module settings
+ * 
+ * On failure, throws an exception or returns Y_PERSISTENTSETTINGS_INVALID.
+ */
+-(Y_PERSISTENTSETTINGS_enum)     get_persistentSettings;
+
+
+-(Y_PERSISTENTSETTINGS_enum) persistentSettings;
+-(int)     set_persistentSettings:(Y_PERSISTENTSETTINGS_enum) newval;
+-(int)     setPersistentSettings:(Y_PERSISTENTSETTINGS_enum) newval;
+
+/**
+ * Returns the luminosity of the  module informative leds (from 0 to 100).
+ * 
+ * @return an integer corresponding to the luminosity of the  module informative leds (from 0 to 100)
+ * 
+ * On failure, throws an exception or returns Y_LUMINOSITY_INVALID.
+ */
+-(int)     get_luminosity;
+
+
+-(int) luminosity;
+/**
+ * Changes the luminosity of the module informative leds. The parameter is a
+ * value between 0 and 100.
+ * Remember to call the saveToFlash() method of the module if the
+ * modification must be kept.
+ * 
+ * @param newval : an integer corresponding to the luminosity of the module informative leds
+ * 
+ * @return YAPI_SUCCESS if the call succeeds.
+ * 
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     set_luminosity:(int) newval;
+-(int)     setLuminosity:(int) newval;
+
+/**
+ * Returns the state of the localization beacon.
+ * 
+ * @return either Y_BEACON_OFF or Y_BEACON_ON, according to the state of the localization beacon
+ * 
+ * On failure, throws an exception or returns Y_BEACON_INVALID.
+ */
+-(Y_BEACON_enum)     get_beacon;
+
+
+-(Y_BEACON_enum) beacon;
+/**
+ * Turns on or off the module localization beacon.
+ * 
+ * @param newval : either Y_BEACON_OFF or Y_BEACON_ON
+ * 
+ * @return YAPI_SUCCESS if the call succeeds.
+ * 
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     set_beacon:(Y_BEACON_enum) newval;
+-(int)     setBeacon:(Y_BEACON_enum) newval;
+
+/**
+ * Returns the number of milliseconds spent since the module was powered on.
+ * 
+ * @return an integer corresponding to the number of milliseconds spent since the module was powered on
+ * 
+ * On failure, throws an exception or returns Y_UPTIME_INVALID.
+ */
+-(s64)     get_upTime;
+
+
+-(s64) upTime;
+/**
+ * Returns the current consumed by the module on the USB bus, in milli-amps.
+ * 
+ * @return an integer corresponding to the current consumed by the module on the USB bus, in milli-amps
+ * 
+ * On failure, throws an exception or returns Y_USBCURRENT_INVALID.
+ */
+-(int)     get_usbCurrent;
+
+
+-(int) usbCurrent;
+/**
+ * Returns the remaining number of seconds before the module restarts, or zero when no
+ * reboot has been scheduled.
+ * 
+ * @return an integer corresponding to the remaining number of seconds before the module restarts, or zero when no
+ *         reboot has been scheduled
+ * 
+ * On failure, throws an exception or returns Y_REBOOTCOUNTDOWN_INVALID.
+ */
+-(int)     get_rebootCountdown;
+
+
+-(int) rebootCountdown;
+-(int)     set_rebootCountdown:(int) newval;
+-(int)     setRebootCountdown:(int) newval;
+
+/**
+ * Returns the number of USB interfaces used by the module.
+ * 
+ * @return either Y_USBBANDWIDTH_SIMPLE or Y_USBBANDWIDTH_DOUBLE, according to the number of USB
+ * interfaces used by the module
+ * 
+ * On failure, throws an exception or returns Y_USBBANDWIDTH_INVALID.
+ */
+-(Y_USBBANDWIDTH_enum)     get_usbBandwidth;
+
+
+-(Y_USBBANDWIDTH_enum) usbBandwidth;
+/**
+ * Changes the number of USB interfaces used by the module. You must reboot the module
+ * after changing this setting.
+ * 
+ * @param newval : either Y_USBBANDWIDTH_SIMPLE or Y_USBBANDWIDTH_DOUBLE, according to the number of
+ * USB interfaces used by the module
+ * 
+ * @return YAPI_SUCCESS if the call succeeds.
+ * 
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     set_usbBandwidth:(Y_USBBANDWIDTH_enum) newval;
+-(int)     setUsbBandwidth:(Y_USBBANDWIDTH_enum) newval;
+
+/**
+ * Allows you to find a module from its serial number or from its logical name.
+ * 
+ * This function does not require that the module is online at the time
+ * it is invoked. The returned object is nevertheless valid.
+ * Use the method YModule.isOnline() to test if the module is
+ * indeed online at a given time. In case of ambiguity when looking for
+ * a module by logical name, no error is notified: the first instance
+ * found is returned. The search is performed first by hardware name,
+ * then by logical name.
+ * 
+ * @param func : a string containing either the serial number or
+ *         the logical name of the desired module
+ * 
+ * @return a YModule object allowing you to drive the module
+ *         or get additional information on the module.
+ */
++(YModule*)     FindModule:(NSString*)func;
+
+/**
+ * Registers the callback function that is invoked on every change of advertised value.
+ * The callback is invoked only during the execution of ySleep or yHandleEvents.
+ * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
+ * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
+ * 
+ * @param callback : the callback function to call, or a null pointer. The callback function should take two
+ *         arguments: the function object of which the value has changed, and the character string describing
+ *         the new advertised value.
+ * @noreturn
+ */
+-(int)     registerValueCallback:(YModuleValueCallback)callback;
+
+-(int)     _invokeValueCallback:(NSString*)value;
+
+/**
+ * Saves current settings in the nonvolatile memory of the module.
+ * Warning: the number of allowed save operations during a module life is
+ * limited (about 100000 cycles). Do not call this function within a loop.
+ * 
+ * @return YAPI_SUCCESS when the call succeeds.
+ * 
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     saveToFlash;
+
+/**
+ * Reloads the settings stored in the nonvolatile memory, as
+ * when the module is powered on.
+ * 
+ * @return YAPI_SUCCESS when the call succeeds.
+ * 
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     revertFromFlash;
+
+/**
+ * Schedules a simple module reboot after the given number of seconds.
+ * 
+ * @param secBeforeReboot : number of seconds before rebooting
+ * 
+ * @return YAPI_SUCCESS when the call succeeds.
+ * 
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     reboot:(int)secBeforeReboot;
+
+/**
+ * Schedules a module reboot into special firmware update mode.
+ * 
+ * @param secBeforeReboot : number of seconds before rebooting
+ * 
+ * @return YAPI_SUCCESS when the call succeeds.
+ * 
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     triggerFirmwareUpdate:(int)secBeforeReboot;
+
+/**
+ * Downloads the specified built-in file and returns a binary buffer with its content.
+ * 
+ * @param pathname : name of the new file to load
+ * 
+ * @return a binary buffer with the file content
+ * 
+ * On failure, throws an exception or returns an empty content.
+ */
+-(NSData*)     download:(NSString*)pathname;
+
+/**
+ * Returns the icon of the module. The icon is a PNG image and does not
+ * exceeds 1536 bytes.
+ * 
+ * @return a binary buffer with module icon, in png format.
+ */
+-(NSData*)     get_icon2d;
+
+/**
+ * Returns a string with last logs of the module. This method return only
+ * logs that are still in the module.
+ * 
+ * @return a string with last logs of the module.
+ */
+-(NSString*)     get_lastLogs;
+
+
+/**
+ * Continues the module enumeration started using yFirstModule().
+ * 
+ * @return a pointer to a YModule object, corresponding to
+ *         the next module found, or a null pointer
+ *         if there are no more modules to enumerate.
+ */
+-(YModule*) nextModule;
+/**
+ * Starts the enumeration of modules currently accessible.
+ * Use the method YModule.nextModule() to iterate on the
+ * next modules.
+ * 
+ * @return a pointer to a YModule object, corresponding to
+ *         the first module currently online, or a null pointer
+ *         if there are none.
+ */
++(YModule*) FirstModule;
+//--- (end of generated code: YModule public methods declaration)
+
+@end
+
+
+//--- (generated code: YSensor class start)
+/**
+ * YSensor Class: Sensor function interface
+ * 
+ * The Yoctopuce application programming interface allows you to read an instant
+ * measure of the sensor, as well as the minimal and maximal values observed.
+ */
+@interface YSensor : YFunction
+//--- (end of generated code: YSensor class start)
+{
+@protected
+//--- (generated code: YSensor attributes declaration)
+    NSString*       _unit;
+    double          _currentValue;
+    double          _lowestValue;
+    double          _highestValue;
+    double          _currentRawValue;
+    NSString*       _logFrequency;
+    NSString*       _reportFrequency;
+    NSString*       _calibrationParam;
+    double          _resolution;
+    YSensorValueCallback _valueCallbackSensor;
+    YSensorTimedReportCallback _timedReportCallbackSensor;
+    double          _prevTimedReport;
+    double          _iresol;
+    double          _offset;
+    double          _scale;
+    double          _decexp;
+    bool            _isScal;
+    int             _caltyp;
+    NSMutableArray* _calpar;
+    NSMutableArray* _calraw;
+    NSMutableArray* _calref;
+    id              _calhdl;
+//--- (end of generated code: YSensor attributes declaration)
+}
+// Constructor is protected, use yFindSensor factory function to instantiate
+-(id)    initWith:(NSString*) func;
+
+//--- (generated code: YSensor private methods declaration)
+// Function-specific method for parsing of JSON output and caching result
+-(int)             _parseAttr:(yJsonStateMachine*) j;
+
+//--- (end of generated code: YSensor private methods declaration)
+
+// Method used to encode calibration points into fixed-point 16-bit integers or decimal floating-point
+
+-(NSString*) _encodeCalibrationPoints:(NSArray*)rawValues :(NSArray*)refValues :(NSString*)actualCparams;
+// Method used to decode calibration points given as 16-bit fixed-point or decimal floating-point
+-(int) _decodeCalibrationPoints:(NSString*)calibParams :(NSMutableArray*)intPt :(NSMutableArray*)rawPt :(NSMutableArray*)calPt;
 
 
 
+//--- (generated code: YSensor public methods declaration)
+/**
+ * Returns the measuring unit for the measure.
+ * 
+ * @return a string corresponding to the measuring unit for the measure
+ * 
+ * On failure, throws an exception or returns Y_UNIT_INVALID.
+ */
+-(NSString*)     get_unit;
+
+
+-(NSString*) unit;
+/**
+ * Returns the current value of the measure.
+ * 
+ * @return a floating point number corresponding to the current value of the measure
+ * 
+ * On failure, throws an exception or returns Y_CURRENTVALUE_INVALID.
+ */
+-(double)     get_currentValue;
+
+
+-(double) currentValue;
+/**
+ * Changes the recorded minimal value observed.
+ * 
+ * @param newval : a floating point number corresponding to the recorded minimal value observed
+ * 
+ * @return YAPI_SUCCESS if the call succeeds.
+ * 
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     set_lowestValue:(double) newval;
+-(int)     setLowestValue:(double) newval;
+
+/**
+ * Returns the minimal value observed for the measure since the device was started.
+ * 
+ * @return a floating point number corresponding to the minimal value observed for the measure since
+ * the device was started
+ * 
+ * On failure, throws an exception or returns Y_LOWESTVALUE_INVALID.
+ */
+-(double)     get_lowestValue;
+
+
+-(double) lowestValue;
+/**
+ * Changes the recorded maximal value observed.
+ * 
+ * @param newval : a floating point number corresponding to the recorded maximal value observed
+ * 
+ * @return YAPI_SUCCESS if the call succeeds.
+ * 
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     set_highestValue:(double) newval;
+-(int)     setHighestValue:(double) newval;
+
+/**
+ * Returns the maximal value observed for the measure since the device was started.
+ * 
+ * @return a floating point number corresponding to the maximal value observed for the measure since
+ * the device was started
+ * 
+ * On failure, throws an exception or returns Y_HIGHESTVALUE_INVALID.
+ */
+-(double)     get_highestValue;
+
+
+-(double) highestValue;
+/**
+ * Returns the uncalibrated, unrounded raw value returned by the sensor.
+ * 
+ * @return a floating point number corresponding to the uncalibrated, unrounded raw value returned by the sensor
+ * 
+ * On failure, throws an exception or returns Y_CURRENTRAWVALUE_INVALID.
+ */
+-(double)     get_currentRawValue;
+
+
+-(double) currentRawValue;
+/**
+ * Returns the datalogger recording frequency for this function, or "OFF"
+ * when measures are not stored in the data logger flash memory.
+ * 
+ * @return a string corresponding to the datalogger recording frequency for this function, or "OFF"
+ *         when measures are not stored in the data logger flash memory
+ * 
+ * On failure, throws an exception or returns Y_LOGFREQUENCY_INVALID.
+ */
+-(NSString*)     get_logFrequency;
+
+
+-(NSString*) logFrequency;
+/**
+ * Changes the datalogger recording frequency for this function.
+ * The frequency can be specified as samples per second,
+ * as sample per minute (for instance "15/m") or in samples per
+ * hour (eg. "4/h"). To disable recording for this function, use
+ * the value "OFF".
+ * 
+ * @param newval : a string corresponding to the datalogger recording frequency for this function
+ * 
+ * @return YAPI_SUCCESS if the call succeeds.
+ * 
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     set_logFrequency:(NSString*) newval;
+-(int)     setLogFrequency:(NSString*) newval;
+
+/**
+ * Returns the timed value notification frequency, or "OFF" if timed
+ * value notifications are disabled for this function.
+ * 
+ * @return a string corresponding to the timed value notification frequency, or "OFF" if timed
+ *         value notifications are disabled for this function
+ * 
+ * On failure, throws an exception or returns Y_REPORTFREQUENCY_INVALID.
+ */
+-(NSString*)     get_reportFrequency;
+
+
+-(NSString*) reportFrequency;
+/**
+ * Changes the timed value notification frequency for this function.
+ * The frequency can be specified as samples per second,
+ * as sample per minute (for instance "15/m") or in samples per
+ * hour (eg. "4/h"). To disable timed value notifications for this
+ * function, use the value "OFF".
+ * 
+ * @param newval : a string corresponding to the timed value notification frequency for this function
+ * 
+ * @return YAPI_SUCCESS if the call succeeds.
+ * 
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     set_reportFrequency:(NSString*) newval;
+-(int)     setReportFrequency:(NSString*) newval;
+
+-(NSString*)     get_calibrationParam;
+
+
+-(NSString*) calibrationParam;
+-(int)     set_calibrationParam:(NSString*) newval;
+-(int)     setCalibrationParam:(NSString*) newval;
+
+/**
+ * Changes the resolution of the measured physical values. The resolution corresponds to the numerical precision
+ * when displaying value. It does not change the precision of the measure itself.
+ * 
+ * @param newval : a floating point number corresponding to the resolution of the measured physical values
+ * 
+ * @return YAPI_SUCCESS if the call succeeds.
+ * 
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     set_resolution:(double) newval;
+-(int)     setResolution:(double) newval;
+
+/**
+ * Returns the resolution of the measured values. The resolution corresponds to the numerical precision
+ * of the measures, which is not always the same as the actual precision of the sensor.
+ * 
+ * @return a floating point number corresponding to the resolution of the measured values
+ * 
+ * On failure, throws an exception or returns Y_RESOLUTION_INVALID.
+ */
+-(double)     get_resolution;
+
+
+-(double) resolution;
+/**
+ * Retrieves a sensor for a given identifier.
+ * The identifier can be specified using several formats:
+ * <ul>
+ * <li>FunctionLogicalName</li>
+ * <li>ModuleSerialNumber.FunctionIdentifier</li>
+ * <li>ModuleSerialNumber.FunctionLogicalName</li>
+ * <li>ModuleLogicalName.FunctionIdentifier</li>
+ * <li>ModuleLogicalName.FunctionLogicalName</li>
+ * </ul>
+ * 
+ * This function does not require that the sensor is online at the time
+ * it is invoked. The returned object is nevertheless valid.
+ * Use the method YSensor.isOnline() to test if the sensor is
+ * indeed online at a given time. In case of ambiguity when looking for
+ * a sensor by logical name, no error is notified: the first instance
+ * found is returned. The search is performed first by hardware name,
+ * then by logical name.
+ * 
+ * @param func : a string that uniquely characterizes the sensor
+ * 
+ * @return a YSensor object allowing you to drive the sensor.
+ */
++(YSensor*)     FindSensor:(NSString*)func;
+
+/**
+ * Registers the callback function that is invoked on every change of advertised value.
+ * The callback is invoked only during the execution of ySleep or yHandleEvents.
+ * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
+ * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
+ * 
+ * @param callback : the callback function to call, or a null pointer. The callback function should take two
+ *         arguments: the function object of which the value has changed, and the character string describing
+ *         the new advertised value.
+ * @noreturn
+ */
+-(int)     registerValueCallback:(YSensorValueCallback)callback;
+
+-(int)     _invokeValueCallback:(NSString*)value;
+
+-(int)     _parserHelper;
+
+/**
+ * Retrieves a DataSet object holding historical data for this
+ * sensor, for a specified time interval. The measures will be
+ * retrieved from the data logger, which must have been turned
+ * on at the desired time. See the documentation of the DataSet
+ * class for information on how to get an overview of the
+ * recorded data, and how to load progressively a large set
+ * of measures from the data logger.
+ * 
+ * This function only works if the device uses a recent firmware,
+ * as DataSet objects are not supported by firmwares older than
+ * version 13000.
+ * 
+ * @param startTime : the start of the desired measure time interval,
+ *         as a Unix timestamp, i.e. the number of seconds since
+ *         January 1, 1970 UTC. The special value 0 can be used
+ *         to include any meaasure, without initial limit.
+ * @param endTime : the end of the desired measure time interval,
+ *         as a Unix timestamp, i.e. the number of seconds since
+ *         January 1, 1970 UTC. The special value 0 can be used
+ *         to include any meaasure, without ending limit.
+ * 
+ * @return an instance of YDataSet, providing access to historical
+ *         data. Past measures can be loaded progressively
+ *         using methods from the YDataSet object.
+ */
+-(YDataSet*)     get_recordedData:(s64)startTime :(s64)endTime;
+
+/**
+ * Registers the callback function that is invoked on every periodic timed notification.
+ * The callback is invoked only during the execution of ySleep or yHandleEvents.
+ * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
+ * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
+ * 
+ * @param callback : the callback function to call, or a null pointer. The callback function should take two
+ *         arguments: the function object of which the value has changed, and an YMeasure object describing
+ *         the new advertised value.
+ * @noreturn
+ */
+-(int)     registerTimedReportCallback:(YSensorTimedReportCallback)callback;
+
+-(int)     _invokeTimedReportCallback:(YMeasure*)value;
+
+/**
+ * Configures error correction data points, in particular to compensate for
+ * a possible perturbation of the measure caused by an enclosure. It is possible
+ * to configure up to five correction points. Correction points must be provided
+ * in ascending order, and be in the range of the sensor. The device will automatically
+ * perform a linear interpolation of the error correction between specified
+ * points. Remember to call the saveToFlash() method of the module if the
+ * modification must be kept.
+ * 
+ * For more information on advanced capabilities to refine the calibration of
+ * sensors, please contact support@yoctopuce.com.
+ * 
+ * @param rawValues : array of floating point numbers, corresponding to the raw
+ *         values returned by the sensor for the correction points.
+ * @param refValues : array of floating point numbers, corresponding to the corrected
+ *         values for the correction points.
+ */
+-(int)     calibrateFromPoints:(NSMutableArray*)rawValues :(NSMutableArray*)refValues;
+
+/**
+ * Retrieves error correction data points previously entered using the method
+ * calibrateFromPoints.
+ * 
+ * @param rawValues : array of floating point numbers, that will be filled by the
+ *         function with the raw sensor values for the correction points.
+ * @param refValues : array of floating point numbers, that will be filled by the
+ *         function with the desired values for the correction points.
+ * 
+ * @return YAPI_SUCCESS if the call succeeds.
+ * 
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     loadCalibrationPoints:(NSMutableArray*)rawValues :(NSMutableArray*)refValues;
+
+-(NSString*)     _encodeCalibrationPoints:(NSMutableArray*)rawValues :(NSMutableArray*)refValues;
+
+-(double)     _applyCalibration:(double)rawValue;
+
+-(YMeasure*)     _decodeTimedReport:(double)timestamp :(NSMutableArray*)report;
+
+-(double)     _decodeVal:(int)w;
+
+-(double)     _decodeAvg:(int)dw;
+
+
+/**
+ * Continues the enumeration of sensors started using yFirstSensor().
+ * 
+ * @return a pointer to a YSensor object, corresponding to
+ *         a sensor currently online, or a null pointer
+ *         if there are no more sensors to enumerate.
+ */
+-(YSensor*) nextSensor;
+/**
+ * Starts the enumeration of sensors currently accessible.
+ * Use the method YSensor.nextSensor() to iterate on
+ * next sensors.
+ * 
+ * @return a pointer to a YSensor object, corresponding to
+ *         the first sensor currently online, or a null pointer
+ *         if there are none.
+ */
++(YSensor*) FirstSensor;
+//--- (end of generated code: YSensor public methods declaration)
+
+@end
+
+
+
+
+
+#define Y_DATA_INVALID                  (-DBL_MAX)
+#define Y_DURATION_INVALID              (-1)
+
+
+//--- (generated code: YDataStream class start)
+/**
+ * YDataStream Class: Unformatted data sequence
+ * 
+ * YDataStream objects represent bare recorded measure sequences,
+ * exactly as found within the data logger present on Yoctopuce
+ * sensors.
+ * 
+ * In most cases, it is not necessary to use YDataStream objects
+ * directly, as the YDataSet objects (returned by the
+ * get_recordedData() method from sensors and the
+ * get_dataSets() method from the data logger) provide
+ * a more convenient interface.
+ */
+@interface YDataStream : NSObject
+//--- (end of generated code: YDataStream class start)
+{
+@protected
+//--- (generated code: YDataStream attributes declaration)
+    YFunction*      _parent;
+    int             _runNo;
+    s64             _utcStamp;
+    int             _nCols;
+    int             _nRows;
+    int             _duration;
+    NSMutableArray* _columnNames;
+    NSString*       _functionId;
+    bool            _isClosed;
+    bool            _isAvg;
+    bool            _isScal;
+    int             _decimals;
+    double          _offset;
+    double          _scale;
+    int             _samplesPerHour;
+    double          _minVal;
+    double          _avgVal;
+    double          _maxVal;
+    double          _decexp;
+    int             _caltyp;
+    NSMutableArray* _calpar;
+    NSMutableArray* _calraw;
+    NSMutableArray* _calref;
+    NSMutableArray* _values;
+//--- (end of generated code: YDataStream attributes declaration)
+    id                      _calhdl;
+
+}
+-(id)   initWith:(YFunction *)parent;
+-(id)   initWith:(YFunction *)parent :(YDataSet*)dataset :(NSArray*) encoded;
+
+
+//--- (generated code: YDataStream private methods declaration)
+//--- (end of generated code: YDataStream private methods declaration)
+//--- (generated code: YDataStream public methods declaration)
+-(int)     _initFromDataSet:(YDataSet*)dataset :(NSMutableArray*)encoded;
+
+-(int)     parse:(NSData*)sdata;
+
+-(NSString*)     get_url;
+
+-(int)     loadStream;
+
+-(double)     _decodeVal:(int)w;
+
+-(double)     _decodeAvg:(int)dw :(int)count;
+
+-(bool)     isClosed;
+
+/**
+ * Returns the run index of the data stream. A run can be made of
+ * multiple datastreams, for different time intervals.
+ * 
+ * @return an unsigned number corresponding to the run index.
+ */
+-(int)     get_runIndex;
+
+/**
+ * Returns the relative start time of the data stream, measured in seconds.
+ * For recent firmwares, the value is relative to the present time,
+ * which means the value is always negative.
+ * If the device uses a firmware older than version 13000, value is
+ * relative to the start of the time the device was powered on, and
+ * is always positive.
+ * If you need an absolute UTC timestamp, use get_startTimeUTC().
+ * 
+ * @return an unsigned number corresponding to the number of seconds
+ *         between the start of the run and the beginning of this data
+ *         stream.
+ */
+-(int)     get_startTime;
+
+/**
+ * Returns the start time of the data stream, relative to the Jan 1, 1970.
+ * If the UTC time was not set in the datalogger at the time of the recording
+ * of this data stream, this method returns 0.
+ * 
+ * @return an unsigned number corresponding to the number of seconds
+ *         between the Jan 1, 1970 and the beginning of this data
+ *         stream (i.e. Unix time representation of the absolute time).
+ */
+-(s64)     get_startTimeUTC;
+
+/**
+ * Returns the number of milliseconds between two consecutive
+ * rows of this data stream. By default, the data logger records one row
+ * per second, but the recording frequency can be changed for
+ * each device function
+ * 
+ * @return an unsigned number corresponding to a number of milliseconds.
+ */
+-(int)     get_dataSamplesIntervalMs;
+
+-(double)     get_dataSamplesInterval;
+
+/**
+ * Returns the number of data rows present in this stream.
+ * 
+ * If the device uses a firmware older than version 13000,
+ * this method fetches the whole data stream from the device
+ * if not yet done, which can cause a little delay.
+ * 
+ * @return an unsigned number corresponding to the number of rows.
+ * 
+ * On failure, throws an exception or returns zero.
+ */
+-(int)     get_rowCount;
+
+/**
+ * Returns the number of data columns present in this stream.
+ * The meaning of the values present in each column can be obtained
+ * using the method get_columnNames().
+ * 
+ * If the device uses a firmware older than version 13000,
+ * this method fetches the whole data stream from the device
+ * if not yet done, which can cause a little delay.
+ * 
+ * @return an unsigned number corresponding to the number of columns.
+ * 
+ * On failure, throws an exception or returns zero.
+ */
+-(int)     get_columnCount;
+
+/**
+ * Returns the title (or meaning) of each data column present in this stream.
+ * In most case, the title of the data column is the hardware identifier
+ * of the sensor that produced the data. For streams recorded at a lower
+ * recording rate, the dataLogger stores the min, average and max value
+ * during each measure interval into three columns with suffixes _min,
+ * _avg and _max respectively.
+ * 
+ * If the device uses a firmware older than version 13000,
+ * this method fetches the whole data stream from the device
+ * if not yet done, which can cause a little delay.
+ * 
+ * @return a list containing as many strings as there are columns in the
+ *         data stream.
+ * 
+ * On failure, throws an exception or returns an empty array.
+ */
+-(NSMutableArray*)     get_columnNames;
+
+/**
+ * Returns the smallest measure observed within this stream.
+ * If the device uses a firmware older than version 13000,
+ * this method will always return Y_DATA_INVALID.
+ * 
+ * @return a floating-point number corresponding to the smallest value,
+ *         or Y_DATA_INVALID if the stream is not yet complete (still recording).
+ * 
+ * On failure, throws an exception or returns Y_DATA_INVALID.
+ */
+-(double)     get_minValue;
+
+/**
+ * Returns the average of all measures observed within this stream.
+ * If the device uses a firmware older than version 13000,
+ * this method will always return Y_DATA_INVALID.
+ * 
+ * @return a floating-point number corresponding to the average value,
+ *         or Y_DATA_INVALID if the stream is not yet complete (still recording).
+ * 
+ * On failure, throws an exception or returns Y_DATA_INVALID.
+ */
+-(double)     get_averageValue;
+
+/**
+ * Returns the largest measure observed within this stream.
+ * If the device uses a firmware older than version 13000,
+ * this method will always return Y_DATA_INVALID.
+ * 
+ * @return a floating-point number corresponding to the largest value,
+ *         or Y_DATA_INVALID if the stream is not yet complete (still recording).
+ * 
+ * On failure, throws an exception or returns Y_DATA_INVALID.
+ */
+-(double)     get_maxValue;
+
+/**
+ * Returns the approximate duration of this stream, in seconds.
+ * 
+ * @return the number of seconds covered by this stream.
+ * 
+ * On failure, throws an exception or returns Y_DURATION_INVALID.
+ */
+-(int)     get_duration;
+
+/**
+ * Returns the whole data set contained in the stream, as a bidimensional
+ * table of numbers.
+ * The meaning of the values present in each column can be obtained
+ * using the method get_columnNames().
+ * 
+ * This method fetches the whole data stream from the device,
+ * if not yet done.
+ * 
+ * @return a list containing as many elements as there are rows in the
+ *         data stream. Each row itself is a list of floating-point
+ *         numbers.
+ * 
+ * On failure, throws an exception or returns an empty array.
+ */
+-(NSMutableArray*)     get_dataRows;
+
+/**
+ * Returns a single measure from the data stream, specified by its
+ * row and column index.
+ * The meaning of the values present in each column can be obtained
+ * using the method get_columnNames().
+ * 
+ * This method fetches the whole data stream from the device,
+ * if not yet done.
+ * 
+ * @param row : row index
+ * @param col : column index
+ * 
+ * @return a floating-point number
+ * 
+ * On failure, throws an exception or returns Y_DATA_INVALID.
+ */
+-(double)     get_data:(int)row :(int)col;
+
+
+//--- (end of generated code: YDataStream public methods declaration)
+
+@end
+
+//--- (generated code: YMeasure class start)
+/**
+ * YMeasure Class: Measured value
+ * 
+ * YMeasure objects are used within the API to represent
+ * a value measured at a specified time. These objects are
+ * used in particular in conjunction with the YDataSet class.
+ */
+@interface YMeasure : NSObject
+//--- (end of generated code: YMeasure class start)
+{
+@protected
+//--- (generated code: YMeasure attributes declaration)
+    double          _start;
+    double          _end;
+    double          _minVal;
+    double          _avgVal;
+    double          _maxVal;
+//--- (end of generated code: YMeasure attributes declaration)
+
+}
+
+-(id)   init;
+-(id)   initWith:(double)start :(double)end :(double)minVal :(double)avgVal :(double)maxVal;
+
+
+//--- (generated code: YMeasure private methods declaration)
+//--- (end of generated code: YMeasure private methods declaration)
+//--- (generated code: YMeasure public methods declaration)
+/**
+ * Returns the start time of the measure, relative to the Jan 1, 1970 UTC
+ * (Unix timestamp). When the recording rate is higher then 1 sample
+ * per second, the timestamp may have a fractional part.
+ * 
+ * @return an floating point number corresponding to the number of seconds
+ *         between the Jan 1, 1970 UTC and the beginning of this measure.
+ */
+-(double)     get_startTimeUTC;
+
+/**
+ * Returns the end time of the measure, relative to the Jan 1, 1970 UTC
+ * (Unix timestamp). When the recording rate is higher then 1 sample
+ * per second, the timestamp may have a fractional part.
+ * 
+ * @return an floating point number corresponding to the number of seconds
+ *         between the Jan 1, 1970 UTC and the end of this measure.
+ */
+-(double)     get_endTimeUTC;
+
+/**
+ * Returns the smallest value observed during the time interval
+ * covered by this measure.
+ * 
+ * @return a floating-point number corresponding to the smallest value observed.
+ */
+-(double)     get_minValue;
+
+/**
+ * Returns the average value observed during the time interval
+ * covered by this measure.
+ * 
+ * @return a floating-point number corresponding to the average value observed.
+ */
+-(double)     get_averageValue;
+
+/**
+ * Returns the largest value observed during the time interval
+ * covered by this measure.
+ * 
+ * @return a floating-point number corresponding to the largest value observed.
+ */
+-(double)     get_maxValue;
+
+
+//--- (end of generated code: YMeasure public methods declaration)
+
+-(NSDate*)       get_startTimeUTC_asNSDate;
+-(NSDate*)       get_endTimeUTC_asNSDate;
+
+@end
+
+//--- (generated code: YDataSet class start)
+/**
+ * YDataSet Class: Recorded data sequence
+ * 
+ * YDataSet objects make it possible to retrieve a set of recorded measures
+ * for a given sensor and a specified time interval. They can be used
+ * to load data points with a progress report. When the YDataSet object is
+ * instanciated by the get_recordedData()  function, no data is
+ * yet loaded from the module. It is only when the loadMore()
+ * method is called over and over than data will be effectively loaded
+ * from the dataLogger.
+ * 
+ * A preview of available measures is available using the function
+ * get_preview() as soon as loadMore() has been called
+ * once. Measures themselves are available using function get_measures()
+ * when loaded by subsequent calls to loadMore().
+ * 
+ * This class can only be used on devices that use a recent firmware,
+ * as YDataSet objects are not supported by firmwares older than version 13000.
+ */
+@interface YDataSet : NSObject
+//--- (end of generated code: YDataSet class start)
+{
+@protected
+//--- (generated code: YDataSet attributes declaration)
+    YFunction*      _parent;
+    NSString*       _hardwareId;
+    NSString*       _functionId;
+    NSString*       _unit;
+    s64             _startTime;
+    s64             _endTime;
+    int             _progress;
+    NSMutableArray* _calib;
+    NSMutableArray* _streams;
+    YMeasure*       _summary;
+    NSMutableArray* _preview;
+    NSMutableArray* _measures;
+//--- (end of generated code: YDataSet attributes declaration)
+}
+
+-(id)   initWith:(YFunction *)parent :(NSString*)functionId :(NSString*)unit :(s64)startTime :(s64)endTime;
+-(id)   initWith:(YFunction *)parent :(NSString *)json;
+
+-(int)  _parse:(NSString *)json;
+//--- (generated code: YDataSet private methods declaration)
+//--- (end of generated code: YDataSet private methods declaration)
+
+//--- (generated code: YDataSet public methods declaration)
+-(NSMutableArray*)     get_calibration;
+
+-(int)     processMore:(int)progress :(NSData*)data;
+
+-(NSMutableArray*)     get_privateDataStreams;
+
+/**
+ * Returns the unique hardware identifier of the function who performed the measures,
+ * in the form SERIAL.FUNCTIONID. The unique hardware identifier is composed of the
+ * device serial number and of the hardware identifier of the function
+ * (for example THRMCPL1-123456.temperature1)
+ * 
+ * @return a string that uniquely identifies the function (ex: THRMCPL1-123456.temperature1)
+ * 
+ * On failure, throws an exception or returns  Y_HARDWAREID_INVALID.
+ */
+-(NSString*)     get_hardwareId;
+
+/**
+ * Returns the hardware identifier of the function that performed the measure,
+ * without reference to the module. For example temperature1.
+ * 
+ * @return a string that identifies the function (ex: temperature1)
+ */
+-(NSString*)     get_functionId;
+
+/**
+ * Returns the measuring unit for the measured value.
+ * 
+ * @return a string that represents a physical unit.
+ * 
+ * On failure, throws an exception or returns  Y_UNIT_INVALID.
+ */
+-(NSString*)     get_unit;
+
+/**
+ * Returns the start time of the dataset, relative to the Jan 1, 1970.
+ * When the YDataSet is created, the start time is the value passed
+ * in parameter to the get_dataSet() function. After the
+ * very first call to loadMore(), the start time is updated
+ * to reflect the timestamp of the first measure actually found in the
+ * dataLogger within the specified range.
+ * 
+ * @return an unsigned number corresponding to the number of seconds
+ *         between the Jan 1, 1970 and the beginning of this data
+ *         set (i.e. Unix time representation of the absolute time).
+ */
+-(s64)     get_startTimeUTC;
+
+/**
+ * Returns the end time of the dataset, relative to the Jan 1, 1970.
+ * When the YDataSet is created, the end time is the value passed
+ * in parameter to the get_dataSet() function. After the
+ * very first call to loadMore(), the end time is updated
+ * to reflect the timestamp of the last measure actually found in the
+ * dataLogger within the specified range.
+ * 
+ * @return an unsigned number corresponding to the number of seconds
+ *         between the Jan 1, 1970 and the end of this data
+ *         set (i.e. Unix time representation of the absolute time).
+ */
+-(s64)     get_endTimeUTC;
+
+/**
+ * Returns the progress of the downloads of the measures from the data logger,
+ * on a scale from 0 to 100. When the object is instanciated by get_dataSet,
+ * the progress is zero. Each time loadMore() is invoked, the progress
+ * is updated, to reach the value 100 only once all measures have been loaded.
+ * 
+ * @return an integer in the range 0 to 100 (percentage of completion).
+ */
+-(int)     get_progress;
+
+/**
+ * Loads the the next block of measures from the dataLogger, and updates
+ * the progress indicator.
+ * 
+ * @return an integer in the range 0 to 100 (percentage of completion),
+ *         or a negative error code in case of failure.
+ * 
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     loadMore;
+
+/**
+ * Returns an YMeasure object which summarizes the whole
+ * DataSet. In includes the following information:
+ * - the start of a time interval
+ * - the end of a time interval
+ * - the minimal value observed during the time interval
+ * - the average value observed during the time interval
+ * - the maximal value observed during the time interval
+ * 
+ * This summary is available as soon as loadMore() has
+ * been called for the first time.
+ * 
+ * @return an YMeasure object
+ */
+-(YMeasure*)     get_summary;
+
+/**
+ * Returns a condensed version of the measures that can
+ * retrieved in this YDataSet, as a list of YMeasure
+ * objects. Each item includes:
+ * - the start of a time interval
+ * - the end of a time interval
+ * - the minimal value observed during the time interval
+ * - the average value observed during the time interval
+ * - the maximal value observed during the time interval
+ * 
+ * This preview is available as soon as loadMore() has
+ * been called for the first time.
+ * 
+ * @return a table of records, where each record depicts the
+ *         measured values during a time interval
+ * 
+ * On failure, throws an exception or returns an empty array.
+ */
+-(NSMutableArray*)     get_preview;
+
+/**
+ * Returns all measured values currently available for this DataSet,
+ * as a list of YMeasure objects. Each item includes:
+ * - the start of the measure time interval
+ * - the end of the measure time interval
+ * - the minimal value observed during the time interval
+ * - the average value observed during the time interval
+ * - the maximal value observed during the time interval
+ * 
+ * Before calling this method, you should call loadMore()
+ * to load data from the device. You may have to call loadMore()
+ * several time until all rows are loaded, but you can start
+ * looking at available data rows before the load is complete.
+ * 
+ * The oldest measures are always loaded first, and the most
+ * recent measures will be loaded last. As a result, timestamps
+ * are normally sorted in ascending order within the measure table,
+ * unless there was an unexpected adjustment of the datalogger UTC
+ * clock.
+ * 
+ * @return a table of records, where each record depicts the
+ *         measured value for a given time interval
+ * 
+ * On failure, throws an exception or returns an empty array.
+ */
+-(NSMutableArray*)     get_measures;
+
+
+//--- (end of generated code: YDataSet public methods declaration)
 
 @end
 
@@ -1224,13 +2334,25 @@ void yEnableExceptions(void);
 
 
 /**
- * Setup the Yoctopuce library to use modules connected on a given machine.
- * When using Yoctopuce modules through the VirtualHub gateway,
- * you should provide as parameter the address of the machine on which the
- * VirtualHub software is running (typically "http://127.0.0.1:4444",
- * which represents the local machine).
- * When you use a language which has direct access to the USB hardware,
- * you can use the pseudo-URL "usb" instead.
+ * Setup the Yoctopuce library to use modules connected on a given machine. The
+ * parameter will determine how the API will work. Use the following values:
+ * 
+ * <b>usb</b>: When the usb keyword is used, the API will work with
+ * devices connected directly to the USB bus. Some programming languages such a Javascript,
+ * PHP, and Java don't provide direct access to USB hardware, so usb will
+ * not work with these. In this case, use a VirtualHub or a networked YoctoHub (see below).
+ * 
+ * <b><i>x.x.x.x</i></b> or <b><i>hostname</i></b>: The API will use the devices connected to the
+ * host with the given IP address or hostname. That host can be a regular computer
+ * running a VirtualHub, or a networked YoctoHub such as YoctoHub-Ethernet or
+ * YoctoHub-Wireless. If you want to use the VirtualHub running on you local
+ * computer, use the IP address 127.0.0.1.
+ * 
+ * <b>callback</b>: that keyword make the API run in "<i>HTTP Callback</i>" mode.
+ * This a special mode allowing to take control of Yoctopuce devices
+ * through a NAT filter when using a VirtualHub or a networked YoctoHub. You only
+ * need to configure your hub to call your server script on a regular basis.
+ * This mode is currently available for PHP and Node.JS only.
  * 
  * Be aware that only one application can use direct USB access at a
  * given time on a machine. Multiple access would cause conflicts
@@ -1240,12 +2362,14 @@ void yEnableExceptions(void);
  * for this limitation is to setup the library to use the VirtualHub
  * rather than direct USB access.
  * 
- * If acces control has been activated on the VirtualHub you want to
+ * If access control has been activated on the hub, virtual or not, you want to
  * reach, the URL parameter should look like:
  * 
  * http://username:password@adresse:port
  * 
- * @param url : a string containing either "usb" or the
+ * You can call <i>RegisterHub</i> several times to connect to several machines.
+ * 
+ * @param url : a string containing either "usb","callback" or the
  *         root URL of the hub to monitor
  * @param errmsg : a string passed by reference to receive any error message.
  * 
@@ -1255,8 +2379,20 @@ void yEnableExceptions(void);
  */
 YRETCODE yRegisterHub(NSString * url, NSError** errmsg);
 
-/** 
+/**
+ * Fault-tolerant alternative to RegisterHub(). This function has the same
+ * purpose and same arguments as RegisterHub(), but does not trigger
+ * an error when the selected hub is not available at the time of the function call.
+ * This makes it possible to register a network hub independently of the current
+ * connectivity, and to try to contact it only when a device is actively needed.
  * 
+ * @param url : a string containing either "usb","callback" or the
+ *         root URL of the hub to monitor
+ * @param errmsg : a string passed by reference to receive any error message.
+ * 
+ * @return YAPI_SUCCESS when the call succeeds.
+ * 
+ * On failure, throws an exception or returns a negative error code.
  */
 YRETCODE yPreregisterHub(NSString * url, NSError** errmsg);
 
@@ -1311,7 +2447,7 @@ YRETCODE yHandleEvents(NSError** errmsg);
 /**
  * Pauses the execution flow for a specified duration.
  * This function implements a passive waiting loop, meaning that it does not
- * consume CPU cycles significatively. The processor is left available for
+ * consume CPU cycles significantly. The processor is left available for
  * other threads and processes. During the pause, the library nevertheless
  * reads from time to time information from the Yoctopuce modules by
  * calling yHandleEvents(), in order to stay up-to-date.
@@ -1330,11 +2466,11 @@ YRETCODE yHandleEvents(NSError** errmsg);
 YRETCODE ySleep(unsigned ms_duration, NSError** errmsg);
 
 /**
- * (Objective-C only) Register an object that must follow the procol YDeviceHotPlug. The methodes
+ * (Objective-C only) Register an object that must follow the protocol YDeviceHotPlug. The methods
  * yDeviceArrival and yDeviceRemoval  will be invoked while yUpdateDeviceList
  * is running. You will have to call this function on a regular basis.
  * 
- * @param object : an object that must follow the procol YAPIDelegate, or nil
+ * @param object : an object that must follow the protocol YAPIDelegate, or nil
  *         to unregister a previously registered  object.
  */
 
@@ -1344,7 +2480,7 @@ void ySetDelegate(id object);
 /**
  * Returns the current value of a monotone millisecond-based time counter.
  * This counter can be used to compute delays in relation with
- * Yoctopuce devices, which also uses the milisecond as timebase.
+ * Yoctopuce devices, which also uses the millisecond as timebase.
  * 
  * @return a long integer corresponding to the millisecond counter.
  */
@@ -1366,7 +2502,7 @@ BOOL yCheckLogicalName(NSString * name);
 
 /**
  * Register a callback function, to be called each time
- * a device is pluged. This callback will be invoked while yUpdateDeviceList
+ * a device is plugged. This callback will be invoked while yUpdateDeviceList
  * is running. You will have to call this function on a regular basis.
  * 
  * @param arrivalCallback : a procedure taking a YModule parameter, or null
@@ -1376,7 +2512,7 @@ void    yRegisterDeviceArrivalCallback(yDeviceUpdateCallback arrivalCallback);
 
 /**
  * Register a callback function, to be called each time
- * a device is unpluged. This callback will be invoked while yUpdateDeviceList
+ * a device is unplugged. This callback will be invoked while yUpdateDeviceList
  * is running. You will have to call this function on a regular basis.
  * 
  * @param removalCallback : a procedure taking a YModule parameter, or null
@@ -1384,22 +2520,50 @@ void    yRegisterDeviceArrivalCallback(yDeviceUpdateCallback arrivalCallback);
  */
 void    yRegisterDeviceRemovalCallback(yDeviceUpdateCallback removalCallback);
 
-/**
- *
- */
 void    yRegisterDeviceChangeCallback(yDeviceUpdateCallback removalCallback);
 
 /**
  * Registers a log callback function. This callback will be called each time
- * the API have something to say. Quite usefull to debug the API.
+ * the API have something to say. Quite useful to debug the API.
  * 
  * @param logfun : a procedure taking a string parameter, or null
  *         to unregister a previously registered  callback.
  */
 void    yRegisterLogFunction(yLogCallback logfun);
 
-//--- (generated code: Module functions declaration)
+//--- (generated code: Function functions declaration)
+/**
+ * Retrieves a function for a given identifier.
+ * The identifier can be specified using several formats:
+ * <ul>
+ * <li>FunctionLogicalName</li>
+ * <li>ModuleSerialNumber.FunctionIdentifier</li>
+ * <li>ModuleSerialNumber.FunctionLogicalName</li>
+ * <li>ModuleLogicalName.FunctionIdentifier</li>
+ * <li>ModuleLogicalName.FunctionLogicalName</li>
+ * </ul>
+ * 
+ * This function does not require that the function is online at the time
+ * it is invoked. The returned object is nevertheless valid.
+ * Use the method YFunction.isOnline() to test if the function is
+ * indeed online at a given time. In case of ambiguity when looking for
+ * a function by logical name, no error is notified: the first instance
+ * found is returned. The search is performed first by hardware name,
+ * then by logical name.
+ * 
+ * @param func : a string that uniquely characterizes the function
+ * 
+ * @return a YFunction object allowing you to drive the function.
+ */
+YFunction* yFindFunction(NSString* func);
+/**
+ * comment from .yc definition
+ */
+YFunction* yFirstFunction(void);
 
+//--- (end of generated code: Function functions declaration)
+
+//--- (generated code: Module functions declaration)
 /**
  * Allows you to find a module from its serial number or from its logical name.
  * 
@@ -1430,6 +2594,44 @@ YModule* yFindModule(NSString* func);
 YModule* yFirstModule(void);
 
 //--- (end of generated code: Module functions declaration)
+
+//--- (generated code: Sensor functions declaration)
+/**
+ * Retrieves a sensor for a given identifier.
+ * The identifier can be specified using several formats:
+ * <ul>
+ * <li>FunctionLogicalName</li>
+ * <li>ModuleSerialNumber.FunctionIdentifier</li>
+ * <li>ModuleSerialNumber.FunctionLogicalName</li>
+ * <li>ModuleLogicalName.FunctionIdentifier</li>
+ * <li>ModuleLogicalName.FunctionLogicalName</li>
+ * </ul>
+ * 
+ * This function does not require that the sensor is online at the time
+ * it is invoked. The returned object is nevertheless valid.
+ * Use the method YSensor.isOnline() to test if the sensor is
+ * indeed online at a given time. In case of ambiguity when looking for
+ * a sensor by logical name, no error is notified: the first instance
+ * found is returned. The search is performed first by hardware name,
+ * then by logical name.
+ * 
+ * @param func : a string that uniquely characterizes the sensor
+ * 
+ * @return a YSensor object allowing you to drive the sensor.
+ */
+YSensor* yFindSensor(NSString* func);
+/**
+ * Starts the enumeration of sensors currently accessible.
+ * Use the method YSensor.nextSensor() to iterate on
+ * next sensors.
+ * 
+ * @return a pointer to a YSensor object, corresponding to
+ *         the first sensor currently online, or a null pointer
+ *         if there are none.
+ */
+YSensor* yFirstSensor(void);
+
+//--- (end of generated code: Sensor functions declaration)
 
 CF_EXTERN_C_END
 

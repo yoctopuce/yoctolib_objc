@@ -1,8 +1,8 @@
 /*********************************************************************
  *
- * $Id: yocto_network.m 12337 2013-08-14 15:22:22Z mvuilleu $
+ * $Id: yocto_network.m 14721 2014-01-24 17:58:44Z seb $
  *
- * Implements yFindNetwork(), the high-level API for Network functions
+ * Implements the high-level API for Network functions
  *
  * - - - - - - - - - License information: - - - - - - - - - 
  *
@@ -47,13 +47,12 @@
 @implementation YNetwork
 
 // Constructor is protected, use yFindNetwork factory function to instantiate
--(id)              initWithFunction:(NSString*) func
+-(id)              initWith:(NSString*) func
 {
-//--- (YNetwork attributes)
-   if(!(self = [super initProtected:@"Network":func]))
+   if(!(self = [super initWith:func]))
           return nil;
-    _logicalName = Y_LOGICALNAME_INVALID;
-    _advertisedValue = Y_ADVERTISEDVALUE_INVALID;
+    _className = @"Network";
+//--- (YNetwork attributes initialization)
     _readiness = Y_READINESS_INVALID;
     _macAddress = Y_MACADDRESS_INVALID;
     _ipAddress = Y_IPADDRESS_INVALID;
@@ -73,17 +72,14 @@
     _callbackMinDelay = Y_CALLBACKMINDELAY_INVALID;
     _callbackMaxDelay = Y_CALLBACKMAXDELAY_INVALID;
     _poeCurrent = Y_POECURRENT_INVALID;
-//--- (end of YNetwork attributes)
+    _valueCallbackNetwork = NULL;
+//--- (end of YNetwork attributes initialization)
     return self;
 }
 // destructor 
 -(void)  dealloc
 {
 //--- (YNetwork cleanup)
-    ARC_release(_logicalName);
-    _logicalName = nil;
-    ARC_release(_advertisedValue);
-    _advertisedValue = nil;
     ARC_release(_macAddress);
     _macAddress = nil;
     ARC_release(_ipAddress);
@@ -106,185 +102,139 @@
     _callbackUrl = nil;
     ARC_release(_callbackCredentials);
     _callbackCredentials = nil;
-//--- (end of YNetwork cleanup)
     ARC_dealloc(super);
+//--- (end of YNetwork cleanup)
 }
-//--- (YNetwork implementation)
+//--- (YNetwork private methods implementation)
 
--(int) _parse:(yJsonStateMachine*) j
+-(int) _parseAttr:(yJsonStateMachine*) j
 {
-    if(yJsonParse(j) != YJSON_PARSE_AVAIL || j->st != YJSON_PARSE_STRUCT) {
-    failed:
-        return -1;
+    if(!strcmp(j->token, "readiness")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _readiness =  atoi(j->token);
+        return 1;
     }
-    while(yJsonParse(j) == YJSON_PARSE_AVAIL && j->st == YJSON_PARSE_MEMBNAME) {
-        if(!strcmp(j->token, "logicalName")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            ARC_release(_logicalName);
-            _logicalName =  [self _parseString:j];
-            ARC_retain(_logicalName);
-        } else if(!strcmp(j->token, "advertisedValue")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            ARC_release(_advertisedValue);
-            _advertisedValue =  [self _parseString:j];
-            ARC_retain(_advertisedValue);
-        } else if(!strcmp(j->token, "readiness")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            _readiness =  atoi(j->token);
-        } else if(!strcmp(j->token, "macAddress")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            ARC_release(_macAddress);
-            _macAddress =  [self _parseString:j];
-            ARC_retain(_macAddress);
-        } else if(!strcmp(j->token, "ipAddress")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            ARC_release(_ipAddress);
-            _ipAddress =  [self _parseString:j];
-            ARC_retain(_ipAddress);
-        } else if(!strcmp(j->token, "subnetMask")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            ARC_release(_subnetMask);
-            _subnetMask =  [self _parseString:j];
-            ARC_retain(_subnetMask);
-        } else if(!strcmp(j->token, "router")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            ARC_release(_router);
-            _router =  [self _parseString:j];
-            ARC_retain(_router);
-        } else if(!strcmp(j->token, "ipConfig")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            ARC_release(_ipConfig);
-            _ipConfig =  [self _parseString:j];
-            ARC_retain(_ipConfig);
-        } else if(!strcmp(j->token, "primaryDNS")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            ARC_release(_primaryDNS);
-            _primaryDNS =  [self _parseString:j];
-            ARC_retain(_primaryDNS);
-        } else if(!strcmp(j->token, "secondaryDNS")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            ARC_release(_secondaryDNS);
-            _secondaryDNS =  [self _parseString:j];
-            ARC_retain(_secondaryDNS);
-        } else if(!strcmp(j->token, "userPassword")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            ARC_release(_userPassword);
-            _userPassword =  [self _parseString:j];
-            ARC_retain(_userPassword);
-        } else if(!strcmp(j->token, "adminPassword")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            ARC_release(_adminPassword);
-            _adminPassword =  [self _parseString:j];
-            ARC_retain(_adminPassword);
-        } else if(!strcmp(j->token, "discoverable")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            _discoverable =  (Y_DISCOVERABLE_enum)atoi(j->token);
-        } else if(!strcmp(j->token, "wwwWatchdogDelay")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            _wwwWatchdogDelay =  atoi(j->token);
-        } else if(!strcmp(j->token, "callbackUrl")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            ARC_release(_callbackUrl);
-            _callbackUrl =  [self _parseString:j];
-            ARC_retain(_callbackUrl);
-        } else if(!strcmp(j->token, "callbackMethod")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            _callbackMethod =  atoi(j->token);
-        } else if(!strcmp(j->token, "callbackEncoding")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            _callbackEncoding =  atoi(j->token);
-        } else if(!strcmp(j->token, "callbackCredentials")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            ARC_release(_callbackCredentials);
-            _callbackCredentials =  [self _parseString:j];
-            ARC_retain(_callbackCredentials);
-        } else if(!strcmp(j->token, "callbackMinDelay")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            _callbackMinDelay =  atoi(j->token);
-        } else if(!strcmp(j->token, "callbackMaxDelay")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            _callbackMaxDelay =  atoi(j->token);
-        } else if(!strcmp(j->token, "poeCurrent")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            _poeCurrent =  atoi(j->token);
-        } else {
-            // ignore unknown field
-            yJsonSkip(j, 1);
-        }
+    if(!strcmp(j->token, "macAddress")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+       ARC_release(_macAddress);
+        _macAddress =  [self _parseString:j];
+        ARC_retain(_macAddress);
+        return 1;
     }
-    if(j->st != YJSON_PARSE_STRUCT) goto failed;
-    return 0;
-}
-
-/**
- * Returns the logical name of the network interface, corresponding to the network name of the module.
- * 
- * @return a string corresponding to the logical name of the network interface, corresponding to the
- * network name of the module
- * 
- * On failure, throws an exception or returns Y_LOGICALNAME_INVALID.
- */
--(NSString*) get_logicalName
-{
-    return [self logicalName];
-}
--(NSString*) logicalName
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_LOGICALNAME_INVALID;
+    if(!strcmp(j->token, "ipAddress")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+       ARC_release(_ipAddress);
+        _ipAddress =  [self _parseString:j];
+        ARC_retain(_ipAddress);
+        return 1;
     }
-    return _logicalName;
-}
-
-/**
- * Changes the logical name of the network interface, corresponding to the network name of the module.
- * You can use yCheckLogicalName()
- * prior to this call to make sure that your parameter is valid.
- * Remember to call the saveToFlash() method of the module if the
- * modification must be kept.
- * 
- * @param newval : a string corresponding to the logical name of the network interface, corresponding
- * to the network name of the module
- * 
- * @return YAPI_SUCCESS if the call succeeds.
- * 
- * On failure, throws an exception or returns a negative error code.
- */
--(int) set_logicalName:(NSString*) newval
-{
-    return [self setLogicalName:newval];
-}
--(int) setLogicalName:(NSString*) newval
-{
-    NSString* rest_val;
-    rest_val = newval;
-    return [self _setAttr:@"logicalName" :rest_val];
-}
-
-/**
- * Returns the current value of the network interface (no more than 6 characters).
- * 
- * @return a string corresponding to the current value of the network interface (no more than 6 characters)
- * 
- * On failure, throws an exception or returns Y_ADVERTISEDVALUE_INVALID.
- */
--(NSString*) get_advertisedValue
-{
-    return [self advertisedValue];
-}
--(NSString*) advertisedValue
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_ADVERTISEDVALUE_INVALID;
+    if(!strcmp(j->token, "subnetMask")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+       ARC_release(_subnetMask);
+        _subnetMask =  [self _parseString:j];
+        ARC_retain(_subnetMask);
+        return 1;
     }
-    return _advertisedValue;
+    if(!strcmp(j->token, "router")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+       ARC_release(_router);
+        _router =  [self _parseString:j];
+        ARC_retain(_router);
+        return 1;
+    }
+    if(!strcmp(j->token, "ipConfig")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+       ARC_release(_ipConfig);
+        _ipConfig =  [self _parseString:j];
+        ARC_retain(_ipConfig);
+        return 1;
+    }
+    if(!strcmp(j->token, "primaryDNS")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+       ARC_release(_primaryDNS);
+        _primaryDNS =  [self _parseString:j];
+        ARC_retain(_primaryDNS);
+        return 1;
+    }
+    if(!strcmp(j->token, "secondaryDNS")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+       ARC_release(_secondaryDNS);
+        _secondaryDNS =  [self _parseString:j];
+        ARC_retain(_secondaryDNS);
+        return 1;
+    }
+    if(!strcmp(j->token, "userPassword")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+       ARC_release(_userPassword);
+        _userPassword =  [self _parseString:j];
+        ARC_retain(_userPassword);
+        return 1;
+    }
+    if(!strcmp(j->token, "adminPassword")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+       ARC_release(_adminPassword);
+        _adminPassword =  [self _parseString:j];
+        ARC_retain(_adminPassword);
+        return 1;
+    }
+    if(!strcmp(j->token, "discoverable")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _discoverable =  (Y_DISCOVERABLE_enum)atoi(j->token);
+        return 1;
+    }
+    if(!strcmp(j->token, "wwwWatchdogDelay")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _wwwWatchdogDelay =  atoi(j->token);
+        return 1;
+    }
+    if(!strcmp(j->token, "callbackUrl")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+       ARC_release(_callbackUrl);
+        _callbackUrl =  [self _parseString:j];
+        ARC_retain(_callbackUrl);
+        return 1;
+    }
+    if(!strcmp(j->token, "callbackMethod")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _callbackMethod =  atoi(j->token);
+        return 1;
+    }
+    if(!strcmp(j->token, "callbackEncoding")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _callbackEncoding =  atoi(j->token);
+        return 1;
+    }
+    if(!strcmp(j->token, "callbackCredentials")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+       ARC_release(_callbackCredentials);
+        _callbackCredentials =  [self _parseString:j];
+        ARC_retain(_callbackCredentials);
+        return 1;
+    }
+    if(!strcmp(j->token, "callbackMinDelay")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _callbackMinDelay =  atoi(j->token);
+        return 1;
+    }
+    if(!strcmp(j->token, "callbackMaxDelay")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _callbackMaxDelay =  atoi(j->token);
+        return 1;
+    }
+    if(!strcmp(j->token, "poeCurrent")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _poeCurrent =  atoi(j->token);
+        return 1;
+    }
+    return [super _parseAttr:j];
 }
-
+//--- (end of YNetwork private methods implementation)
+//--- (YNetwork public methods implementation)
 /**
  * Returns the current established working mode of the network interface.
  * Level zero (DOWN_0) means that no hardware link has been detected. Either there is no signal
  * on the network cable, or the selected wireless access point cannot be detected.
- * Level 1 (LIVE_1) is reached when the network is detected, but is not yet connected,
+ * Level 1 (LIVE_1) is reached when the network is detected, but is not yet connected.
  * For a wireless network, this shows that the requested SSID is present.
  * Level 2 (LINK_2) is reached when the hardware connection is established.
  * For a wired network connection, level 2 means that the cable is attached at both ends.
@@ -303,16 +253,19 @@
  */
 -(Y_READINESS_enum) get_readiness
 {
-    return [self readiness];
-}
--(Y_READINESS_enum) readiness
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_READINESS_INVALID;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_READINESS_INVALID;
+        }
     }
     return _readiness;
 }
 
+
+-(Y_READINESS_enum) readiness
+{
+    return [self get_readiness];
+}
 /**
  * Returns the MAC address of the network interface. The MAC address is also available on a sticker
  * on the module, in both numeric and barcode forms.
@@ -323,18 +276,21 @@
  */
 -(NSString*) get_macAddress
 {
-    return [self macAddress];
-}
--(NSString*) macAddress
-{
-    if(_macAddress == Y_MACADDRESS_INVALID) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_MACADDRESS_INVALID;
+    if (_cacheExpiration == 0) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_MACADDRESS_INVALID;
+        }
     }
     return _macAddress;
 }
 
+
+-(NSString*) macAddress
+{
+    return [self get_macAddress];
+}
 /**
- * Returns the IP address currently in use by the device. The adress may have been configured
+ * Returns the IP address currently in use by the device. The address may have been configured
  * statically, or provided by a DHCP server.
  * 
  * @return a string corresponding to the IP address currently in use by the device
@@ -343,16 +299,19 @@
  */
 -(NSString*) get_ipAddress
 {
-    return [self ipAddress];
-}
--(NSString*) ipAddress
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_IPADDRESS_INVALID;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_IPADDRESS_INVALID;
+        }
     }
     return _ipAddress;
 }
 
+
+-(NSString*) ipAddress
+{
+    return [self get_ipAddress];
+}
 /**
  * Returns the subnet mask currently used by the device.
  * 
@@ -362,16 +321,19 @@
  */
 -(NSString*) get_subnetMask
 {
-    return [self subnetMask];
-}
--(NSString*) subnetMask
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_SUBNETMASK_INVALID;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_SUBNETMASK_INVALID;
+        }
     }
     return _subnetMask;
 }
 
+
+-(NSString*) subnetMask
+{
+    return [self get_subnetMask];
+}
 /**
  * Returns the IP address of the router on the device subnet (default gateway).
  * 
@@ -381,26 +343,33 @@
  */
 -(NSString*) get_router
 {
-    return [self router];
-}
--(NSString*) router
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_ROUTER_INVALID;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_ROUTER_INVALID;
+        }
     }
     return _router;
 }
 
+
+-(NSString*) router
+{
+    return [self get_router];
+}
 -(NSString*) get_ipConfig
 {
-    return [self ipConfig];
-}
--(NSString*) ipConfig
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_IPCONFIG_INVALID;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_IPCONFIG_INVALID;
+        }
     }
     return _ipConfig;
+}
+
+
+-(NSString*) ipConfig
+{
+    return [self get_ipConfig];
 }
 
 -(int) set_ipConfig:(NSString*) newval
@@ -429,7 +398,7 @@
  * 
  * On failure, throws an exception or returns a negative error code.
  */
--(int) useDHCP :(NSString*)fallbackIpAddr :(int)fallbackSubnetMaskLen :(NSString*)fallbackRouter
+-(int) useDHCP:(NSString*)fallbackIpAddr :(int)fallbackSubnetMaskLen :(NSString*)fallbackRouter
 {
     NSString* rest_val;
     rest_val = [NSString stringWithFormat:@"DHCP:%@/%d/%@",fallbackIpAddr,fallbackSubnetMaskLen,fallbackRouter];
@@ -448,13 +417,12 @@
  * 
  * On failure, throws an exception or returns a negative error code.
  */
--(int) useStaticIP :(NSString*)ipAddress :(int)subnetMaskLen :(NSString*)router
+-(int) useStaticIP:(NSString*)ipAddress :(int)subnetMaskLen :(NSString*)router
 {
     NSString* rest_val;
     rest_val = [NSString stringWithFormat:@"STATIC:%@/%d/%@",ipAddress,subnetMaskLen,router];
     return [self _setAttr:@"ipConfig" :rest_val];
 }
-
 /**
  * Returns the IP address of the primary name server to be used by the module.
  * 
@@ -464,14 +432,18 @@
  */
 -(NSString*) get_primaryDNS
 {
-    return [self primaryDNS];
-}
--(NSString*) primaryDNS
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_PRIMARYDNS_INVALID;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_PRIMARYDNS_INVALID;
+        }
     }
     return _primaryDNS;
+}
+
+
+-(NSString*) primaryDNS
+{
+    return [self get_primaryDNS];
 }
 
 /**
@@ -495,7 +467,6 @@
     rest_val = newval;
     return [self _setAttr:@"primaryDNS" :rest_val];
 }
-
 /**
  * Returns the IP address of the secondary name server to be used by the module.
  * 
@@ -505,22 +476,26 @@
  */
 -(NSString*) get_secondaryDNS
 {
-    return [self secondaryDNS];
-}
--(NSString*) secondaryDNS
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_SECONDARYDNS_INVALID;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_SECONDARYDNS_INVALID;
+        }
     }
     return _secondaryDNS;
 }
 
+
+-(NSString*) secondaryDNS
+{
+    return [self get_secondaryDNS];
+}
+
 /**
- * Changes the IP address of the secondarz name server to be used by the module.
+ * Changes the IP address of the secondary name server to be used by the module.
  * When using DHCP, if a value is specified, it overrides the value received from the DHCP server.
  * Remember to call the saveToFlash() method and then to reboot the module to apply this setting.
  * 
- * @param newval : a string corresponding to the IP address of the secondarz name server to be used by the module
+ * @param newval : a string corresponding to the IP address of the secondary name server to be used by the module
  * 
  * @return YAPI_SUCCESS if the call succeeds.
  * 
@@ -536,7 +511,6 @@
     rest_val = newval;
     return [self _setAttr:@"secondaryDNS" :rest_val];
 }
-
 /**
  * Returns a hash string if a password has been set for "user" user,
  * or an empty string otherwise.
@@ -548,14 +522,18 @@
  */
 -(NSString*) get_userPassword
 {
-    return [self userPassword];
-}
--(NSString*) userPassword
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_USERPASSWORD_INVALID;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_USERPASSWORD_INVALID;
+        }
     }
     return _userPassword;
+}
+
+
+-(NSString*) userPassword
+{
+    return [self get_userPassword];
 }
 
 /**
@@ -581,7 +559,6 @@
     rest_val = newval;
     return [self _setAttr:@"userPassword" :rest_val];
 }
-
 /**
  * Returns a hash string if a password has been set for user "admin",
  * or an empty string otherwise.
@@ -593,14 +570,18 @@
  */
 -(NSString*) get_adminPassword
 {
-    return [self adminPassword];
-}
--(NSString*) adminPassword
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_ADMINPASSWORD_INVALID;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_ADMINPASSWORD_INVALID;
+        }
     }
     return _adminPassword;
+}
+
+
+-(NSString*) adminPassword
+{
+    return [self get_adminPassword];
 }
 
 /**
@@ -626,7 +607,6 @@
     rest_val = newval;
     return [self _setAttr:@"adminPassword" :rest_val];
 }
-
 /**
  * Returns the activation state of the multicast announce protocols to allow easy
  * discovery of the module in the network neighborhood (uPnP/Bonjour protocol).
@@ -639,14 +619,18 @@
  */
 -(Y_DISCOVERABLE_enum) get_discoverable
 {
-    return [self discoverable];
-}
--(Y_DISCOVERABLE_enum) discoverable
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_DISCOVERABLE_INVALID;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_DISCOVERABLE_INVALID;
+        }
     }
     return _discoverable;
+}
+
+
+-(Y_DISCOVERABLE_enum) discoverable
+{
+    return [self get_discoverable];
 }
 
 /**
@@ -671,7 +655,6 @@
     rest_val = (newval ? @"1" : @"0");
     return [self _setAttr:@"discoverable" :rest_val];
 }
-
 /**
  * Returns the allowed downtime of the WWW link (in seconds) before triggering an automated
  * reboot to try to recover Internet connectivity. A zero value disables automated reboot
@@ -683,21 +666,25 @@
  * 
  * On failure, throws an exception or returns Y_WWWWATCHDOGDELAY_INVALID.
  */
--(unsigned) get_wwwWatchdogDelay
+-(int) get_wwwWatchdogDelay
 {
-    return [self wwwWatchdogDelay];
-}
--(unsigned) wwwWatchdogDelay
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_WWWWATCHDOGDELAY_INVALID;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_WWWWATCHDOGDELAY_INVALID;
+        }
     }
     return _wwwWatchdogDelay;
 }
 
+
+-(int) wwwWatchdogDelay
+{
+    return [self get_wwwWatchdogDelay];
+}
+
 /**
  * Changes the allowed downtime of the WWW link (in seconds) before triggering an automated
- * reboot to try to recover Internet connectivity. A zero value disable automated reboot
+ * reboot to try to recover Internet connectivity. A zero value disables automated reboot
  * in case of Internet connectivity loss. The smallest valid non-zero timeout is
  * 90 seconds.
  * 
@@ -709,17 +696,16 @@
  * 
  * On failure, throws an exception or returns a negative error code.
  */
--(int) set_wwwWatchdogDelay:(unsigned) newval
+-(int) set_wwwWatchdogDelay:(int) newval
 {
     return [self setWwwWatchdogDelay:newval];
 }
--(int) setWwwWatchdogDelay:(unsigned) newval
+-(int) setWwwWatchdogDelay:(int) newval
 {
     NSString* rest_val;
-    rest_val = [NSString stringWithFormat:@"%u", newval];
+    rest_val = [NSString stringWithFormat:@"%d", newval];
     return [self _setAttr:@"wwwWatchdogDelay" :rest_val];
 }
-
 /**
  * Returns the callback URL to notify of significant state changes.
  * 
@@ -729,14 +715,18 @@
  */
 -(NSString*) get_callbackUrl
 {
-    return [self callbackUrl];
-}
--(NSString*) callbackUrl
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_CALLBACKURL_INVALID;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_CALLBACKURL_INVALID;
+        }
     }
     return _callbackUrl;
+}
+
+
+-(NSString*) callbackUrl
+{
+    return [self get_callbackUrl];
 }
 
 /**
@@ -759,7 +749,6 @@
     rest_val = newval;
     return [self _setAttr:@"callbackUrl" :rest_val];
 }
-
 /**
  * Returns the HTTP method used to notify callbacks for significant state changes.
  * 
@@ -770,14 +759,18 @@
  */
 -(Y_CALLBACKMETHOD_enum) get_callbackMethod
 {
-    return [self callbackMethod];
-}
--(Y_CALLBACKMETHOD_enum) callbackMethod
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_CALLBACKMETHOD_INVALID;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_CALLBACKMETHOD_INVALID;
+        }
     }
     return _callbackMethod;
+}
+
+
+-(Y_CALLBACKMETHOD_enum) callbackMethod
+{
+    return [self get_callbackMethod];
 }
 
 /**
@@ -797,10 +790,9 @@
 -(int) setCallbackMethod:(Y_CALLBACKMETHOD_enum) newval
 {
     NSString* rest_val;
-    rest_val = [NSString stringWithFormat:@"%u", newval];
+    rest_val = [NSString stringWithFormat:@"%d", newval];
     return [self _setAttr:@"callbackMethod" :rest_val];
 }
-
 /**
  * Returns the encoding standard to use for representing notification values.
  * 
@@ -812,14 +804,18 @@
  */
 -(Y_CALLBACKENCODING_enum) get_callbackEncoding
 {
-    return [self callbackEncoding];
-}
--(Y_CALLBACKENCODING_enum) callbackEncoding
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_CALLBACKENCODING_INVALID;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_CALLBACKENCODING_INVALID;
+        }
     }
     return _callbackEncoding;
+}
+
+
+-(Y_CALLBACKENCODING_enum) callbackEncoding
+{
+    return [self get_callbackEncoding];
 }
 
 /**
@@ -840,10 +836,9 @@
 -(int) setCallbackEncoding:(Y_CALLBACKENCODING_enum) newval
 {
     NSString* rest_val;
-    rest_val = [NSString stringWithFormat:@"%u", newval];
+    rest_val = [NSString stringWithFormat:@"%d", newval];
     return [self _setAttr:@"callbackEncoding" :rest_val];
 }
-
 /**
  * Returns a hashed version of the notification callback credentials if set,
  * or an empty string otherwise.
@@ -855,14 +850,18 @@
  */
 -(NSString*) get_callbackCredentials
 {
-    return [self callbackCredentials];
-}
--(NSString*) callbackCredentials
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_CALLBACKCREDENTIALS_INVALID;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_CALLBACKCREDENTIALS_INVALID;
+        }
     }
     return _callbackCredentials;
+}
+
+
+-(NSString*) callbackCredentials
+{
+    return [self get_callbackCredentials];
 }
 
 /**
@@ -906,13 +905,12 @@
  * 
  * On failure, throws an exception or returns a negative error code.
  */
--(int) callbackLogin :(NSString*)username :(NSString*)password
+-(int) callbackLogin:(NSString*)username :(NSString*)password
 {
     NSString* rest_val;
     rest_val = [NSString stringWithFormat:@"%@:%@",username,password];
     return [self _setAttr:@"callbackCredentials" :rest_val];
 }
-
 /**
  * Returns the minimum waiting time between two callback notifications, in seconds.
  * 
@@ -920,16 +918,20 @@
  * 
  * On failure, throws an exception or returns Y_CALLBACKMINDELAY_INVALID.
  */
--(unsigned) get_callbackMinDelay
+-(int) get_callbackMinDelay
 {
-    return [self callbackMinDelay];
-}
--(unsigned) callbackMinDelay
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_CALLBACKMINDELAY_INVALID;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_CALLBACKMINDELAY_INVALID;
+        }
     }
     return _callbackMinDelay;
+}
+
+
+-(int) callbackMinDelay
+{
+    return [self get_callbackMinDelay];
 }
 
 /**
@@ -942,17 +944,16 @@
  * 
  * On failure, throws an exception or returns a negative error code.
  */
--(int) set_callbackMinDelay:(unsigned) newval
+-(int) set_callbackMinDelay:(int) newval
 {
     return [self setCallbackMinDelay:newval];
 }
--(int) setCallbackMinDelay:(unsigned) newval
+-(int) setCallbackMinDelay:(int) newval
 {
     NSString* rest_val;
-    rest_val = [NSString stringWithFormat:@"%u", newval];
+    rest_val = [NSString stringWithFormat:@"%d", newval];
     return [self _setAttr:@"callbackMinDelay" :rest_val];
 }
-
 /**
  * Returns the maximum waiting time between two callback notifications, in seconds.
  * 
@@ -960,16 +961,20 @@
  * 
  * On failure, throws an exception or returns Y_CALLBACKMAXDELAY_INVALID.
  */
--(unsigned) get_callbackMaxDelay
+-(int) get_callbackMaxDelay
 {
-    return [self callbackMaxDelay];
-}
--(unsigned) callbackMaxDelay
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_CALLBACKMAXDELAY_INVALID;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_CALLBACKMAXDELAY_INVALID;
+        }
     }
     return _callbackMaxDelay;
+}
+
+
+-(int) callbackMaxDelay
+{
+    return [self get_callbackMaxDelay];
 }
 
 /**
@@ -982,17 +987,16 @@
  * 
  * On failure, throws an exception or returns a negative error code.
  */
--(int) set_callbackMaxDelay:(unsigned) newval
+-(int) set_callbackMaxDelay:(int) newval
 {
     return [self setCallbackMaxDelay:newval];
 }
--(int) setCallbackMaxDelay:(unsigned) newval
+-(int) setCallbackMaxDelay:(int) newval
 {
     NSString* rest_val;
-    rest_val = [NSString stringWithFormat:@"%u", newval];
+    rest_val = [NSString stringWithFormat:@"%d", newval];
     return [self _setAttr:@"callbackMaxDelay" :rest_val];
 }
-
 /**
  * Returns the current consumed by the module from Power-over-Ethernet (PoE), in milli-amps.
  * The current consumption is measured after converting PoE source to 5 Volt, and should
@@ -1003,32 +1007,110 @@
  * 
  * On failure, throws an exception or returns Y_POECURRENT_INVALID.
  */
--(unsigned) get_poeCurrent
+-(int) get_poeCurrent
 {
-    return [self poeCurrent];
-}
--(unsigned) poeCurrent
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_POECURRENT_INVALID;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_POECURRENT_INVALID;
+        }
     }
     return _poeCurrent;
 }
+
+
+-(int) poeCurrent
+{
+    return [self get_poeCurrent];
+}
 /**
- * Pings str_host to test the network connectivity. Sends four requests ICMP ECHO_REQUEST from the
+ * Retrieves $AFUNCTION$ for a given identifier.
+ * The identifier can be specified using several formats:
+ * <ul>
+ * <li>FunctionLogicalName</li>
+ * <li>ModuleSerialNumber.FunctionIdentifier</li>
+ * <li>ModuleSerialNumber.FunctionLogicalName</li>
+ * <li>ModuleLogicalName.FunctionIdentifier</li>
+ * <li>ModuleLogicalName.FunctionLogicalName</li>
+ * </ul>
+ * 
+ * This function does not require that $THEFUNCTION$ is online at the time
+ * it is invoked. The returned object is nevertheless valid.
+ * Use the method YNetwork.isOnline() to test if $THEFUNCTION$ is
+ * indeed online at a given time. In case of ambiguity when looking for
+ * $AFUNCTION$ by logical name, no error is notified: the first instance
+ * found is returned. The search is performed first by hardware name,
+ * then by logical name.
+ * 
+ * @param func : a string that uniquely characterizes $THEFUNCTION$
+ * 
+ * @return a YNetwork object allowing you to drive $THEFUNCTION$.
+ */
++(YNetwork*) FindNetwork:(NSString*)func
+{
+    YNetwork* obj;
+    obj = (YNetwork*) [YFunction _FindFromCache:@"Network" :func];
+    if (obj == nil) {
+        obj = ARC_sendAutorelease([[YNetwork alloc] initWith:func]);
+        [YFunction _AddToCache:@"Network" : func :obj];
+    }
+    return obj;
+}
+
+/**
+ * Registers the callback function that is invoked on every change of advertised value.
+ * The callback is invoked only during the execution of ySleep or yHandleEvents.
+ * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
+ * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
+ * 
+ * @param callback : the callback function to call, or a null pointer. The callback function should take two
+ *         arguments: the function object of which the value has changed, and the character string describing
+ *         the new advertised value.
+ * @noreturn
+ */
+-(int) registerValueCallback:(YNetworkValueCallback)callback
+{
+    NSString* val;
+    if (callback != NULL) {
+        [YFunction _UpdateValueCallbackList:self :YES];
+    } else {
+        [YFunction _UpdateValueCallbackList:self :NO];
+    }
+    _valueCallbackNetwork = callback;
+    // Immediately invoke value callback with current value
+    if (callback != NULL && [self isOnline]) {
+        val = _advertisedValue;
+        if (!([val isEqualToString:@""])) {
+            [self _invokeValueCallback:val];
+        }
+    }
+    return 0;
+}
+
+-(int) _invokeValueCallback:(NSString*)value
+{
+    if (_valueCallbackNetwork != NULL) {
+        _valueCallbackNetwork(self, value);
+    } else {
+        [super _invokeValueCallback:value];
+    }
+    return 0;
+}
+
+/**
+ * Pings str_host to test the network connectivity. Sends four ICMP ECHO_REQUEST requests from the
  * module to the target str_host. This method returns a string with the result of the
- * 4 ICMP ECHO_REQUEST result.
+ * 4 ICMP ECHO_REQUEST requests.
  * 
  * @param host : the hostname or the IP address of the target
  * 
  * @return a string with the result of the ping.
  */
--(NSString*) ping :(NSString*)host
+-(NSString*) ping:(NSString*)host
 {
     NSData* content;
+    // may throw an exception
     content = [self _download:[NSString stringWithFormat:@"ping.txt?host=%@",host]];
     return ARC_sendAutorelease([[NSString alloc] initWithData:content encoding:NSASCIIStringEncoding]);
-    
 }
 
 
@@ -1039,53 +1121,7 @@
     if(YISERR([self _nextFunction:&hwid]) || [hwid isEqualToString:@""]) {
         return NULL;
     }
-    return yFindNetwork(hwid);
-}
--(void )    registerValueCallback:(YFunctionUpdateCallback)callback
-{ 
-    _callback = callback;
-    if (callback != NULL) {
-        [self _registerFuncCallback];
-    } else {
-        [self _unregisterFuncCallback];
-    }
-}
--(void )    set_objectCallback:(id)object :(SEL)selector
-{ [self setObjectCallback:object withSelector:selector];}
--(void )    setObjectCallback:(id)object :(SEL)selector
-{ [self setObjectCallback:object withSelector:selector];}
--(void )    setObjectCallback:(id)object withSelector:(SEL)selector
-{ 
-    _callbackObject = object;
-    _callbackSel    = selector;
-    if (object != nil) {
-        [self _registerFuncCallback];
-        if([self isOnline]) {
-           yapiLockFunctionCallBack(NULL);
-           yInternalPushNewVal([self functionDescriptor],[self advertisedValue]);
-           yapiUnlockFunctionCallBack(NULL);
-        }
-    } else {
-        [self _unregisterFuncCallback];
-    }
-}
-
-+(YNetwork*) FindNetwork:(NSString*) func
-{
-    YNetwork * retVal=nil;
-    if(func==nil) return nil;
-    // Search in cache
-    if ([YAPI_YFunctions objectForKey:@"YNetwork"] == nil){
-        [YAPI_YFunctions setObject:[NSMutableDictionary dictionary] forKey:@"YNetwork"];
-    }
-    if(nil != [[YAPI_YFunctions objectForKey:@"YNetwork"] objectForKey:func]){
-        retVal = [[YAPI_YFunctions objectForKey:@"YNetwork"] objectForKey:func];
-    } else {
-        retVal = [[YNetwork alloc] initWithFunction:func];
-        [[YAPI_YFunctions objectForKey:@"YNetwork"] setObject:retVal forKey:func];
-        ARC_autorelease(retVal);
-    }
-    return retVal;
+    return [YNetwork FindNetwork:hwid];
 }
 
 +(YNetwork *) FirstNetwork
@@ -1103,7 +1139,7 @@
     return nil;
 }
 
-//--- (end of YNetwork implementation)
+//--- (end of YNetwork public methods implementation)
 
 @end
 //--- (Network functions)

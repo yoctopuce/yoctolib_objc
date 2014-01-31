@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_colorled.h 12324 2013-08-13 15:10:31Z mvuilleu $
+ * $Id: yocto_colorled.h 14325 2014-01-11 01:42:47Z seb $
  *
  * Declares yFindColorLed(), the high-level API for ColorLed functions
  *
@@ -40,14 +40,26 @@
 #include "yocto_api.h"
 CF_EXTERN_C_BEGIN
 
-//--- (YColorLed definitions)
-#define Y_LOGICALNAME_INVALID           [YAPI  INVALID_STRING]
-#define Y_ADVERTISEDVALUE_INVALID       [YAPI  INVALID_STRING]
-#define Y_RGBCOLOR_INVALID              (0xffffffff)
-#define Y_HSLCOLOR_INVALID              (0xffffffff)
-#define Y_RGBCOLORATPOWERON_INVALID     (0xffffffff)
-//--- (end of YColorLed definitions)
+@class YColorLed;
 
+//--- (YColorLed globals)
+typedef void (*YColorLedValueCallback)(YColorLed *func, NSString *functionValue);
+#ifndef _STRUCT_MOVE
+#define _STRUCT_MOVE
+typedef struct _YMove {
+    int             target;
+    int             ms;
+    int             moving;
+} YMove;
+#endif
+#define Y_RGBMOVE_INVALID (YMove){YAPI_INVALID_INT,YAPI_INVALID_INT,YAPI_INVALID_UINT}
+#define Y_HSLMOVE_INVALID (YMove){YAPI_INVALID_INT,YAPI_INVALID_INT,YAPI_INVALID_UINT}
+#define Y_RGBCOLOR_INVALID              YAPI_INVALID_UINT
+#define Y_HSLCOLOR_INVALID              YAPI_INVALID_UINT
+#define Y_RGBCOLORATPOWERON_INVALID     YAPI_INVALID_UINT
+//--- (end of YColorLed globals)
+
+//--- (YColorLed class start)
 /**
  * YColorLed Class: ColorLed function interface
  * 
@@ -59,65 +71,138 @@ CF_EXTERN_C_BEGIN
  * difference between RGB and HSL in the section following this one.
  */
 @interface YColorLed : YFunction
+//--- (end of YColorLed class start)
 {
 @protected
-
-// Attributes (function value cache)
-//--- (YColorLed attributes)
-    NSString*       _logicalName;
-    NSString*       _advertisedValue;
-    unsigned        _rgbColor;
-    unsigned        _hslColor;
-    struct {
-        s32             target;
-        s16             ms;
-        u8              moving;
-    }  _rgbMove;
-    struct {
-        s32             target;
-        s16             ms;
-        u8              moving;
-    }  _hslMove;
-    unsigned        _rgbColorAtPowerOn;
-//--- (end of YColorLed attributes)
+//--- (YColorLed attributes declaration)
+    int             _rgbColor;
+    int             _hslColor;
+    YMove           _rgbMove;
+    YMove           _hslMove;
+    int             _rgbColorAtPowerOn;
+    YColorLedValueCallback _valueCallbackColorLed;
+//--- (end of YColorLed attributes declaration)
 }
-//--- (YColorLed declaration)
 // Constructor is protected, use yFindColorLed factory function to instantiate
--(id)    initWithFunction:(NSString*) func;
+-(id)    initWith:(NSString*) func;
 
+//--- (YColorLed private methods declaration)
 // Function-specific method for parsing of JSON output and caching result
--(int)             _parse:(yJsonStateMachine*) j;
+-(int)             _parseAttr:(yJsonStateMachine*) j;
 
+//--- (end of YColorLed private methods declaration)
+//--- (YColorLed public methods declaration)
 /**
- * Registers the callback function that is invoked on every change of advertised value.
- * The callback is invoked only during the execution of ySleep or yHandleEvents.
- * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
- * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
+ * Returns the current RGB color of the led.
  * 
- * @param callback : the callback function to call, or a null pointer. The callback function should take two
- *         arguments: the function object of which the value has changed, and the character string describing
- *         the new advertised value.
- * @noreturn
- */
--(void)     registerValueCallback:(YFunctionUpdateCallback) callback;   
-/**
- * comment from .yc definition
- */
--(void)     set_objectCallback:(id) object :(SEL)selector;
--(void)     setObjectCallback:(id) object :(SEL)selector;
--(void)     setObjectCallback:(id) object withSelector:(SEL)selector;
-
-//--- (end of YColorLed declaration)
-//--- (YColorLed accessors declaration)
-
-/**
- * Continues the enumeration of RGB leds started using yFirstColorLed().
+ * @return an integer corresponding to the current RGB color of the led
  * 
- * @return a pointer to a YColorLed object, corresponding to
- *         an RGB led currently online, or a null pointer
- *         if there are no more RGB leds to enumerate.
+ * On failure, throws an exception or returns Y_RGBCOLOR_INVALID.
  */
--(YColorLed*) nextColorLed;
+-(int)     get_rgbColor;
+
+
+-(int) rgbColor;
+/**
+ * Changes the current color of the led, using a RGB color. Encoding is done as follows: 0xRRGGBB.
+ * 
+ * @param newval : an integer corresponding to the current color of the led, using a RGB color
+ * 
+ * @return YAPI_SUCCESS if the call succeeds.
+ * 
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     set_rgbColor:(int) newval;
+-(int)     setRgbColor:(int) newval;
+
+/**
+ * Returns the current HSL color of the led.
+ * 
+ * @return an integer corresponding to the current HSL color of the led
+ * 
+ * On failure, throws an exception or returns Y_HSLCOLOR_INVALID.
+ */
+-(int)     get_hslColor;
+
+
+-(int) hslColor;
+/**
+ * Changes the current color of the led, using a color HSL. Encoding is done as follows: 0xHHSSLL.
+ * 
+ * @param newval : an integer corresponding to the current color of the led, using a color HSL
+ * 
+ * @return YAPI_SUCCESS if the call succeeds.
+ * 
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     set_hslColor:(int) newval;
+-(int)     setHslColor:(int) newval;
+
+-(YMove)     get_rgbMove;
+
+
+-(YMove) rgbMove;
+-(int)     set_rgbMove:(YMove) newval;
+-(int)     setRgbMove:(YMove) newval;
+
+/**
+ * Performs a smooth transition in the RGB color space between the current color and a target color.
+ * 
+ * @param rgb_target  : desired RGB color at the end of the transition
+ * @param ms_duration : duration of the transition, in millisecond
+ * 
+ * @return YAPI_SUCCESS if the call succeeds.
+ * 
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     rgbMove:(int)rgb_target :(int)ms_duration;
+
+-(YMove)     get_hslMove;
+
+
+-(YMove) hslMove;
+-(int)     set_hslMove:(YMove) newval;
+-(int)     setHslMove:(YMove) newval;
+
+/**
+ * Performs a smooth transition in the HSL color space between the current color and a target color.
+ * 
+ * @param hsl_target  : desired HSL color at the end of the transition
+ * @param ms_duration : duration of the transition, in millisecond
+ * 
+ * @return YAPI_SUCCESS if the call succeeds.
+ * 
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     hslMove:(int)hsl_target :(int)ms_duration;
+
+/**
+ * Returns the configured color to be displayed when the module is turned on.
+ * 
+ * @return an integer corresponding to the configured color to be displayed when the module is turned on
+ * 
+ * On failure, throws an exception or returns Y_RGBCOLORATPOWERON_INVALID.
+ */
+-(int)     get_rgbColorAtPowerOn;
+
+
+-(int) rgbColorAtPowerOn;
+/**
+ * Changes the color that the led will display by default when the module is turned on.
+ * This color will be displayed as soon as the module is powered on.
+ * Remember to call the saveToFlash() method of the module if the
+ * change should be kept.
+ * 
+ * @param newval : an integer corresponding to the color that the led will display by default when the
+ * module is turned on
+ * 
+ * @return YAPI_SUCCESS if the call succeeds.
+ * 
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     set_rgbColorAtPowerOn:(int) newval;
+-(int)     setRgbColorAtPowerOn:(int) newval;
+
 /**
  * Retrieves an RGB led for a given identifier.
  * The identifier can be specified using several formats:
@@ -141,7 +226,32 @@ CF_EXTERN_C_BEGIN
  * 
  * @return a YColorLed object allowing you to drive the RGB led.
  */
-+(YColorLed*) FindColorLed:(NSString*) func;
++(YColorLed*)     FindColorLed:(NSString*)func;
+
+/**
+ * Registers the callback function that is invoked on every change of advertised value.
+ * The callback is invoked only during the execution of ySleep or yHandleEvents.
+ * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
+ * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
+ * 
+ * @param callback : the callback function to call, or a null pointer. The callback function should take two
+ *         arguments: the function object of which the value has changed, and the character string describing
+ *         the new advertised value.
+ * @noreturn
+ */
+-(int)     registerValueCallback:(YColorLedValueCallback)callback;
+
+-(int)     _invokeValueCallback:(NSString*)value;
+
+
+/**
+ * Continues the enumeration of RGB leds started using yFirstColorLed().
+ * 
+ * @return a pointer to a YColorLed object, corresponding to
+ *         an RGB led currently online, or a null pointer
+ *         if there are no more RGB leds to enumerate.
+ */
+-(YColorLed*) nextColorLed;
 /**
  * Starts the enumeration of RGB leds currently accessible.
  * Use the method YColorLed.nextColorLed() to iterate on
@@ -152,150 +262,11 @@ CF_EXTERN_C_BEGIN
  *         if there are none.
  */
 +(YColorLed*) FirstColorLed;
+//--- (end of YColorLed public methods declaration)
 
-/**
- * Returns the logical name of the RGB led.
- * 
- * @return a string corresponding to the logical name of the RGB led
- * 
- * On failure, throws an exception or returns Y_LOGICALNAME_INVALID.
- */
--(NSString*) get_logicalName;
--(NSString*) logicalName;
-
-/**
- * Changes the logical name of the RGB led. You can use yCheckLogicalName()
- * prior to this call to make sure that your parameter is valid.
- * Remember to call the saveToFlash() method of the module if the
- * modification must be kept.
- * 
- * @param newval : a string corresponding to the logical name of the RGB led
- * 
- * @return YAPI_SUCCESS if the call succeeds.
- * 
- * On failure, throws an exception or returns a negative error code.
- */
--(int)     set_logicalName:(NSString*) newval;
--(int)     setLogicalName:(NSString*) newval;
-
-/**
- * Returns the current value of the RGB led (no more than 6 characters).
- * 
- * @return a string corresponding to the current value of the RGB led (no more than 6 characters)
- * 
- * On failure, throws an exception or returns Y_ADVERTISEDVALUE_INVALID.
- */
--(NSString*) get_advertisedValue;
--(NSString*) advertisedValue;
-
-/**
- * Returns the current RGB color of the led.
- * 
- * @return an integer corresponding to the current RGB color of the led
- * 
- * On failure, throws an exception or returns Y_RGBCOLOR_INVALID.
- */
--(unsigned) get_rgbColor;
--(unsigned) rgbColor;
-
-/**
- * Changes the current color of the led, using a RGB color. Encoding is done as follows: 0xRRGGBB.
- * 
- * @param newval : an integer corresponding to the current color of the led, using a RGB color
- * 
- * @return YAPI_SUCCESS if the call succeeds.
- * 
- * On failure, throws an exception or returns a negative error code.
- */
--(int)     set_rgbColor:(unsigned) newval;
--(int)     setRgbColor:(unsigned) newval;
-
-/**
- * Returns the current HSL color of the led.
- * 
- * @return an integer corresponding to the current HSL color of the led
- * 
- * On failure, throws an exception or returns Y_HSLCOLOR_INVALID.
- */
--(unsigned) get_hslColor;
--(unsigned) hslColor;
-
-/**
- * Changes the current color of the led, using a color HSL. Encoding is done as follows: 0xHHSSLL.
- * 
- * @param newval : an integer corresponding to the current color of the led, using a color HSL
- * 
- * @return YAPI_SUCCESS if the call succeeds.
- * 
- * On failure, throws an exception or returns a negative error code.
- */
--(int)     set_hslColor:(unsigned) newval;
--(int)     setHslColor:(unsigned) newval;
-
--(YRETCODE) get_rgbMove :(s32*)target :(s16*)ms :(u8*)moving;
-
--(YRETCODE)     set_rgbMove :(s32)target :(s16)ms :(u8)moving;
-
-/**
- * Performs a smooth transition in the RGB color space between the current color and a target color.
- * 
- * @param rgb_target  : desired RGB color at the end of the transition
- * @param ms_duration : duration of the transition, in millisecond
- * 
- * @return YAPI_SUCCESS if the call succeeds.
- * 
- * On failure, throws an exception or returns a negative error code.
- */
--(int)     rgbMove :(int)rgb_target :(int)ms_duration;
-
--(YRETCODE) get_hslMove :(s32*)target :(s16*)ms :(u8*)moving;
-
--(YRETCODE)     set_hslMove :(s32)target :(s16)ms :(u8)moving;
-
-/**
- * Performs a smooth transition in the HSL color space between the current color and a target color.
- * 
- * @param hsl_target  : desired HSL color at the end of the transition
- * @param ms_duration : duration of the transition, in millisecond
- * 
- * @return YAPI_SUCCESS if the call succeeds.
- * 
- * On failure, throws an exception or returns a negative error code.
- */
--(int)     hslMove :(int)hsl_target :(int)ms_duration;
-
-/**
- * Returns the configured color to be displayed when the module is turned on.
- * 
- * @return an integer corresponding to the configured color to be displayed when the module is turned on
- * 
- * On failure, throws an exception or returns Y_RGBCOLORATPOWERON_INVALID.
- */
--(unsigned) get_rgbColorAtPowerOn;
--(unsigned) rgbColorAtPowerOn;
-
-/**
- * Changes the color that the led will display by default when the module is turned on.
- * This color will be displayed as soon as the module is powered on.
- * Remember to call the saveToFlash() method of the module if the
- * change should be kept.
- * 
- * @param newval : an integer corresponding to the color that the led will display by default when the
- * module is turned on
- * 
- * @return YAPI_SUCCESS if the call succeeds.
- * 
- * On failure, throws an exception or returns a negative error code.
- */
--(int)     set_rgbColorAtPowerOn:(unsigned) newval;
--(int)     setRgbColorAtPowerOn:(unsigned) newval;
-
-
-//--- (end of YColorLed accessors declaration)
 @end
 
 //--- (ColorLed functions declaration)
-
 /**
  * Retrieves an RGB led for a given identifier.
  * The identifier can be specified using several formats:

@@ -1,8 +1,8 @@
 /*********************************************************************
  *
- * $Id: yocto_oscontrol.m 12337 2013-08-14 15:22:22Z mvuilleu $
+ * $Id: yocto_oscontrol.m 14721 2014-01-24 17:58:44Z seb $
  *
- * Implements yFindOsControl(), the high-level API for OsControl functions
+ * Implements the high-level API for OsControl functions
  *
  * - - - - - - - - - License information: - - - - - - - - - 
  *
@@ -47,121 +47,37 @@
 @implementation YOsControl
 
 // Constructor is protected, use yFindOsControl factory function to instantiate
--(id)              initWithFunction:(NSString*) func
+-(id)              initWith:(NSString*) func
 {
-//--- (YOsControl attributes)
-   if(!(self = [super initProtected:@"OsControl":func]))
+   if(!(self = [super initWith:func]))
           return nil;
-    _logicalName = Y_LOGICALNAME_INVALID;
-    _advertisedValue = Y_ADVERTISEDVALUE_INVALID;
+    _className = @"OsControl";
+//--- (YOsControl attributes initialization)
     _shutdownCountdown = Y_SHUTDOWNCOUNTDOWN_INVALID;
-//--- (end of YOsControl attributes)
+    _valueCallbackOsControl = NULL;
+//--- (end of YOsControl attributes initialization)
     return self;
 }
 // destructor 
 -(void)  dealloc
 {
 //--- (YOsControl cleanup)
-    ARC_release(_logicalName);
-    _logicalName = nil;
-    ARC_release(_advertisedValue);
-    _advertisedValue = nil;
-//--- (end of YOsControl cleanup)
     ARC_dealloc(super);
+//--- (end of YOsControl cleanup)
 }
-//--- (YOsControl implementation)
+//--- (YOsControl private methods implementation)
 
--(int) _parse:(yJsonStateMachine*) j
+-(int) _parseAttr:(yJsonStateMachine*) j
 {
-    if(yJsonParse(j) != YJSON_PARSE_AVAIL || j->st != YJSON_PARSE_STRUCT) {
-    failed:
-        return -1;
+    if(!strcmp(j->token, "shutdownCountdown")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _shutdownCountdown =  atoi(j->token);
+        return 1;
     }
-    while(yJsonParse(j) == YJSON_PARSE_AVAIL && j->st == YJSON_PARSE_MEMBNAME) {
-        if(!strcmp(j->token, "logicalName")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            ARC_release(_logicalName);
-            _logicalName =  [self _parseString:j];
-            ARC_retain(_logicalName);
-        } else if(!strcmp(j->token, "advertisedValue")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            ARC_release(_advertisedValue);
-            _advertisedValue =  [self _parseString:j];
-            ARC_retain(_advertisedValue);
-        } else if(!strcmp(j->token, "shutdownCountdown")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            _shutdownCountdown =  atoi(j->token);
-        } else {
-            // ignore unknown field
-            yJsonSkip(j, 1);
-        }
-    }
-    if(j->st != YJSON_PARSE_STRUCT) goto failed;
-    return 0;
+    return [super _parseAttr:j];
 }
-
-/**
- * Returns the logical name of the OS control, corresponding to the network name of the module.
- * 
- * @return a string corresponding to the logical name of the OS control, corresponding to the network
- * name of the module
- * 
- * On failure, throws an exception or returns Y_LOGICALNAME_INVALID.
- */
--(NSString*) get_logicalName
-{
-    return [self logicalName];
-}
--(NSString*) logicalName
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_LOGICALNAME_INVALID;
-    }
-    return _logicalName;
-}
-
-/**
- * Changes the logical name of the OS control. You can use yCheckLogicalName()
- * prior to this call to make sure that your parameter is valid.
- * Remember to call the saveToFlash() method of the module if the
- * modification must be kept.
- * 
- * @param newval : a string corresponding to the logical name of the OS control
- * 
- * @return YAPI_SUCCESS if the call succeeds.
- * 
- * On failure, throws an exception or returns a negative error code.
- */
--(int) set_logicalName:(NSString*) newval
-{
-    return [self setLogicalName:newval];
-}
--(int) setLogicalName:(NSString*) newval
-{
-    NSString* rest_val;
-    rest_val = newval;
-    return [self _setAttr:@"logicalName" :rest_val];
-}
-
-/**
- * Returns the current value of the OS control (no more than 6 characters).
- * 
- * @return a string corresponding to the current value of the OS control (no more than 6 characters)
- * 
- * On failure, throws an exception or returns Y_ADVERTISEDVALUE_INVALID.
- */
--(NSString*) get_advertisedValue
-{
-    return [self advertisedValue];
-}
--(NSString*) advertisedValue
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_ADVERTISEDVALUE_INVALID;
-    }
-    return _advertisedValue;
-}
-
+//--- (end of YOsControl private methods implementation)
+//--- (YOsControl public methods implementation)
 /**
  * Returns the remaining number of seconds before the OS shutdown, or zero when no
  * shutdown has been scheduled.
@@ -171,27 +87,104 @@
  * 
  * On failure, throws an exception or returns Y_SHUTDOWNCOUNTDOWN_INVALID.
  */
--(unsigned) get_shutdownCountdown
+-(int) get_shutdownCountdown
 {
-    return [self shutdownCountdown];
-}
--(unsigned) shutdownCountdown
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_SHUTDOWNCOUNTDOWN_INVALID;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_SHUTDOWNCOUNTDOWN_INVALID;
+        }
     }
     return _shutdownCountdown;
 }
 
--(int) set_shutdownCountdown:(unsigned) newval
+
+-(int) shutdownCountdown
+{
+    return [self get_shutdownCountdown];
+}
+
+-(int) set_shutdownCountdown:(int) newval
 {
     return [self setShutdownCountdown:newval];
 }
--(int) setShutdownCountdown:(unsigned) newval
+-(int) setShutdownCountdown:(int) newval
 {
     NSString* rest_val;
-    rest_val = [NSString stringWithFormat:@"%u", newval];
+    rest_val = [NSString stringWithFormat:@"%d", newval];
     return [self _setAttr:@"shutdownCountdown" :rest_val];
+}
+/**
+ * Retrieves $AFUNCTION$ for a given identifier.
+ * The identifier can be specified using several formats:
+ * <ul>
+ * <li>FunctionLogicalName</li>
+ * <li>ModuleSerialNumber.FunctionIdentifier</li>
+ * <li>ModuleSerialNumber.FunctionLogicalName</li>
+ * <li>ModuleLogicalName.FunctionIdentifier</li>
+ * <li>ModuleLogicalName.FunctionLogicalName</li>
+ * </ul>
+ * 
+ * This function does not require that $THEFUNCTION$ is online at the time
+ * it is invoked. The returned object is nevertheless valid.
+ * Use the method YOsControl.isOnline() to test if $THEFUNCTION$ is
+ * indeed online at a given time. In case of ambiguity when looking for
+ * $AFUNCTION$ by logical name, no error is notified: the first instance
+ * found is returned. The search is performed first by hardware name,
+ * then by logical name.
+ * 
+ * @param func : a string that uniquely characterizes $THEFUNCTION$
+ * 
+ * @return a YOsControl object allowing you to drive $THEFUNCTION$.
+ */
++(YOsControl*) FindOsControl:(NSString*)func
+{
+    YOsControl* obj;
+    obj = (YOsControl*) [YFunction _FindFromCache:@"OsControl" :func];
+    if (obj == nil) {
+        obj = ARC_sendAutorelease([[YOsControl alloc] initWith:func]);
+        [YFunction _AddToCache:@"OsControl" : func :obj];
+    }
+    return obj;
+}
+
+/**
+ * Registers the callback function that is invoked on every change of advertised value.
+ * The callback is invoked only during the execution of ySleep or yHandleEvents.
+ * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
+ * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
+ * 
+ * @param callback : the callback function to call, or a null pointer. The callback function should take two
+ *         arguments: the function object of which the value has changed, and the character string describing
+ *         the new advertised value.
+ * @noreturn
+ */
+-(int) registerValueCallback:(YOsControlValueCallback)callback
+{
+    NSString* val;
+    if (callback != NULL) {
+        [YFunction _UpdateValueCallbackList:self :YES];
+    } else {
+        [YFunction _UpdateValueCallbackList:self :NO];
+    }
+    _valueCallbackOsControl = callback;
+    // Immediately invoke value callback with current value
+    if (callback != NULL && [self isOnline]) {
+        val = _advertisedValue;
+        if (!([val isEqualToString:@""])) {
+            [self _invokeValueCallback:val];
+        }
+    }
+    return 0;
+}
+
+-(int) _invokeValueCallback:(NSString*)value
+{
+    if (_valueCallbackOsControl != NULL) {
+        _valueCallbackOsControl(self, value);
+    } else {
+        [super _invokeValueCallback:value];
+    }
+    return 0;
 }
 
 /**
@@ -199,16 +192,15 @@
  * 
  * @param secBeforeShutDown : number of seconds before shutdown
  * 
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI_SUCCESS when the call succeeds.
  * 
  * On failure, throws an exception or returns a negative error code.
  */
--(int) shutdown :(int)secBeforeShutDown
+-(int) shutdown:(int)secBeforeShutDown
 {
-    NSString* rest_val;
-    rest_val = [NSString stringWithFormat:@"%u", secBeforeShutDown];
-    return [self _setAttr:@"shutdownCountdown" :rest_val];
+    return [self set_shutdownCountdown:secBeforeShutDown];
 }
+
 
 -(YOsControl*)   nextOsControl
 {
@@ -217,53 +209,7 @@
     if(YISERR([self _nextFunction:&hwid]) || [hwid isEqualToString:@""]) {
         return NULL;
     }
-    return yFindOsControl(hwid);
-}
--(void )    registerValueCallback:(YFunctionUpdateCallback)callback
-{ 
-    _callback = callback;
-    if (callback != NULL) {
-        [self _registerFuncCallback];
-    } else {
-        [self _unregisterFuncCallback];
-    }
-}
--(void )    set_objectCallback:(id)object :(SEL)selector
-{ [self setObjectCallback:object withSelector:selector];}
--(void )    setObjectCallback:(id)object :(SEL)selector
-{ [self setObjectCallback:object withSelector:selector];}
--(void )    setObjectCallback:(id)object withSelector:(SEL)selector
-{ 
-    _callbackObject = object;
-    _callbackSel    = selector;
-    if (object != nil) {
-        [self _registerFuncCallback];
-        if([self isOnline]) {
-           yapiLockFunctionCallBack(NULL);
-           yInternalPushNewVal([self functionDescriptor],[self advertisedValue]);
-           yapiUnlockFunctionCallBack(NULL);
-        }
-    } else {
-        [self _unregisterFuncCallback];
-    }
-}
-
-+(YOsControl*) FindOsControl:(NSString*) func
-{
-    YOsControl * retVal=nil;
-    if(func==nil) return nil;
-    // Search in cache
-    if ([YAPI_YFunctions objectForKey:@"YOsControl"] == nil){
-        [YAPI_YFunctions setObject:[NSMutableDictionary dictionary] forKey:@"YOsControl"];
-    }
-    if(nil != [[YAPI_YFunctions objectForKey:@"YOsControl"] objectForKey:func]){
-        retVal = [[YAPI_YFunctions objectForKey:@"YOsControl"] objectForKey:func];
-    } else {
-        retVal = [[YOsControl alloc] initWithFunction:func];
-        [[YAPI_YFunctions objectForKey:@"YOsControl"] setObject:retVal forKey:func];
-        ARC_autorelease(retVal);
-    }
-    return retVal;
+    return [YOsControl FindOsControl:hwid];
 }
 
 +(YOsControl *) FirstOsControl
@@ -281,7 +227,7 @@
     return nil;
 }
 
-//--- (end of YOsControl implementation)
+//--- (end of YOsControl public methods implementation)
 
 @end
 //--- (OsControl functions)

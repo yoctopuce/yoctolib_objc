@@ -1,8 +1,8 @@
 /*********************************************************************
  *
- * $Id: yocto_servo.m 12324 2013-08-13 15:10:31Z mvuilleu $
+ * $Id: yocto_servo.m 14721 2014-01-24 17:58:44Z seb $
  *
- * Implements yFindServo(), the high-level API for Servo functions
+ * Implements the high-level API for Servo functions
  *
  * - - - - - - - - - License information: - - - - - - - - - 
  *
@@ -47,145 +47,68 @@
 @implementation YServo
 
 // Constructor is protected, use yFindServo factory function to instantiate
--(id)              initWithFunction:(NSString*) func
+-(id)              initWith:(NSString*) func
 {
-//--- (YServo attributes)
-   if(!(self = [super initProtected:@"Servo":func]))
+   if(!(self = [super initWith:func]))
           return nil;
-    _logicalName = Y_LOGICALNAME_INVALID;
-    _advertisedValue = Y_ADVERTISEDVALUE_INVALID;
+    _className = @"Servo";
+//--- (YServo attributes initialization)
     _position = Y_POSITION_INVALID;
     _range = Y_RANGE_INVALID;
     _neutral = Y_NEUTRAL_INVALID;
-//--- (end of YServo attributes)
+    _move = Y_MOVE_INVALID;
+    _valueCallbackServo = NULL;
+//--- (end of YServo attributes initialization)
     return self;
 }
 // destructor 
 -(void)  dealloc
 {
 //--- (YServo cleanup)
-    ARC_release(_logicalName);
-    _logicalName = nil;
-    ARC_release(_advertisedValue);
-    _advertisedValue = nil;
-//--- (end of YServo cleanup)
     ARC_dealloc(super);
+//--- (end of YServo cleanup)
 }
-//--- (YServo implementation)
+//--- (YServo private methods implementation)
 
--(int) _parse:(yJsonStateMachine*) j
+-(int) _parseAttr:(yJsonStateMachine*) j
 {
-    if(yJsonParse(j) != YJSON_PARSE_AVAIL || j->st != YJSON_PARSE_STRUCT) {
-    failed:
-        return -1;
+    if(!strcmp(j->token, "position")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _position =  atoi(j->token);
+        return 1;
     }
-    while(yJsonParse(j) == YJSON_PARSE_AVAIL && j->st == YJSON_PARSE_MEMBNAME) {
-        if(!strcmp(j->token, "logicalName")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            ARC_release(_logicalName);
-            _logicalName =  [self _parseString:j];
-            ARC_retain(_logicalName);
-        } else if(!strcmp(j->token, "advertisedValue")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            ARC_release(_advertisedValue);
-            _advertisedValue =  [self _parseString:j];
-            ARC_retain(_advertisedValue);
-        } else if(!strcmp(j->token, "position")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            _position =  atoi(j->token);
-        } else if(!strcmp(j->token, "range")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            _range =  atoi(j->token);
-        } else if(!strcmp(j->token, "neutral")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            _neutral =  atoi(j->token);
-        } else if(!strcmp(j->token, "move")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            if(j->st != YJSON_PARSE_STRUCT) goto failed;
+    if(!strcmp(j->token, "range")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _range =  atoi(j->token);
+        return 1;
+    }
+    if(!strcmp(j->token, "neutral")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _neutral =  atoi(j->token);
+        return 1;
+    }
+    if(!strcmp(j->token, "move")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        if(j->st == YJSON_PARSE_STRUCT) {
             while(yJsonParse(j) == YJSON_PARSE_AVAIL && j->st == YJSON_PARSE_MEMBNAME) {
                 if(!strcmp(j->token, "moving")) {
-                    if(yJsonParse(j) != YJSON_PARSE_AVAIL) goto failed;
-                    _move.moving = atoi(j->token);
+                    if(yJsonParse(j) == YJSON_PARSE_AVAIL)
+                        _move.moving = atoi(j->token);
                 } else if(!strcmp(j->token, "target")) {
-                    if(yJsonParse(j) != YJSON_PARSE_AVAIL) goto failed;
-                    _move.target = atoi(j->token);
+                    if(yJsonParse(j) == YJSON_PARSE_AVAIL)
+                        _move.target = atoi(j->token);
                 } else if(!strcmp(j->token, "ms")) {
-                    if(yJsonParse(j) != YJSON_PARSE_AVAIL) goto failed;
-                    _move.ms = atoi(j->token);
+                    if(yJsonParse(j) == YJSON_PARSE_AVAIL)
+                        _move.ms = atoi(j->token);
                 }
             }
-            if(j->st != YJSON_PARSE_STRUCT) goto failed; 
-            
-        } else {
-            // ignore unknown field
-            yJsonSkip(j, 1);
         }
+        return 1;
     }
-    if(j->st != YJSON_PARSE_STRUCT) goto failed;
-    return 0;
+    return [super _parseAttr:j];
 }
-
-/**
- * Returns the logical name of the servo.
- * 
- * @return a string corresponding to the logical name of the servo
- * 
- * On failure, throws an exception or returns Y_LOGICALNAME_INVALID.
- */
--(NSString*) get_logicalName
-{
-    return [self logicalName];
-}
--(NSString*) logicalName
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_LOGICALNAME_INVALID;
-    }
-    return _logicalName;
-}
-
-/**
- * Changes the logical name of the servo. You can use yCheckLogicalName()
- * prior to this call to make sure that your parameter is valid.
- * Remember to call the saveToFlash() method of the module if the
- * modification must be kept.
- * 
- * @param newval : a string corresponding to the logical name of the servo
- * 
- * @return YAPI_SUCCESS if the call succeeds.
- * 
- * On failure, throws an exception or returns a negative error code.
- */
--(int) set_logicalName:(NSString*) newval
-{
-    return [self setLogicalName:newval];
-}
--(int) setLogicalName:(NSString*) newval
-{
-    NSString* rest_val;
-    rest_val = newval;
-    return [self _setAttr:@"logicalName" :rest_val];
-}
-
-/**
- * Returns the current value of the servo (no more than 6 characters).
- * 
- * @return a string corresponding to the current value of the servo (no more than 6 characters)
- * 
- * On failure, throws an exception or returns Y_ADVERTISEDVALUE_INVALID.
- */
--(NSString*) get_advertisedValue
-{
-    return [self advertisedValue];
-}
--(NSString*) advertisedValue
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_ADVERTISEDVALUE_INVALID;
-    }
-    return _advertisedValue;
-}
-
+//--- (end of YServo private methods implementation)
+//--- (YServo public methods implementation)
 /**
  * Returns the current servo position.
  * 
@@ -195,14 +118,18 @@
  */
 -(int) get_position
 {
-    return [self position];
-}
--(int) position
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_POSITION_INVALID;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_POSITION_INVALID;
+        }
     }
     return _position;
+}
+
+
+-(int) position
+{
+    return [self get_position];
 }
 
 /**
@@ -224,7 +151,6 @@
     rest_val = [NSString stringWithFormat:@"%d", newval];
     return [self _setAttr:@"position" :rest_val];
 }
-
 /**
  * Returns the current range of use of the servo.
  * 
@@ -234,14 +160,18 @@
  */
 -(int) get_range
 {
-    return [self range];
-}
--(int) range
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_RANGE_INVALID;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_RANGE_INVALID;
+        }
     }
     return _range;
+}
+
+
+-(int) range
+{
+    return [self get_range];
 }
 
 /**
@@ -265,10 +195,9 @@
 -(int) setRange:(int) newval
 {
     NSString* rest_val;
-    rest_val = [NSString stringWithFormat:@"%u", newval];
+    rest_val = [NSString stringWithFormat:@"%d", newval];
     return [self _setAttr:@"range" :rest_val];
 }
-
 /**
  * Returns the duration in microseconds of a neutral pulse for the servo.
  * 
@@ -278,14 +207,18 @@
  */
 -(int) get_neutral
 {
-    return [self neutral];
-}
--(int) neutral
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_NEUTRAL_INVALID;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_NEUTRAL_INVALID;
+        }
     }
     return _neutral;
+}
+
+
+-(int) neutral
+{
+    return [self get_neutral];
 }
 
 /**
@@ -309,25 +242,33 @@
 -(int) setNeutral:(int) newval
 {
     NSString* rest_val;
-    rest_val = [NSString stringWithFormat:@"%u", newval];
+    rest_val = [NSString stringWithFormat:@"%d", newval];
     return [self _setAttr:@"neutral" :rest_val];
 }
-
--(YRETCODE) get_move :(s32*)target :(s16*)ms :(u8*)moving
+-(YMove) get_move
 {
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return YAPI_IO_ERROR;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_MOVE_INVALID;
+        }
     }
-    *target = _move.target;
-    *ms = _move.ms;
-    *moving = _move.moving;
-    return YAPI_SUCCESS;
+    return _move;
 }
 
--(YRETCODE) set_move :(s32)target :(s16)ms :(u8)moving
+
+-(YMove) move
+{
+    return [self get_move];
+}
+
+-(int) set_move:(YMove) newval
+{
+    return [self setMove:newval];
+}
+-(int) setMove:(YMove) newval
 {
     NSString* rest_val;
-    rest_val = [NSString stringWithFormat:@"%d:%d",target,ms];
+    rest_val = [NSString stringWithFormat:@"%d:%d",newval.target,newval.ms];
     return [self _setAttr:@"move" :rest_val];
 }
 
@@ -341,12 +282,86 @@
  * 
  * On failure, throws an exception or returns a negative error code.
  */
--(int) move :(int)target :(int)ms_duration
+-(int) move:(int)target :(int)ms_duration
 {
     NSString* rest_val;
     rest_val = [NSString stringWithFormat:@"%d:%d",target,ms_duration];
     return [self _setAttr:@"move" :rest_val];
 }
+/**
+ * Retrieves $AFUNCTION$ for a given identifier.
+ * The identifier can be specified using several formats:
+ * <ul>
+ * <li>FunctionLogicalName</li>
+ * <li>ModuleSerialNumber.FunctionIdentifier</li>
+ * <li>ModuleSerialNumber.FunctionLogicalName</li>
+ * <li>ModuleLogicalName.FunctionIdentifier</li>
+ * <li>ModuleLogicalName.FunctionLogicalName</li>
+ * </ul>
+ * 
+ * This function does not require that $THEFUNCTION$ is online at the time
+ * it is invoked. The returned object is nevertheless valid.
+ * Use the method YServo.isOnline() to test if $THEFUNCTION$ is
+ * indeed online at a given time. In case of ambiguity when looking for
+ * $AFUNCTION$ by logical name, no error is notified: the first instance
+ * found is returned. The search is performed first by hardware name,
+ * then by logical name.
+ * 
+ * @param func : a string that uniquely characterizes $THEFUNCTION$
+ * 
+ * @return a YServo object allowing you to drive $THEFUNCTION$.
+ */
++(YServo*) FindServo:(NSString*)func
+{
+    YServo* obj;
+    obj = (YServo*) [YFunction _FindFromCache:@"Servo" :func];
+    if (obj == nil) {
+        obj = ARC_sendAutorelease([[YServo alloc] initWith:func]);
+        [YFunction _AddToCache:@"Servo" : func :obj];
+    }
+    return obj;
+}
+
+/**
+ * Registers the callback function that is invoked on every change of advertised value.
+ * The callback is invoked only during the execution of ySleep or yHandleEvents.
+ * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
+ * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
+ * 
+ * @param callback : the callback function to call, or a null pointer. The callback function should take two
+ *         arguments: the function object of which the value has changed, and the character string describing
+ *         the new advertised value.
+ * @noreturn
+ */
+-(int) registerValueCallback:(YServoValueCallback)callback
+{
+    NSString* val;
+    if (callback != NULL) {
+        [YFunction _UpdateValueCallbackList:self :YES];
+    } else {
+        [YFunction _UpdateValueCallbackList:self :NO];
+    }
+    _valueCallbackServo = callback;
+    // Immediately invoke value callback with current value
+    if (callback != NULL && [self isOnline]) {
+        val = _advertisedValue;
+        if (!([val isEqualToString:@""])) {
+            [self _invokeValueCallback:val];
+        }
+    }
+    return 0;
+}
+
+-(int) _invokeValueCallback:(NSString*)value
+{
+    if (_valueCallbackServo != NULL) {
+        _valueCallbackServo(self, value);
+    } else {
+        [super _invokeValueCallback:value];
+    }
+    return 0;
+}
+
 
 -(YServo*)   nextServo
 {
@@ -355,53 +370,7 @@
     if(YISERR([self _nextFunction:&hwid]) || [hwid isEqualToString:@""]) {
         return NULL;
     }
-    return yFindServo(hwid);
-}
--(void )    registerValueCallback:(YFunctionUpdateCallback)callback
-{ 
-    _callback = callback;
-    if (callback != NULL) {
-        [self _registerFuncCallback];
-    } else {
-        [self _unregisterFuncCallback];
-    }
-}
--(void )    set_objectCallback:(id)object :(SEL)selector
-{ [self setObjectCallback:object withSelector:selector];}
--(void )    setObjectCallback:(id)object :(SEL)selector
-{ [self setObjectCallback:object withSelector:selector];}
--(void )    setObjectCallback:(id)object withSelector:(SEL)selector
-{ 
-    _callbackObject = object;
-    _callbackSel    = selector;
-    if (object != nil) {
-        [self _registerFuncCallback];
-        if([self isOnline]) {
-           yapiLockFunctionCallBack(NULL);
-           yInternalPushNewVal([self functionDescriptor],[self advertisedValue]);
-           yapiUnlockFunctionCallBack(NULL);
-        }
-    } else {
-        [self _unregisterFuncCallback];
-    }
-}
-
-+(YServo*) FindServo:(NSString*) func
-{
-    YServo * retVal=nil;
-    if(func==nil) return nil;
-    // Search in cache
-    if ([YAPI_YFunctions objectForKey:@"YServo"] == nil){
-        [YAPI_YFunctions setObject:[NSMutableDictionary dictionary] forKey:@"YServo"];
-    }
-    if(nil != [[YAPI_YFunctions objectForKey:@"YServo"] objectForKey:func]){
-        retVal = [[YAPI_YFunctions objectForKey:@"YServo"] objectForKey:func];
-    } else {
-        retVal = [[YServo alloc] initWithFunction:func];
-        [[YAPI_YFunctions objectForKey:@"YServo"] setObject:retVal forKey:func];
-        ARC_autorelease(retVal);
-    }
-    return retVal;
+    return [YServo FindServo:hwid];
 }
 
 +(YServo *) FirstServo
@@ -419,7 +388,7 @@
     return nil;
 }
 
-//--- (end of YServo implementation)
+//--- (end of YServo public methods implementation)
 
 @end
 //--- (Servo functions)

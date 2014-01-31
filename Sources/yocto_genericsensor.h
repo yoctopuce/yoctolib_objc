@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_genericsensor.h 12324 2013-08-13 15:10:31Z mvuilleu $
+ * $Id: yocto_genericsensor.h 14325 2014-01-11 01:42:47Z seb $
  *
  * Declares yFindGenericSensor(), the high-level API for GenericSensor functions
  *
@@ -40,87 +40,129 @@
 #include "yocto_api.h"
 CF_EXTERN_C_BEGIN
 
-//--- (YGenericSensor definitions)
-#define Y_LOGICALNAME_INVALID           [YAPI  INVALID_STRING]
-#define Y_ADVERTISEDVALUE_INVALID       [YAPI  INVALID_STRING]
-#define Y_UNIT_INVALID                  [YAPI  INVALID_STRING]
-#define Y_CURRENTVALUE_INVALID          (-DBL_MAX)
-#define Y_LOWESTVALUE_INVALID           (-DBL_MAX)
-#define Y_HIGHESTVALUE_INVALID          (-DBL_MAX)
-#define Y_CURRENTRAWVALUE_INVALID       (-DBL_MAX)
-#define Y_CALIBRATIONPARAM_INVALID      [YAPI  INVALID_STRING]
-#define Y_SIGNALVALUE_INVALID           (-DBL_MAX)
-#define Y_SIGNALUNIT_INVALID            [YAPI  INVALID_STRING]
-#define Y_SIGNALRANGE_INVALID           [YAPI  INVALID_STRING]
-#define Y_VALUERANGE_INVALID            [YAPI  INVALID_STRING]
-#define Y_RESOLUTION_INVALID            (-DBL_MAX)
-//--- (end of YGenericSensor definitions)
+@class YGenericSensor;
 
+//--- (YGenericSensor globals)
+typedef void (*YGenericSensorValueCallback)(YGenericSensor *func, NSString *functionValue);
+typedef void (*YGenericSensorTimedReportCallback)(YGenericSensor *func, YMeasure *measure);
+#define Y_SIGNALVALUE_INVALID           YAPI_INVALID_DOUBLE
+#define Y_SIGNALUNIT_INVALID            YAPI_INVALID_STRING
+#define Y_SIGNALRANGE_INVALID           YAPI_INVALID_STRING
+#define Y_VALUERANGE_INVALID            YAPI_INVALID_STRING
+//--- (end of YGenericSensor globals)
+
+//--- (YGenericSensor class start)
 /**
  * YGenericSensor Class: GenericSensor function interface
  * 
  * The Yoctopuce application programming interface allows you to read an instant
  * measure of the sensor, as well as the minimal and maximal values observed.
  */
-@interface YGenericSensor : YFunction
+@interface YGenericSensor : YSensor
+//--- (end of YGenericSensor class start)
 {
 @protected
-
-// Attributes (function value cache)
-//--- (YGenericSensor attributes)
-    NSString*       _logicalName;
-    NSString*       _advertisedValue;
-    NSString*       _unit;
-    double          _currentValue;
-    double          _lowestValue;
-    double          _highestValue;
-    double          _currentRawValue;
-    NSString*       _calibrationParam;
+//--- (YGenericSensor attributes declaration)
     double          _signalValue;
     NSString*       _signalUnit;
     NSString*       _signalRange;
     NSString*       _valueRange;
-    double          _resolution;
-    int             _calibrationOffset;
-//--- (end of YGenericSensor attributes)
+    YGenericSensorValueCallback _valueCallbackGenericSensor;
+    YGenericSensorTimedReportCallback _timedReportCallbackGenericSensor;
+//--- (end of YGenericSensor attributes declaration)
 }
-//--- (YGenericSensor declaration)
 // Constructor is protected, use yFindGenericSensor factory function to instantiate
--(id)    initWithFunction:(NSString*) func;
+-(id)    initWith:(NSString*) func;
 
+//--- (YGenericSensor private methods declaration)
 // Function-specific method for parsing of JSON output and caching result
--(int)             _parse:(yJsonStateMachine*) j;
+-(int)             _parseAttr:(yJsonStateMachine*) j;
 
+//--- (end of YGenericSensor private methods declaration)
+//--- (YGenericSensor public methods declaration)
 /**
- * Registers the callback function that is invoked on every change of advertised value.
- * The callback is invoked only during the execution of ySleep or yHandleEvents.
- * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
- * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
+ * Changes the measuring unit for the measured value.
+ * Remember to call the saveToFlash() method of the module if the
+ * modification must be kept.
  * 
- * @param callback : the callback function to call, or a null pointer. The callback function should take two
- *         arguments: the function object of which the value has changed, and the character string describing
- *         the new advertised value.
- * @noreturn
- */
--(void)     registerValueCallback:(YFunctionUpdateCallback) callback;   
-/**
- * comment from .yc definition
- */
--(void)     set_objectCallback:(id) object :(SEL)selector;
--(void)     setObjectCallback:(id) object :(SEL)selector;
--(void)     setObjectCallback:(id) object withSelector:(SEL)selector;
-
-//--- (end of YGenericSensor declaration)
-//--- (YGenericSensor accessors declaration)
-
-/**
- * Continues the enumeration of generic sensors started using yFirstGenericSensor().
+ * @param newval : a string corresponding to the measuring unit for the measured value
  * 
- * @return a pointer to a YGenericSensor object, corresponding to
- *         a generic sensor currently online, or a null pointer
- *         if there are no more generic sensors to enumerate.
+ * @return YAPI_SUCCESS if the call succeeds.
+ * 
+ * On failure, throws an exception or returns a negative error code.
  */
--(YGenericSensor*) nextGenericSensor;
+-(int)     set_unit:(NSString*) newval;
+-(int)     setUnit:(NSString*) newval;
+
+/**
+ * Returns the measured value of the electrical signal used by the sensor.
+ * 
+ * @return a floating point number corresponding to the measured value of the electrical signal used by the sensor
+ * 
+ * On failure, throws an exception or returns Y_SIGNALVALUE_INVALID.
+ */
+-(double)     get_signalValue;
+
+
+-(double) signalValue;
+/**
+ * Returns the measuring unit of the electrical signal used by the sensor.
+ * 
+ * @return a string corresponding to the measuring unit of the electrical signal used by the sensor
+ * 
+ * On failure, throws an exception or returns Y_SIGNALUNIT_INVALID.
+ */
+-(NSString*)     get_signalUnit;
+
+
+-(NSString*) signalUnit;
+/**
+ * Returns the electric signal range used by the sensor.
+ * 
+ * @return a string corresponding to the electric signal range used by the sensor
+ * 
+ * On failure, throws an exception or returns Y_SIGNALRANGE_INVALID.
+ */
+-(NSString*)     get_signalRange;
+
+
+-(NSString*) signalRange;
+/**
+ * Changes the electric signal range used by the sensor.
+ * 
+ * @param newval : a string corresponding to the electric signal range used by the sensor
+ * 
+ * @return YAPI_SUCCESS if the call succeeds.
+ * 
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     set_signalRange:(NSString*) newval;
+-(int)     setSignalRange:(NSString*) newval;
+
+/**
+ * Returns the physical value range measured by the sensor.
+ * 
+ * @return a string corresponding to the physical value range measured by the sensor
+ * 
+ * On failure, throws an exception or returns Y_VALUERANGE_INVALID.
+ */
+-(NSString*)     get_valueRange;
+
+
+-(NSString*) valueRange;
+/**
+ * Changes the physical value range measured by the sensor. The range change may have a side effect
+ * on the display resolution, as it may be adapted automatically.
+ * 
+ * @param newval : a string corresponding to the physical value range measured by the sensor
+ * 
+ * @return YAPI_SUCCESS if the call succeeds.
+ * 
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     set_valueRange:(NSString*) newval;
+-(int)     setValueRange:(NSString*) newval;
+
 /**
  * Retrieves a generic sensor for a given identifier.
  * The identifier can be specified using several formats:
@@ -144,7 +186,47 @@ CF_EXTERN_C_BEGIN
  * 
  * @return a YGenericSensor object allowing you to drive the generic sensor.
  */
-+(YGenericSensor*) FindGenericSensor:(NSString*) func;
++(YGenericSensor*)     FindGenericSensor:(NSString*)func;
+
+/**
+ * Registers the callback function that is invoked on every change of advertised value.
+ * The callback is invoked only during the execution of ySleep or yHandleEvents.
+ * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
+ * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
+ * 
+ * @param callback : the callback function to call, or a null pointer. The callback function should take two
+ *         arguments: the function object of which the value has changed, and the character string describing
+ *         the new advertised value.
+ * @noreturn
+ */
+-(int)     registerValueCallback:(YGenericSensorValueCallback)callback;
+
+-(int)     _invokeValueCallback:(NSString*)value;
+
+/**
+ * Registers the callback function that is invoked on every periodic timed notification.
+ * The callback is invoked only during the execution of ySleep or yHandleEvents.
+ * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
+ * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
+ * 
+ * @param callback : the callback function to call, or a null pointer. The callback function should take two
+ *         arguments: the function object of which the value has changed, and an YMeasure object describing
+ *         the new advertised value.
+ * @noreturn
+ */
+-(int)     registerTimedReportCallback:(YGenericSensorTimedReportCallback)callback;
+
+-(int)     _invokeTimedReportCallback:(YMeasure*)value;
+
+
+/**
+ * Continues the enumeration of generic sensors started using yFirstGenericSensor().
+ * 
+ * @return a pointer to a YGenericSensor object, corresponding to
+ *         a generic sensor currently online, or a null pointer
+ *         if there are no more generic sensors to enumerate.
+ */
+-(YGenericSensor*) nextGenericSensor;
 /**
  * Starts the enumeration of generic sensors currently accessible.
  * Use the method YGenericSensor.nextGenericSensor() to iterate on
@@ -155,256 +237,11 @@ CF_EXTERN_C_BEGIN
  *         if there are none.
  */
 +(YGenericSensor*) FirstGenericSensor;
+//--- (end of YGenericSensor public methods declaration)
 
-/**
- * Returns the logical name of the generic sensor.
- * 
- * @return a string corresponding to the logical name of the generic sensor
- * 
- * On failure, throws an exception or returns Y_LOGICALNAME_INVALID.
- */
--(NSString*) get_logicalName;
--(NSString*) logicalName;
-
-/**
- * Changes the logical name of the generic sensor. You can use yCheckLogicalName()
- * prior to this call to make sure that your parameter is valid.
- * Remember to call the saveToFlash() method of the module if the
- * modification must be kept.
- * 
- * @param newval : a string corresponding to the logical name of the generic sensor
- * 
- * @return YAPI_SUCCESS if the call succeeds.
- * 
- * On failure, throws an exception or returns a negative error code.
- */
--(int)     set_logicalName:(NSString*) newval;
--(int)     setLogicalName:(NSString*) newval;
-
-/**
- * Returns the current value of the generic sensor (no more than 6 characters).
- * 
- * @return a string corresponding to the current value of the generic sensor (no more than 6 characters)
- * 
- * On failure, throws an exception or returns Y_ADVERTISEDVALUE_INVALID.
- */
--(NSString*) get_advertisedValue;
--(NSString*) advertisedValue;
-
-/**
- * Returns the measuring unit for the measured value.
- * 
- * @return a string corresponding to the measuring unit for the measured value
- * 
- * On failure, throws an exception or returns Y_UNIT_INVALID.
- */
--(NSString*) get_unit;
--(NSString*) unit;
-
-/**
- * Changes the measuring unit for the measured value.
- * Remember to call the saveToFlash() method of the module if the
- * modification must be kept.
- * 
- * @param newval : a string corresponding to the measuring unit for the measured value
- * 
- * @return YAPI_SUCCESS if the call succeeds.
- * 
- * On failure, throws an exception or returns a negative error code.
- */
--(int)     set_unit:(NSString*) newval;
--(int)     setUnit:(NSString*) newval;
-
-/**
- * Returns the current measured value.
- * 
- * @return a floating point number corresponding to the current measured value
- * 
- * On failure, throws an exception or returns Y_CURRENTVALUE_INVALID.
- */
--(double) get_currentValue;
--(double) currentValue;
-
-/**
- * Changes the recorded minimal value observed.
- * 
- * @param newval : a floating point number corresponding to the recorded minimal value observed
- * 
- * @return YAPI_SUCCESS if the call succeeds.
- * 
- * On failure, throws an exception or returns a negative error code.
- */
--(int)     set_lowestValue:(double) newval;
--(int)     setLowestValue:(double) newval;
-
-/**
- * Returns the minimal value observed.
- * 
- * @return a floating point number corresponding to the minimal value observed
- * 
- * On failure, throws an exception or returns Y_LOWESTVALUE_INVALID.
- */
--(double) get_lowestValue;
--(double) lowestValue;
-
-/**
- * Changes the recorded maximal value observed.
- * 
- * @param newval : a floating point number corresponding to the recorded maximal value observed
- * 
- * @return YAPI_SUCCESS if the call succeeds.
- * 
- * On failure, throws an exception or returns a negative error code.
- */
--(int)     set_highestValue:(double) newval;
--(int)     setHighestValue:(double) newval;
-
-/**
- * Returns the maximal value observed.
- * 
- * @return a floating point number corresponding to the maximal value observed
- * 
- * On failure, throws an exception or returns Y_HIGHESTVALUE_INVALID.
- */
--(double) get_highestValue;
--(double) highestValue;
-
-/**
- * Returns the uncalibrated, unrounded raw value returned by the sensor.
- * 
- * @return a floating point number corresponding to the uncalibrated, unrounded raw value returned by the sensor
- * 
- * On failure, throws an exception or returns Y_CURRENTRAWVALUE_INVALID.
- */
--(double) get_currentRawValue;
--(double) currentRawValue;
-
--(NSString*) get_calibrationParam;
--(NSString*) calibrationParam;
-
--(int)     set_calibrationParam:(NSString*) newval;
--(int)     setCalibrationParam:(NSString*) newval;
-
-/**
- * Configures error correction data points, in particular to compensate for
- * a possible perturbation of the measure caused by an enclosure. It is possible
- * to configure up to five correction points. Correction points must be provided
- * in ascending order, and be in the range of the sensor. The device will automatically
- * perform a linear interpolation of the error correction between specified
- * points. Remember to call the saveToFlash() method of the module if the
- * modification must be kept.
- * 
- * For more information on advanced capabilities to refine the calibration of
- * sensors, please contact support@yoctopuce.com.
- * 
- * @param rawValues : array of floating point numbers, corresponding to the raw
- *         values returned by the sensor for the correction points.
- * @param refValues : array of floating point numbers, corresponding to the corrected
- *         values for the correction points.
- * 
- * @return YAPI_SUCCESS if the call succeeds.
- * 
- * On failure, throws an exception or returns a negative error code.
- */
--(int)     calibrateFromPoints :(NSMutableArray*)rawValues :(NSMutableArray*)refValues;
-
--(int)     loadCalibrationPoints :(NSMutableArray*)rawValues :(NSMutableArray*)refValues;
-
-/**
- * Returns the measured value of the electrical signal used by the sensor.
- * 
- * @return a floating point number corresponding to the measured value of the electrical signal used by the sensor
- * 
- * On failure, throws an exception or returns Y_SIGNALVALUE_INVALID.
- */
--(double) get_signalValue;
--(double) signalValue;
-
-/**
- * Returns the measuring unit of the electrical signal used by the sensor.
- * 
- * @return a string corresponding to the measuring unit of the electrical signal used by the sensor
- * 
- * On failure, throws an exception or returns Y_SIGNALUNIT_INVALID.
- */
--(NSString*) get_signalUnit;
--(NSString*) signalUnit;
-
-/**
- * Returns the electric signal range used by the sensor.
- * 
- * @return a string corresponding to the electric signal range used by the sensor
- * 
- * On failure, throws an exception or returns Y_SIGNALRANGE_INVALID.
- */
--(NSString*) get_signalRange;
--(NSString*) signalRange;
-
-/**
- * Changes the electric signal range used by the sensor.
- * 
- * @param newval : a string corresponding to the electric signal range used by the sensor
- * 
- * @return YAPI_SUCCESS if the call succeeds.
- * 
- * On failure, throws an exception or returns a negative error code.
- */
--(int)     set_signalRange:(NSString*) newval;
--(int)     setSignalRange:(NSString*) newval;
-
-/**
- * Returns the physical value range measured by the sensor.
- * 
- * @return a string corresponding to the physical value range measured by the sensor
- * 
- * On failure, throws an exception or returns Y_VALUERANGE_INVALID.
- */
--(NSString*) get_valueRange;
--(NSString*) valueRange;
-
-/**
- * Changes the physical value range measured by the sensor. The range change may have a side effect
- * on the display resolution, as it may be adapted automatically.
- * 
- * @param newval : a string corresponding to the physical value range measured by the sensor
- * 
- * @return YAPI_SUCCESS if the call succeeds.
- * 
- * On failure, throws an exception or returns a negative error code.
- */
--(int)     set_valueRange:(NSString*) newval;
--(int)     setValueRange:(NSString*) newval;
-
-/**
- * Changes the resolution of the measured physical values. The resolution corresponds to the numerical precision
- * when displaying value. It does not change the precision of the measure itself.
- * 
- * @param newval : a floating point number corresponding to the resolution of the measured physical values
- * 
- * @return YAPI_SUCCESS if the call succeeds.
- * 
- * On failure, throws an exception or returns a negative error code.
- */
--(int)     set_resolution:(double) newval;
--(int)     setResolution:(double) newval;
-
-/**
- * Returns the resolution of the measured values. The resolution corresponds to the numerical precision
- * of the values, which is not always the same as the actual precision of the sensor.
- * 
- * @return a floating point number corresponding to the resolution of the measured values
- * 
- * On failure, throws an exception or returns Y_RESOLUTION_INVALID.
- */
--(double) get_resolution;
--(double) resolution;
-
-
-//--- (end of YGenericSensor accessors declaration)
 @end
 
 //--- (GenericSensor functions declaration)
-
 /**
  * Retrieves a generic sensor for a given identifier.
  * The identifier can be specified using several formats:

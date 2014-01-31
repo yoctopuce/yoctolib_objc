@@ -1,8 +1,8 @@
 /*********************************************************************
  *
- * $Id: yocto_hubport.m 12337 2013-08-14 15:22:22Z mvuilleu $
+ * $Id: yocto_hubport.m 14721 2014-01-24 17:58:44Z seb $
  *
- * Implements yFindHubPort(), the high-level API for HubPort functions
+ * Implements the high-level API for HubPort functions
  *
  * - - - - - - - - - License information: - - - - - - - - - 
  *
@@ -47,129 +47,49 @@
 @implementation YHubPort
 
 // Constructor is protected, use yFindHubPort factory function to instantiate
--(id)              initWithFunction:(NSString*) func
+-(id)              initWith:(NSString*) func
 {
-//--- (YHubPort attributes)
-   if(!(self = [super initProtected:@"HubPort":func]))
+   if(!(self = [super initWith:func]))
           return nil;
-    _logicalName = Y_LOGICALNAME_INVALID;
-    _advertisedValue = Y_ADVERTISEDVALUE_INVALID;
+    _className = @"HubPort";
+//--- (YHubPort attributes initialization)
     _enabled = Y_ENABLED_INVALID;
     _portState = Y_PORTSTATE_INVALID;
     _baudRate = Y_BAUDRATE_INVALID;
-//--- (end of YHubPort attributes)
+    _valueCallbackHubPort = NULL;
+//--- (end of YHubPort attributes initialization)
     return self;
 }
 // destructor 
 -(void)  dealloc
 {
 //--- (YHubPort cleanup)
-    ARC_release(_logicalName);
-    _logicalName = nil;
-    ARC_release(_advertisedValue);
-    _advertisedValue = nil;
-//--- (end of YHubPort cleanup)
     ARC_dealloc(super);
+//--- (end of YHubPort cleanup)
 }
-//--- (YHubPort implementation)
+//--- (YHubPort private methods implementation)
 
--(int) _parse:(yJsonStateMachine*) j
+-(int) _parseAttr:(yJsonStateMachine*) j
 {
-    if(yJsonParse(j) != YJSON_PARSE_AVAIL || j->st != YJSON_PARSE_STRUCT) {
-    failed:
-        return -1;
+    if(!strcmp(j->token, "enabled")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _enabled =  (Y_ENABLED_enum)atoi(j->token);
+        return 1;
     }
-    while(yJsonParse(j) == YJSON_PARSE_AVAIL && j->st == YJSON_PARSE_MEMBNAME) {
-        if(!strcmp(j->token, "logicalName")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            ARC_release(_logicalName);
-            _logicalName =  [self _parseString:j];
-            ARC_retain(_logicalName);
-        } else if(!strcmp(j->token, "advertisedValue")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            ARC_release(_advertisedValue);
-            _advertisedValue =  [self _parseString:j];
-            ARC_retain(_advertisedValue);
-        } else if(!strcmp(j->token, "enabled")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            _enabled =  (Y_ENABLED_enum)atoi(j->token);
-        } else if(!strcmp(j->token, "portState")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            _portState =  atoi(j->token);
-        } else if(!strcmp(j->token, "baudRate")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            _baudRate =  atoi(j->token);
-        } else {
-            // ignore unknown field
-            yJsonSkip(j, 1);
-        }
+    if(!strcmp(j->token, "portState")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _portState =  atoi(j->token);
+        return 1;
     }
-    if(j->st != YJSON_PARSE_STRUCT) goto failed;
-    return 0;
-}
-
-/**
- * Returns the logical name of the Yocto-hub port, which is always the serial number of the
- * connected module.
- * 
- * @return a string corresponding to the logical name of the Yocto-hub port, which is always the
- * serial number of the
- *         connected module
- * 
- * On failure, throws an exception or returns Y_LOGICALNAME_INVALID.
- */
--(NSString*) get_logicalName
-{
-    return [self logicalName];
-}
--(NSString*) logicalName
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_LOGICALNAME_INVALID;
+    if(!strcmp(j->token, "baudRate")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _baudRate =  atoi(j->token);
+        return 1;
     }
-    return _logicalName;
+    return [super _parseAttr:j];
 }
-
-/**
- * It is not possible to configure the logical name of a Yocto-hub port. The logical
- * name is automatically set to the serial number of the connected module.
- * 
- * @param newval : a string
- * 
- * @return YAPI_SUCCESS if the call succeeds.
- * 
- * On failure, throws an exception or returns a negative error code.
- */
--(int) set_logicalName:(NSString*) newval
-{
-    return [self setLogicalName:newval];
-}
--(int) setLogicalName:(NSString*) newval
-{
-    NSString* rest_val;
-    rest_val = newval;
-    return [self _setAttr:@"logicalName" :rest_val];
-}
-
-/**
- * Returns the current value of the Yocto-hub port (no more than 6 characters).
- * 
- * @return a string corresponding to the current value of the Yocto-hub port (no more than 6 characters)
- * 
- * On failure, throws an exception or returns Y_ADVERTISEDVALUE_INVALID.
- */
--(NSString*) get_advertisedValue
-{
-    return [self advertisedValue];
-}
--(NSString*) advertisedValue
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_ADVERTISEDVALUE_INVALID;
-    }
-    return _advertisedValue;
-}
-
+//--- (end of YHubPort private methods implementation)
+//--- (YHubPort public methods implementation)
 /**
  * Returns true if the Yocto-hub port is powered, false otherwise.
  * 
@@ -180,19 +100,23 @@
  */
 -(Y_ENABLED_enum) get_enabled
 {
-    return [self enabled];
-}
--(Y_ENABLED_enum) enabled
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_ENABLED_INVALID;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_ENABLED_INVALID;
+        }
     }
     return _enabled;
 }
 
+
+-(Y_ENABLED_enum) enabled
+{
+    return [self get_enabled];
+}
+
 /**
  * Changes the activation of the Yocto-hub port. If the port is enabled, the
- * *      connected module is powered. Otherwise, port power is shut down.
+ * connected module is powered. Otherwise, port power is shut down.
  * 
  * @param newval : either Y_ENABLED_FALSE or Y_ENABLED_TRUE, according to the activation of the Yocto-hub port
  * 
@@ -210,7 +134,6 @@
     rest_val = (newval ? @"1" : @"0");
     return [self _setAttr:@"enabled" :rest_val];
 }
-
 /**
  * Returns the current state of the Yocto-hub port.
  * 
@@ -221,16 +144,19 @@
  */
 -(Y_PORTSTATE_enum) get_portState
 {
-    return [self portState];
-}
--(Y_PORTSTATE_enum) portState
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_PORTSTATE_INVALID;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_PORTSTATE_INVALID;
+        }
     }
     return _portState;
 }
 
+
+-(Y_PORTSTATE_enum) portState
+{
+    return [self get_portState];
+}
 /**
  * Returns the current baud rate used by this Yocto-hub port, in kbps.
  * The default value is 1000 kbps, but a slower rate may be used if communication
@@ -242,15 +168,93 @@
  */
 -(int) get_baudRate
 {
-    return [self baudRate];
-}
--(int) baudRate
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_BAUDRATE_INVALID;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_BAUDRATE_INVALID;
+        }
     }
     return _baudRate;
 }
+
+
+-(int) baudRate
+{
+    return [self get_baudRate];
+}
+/**
+ * Retrieves $AFUNCTION$ for a given identifier.
+ * The identifier can be specified using several formats:
+ * <ul>
+ * <li>FunctionLogicalName</li>
+ * <li>ModuleSerialNumber.FunctionIdentifier</li>
+ * <li>ModuleSerialNumber.FunctionLogicalName</li>
+ * <li>ModuleLogicalName.FunctionIdentifier</li>
+ * <li>ModuleLogicalName.FunctionLogicalName</li>
+ * </ul>
+ * 
+ * This function does not require that $THEFUNCTION$ is online at the time
+ * it is invoked. The returned object is nevertheless valid.
+ * Use the method YHubPort.isOnline() to test if $THEFUNCTION$ is
+ * indeed online at a given time. In case of ambiguity when looking for
+ * $AFUNCTION$ by logical name, no error is notified: the first instance
+ * found is returned. The search is performed first by hardware name,
+ * then by logical name.
+ * 
+ * @param func : a string that uniquely characterizes $THEFUNCTION$
+ * 
+ * @return a YHubPort object allowing you to drive $THEFUNCTION$.
+ */
++(YHubPort*) FindHubPort:(NSString*)func
+{
+    YHubPort* obj;
+    obj = (YHubPort*) [YFunction _FindFromCache:@"HubPort" :func];
+    if (obj == nil) {
+        obj = ARC_sendAutorelease([[YHubPort alloc] initWith:func]);
+        [YFunction _AddToCache:@"HubPort" : func :obj];
+    }
+    return obj;
+}
+
+/**
+ * Registers the callback function that is invoked on every change of advertised value.
+ * The callback is invoked only during the execution of ySleep or yHandleEvents.
+ * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
+ * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
+ * 
+ * @param callback : the callback function to call, or a null pointer. The callback function should take two
+ *         arguments: the function object of which the value has changed, and the character string describing
+ *         the new advertised value.
+ * @noreturn
+ */
+-(int) registerValueCallback:(YHubPortValueCallback)callback
+{
+    NSString* val;
+    if (callback != NULL) {
+        [YFunction _UpdateValueCallbackList:self :YES];
+    } else {
+        [YFunction _UpdateValueCallbackList:self :NO];
+    }
+    _valueCallbackHubPort = callback;
+    // Immediately invoke value callback with current value
+    if (callback != NULL && [self isOnline]) {
+        val = _advertisedValue;
+        if (!([val isEqualToString:@""])) {
+            [self _invokeValueCallback:val];
+        }
+    }
+    return 0;
+}
+
+-(int) _invokeValueCallback:(NSString*)value
+{
+    if (_valueCallbackHubPort != NULL) {
+        _valueCallbackHubPort(self, value);
+    } else {
+        [super _invokeValueCallback:value];
+    }
+    return 0;
+}
+
 
 -(YHubPort*)   nextHubPort
 {
@@ -259,53 +263,7 @@
     if(YISERR([self _nextFunction:&hwid]) || [hwid isEqualToString:@""]) {
         return NULL;
     }
-    return yFindHubPort(hwid);
-}
--(void )    registerValueCallback:(YFunctionUpdateCallback)callback
-{ 
-    _callback = callback;
-    if (callback != NULL) {
-        [self _registerFuncCallback];
-    } else {
-        [self _unregisterFuncCallback];
-    }
-}
--(void )    set_objectCallback:(id)object :(SEL)selector
-{ [self setObjectCallback:object withSelector:selector];}
--(void )    setObjectCallback:(id)object :(SEL)selector
-{ [self setObjectCallback:object withSelector:selector];}
--(void )    setObjectCallback:(id)object withSelector:(SEL)selector
-{ 
-    _callbackObject = object;
-    _callbackSel    = selector;
-    if (object != nil) {
-        [self _registerFuncCallback];
-        if([self isOnline]) {
-           yapiLockFunctionCallBack(NULL);
-           yInternalPushNewVal([self functionDescriptor],[self advertisedValue]);
-           yapiUnlockFunctionCallBack(NULL);
-        }
-    } else {
-        [self _unregisterFuncCallback];
-    }
-}
-
-+(YHubPort*) FindHubPort:(NSString*) func
-{
-    YHubPort * retVal=nil;
-    if(func==nil) return nil;
-    // Search in cache
-    if ([YAPI_YFunctions objectForKey:@"YHubPort"] == nil){
-        [YAPI_YFunctions setObject:[NSMutableDictionary dictionary] forKey:@"YHubPort"];
-    }
-    if(nil != [[YAPI_YFunctions objectForKey:@"YHubPort"] objectForKey:func]){
-        retVal = [[YAPI_YFunctions objectForKey:@"YHubPort"] objectForKey:func];
-    } else {
-        retVal = [[YHubPort alloc] initWithFunction:func];
-        [[YAPI_YFunctions objectForKey:@"YHubPort"] setObject:retVal forKey:func];
-        ARC_autorelease(retVal);
-    }
-    return retVal;
+    return [YHubPort FindHubPort:hwid];
 }
 
 +(YHubPort *) FirstHubPort
@@ -323,7 +281,7 @@
     return nil;
 }
 
-//--- (end of YHubPort implementation)
+//--- (end of YHubPort public methods implementation)
 
 @end
 //--- (HubPort functions)

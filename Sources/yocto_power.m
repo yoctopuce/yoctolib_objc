@@ -1,8 +1,8 @@
 /*********************************************************************
  *
- * $Id: yocto_power.m 12324 2013-08-13 15:10:31Z mvuilleu $
+ * $Id: yocto_power.m 14721 2014-01-24 17:58:44Z seb $
  *
- * Implements yFindPower(), the high-level API for Power functions
+ * Implements the high-level API for Power functions
  *
  * - - - - - - - - - License information: - - - - - - - - - 
  *
@@ -47,402 +47,50 @@
 @implementation YPower
 
 // Constructor is protected, use yFindPower factory function to instantiate
--(id)              initWithFunction:(NSString*) func
+-(id)              initWith:(NSString*) func
 {
-//--- (YPower attributes)
-   if(!(self = [super initProtected:@"Power":func]))
+   if(!(self = [super initWith:func]))
           return nil;
-    _logicalName = Y_LOGICALNAME_INVALID;
-    _advertisedValue = Y_ADVERTISEDVALUE_INVALID;
-    _unit = Y_UNIT_INVALID;
-    _currentValue = Y_CURRENTVALUE_INVALID;
-    _lowestValue = Y_LOWESTVALUE_INVALID;
-    _highestValue = Y_HIGHESTVALUE_INVALID;
-    _currentRawValue = Y_CURRENTRAWVALUE_INVALID;
-    _calibrationParam = Y_CALIBRATIONPARAM_INVALID;
-    _resolution = Y_RESOLUTION_INVALID;
+    _className = @"Power";
+//--- (YPower attributes initialization)
     _cosPhi = Y_COSPHI_INVALID;
     _meter = Y_METER_INVALID;
     _meterTimer = Y_METERTIMER_INVALID;
-    _calibrationOffset = -32767;
-//--- (end of YPower attributes)
+    _valueCallbackPower = NULL;
+    _timedReportCallbackPower = NULL;
+//--- (end of YPower attributes initialization)
     return self;
 }
 // destructor 
 -(void)  dealloc
 {
 //--- (YPower cleanup)
-    ARC_release(_logicalName);
-    _logicalName = nil;
-    ARC_release(_advertisedValue);
-    _advertisedValue = nil;
-    ARC_release(_unit);
-    _unit = nil;
-    ARC_release(_calibrationParam);
-    _calibrationParam = nil;
-//--- (end of YPower cleanup)
     ARC_dealloc(super);
+//--- (end of YPower cleanup)
 }
-//--- (YPower implementation)
+//--- (YPower private methods implementation)
 
--(int) _parse:(yJsonStateMachine*) j
+-(int) _parseAttr:(yJsonStateMachine*) j
 {
-    if(yJsonParse(j) != YJSON_PARSE_AVAIL || j->st != YJSON_PARSE_STRUCT) {
-    failed:
-        return -1;
+    if(!strcmp(j->token, "cosPhi")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _cosPhi =  atof(j->token)/65536;
+        return 1;
     }
-    while(yJsonParse(j) == YJSON_PARSE_AVAIL && j->st == YJSON_PARSE_MEMBNAME) {
-        if(!strcmp(j->token, "logicalName")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            ARC_release(_logicalName);
-            _logicalName =  [self _parseString:j];
-            ARC_retain(_logicalName);
-        } else if(!strcmp(j->token, "advertisedValue")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            ARC_release(_advertisedValue);
-            _advertisedValue =  [self _parseString:j];
-            ARC_retain(_advertisedValue);
-        } else if(!strcmp(j->token, "unit")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            ARC_release(_unit);
-            _unit =  [self _parseString:j];
-            ARC_retain(_unit);
-        } else if(!strcmp(j->token, "currentValue")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            _currentValue =  floor(atof(j->token)/65.536+.5) / 1000;
-        } else if(!strcmp(j->token, "lowestValue")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            _lowestValue =  floor(atof(j->token)/65.536+.5) / 1000;
-        } else if(!strcmp(j->token, "highestValue")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            _highestValue =  floor(atof(j->token)/65.536+.5) / 1000;
-        } else if(!strcmp(j->token, "currentRawValue")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            _currentRawValue =  atof(j->token)/65536.0;
-        } else if(!strcmp(j->token, "calibrationParam")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            ARC_release(_calibrationParam);
-            _calibrationParam =  [self _parseString:j];
-            ARC_retain(_calibrationParam);
-        } else if(!strcmp(j->token, "resolution")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            _resolution =  (atoi(j->token) > 100 ? 1.0 / floor(65536.0/atof(j->token)+.5) : 0.001 / floor(67.0/atof(j->token)+.5));
-        } else if(!strcmp(j->token, "cosPhi")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            _cosPhi =  floor(atof(j->token)/655.36+.5) / 100;
-        } else if(!strcmp(j->token, "meter")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            _meter =  floor(atof(j->token)/65.536+.5) / 1000;
-        } else if(!strcmp(j->token, "meterTimer")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            _meterTimer =  atoi(j->token);
-        } else {
-            // ignore unknown field
-            yJsonSkip(j, 1);
-        }
+    if(!strcmp(j->token, "meter")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _meter =  atof(j->token)/65536;
+        return 1;
     }
-    if(j->st != YJSON_PARSE_STRUCT) goto failed;
-    return 0;
-}
-
-/**
- * Returns the logical name of the electrical power sensor.
- * 
- * @return a string corresponding to the logical name of the electrical power sensor
- * 
- * On failure, throws an exception or returns Y_LOGICALNAME_INVALID.
- */
--(NSString*) get_logicalName
-{
-    return [self logicalName];
-}
--(NSString*) logicalName
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_LOGICALNAME_INVALID;
+    if(!strcmp(j->token, "meterTimer")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _meterTimer =  atoi(j->token);
+        return 1;
     }
-    return _logicalName;
+    return [super _parseAttr:j];
 }
-
-/**
- * Changes the logical name of the electrical power sensor. You can use yCheckLogicalName()
- * prior to this call to make sure that your parameter is valid.
- * Remember to call the saveToFlash() method of the module if the
- * modification must be kept.
- * 
- * @param newval : a string corresponding to the logical name of the electrical power sensor
- * 
- * @return YAPI_SUCCESS if the call succeeds.
- * 
- * On failure, throws an exception or returns a negative error code.
- */
--(int) set_logicalName:(NSString*) newval
-{
-    return [self setLogicalName:newval];
-}
--(int) setLogicalName:(NSString*) newval
-{
-    NSString* rest_val;
-    rest_val = newval;
-    return [self _setAttr:@"logicalName" :rest_val];
-}
-
-/**
- * Returns the current value of the electrical power sensor (no more than 6 characters).
- * 
- * @return a string corresponding to the current value of the electrical power sensor (no more than 6 characters)
- * 
- * On failure, throws an exception or returns Y_ADVERTISEDVALUE_INVALID.
- */
--(NSString*) get_advertisedValue
-{
-    return [self advertisedValue];
-}
--(NSString*) advertisedValue
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_ADVERTISEDVALUE_INVALID;
-    }
-    return _advertisedValue;
-}
-
-/**
- * Returns the measuring unit for the measured value.
- * 
- * @return a string corresponding to the measuring unit for the measured value
- * 
- * On failure, throws an exception or returns Y_UNIT_INVALID.
- */
--(NSString*) get_unit
-{
-    return [self unit];
-}
--(NSString*) unit
-{
-    if(_unit == Y_UNIT_INVALID) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_UNIT_INVALID;
-    }
-    return _unit;
-}
-
-/**
- * Returns the current measured value.
- * 
- * @return a floating point number corresponding to the current measured value
- * 
- * On failure, throws an exception or returns Y_CURRENTVALUE_INVALID.
- */
--(double) get_currentValue
-{
-    return [self currentValue];
-}
--(double) currentValue
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_CURRENTVALUE_INVALID;
-    }
-    double res = [YAPI _applyCalibration:_currentRawValue: _calibrationParam: _calibrationOffset: _resolution];
-    if(res != Y_CURRENTVALUE_INVALID) return res;
-    return _currentValue;
-}
-
-/**
- * Changes the recorded minimal value observed.
- * 
- * @param newval : a floating point number corresponding to the recorded minimal value observed
- * 
- * @return YAPI_SUCCESS if the call succeeds.
- * 
- * On failure, throws an exception or returns a negative error code.
- */
--(int) set_lowestValue:(double) newval
-{
-    return [self setLowestValue:newval];
-}
--(int) setLowestValue:(double) newval
-{
-    NSString* rest_val;
-    rest_val = [NSString stringWithFormat:@"%d",(int)floor(newval*65536.0+0.5)];
-    return [self _setAttr:@"lowestValue" :rest_val];
-}
-
-/**
- * Returns the minimal value observed.
- * 
- * @return a floating point number corresponding to the minimal value observed
- * 
- * On failure, throws an exception or returns Y_LOWESTVALUE_INVALID.
- */
--(double) get_lowestValue
-{
-    return [self lowestValue];
-}
--(double) lowestValue
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_LOWESTVALUE_INVALID;
-    }
-    return _lowestValue;
-}
-
-/**
- * Changes the recorded maximal value observed.
- * 
- * @param newval : a floating point number corresponding to the recorded maximal value observed
- * 
- * @return YAPI_SUCCESS if the call succeeds.
- * 
- * On failure, throws an exception or returns a negative error code.
- */
--(int) set_highestValue:(double) newval
-{
-    return [self setHighestValue:newval];
-}
--(int) setHighestValue:(double) newval
-{
-    NSString* rest_val;
-    rest_val = [NSString stringWithFormat:@"%d",(int)floor(newval*65536.0+0.5)];
-    return [self _setAttr:@"highestValue" :rest_val];
-}
-
-/**
- * Returns the maximal value observed.
- * 
- * @return a floating point number corresponding to the maximal value observed
- * 
- * On failure, throws an exception or returns Y_HIGHESTVALUE_INVALID.
- */
--(double) get_highestValue
-{
-    return [self highestValue];
-}
--(double) highestValue
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_HIGHESTVALUE_INVALID;
-    }
-    return _highestValue;
-}
-
-/**
- * Returns the uncalibrated, unrounded raw value returned by the sensor.
- * 
- * @return a floating point number corresponding to the uncalibrated, unrounded raw value returned by the sensor
- * 
- * On failure, throws an exception or returns Y_CURRENTRAWVALUE_INVALID.
- */
--(double) get_currentRawValue
-{
-    return [self currentRawValue];
-}
--(double) currentRawValue
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_CURRENTRAWVALUE_INVALID;
-    }
-    return _currentRawValue;
-}
-
--(NSString*) get_calibrationParam
-{
-    return [self calibrationParam];
-}
--(NSString*) calibrationParam
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_CALIBRATIONPARAM_INVALID;
-    }
-    return _calibrationParam;
-}
-
--(int) set_calibrationParam:(NSString*) newval
-{
-    return [self setCalibrationParam:newval];
-}
--(int) setCalibrationParam:(NSString*) newval
-{
-    NSString* rest_val;
-    rest_val = newval;
-    return [self _setAttr:@"calibrationParam" :rest_val];
-}
-
-/**
- * Configures error correction data points, in particular to compensate for
- * a possible perturbation of the measure caused by an enclosure. It is possible
- * to configure up to five correction points. Correction points must be provided
- * in ascending order, and be in the range of the sensor. The device will automatically
- * perform a linear interpolation of the error correction between specified
- * points. Remember to call the saveToFlash() method of the module if the
- * modification must be kept.
- * 
- * For more information on advanced capabilities to refine the calibration of
- * sensors, please contact support@yoctopuce.com.
- * 
- * @param rawValues : array of floating point numbers, corresponding to the raw
- *         values returned by the sensor for the correction points.
- * @param refValues : array of floating point numbers, corresponding to the corrected
- *         values for the correction points.
- * 
- * @return YAPI_SUCCESS if the call succeeds.
- * 
- * On failure, throws an exception or returns a negative error code.
- */
--(int) calibrateFromPoints :(NSMutableArray*)rawValues :(NSMutableArray*)refValues
-{
-    NSString* rest_val;
-    rest_val = [YAPI _encodeCalibrationPoints:rawValues:refValues:_resolution:_calibrationOffset:_calibrationParam];
-    return [self _setAttr:@"calibrationParam" :rest_val];
-}
-
--(int) loadCalibrationPoints :(NSMutableArray*)rawValues :(NSMutableArray*)refValues
-{
-    if(_cacheExpiration <= [YAPI GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return (int)[_lastError code];
-    }
-    return [YAPI _decodeCalibrationPoints:_calibrationParam:nil:rawValues:refValues withResolution:_resolution andOffset:_calibrationOffset];
-}
-
-/**
- * Changes the resolution of the measured values. The resolution corresponds to the numerical precision
- * when displaying value. It does not change the precision of the measure itself.
- * 
- * @param newval : a floating point number corresponding to the resolution of the measured values
- * 
- * @return YAPI_SUCCESS if the call succeeds.
- * 
- * On failure, throws an exception or returns a negative error code.
- */
--(int) set_resolution:(double) newval
-{
-    return [self setResolution:newval];
-}
--(int) setResolution:(double) newval
-{
-    NSString* rest_val;
-    rest_val = [NSString stringWithFormat:@"%d",(int)floor(newval*65536.0+0.5)];
-    return [self _setAttr:@"resolution" :rest_val];
-}
-
-/**
- * Returns the resolution of the measured values. The resolution corresponds to the numerical precision
- * when displaying value, which is not always the same as the actual precision of the sensor.
- * 
- * @return a floating point number corresponding to the resolution of the measured values
- * 
- * On failure, throws an exception or returns Y_RESOLUTION_INVALID.
- */
--(double) get_resolution
-{
-    return [self resolution];
-}
--(double) resolution
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_RESOLUTION_INVALID;
-    }
-    return _resolution;
-}
-
+//--- (end of YPower private methods implementation)
+//--- (YPower public methods implementation)
 /**
  * Returns the power factor (the ratio between the real power consumed,
  * measured in W, and the apparent power provided, measured in VA).
@@ -454,14 +102,18 @@
  */
 -(double) get_cosPhi
 {
-    return [self cosPhi];
-}
--(double) cosPhi
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_COSPHI_INVALID;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_COSPHI_INVALID;
+        }
     }
     return _cosPhi;
+}
+
+
+-(double) cosPhi
+{
+    return [self get_cosPhi];
 }
 
 -(int) set_meter:(double) newval
@@ -474,7 +126,6 @@
     rest_val = [NSString stringWithFormat:@"%d",(int)floor(newval*65536.0+0.5)];
     return [self _setAttr:@"meter" :rest_val];
 }
-
 /**
  * Returns the energy counter, maintained by the wattmeter by integrating the power consumption over time.
  * Note that this counter is reset at each start of the device.
@@ -486,16 +137,19 @@
  */
 -(double) get_meter
 {
-    return [self meter];
-}
--(double) meter
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_METER_INVALID;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_METER_INVALID;
+        }
     }
     return _meter;
 }
 
+
+-(double) meter
+{
+    return [self get_meter];
+}
 /**
  * Returns the elapsed time since last energy counter reset, in seconds.
  * 
@@ -503,17 +157,127 @@
  * 
  * On failure, throws an exception or returns Y_METERTIMER_INVALID.
  */
--(unsigned) get_meterTimer
+-(int) get_meterTimer
 {
-    return [self meterTimer];
-}
--(unsigned) meterTimer
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_METERTIMER_INVALID;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_METERTIMER_INVALID;
+        }
     }
     return _meterTimer;
 }
+
+
+-(int) meterTimer
+{
+    return [self get_meterTimer];
+}
+/**
+ * Retrieves $AFUNCTION$ for a given identifier.
+ * The identifier can be specified using several formats:
+ * <ul>
+ * <li>FunctionLogicalName</li>
+ * <li>ModuleSerialNumber.FunctionIdentifier</li>
+ * <li>ModuleSerialNumber.FunctionLogicalName</li>
+ * <li>ModuleLogicalName.FunctionIdentifier</li>
+ * <li>ModuleLogicalName.FunctionLogicalName</li>
+ * </ul>
+ * 
+ * This function does not require that $THEFUNCTION$ is online at the time
+ * it is invoked. The returned object is nevertheless valid.
+ * Use the method YPower.isOnline() to test if $THEFUNCTION$ is
+ * indeed online at a given time. In case of ambiguity when looking for
+ * $AFUNCTION$ by logical name, no error is notified: the first instance
+ * found is returned. The search is performed first by hardware name,
+ * then by logical name.
+ * 
+ * @param func : a string that uniquely characterizes $THEFUNCTION$
+ * 
+ * @return a YPower object allowing you to drive $THEFUNCTION$.
+ */
++(YPower*) FindPower:(NSString*)func
+{
+    YPower* obj;
+    obj = (YPower*) [YFunction _FindFromCache:@"Power" :func];
+    if (obj == nil) {
+        obj = ARC_sendAutorelease([[YPower alloc] initWith:func]);
+        [YFunction _AddToCache:@"Power" : func :obj];
+    }
+    return obj;
+}
+
+/**
+ * Registers the callback function that is invoked on every change of advertised value.
+ * The callback is invoked only during the execution of ySleep or yHandleEvents.
+ * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
+ * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
+ * 
+ * @param callback : the callback function to call, or a null pointer. The callback function should take two
+ *         arguments: the function object of which the value has changed, and the character string describing
+ *         the new advertised value.
+ * @noreturn
+ */
+-(int) registerValueCallback:(YPowerValueCallback)callback
+{
+    NSString* val;
+    if (callback != NULL) {
+        [YFunction _UpdateValueCallbackList:self :YES];
+    } else {
+        [YFunction _UpdateValueCallbackList:self :NO];
+    }
+    _valueCallbackPower = callback;
+    // Immediately invoke value callback with current value
+    if (callback != NULL && [self isOnline]) {
+        val = _advertisedValue;
+        if (!([val isEqualToString:@""])) {
+            [self _invokeValueCallback:val];
+        }
+    }
+    return 0;
+}
+
+-(int) _invokeValueCallback:(NSString*)value
+{
+    if (_valueCallbackPower != NULL) {
+        _valueCallbackPower(self, value);
+    } else {
+        [super _invokeValueCallback:value];
+    }
+    return 0;
+}
+
+/**
+ * Registers the callback function that is invoked on every periodic timed notification.
+ * The callback is invoked only during the execution of ySleep or yHandleEvents.
+ * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
+ * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
+ * 
+ * @param callback : the callback function to call, or a null pointer. The callback function should take two
+ *         arguments: the function object of which the value has changed, and an YMeasure object describing
+ *         the new advertised value.
+ * @noreturn
+ */
+-(int) registerTimedReportCallback:(YPowerTimedReportCallback)callback
+{
+    if (callback != NULL) {
+        [YFunction _UpdateTimedReportCallbackList:self :YES];
+    } else {
+        [YFunction _UpdateTimedReportCallbackList:self :NO];
+    }
+    _timedReportCallbackPower = callback;
+    return 0;
+}
+
+-(int) _invokeTimedReportCallback:(YMeasure*)value
+{
+    if (_timedReportCallbackPower != NULL) {
+        _timedReportCallbackPower(self, value);
+    } else {
+        [super _invokeTimedReportCallback:value];
+    }
+    return 0;
+}
+
 
 -(YPower*)   nextPower
 {
@@ -522,53 +286,7 @@
     if(YISERR([self _nextFunction:&hwid]) || [hwid isEqualToString:@""]) {
         return NULL;
     }
-    return yFindPower(hwid);
-}
--(void )    registerValueCallback:(YFunctionUpdateCallback)callback
-{ 
-    _callback = callback;
-    if (callback != NULL) {
-        [self _registerFuncCallback];
-    } else {
-        [self _unregisterFuncCallback];
-    }
-}
--(void )    set_objectCallback:(id)object :(SEL)selector
-{ [self setObjectCallback:object withSelector:selector];}
--(void )    setObjectCallback:(id)object :(SEL)selector
-{ [self setObjectCallback:object withSelector:selector];}
--(void )    setObjectCallback:(id)object withSelector:(SEL)selector
-{ 
-    _callbackObject = object;
-    _callbackSel    = selector;
-    if (object != nil) {
-        [self _registerFuncCallback];
-        if([self isOnline]) {
-           yapiLockFunctionCallBack(NULL);
-           yInternalPushNewVal([self functionDescriptor],[self advertisedValue]);
-           yapiUnlockFunctionCallBack(NULL);
-        }
-    } else {
-        [self _unregisterFuncCallback];
-    }
-}
-
-+(YPower*) FindPower:(NSString*) func
-{
-    YPower * retVal=nil;
-    if(func==nil) return nil;
-    // Search in cache
-    if ([YAPI_YFunctions objectForKey:@"YPower"] == nil){
-        [YAPI_YFunctions setObject:[NSMutableDictionary dictionary] forKey:@"YPower"];
-    }
-    if(nil != [[YAPI_YFunctions objectForKey:@"YPower"] objectForKey:func]){
-        retVal = [[YAPI_YFunctions objectForKey:@"YPower"] objectForKey:func];
-    } else {
-        retVal = [[YPower alloc] initWithFunction:func];
-        [[YAPI_YFunctions objectForKey:@"YPower"] setObject:retVal forKey:func];
-        ARC_autorelease(retVal);
-    }
-    return retVal;
+    return [YPower FindPower:hwid];
 }
 
 +(YPower *) FirstPower
@@ -586,7 +304,7 @@
     return nil;
 }
 
-//--- (end of YPower implementation)
+//--- (end of YPower public methods implementation)
 
 @end
 //--- (Power functions)

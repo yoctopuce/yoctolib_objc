@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_voc.h 12324 2013-08-13 15:10:31Z mvuilleu $
+ * $Id: yocto_voc.h 14325 2014-01-11 01:42:47Z seb $
  *
  * Declares yFindVoc(), the high-level API for Voc functions
  *
@@ -40,79 +40,38 @@
 #include "yocto_api.h"
 CF_EXTERN_C_BEGIN
 
-//--- (YVoc definitions)
-#define Y_LOGICALNAME_INVALID           [YAPI  INVALID_STRING]
-#define Y_ADVERTISEDVALUE_INVALID       [YAPI  INVALID_STRING]
-#define Y_UNIT_INVALID                  [YAPI  INVALID_STRING]
-#define Y_CURRENTVALUE_INVALID          (-DBL_MAX)
-#define Y_LOWESTVALUE_INVALID           (-DBL_MAX)
-#define Y_HIGHESTVALUE_INVALID          (-DBL_MAX)
-#define Y_CURRENTRAWVALUE_INVALID       (-DBL_MAX)
-#define Y_CALIBRATIONPARAM_INVALID      [YAPI  INVALID_STRING]
-#define Y_RESOLUTION_INVALID            (-DBL_MAX)
-//--- (end of YVoc definitions)
+@class YVoc;
 
+//--- (YVoc globals)
+typedef void (*YVocValueCallback)(YVoc *func, NSString *functionValue);
+typedef void (*YVocTimedReportCallback)(YVoc *func, YMeasure *measure);
+//--- (end of YVoc globals)
+
+//--- (YVoc class start)
 /**
  * YVoc Class: Voc function interface
  * 
  * The Yoctopuce application programming interface allows you to read an instant
  * measure of the sensor, as well as the minimal and maximal values observed.
  */
-@interface YVoc : YFunction
+@interface YVoc : YSensor
+//--- (end of YVoc class start)
 {
 @protected
-
-// Attributes (function value cache)
-//--- (YVoc attributes)
-    NSString*       _logicalName;
-    NSString*       _advertisedValue;
-    NSString*       _unit;
-    double          _currentValue;
-    double          _lowestValue;
-    double          _highestValue;
-    double          _currentRawValue;
-    NSString*       _calibrationParam;
-    double          _resolution;
-    int             _calibrationOffset;
-//--- (end of YVoc attributes)
+//--- (YVoc attributes declaration)
+    YVocValueCallback _valueCallbackVoc;
+    YVocTimedReportCallback _timedReportCallbackVoc;
+//--- (end of YVoc attributes declaration)
 }
-//--- (YVoc declaration)
 // Constructor is protected, use yFindVoc factory function to instantiate
--(id)    initWithFunction:(NSString*) func;
+-(id)    initWith:(NSString*) func;
 
+//--- (YVoc private methods declaration)
 // Function-specific method for parsing of JSON output and caching result
--(int)             _parse:(yJsonStateMachine*) j;
+-(int)             _parseAttr:(yJsonStateMachine*) j;
 
-/**
- * Registers the callback function that is invoked on every change of advertised value.
- * The callback is invoked only during the execution of ySleep or yHandleEvents.
- * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
- * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
- * 
- * @param callback : the callback function to call, or a null pointer. The callback function should take two
- *         arguments: the function object of which the value has changed, and the character string describing
- *         the new advertised value.
- * @noreturn
- */
--(void)     registerValueCallback:(YFunctionUpdateCallback) callback;   
-/**
- * comment from .yc definition
- */
--(void)     set_objectCallback:(id) object :(SEL)selector;
--(void)     setObjectCallback:(id) object :(SEL)selector;
--(void)     setObjectCallback:(id) object withSelector:(SEL)selector;
-
-//--- (end of YVoc declaration)
-//--- (YVoc accessors declaration)
-
-/**
- * Continues the enumeration of Volatile Organic Compound sensors started using yFirstVoc().
- * 
- * @return a pointer to a YVoc object, corresponding to
- *         a Volatile Organic Compound sensor currently online, or a null pointer
- *         if there are no more Volatile Organic Compound sensors to enumerate.
- */
--(YVoc*) nextVoc;
+//--- (end of YVoc private methods declaration)
+//--- (YVoc public methods declaration)
 /**
  * Retrieves a Volatile Organic Compound sensor for a given identifier.
  * The identifier can be specified using several formats:
@@ -136,7 +95,47 @@ CF_EXTERN_C_BEGIN
  * 
  * @return a YVoc object allowing you to drive the Volatile Organic Compound sensor.
  */
-+(YVoc*) FindVoc:(NSString*) func;
++(YVoc*)     FindVoc:(NSString*)func;
+
+/**
+ * Registers the callback function that is invoked on every change of advertised value.
+ * The callback is invoked only during the execution of ySleep or yHandleEvents.
+ * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
+ * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
+ * 
+ * @param callback : the callback function to call, or a null pointer. The callback function should take two
+ *         arguments: the function object of which the value has changed, and the character string describing
+ *         the new advertised value.
+ * @noreturn
+ */
+-(int)     registerValueCallback:(YVocValueCallback)callback;
+
+-(int)     _invokeValueCallback:(NSString*)value;
+
+/**
+ * Registers the callback function that is invoked on every periodic timed notification.
+ * The callback is invoked only during the execution of ySleep or yHandleEvents.
+ * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
+ * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
+ * 
+ * @param callback : the callback function to call, or a null pointer. The callback function should take two
+ *         arguments: the function object of which the value has changed, and an YMeasure object describing
+ *         the new advertised value.
+ * @noreturn
+ */
+-(int)     registerTimedReportCallback:(YVocTimedReportCallback)callback;
+
+-(int)     _invokeTimedReportCallback:(YMeasure*)value;
+
+
+/**
+ * Continues the enumeration of Volatile Organic Compound sensors started using yFirstVoc().
+ * 
+ * @return a pointer to a YVoc object, corresponding to
+ *         a Volatile Organic Compound sensor currently online, or a null pointer
+ *         if there are no more Volatile Organic Compound sensors to enumerate.
+ */
+-(YVoc*) nextVoc;
 /**
  * Starts the enumeration of Volatile Organic Compound sensors currently accessible.
  * Use the method YVoc.nextVoc() to iterate on
@@ -147,165 +146,11 @@ CF_EXTERN_C_BEGIN
  *         if there are none.
  */
 +(YVoc*) FirstVoc;
+//--- (end of YVoc public methods declaration)
 
-/**
- * Returns the logical name of the Volatile Organic Compound sensor.
- * 
- * @return a string corresponding to the logical name of the Volatile Organic Compound sensor
- * 
- * On failure, throws an exception or returns Y_LOGICALNAME_INVALID.
- */
--(NSString*) get_logicalName;
--(NSString*) logicalName;
-
-/**
- * Changes the logical name of the Volatile Organic Compound sensor. You can use yCheckLogicalName()
- * prior to this call to make sure that your parameter is valid.
- * Remember to call the saveToFlash() method of the module if the
- * modification must be kept.
- * 
- * @param newval : a string corresponding to the logical name of the Volatile Organic Compound sensor
- * 
- * @return YAPI_SUCCESS if the call succeeds.
- * 
- * On failure, throws an exception or returns a negative error code.
- */
--(int)     set_logicalName:(NSString*) newval;
--(int)     setLogicalName:(NSString*) newval;
-
-/**
- * Returns the current value of the Volatile Organic Compound sensor (no more than 6 characters).
- * 
- * @return a string corresponding to the current value of the Volatile Organic Compound sensor (no
- * more than 6 characters)
- * 
- * On failure, throws an exception or returns Y_ADVERTISEDVALUE_INVALID.
- */
--(NSString*) get_advertisedValue;
--(NSString*) advertisedValue;
-
-/**
- * Returns the measuring unit for the measured value.
- * 
- * @return a string corresponding to the measuring unit for the measured value
- * 
- * On failure, throws an exception or returns Y_UNIT_INVALID.
- */
--(NSString*) get_unit;
--(NSString*) unit;
-
-/**
- * Returns the current measured value.
- * 
- * @return a floating point number corresponding to the current measured value
- * 
- * On failure, throws an exception or returns Y_CURRENTVALUE_INVALID.
- */
--(double) get_currentValue;
--(double) currentValue;
-
-/**
- * Changes the recorded minimal value observed.
- * 
- * @param newval : a floating point number corresponding to the recorded minimal value observed
- * 
- * @return YAPI_SUCCESS if the call succeeds.
- * 
- * On failure, throws an exception or returns a negative error code.
- */
--(int)     set_lowestValue:(double) newval;
--(int)     setLowestValue:(double) newval;
-
-/**
- * Returns the minimal value observed.
- * 
- * @return a floating point number corresponding to the minimal value observed
- * 
- * On failure, throws an exception or returns Y_LOWESTVALUE_INVALID.
- */
--(double) get_lowestValue;
--(double) lowestValue;
-
-/**
- * Changes the recorded maximal value observed.
- * 
- * @param newval : a floating point number corresponding to the recorded maximal value observed
- * 
- * @return YAPI_SUCCESS if the call succeeds.
- * 
- * On failure, throws an exception or returns a negative error code.
- */
--(int)     set_highestValue:(double) newval;
--(int)     setHighestValue:(double) newval;
-
-/**
- * Returns the maximal value observed.
- * 
- * @return a floating point number corresponding to the maximal value observed
- * 
- * On failure, throws an exception or returns Y_HIGHESTVALUE_INVALID.
- */
--(double) get_highestValue;
--(double) highestValue;
-
-/**
- * Returns the unrounded and uncalibrated raw value returned by the sensor.
- * 
- * @return a floating point number corresponding to the unrounded and uncalibrated raw value returned by the sensor
- * 
- * On failure, throws an exception or returns Y_CURRENTRAWVALUE_INVALID.
- */
--(double) get_currentRawValue;
--(double) currentRawValue;
-
--(NSString*) get_calibrationParam;
--(NSString*) calibrationParam;
-
--(int)     set_calibrationParam:(NSString*) newval;
--(int)     setCalibrationParam:(NSString*) newval;
-
-/**
- * Configures error correction data points, in particular to compensate for
- * a possible perturbation of the measure caused by an enclosure. It is possible
- * to configure up to five correction points. Correction points must be provided
- * in ascending order, and be in the range of the sensor. The device will automatically
- * perform a linear interpolation of the error correction between specified
- * points. Remember to call the saveToFlash() method of the module if the
- * modification must be kept.
- * 
- * For more information on advanced capabilities to refine the calibration of
- * sensors, please contact support@yoctopuce.com.
- * 
- * @param rawValues : array of floating point numbers, corresponding to the raw
- *         values returned by the sensor for the correction points.
- * @param refValues : array of floating point numbers, corresponding to the corrected
- *         values for the correction points.
- * 
- * @return YAPI_SUCCESS if the call succeeds.
- * 
- * On failure, throws an exception or returns a negative error code.
- */
--(int)     calibrateFromPoints :(NSMutableArray*)rawValues :(NSMutableArray*)refValues;
-
--(int)     loadCalibrationPoints :(NSMutableArray*)rawValues :(NSMutableArray*)refValues;
-
-/**
- * Returns the resolution of the measured values. The resolution corresponds to the numerical precision
- * of the values, which is not always the same as the actual precision of the sensor.
- * 
- * @return a floating point number corresponding to the resolution of the measured values
- * 
- * On failure, throws an exception or returns Y_RESOLUTION_INVALID.
- */
--(double) get_resolution;
--(double) resolution;
-
-
-//--- (end of YVoc accessors declaration)
 @end
 
 //--- (Voc functions declaration)
-
 /**
  * Retrieves a Volatile Organic Compound sensor for a given identifier.
  * The identifier can be specified using several formats:

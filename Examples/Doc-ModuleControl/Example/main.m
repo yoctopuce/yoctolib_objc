@@ -37,7 +37,7 @@ int main (int argc, const char * argv[])
                NSLog(@"ON\n");
             else   
                NSLog(@"OFF\n");
-            NSLog(@"upTime:       %d sec\n", [module upTime]/1000);
+            NSLog(@"upTime:       %ld sec\n", [module upTime]/1000);
             NSLog(@"USB current:  %d mA\n",  [module usbCurrent]);
             NSLog(@"logs:  %@\n",  [module get_lastLogs]);
         } else {

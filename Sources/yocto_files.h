@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_files.h 12326 2013-08-13 15:52:20Z mvuilleu $
+ * $Id: yocto_files.h 14325 2014-01-11 01:42:47Z seb $
  *
  * Declares yFindFiles(), the high-level API for Files functions
  *
@@ -40,58 +40,58 @@
 #include "yocto_api.h"
 CF_EXTERN_C_BEGIN
 
-//--- (generated code: YFiles definitions)
-#define Y_LOGICALNAME_INVALID           [YAPI  INVALID_STRING]
-#define Y_ADVERTISEDVALUE_INVALID       [YAPI  INVALID_STRING]
-#define Y_FILESCOUNT_INVALID            (0xffffffff)
-#define Y_FREESPACE_INVALID             (0xffffffff)
-//--- (end of generated code: YFiles definitions)
+@class YFiles;
+
+//--- (generated code: YFiles globals)
+typedef void (*YFilesValueCallback)(YFiles *func, NSString *functionValue);
+#define Y_FILESCOUNT_INVALID            YAPI_INVALID_UINT
+#define Y_FREESPACE_INVALID             YAPI_INVALID_UINT
+//--- (end of generated code: YFiles globals)
+
+//--- (generated code: YFileRecord globals)
+//--- (end of generated code: YFileRecord globals)
 
 
 
 
-//--- (generated code: YFileRecord definitions)
-//--- (end of generated code: YFileRecord definitions)
-
+//--- (generated code: YFileRecord class start)
+/**
+ * YFileRecord Class: Description of a file on the device filesystem
+ * 
+ * 
+ */
 @interface YFileRecord : NSObject
+//--- (end of generated code: YFileRecord class start)
 {
 @protected
-    NSString *_name;
-    int       _size;
-    int       _crc;
-    //--- (generated code: YFileRecord attributes)
-//--- (end of generated code: YFileRecord attributes)
+//--- (generated code: YFileRecord attributes declaration)
+    NSString*       _name;
+    int             _size;
+    int             _crc;
+//--- (end of generated code: YFileRecord attributes declaration)
 }
 
-// internal function to send a command for this layer
 -(id)    initWith:(NSString*)jsondata;
 
-//--- (generated code: YFileRecord declaration)
-//--- (end of generated code: YFileRecord declaration)
-//--- (generated code: YFileRecord accessors declaration)
-
-
+//--- (generated code: YFileRecord private methods declaration)
+//--- (end of generated code: YFileRecord private methods declaration)
+//--- (generated code: YFileRecord public methods declaration)
 -(NSString*)     get_name;
 
 -(int)     get_size;
 
 -(int)     get_crc;
 
--(NSString*)     name;
 
--(int)     size;
+//--- (end of generated code: YFileRecord public methods declaration)
 
--(int)     crc;
-
-
-//--- (end of generated code: YFileRecord accessors declaration)
 @end
 
 //--- (generated code: FileRecord functions declaration)
-
 //--- (end of generated code: FileRecord functions declaration)
 
 
+//--- (generated code: YFiles class start)
 /**
  * YFiles Class: Files function interface
  * 
@@ -101,54 +101,46 @@ CF_EXTERN_C_BEGIN
  * devices).
  */
 @interface YFiles : YFunction
+//--- (end of generated code: YFiles class start)
 {
 @protected
-
-// Attributes (function value cache)
-//--- (generated code: YFiles attributes)
-    NSString*       _logicalName;
-    NSString*       _advertisedValue;
-    unsigned        _filesCount;
-    unsigned        _freeSpace;
-//--- (end of generated code: YFiles attributes)
+//--- (generated code: YFiles attributes declaration)
+    int             _filesCount;
+    int             _freeSpace;
+    YFilesValueCallback _valueCallbackFiles;
+//--- (end of generated code: YFiles attributes declaration)
 }
-//--- (generated code: YFiles declaration)
 // Constructor is protected, use yFindFiles factory function to instantiate
--(id)    initWithFunction:(NSString*) func;
+-(id)    initWith:(NSString*) func;
 
+//--- (generated code: YFiles private methods declaration)
 // Function-specific method for parsing of JSON output and caching result
--(int)             _parse:(yJsonStateMachine*) j;
+-(int)             _parseAttr:(yJsonStateMachine*) j;
 
+//--- (end of generated code: YFiles private methods declaration)
+//--- (generated code: YFiles public methods declaration)
 /**
- * Registers the callback function that is invoked on every change of advertised value.
- * The callback is invoked only during the execution of ySleep or yHandleEvents.
- * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
- * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
+ * Returns the number of files currently loaded in the filesystem.
  * 
- * @param callback : the callback function to call, or a null pointer. The callback function should take two
- *         arguments: the function object of which the value has changed, and the character string describing
- *         the new advertised value.
- * @noreturn
- */
--(void)     registerValueCallback:(YFunctionUpdateCallback) callback;   
-/**
- * comment from .yc definition
- */
--(void)     set_objectCallback:(id) object :(SEL)selector;
--(void)     setObjectCallback:(id) object :(SEL)selector;
--(void)     setObjectCallback:(id) object withSelector:(SEL)selector;
-
-//--- (end of generated code: YFiles declaration)
-//--- (generated code: YFiles accessors declaration)
-
-/**
- * Continues the enumeration of filesystems started using yFirstFiles().
+ * @return an integer corresponding to the number of files currently loaded in the filesystem
  * 
- * @return a pointer to a YFiles object, corresponding to
- *         a filesystem currently online, or a null pointer
- *         if there are no more filesystems to enumerate.
+ * On failure, throws an exception or returns Y_FILESCOUNT_INVALID.
  */
--(YFiles*) nextFiles;
+-(int)     get_filesCount;
+
+
+-(int) filesCount;
+/**
+ * Returns the free space for uploading new files to the filesystem, in bytes.
+ * 
+ * @return an integer corresponding to the free space for uploading new files to the filesystem, in bytes
+ * 
+ * On failure, throws an exception or returns Y_FREESPACE_INVALID.
+ */
+-(int)     get_freeSpace;
+
+
+-(int) freeSpace;
 /**
  * Retrieves a filesystem for a given identifier.
  * The identifier can be specified using several formats:
@@ -172,74 +164,24 @@ CF_EXTERN_C_BEGIN
  * 
  * @return a YFiles object allowing you to drive the filesystem.
  */
-+(YFiles*) FindFiles:(NSString*) func;
-/**
- * Starts the enumeration of filesystems currently accessible.
- * Use the method YFiles.nextFiles() to iterate on
- * next filesystems.
- * 
- * @return a pointer to a YFiles object, corresponding to
- *         the first filesystem currently online, or a null pointer
- *         if there are none.
- */
-+(YFiles*) FirstFiles;
++(YFiles*)     FindFiles:(NSString*)func;
 
 /**
- * Returns the logical name of the filesystem.
+ * Registers the callback function that is invoked on every change of advertised value.
+ * The callback is invoked only during the execution of ySleep or yHandleEvents.
+ * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
+ * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
  * 
- * @return a string corresponding to the logical name of the filesystem
- * 
- * On failure, throws an exception or returns Y_LOGICALNAME_INVALID.
+ * @param callback : the callback function to call, or a null pointer. The callback function should take two
+ *         arguments: the function object of which the value has changed, and the character string describing
+ *         the new advertised value.
+ * @noreturn
  */
--(NSString*) get_logicalName;
--(NSString*) logicalName;
+-(int)     registerValueCallback:(YFilesValueCallback)callback;
 
-/**
- * Changes the logical name of the filesystem. You can use yCheckLogicalName()
- * prior to this call to make sure that your parameter is valid.
- * Remember to call the saveToFlash() method of the module if the
- * modification must be kept.
- * 
- * @param newval : a string corresponding to the logical name of the filesystem
- * 
- * @return YAPI_SUCCESS if the call succeeds.
- * 
- * On failure, throws an exception or returns a negative error code.
- */
--(int)     set_logicalName:(NSString*) newval;
--(int)     setLogicalName:(NSString*) newval;
+-(int)     _invokeValueCallback:(NSString*)value;
 
-/**
- * Returns the current value of the filesystem (no more than 6 characters).
- * 
- * @return a string corresponding to the current value of the filesystem (no more than 6 characters)
- * 
- * On failure, throws an exception or returns Y_ADVERTISEDVALUE_INVALID.
- */
--(NSString*) get_advertisedValue;
--(NSString*) advertisedValue;
-
-/**
- * Returns the number of files currently loaded in the filesystem.
- * 
- * @return an integer corresponding to the number of files currently loaded in the filesystem
- * 
- * On failure, throws an exception or returns Y_FILESCOUNT_INVALID.
- */
--(unsigned) get_filesCount;
--(unsigned) filesCount;
-
-/**
- * Returns the free space for uploading new files to the filesystem, in bytes.
- * 
- * @return an integer corresponding to the free space for uploading new files to the filesystem, in bytes
- * 
- * On failure, throws an exception or returns Y_FREESPACE_INVALID.
- */
--(unsigned) get_freeSpace;
--(unsigned) freeSpace;
-
--(NSData*)     sendCommand :(NSString*)command;
+-(NSData*)     sendCommand:(NSString*)command;
 
 /**
  * Reinitializes the filesystem to its clean, unfragmented, empty state.
@@ -264,18 +206,18 @@ CF_EXTERN_C_BEGIN
  * 
  * On failure, throws an exception or returns an empty list.
  */
--(NSMutableArray*)     get_list :(NSString*)pattern;
+-(NSMutableArray*)     get_list:(NSString*)pattern;
 
 /**
  * Downloads the requested file and returns a binary buffer with its content.
  * 
- * @param pathname : path and name of the new file to load
+ * @param pathname : path and name of the file to download
  * 
  * @return a binary buffer with the file content
  * 
  * On failure, throws an exception or returns an empty content.
  */
--(NSData*)     download :(NSString*)pathname;
+-(NSData*)     download:(NSString*)pathname;
 
 /**
  * Uploads a file to the filesystem, to the specified full path name.
@@ -288,7 +230,7 @@ CF_EXTERN_C_BEGIN
  * 
  * On failure, throws an exception or returns a negative error code.
  */
--(int)     upload :(NSString*)pathname :(NSData*)content;
+-(int)     upload:(NSString*)pathname :(NSData*)content;
 
 /**
  * Deletes a file, given by its full path name, from the filesystem.
@@ -304,14 +246,32 @@ CF_EXTERN_C_BEGIN
  * 
  * On failure, throws an exception or returns a negative error code.
  */
--(int)     remove :(NSString*)pathname;
+-(int)     remove:(NSString*)pathname;
 
 
-//--- (end of generated code: YFiles accessors declaration)
+/**
+ * Continues the enumeration of filesystems started using yFirstFiles().
+ * 
+ * @return a pointer to a YFiles object, corresponding to
+ *         a filesystem currently online, or a null pointer
+ *         if there are no more filesystems to enumerate.
+ */
+-(YFiles*) nextFiles;
+/**
+ * Starts the enumeration of filesystems currently accessible.
+ * Use the method YFiles.nextFiles() to iterate on
+ * next filesystems.
+ * 
+ * @return a pointer to a YFiles object, corresponding to
+ *         the first filesystem currently online, or a null pointer
+ *         if there are none.
+ */
++(YFiles*) FirstFiles;
+//--- (end of generated code: YFiles public methods declaration)
+
 @end
 
 //--- (generated code: Files functions declaration)
-
 /**
  * Retrieves a filesystem for a given identifier.
  * The identifier can be specified using several formats:

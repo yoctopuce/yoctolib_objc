@@ -1,8 +1,8 @@
 /*********************************************************************
  *
- * $Id: yocto_dualpower.m 12324 2013-08-13 15:10:31Z mvuilleu $
+ * $Id: yocto_dualpower.m 14721 2014-01-24 17:58:44Z seb $
  *
- * Implements yFindDualPower(), the high-level API for DualPower functions
+ * Implements the high-level API for DualPower functions
  *
  * - - - - - - - - - License information: - - - - - - - - - 
  *
@@ -47,128 +47,49 @@
 @implementation YDualPower
 
 // Constructor is protected, use yFindDualPower factory function to instantiate
--(id)              initWithFunction:(NSString*) func
+-(id)              initWith:(NSString*) func
 {
-//--- (YDualPower attributes)
-   if(!(self = [super initProtected:@"DualPower":func]))
+   if(!(self = [super initWith:func]))
           return nil;
-    _logicalName = Y_LOGICALNAME_INVALID;
-    _advertisedValue = Y_ADVERTISEDVALUE_INVALID;
+    _className = @"DualPower";
+//--- (YDualPower attributes initialization)
     _powerState = Y_POWERSTATE_INVALID;
     _powerControl = Y_POWERCONTROL_INVALID;
     _extVoltage = Y_EXTVOLTAGE_INVALID;
-//--- (end of YDualPower attributes)
+    _valueCallbackDualPower = NULL;
+//--- (end of YDualPower attributes initialization)
     return self;
 }
 // destructor 
 -(void)  dealloc
 {
 //--- (YDualPower cleanup)
-    ARC_release(_logicalName);
-    _logicalName = nil;
-    ARC_release(_advertisedValue);
-    _advertisedValue = nil;
-//--- (end of YDualPower cleanup)
     ARC_dealloc(super);
+//--- (end of YDualPower cleanup)
 }
-//--- (YDualPower implementation)
+//--- (YDualPower private methods implementation)
 
--(int) _parse:(yJsonStateMachine*) j
+-(int) _parseAttr:(yJsonStateMachine*) j
 {
-    if(yJsonParse(j) != YJSON_PARSE_AVAIL || j->st != YJSON_PARSE_STRUCT) {
-    failed:
-        return -1;
+    if(!strcmp(j->token, "powerState")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _powerState =  atoi(j->token);
+        return 1;
     }
-    while(yJsonParse(j) == YJSON_PARSE_AVAIL && j->st == YJSON_PARSE_MEMBNAME) {
-        if(!strcmp(j->token, "logicalName")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            ARC_release(_logicalName);
-            _logicalName =  [self _parseString:j];
-            ARC_retain(_logicalName);
-        } else if(!strcmp(j->token, "advertisedValue")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            ARC_release(_advertisedValue);
-            _advertisedValue =  [self _parseString:j];
-            ARC_retain(_advertisedValue);
-        } else if(!strcmp(j->token, "powerState")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            _powerState =  atoi(j->token);
-        } else if(!strcmp(j->token, "powerControl")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            _powerControl =  atoi(j->token);
-        } else if(!strcmp(j->token, "extVoltage")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            _extVoltage =  atoi(j->token);
-        } else {
-            // ignore unknown field
-            yJsonSkip(j, 1);
-        }
+    if(!strcmp(j->token, "powerControl")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _powerControl =  atoi(j->token);
+        return 1;
     }
-    if(j->st != YJSON_PARSE_STRUCT) goto failed;
-    return 0;
-}
-
-/**
- * Returns the logical name of the power control.
- * 
- * @return a string corresponding to the logical name of the power control
- * 
- * On failure, throws an exception or returns Y_LOGICALNAME_INVALID.
- */
--(NSString*) get_logicalName
-{
-    return [self logicalName];
-}
--(NSString*) logicalName
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_LOGICALNAME_INVALID;
+    if(!strcmp(j->token, "extVoltage")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _extVoltage =  atoi(j->token);
+        return 1;
     }
-    return _logicalName;
+    return [super _parseAttr:j];
 }
-
-/**
- * Changes the logical name of the power control. You can use yCheckLogicalName()
- * prior to this call to make sure that your parameter is valid.
- * Remember to call the saveToFlash() method of the module if the
- * modification must be kept.
- * 
- * @param newval : a string corresponding to the logical name of the power control
- * 
- * @return YAPI_SUCCESS if the call succeeds.
- * 
- * On failure, throws an exception or returns a negative error code.
- */
--(int) set_logicalName:(NSString*) newval
-{
-    return [self setLogicalName:newval];
-}
--(int) setLogicalName:(NSString*) newval
-{
-    NSString* rest_val;
-    rest_val = newval;
-    return [self _setAttr:@"logicalName" :rest_val];
-}
-
-/**
- * Returns the current value of the power control (no more than 6 characters).
- * 
- * @return a string corresponding to the current value of the power control (no more than 6 characters)
- * 
- * On failure, throws an exception or returns Y_ADVERTISEDVALUE_INVALID.
- */
--(NSString*) get_advertisedValue
-{
-    return [self advertisedValue];
-}
--(NSString*) advertisedValue
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_ADVERTISEDVALUE_INVALID;
-    }
-    return _advertisedValue;
-}
-
+//--- (end of YDualPower private methods implementation)
+//--- (YDualPower public methods implementation)
 /**
  * Returns the current power source for module functions that require lots of current.
  * 
@@ -179,16 +100,19 @@
  */
 -(Y_POWERSTATE_enum) get_powerState
 {
-    return [self powerState];
-}
--(Y_POWERSTATE_enum) powerState
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_POWERSTATE_INVALID;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_POWERSTATE_INVALID;
+        }
     }
     return _powerState;
 }
 
+
+-(Y_POWERSTATE_enum) powerState
+{
+    return [self get_powerState];
+}
 /**
  * Returns the selected power source for module functions that require lots of current.
  * 
@@ -199,14 +123,18 @@
  */
 -(Y_POWERCONTROL_enum) get_powerControl
 {
-    return [self powerControl];
-}
--(Y_POWERCONTROL_enum) powerControl
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_POWERCONTROL_INVALID;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_POWERCONTROL_INVALID;
+        }
     }
     return _powerControl;
+}
+
+
+-(Y_POWERCONTROL_enum) powerControl
+{
+    return [self get_powerControl];
 }
 
 /**
@@ -227,10 +155,9 @@
 -(int) setPowerControl:(Y_POWERCONTROL_enum) newval
 {
     NSString* rest_val;
-    rest_val = [NSString stringWithFormat:@"%u", newval];
+    rest_val = [NSString stringWithFormat:@"%d", newval];
     return [self _setAttr:@"powerControl" :rest_val];
 }
-
 /**
  * Returns the measured voltage on the external power source, in millivolts.
  * 
@@ -238,17 +165,95 @@
  * 
  * On failure, throws an exception or returns Y_EXTVOLTAGE_INVALID.
  */
--(unsigned) get_extVoltage
+-(int) get_extVoltage
 {
-    return [self extVoltage];
-}
--(unsigned) extVoltage
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_EXTVOLTAGE_INVALID;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_EXTVOLTAGE_INVALID;
+        }
     }
     return _extVoltage;
 }
+
+
+-(int) extVoltage
+{
+    return [self get_extVoltage];
+}
+/**
+ * Retrieves $AFUNCTION$ for a given identifier.
+ * The identifier can be specified using several formats:
+ * <ul>
+ * <li>FunctionLogicalName</li>
+ * <li>ModuleSerialNumber.FunctionIdentifier</li>
+ * <li>ModuleSerialNumber.FunctionLogicalName</li>
+ * <li>ModuleLogicalName.FunctionIdentifier</li>
+ * <li>ModuleLogicalName.FunctionLogicalName</li>
+ * </ul>
+ * 
+ * This function does not require that $THEFUNCTION$ is online at the time
+ * it is invoked. The returned object is nevertheless valid.
+ * Use the method YDualPower.isOnline() to test if $THEFUNCTION$ is
+ * indeed online at a given time. In case of ambiguity when looking for
+ * $AFUNCTION$ by logical name, no error is notified: the first instance
+ * found is returned. The search is performed first by hardware name,
+ * then by logical name.
+ * 
+ * @param func : a string that uniquely characterizes $THEFUNCTION$
+ * 
+ * @return a YDualPower object allowing you to drive $THEFUNCTION$.
+ */
++(YDualPower*) FindDualPower:(NSString*)func
+{
+    YDualPower* obj;
+    obj = (YDualPower*) [YFunction _FindFromCache:@"DualPower" :func];
+    if (obj == nil) {
+        obj = ARC_sendAutorelease([[YDualPower alloc] initWith:func]);
+        [YFunction _AddToCache:@"DualPower" : func :obj];
+    }
+    return obj;
+}
+
+/**
+ * Registers the callback function that is invoked on every change of advertised value.
+ * The callback is invoked only during the execution of ySleep or yHandleEvents.
+ * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
+ * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
+ * 
+ * @param callback : the callback function to call, or a null pointer. The callback function should take two
+ *         arguments: the function object of which the value has changed, and the character string describing
+ *         the new advertised value.
+ * @noreturn
+ */
+-(int) registerValueCallback:(YDualPowerValueCallback)callback
+{
+    NSString* val;
+    if (callback != NULL) {
+        [YFunction _UpdateValueCallbackList:self :YES];
+    } else {
+        [YFunction _UpdateValueCallbackList:self :NO];
+    }
+    _valueCallbackDualPower = callback;
+    // Immediately invoke value callback with current value
+    if (callback != NULL && [self isOnline]) {
+        val = _advertisedValue;
+        if (!([val isEqualToString:@""])) {
+            [self _invokeValueCallback:val];
+        }
+    }
+    return 0;
+}
+
+-(int) _invokeValueCallback:(NSString*)value
+{
+    if (_valueCallbackDualPower != NULL) {
+        _valueCallbackDualPower(self, value);
+    } else {
+        [super _invokeValueCallback:value];
+    }
+    return 0;
+}
+
 
 -(YDualPower*)   nextDualPower
 {
@@ -257,53 +262,7 @@
     if(YISERR([self _nextFunction:&hwid]) || [hwid isEqualToString:@""]) {
         return NULL;
     }
-    return yFindDualPower(hwid);
-}
--(void )    registerValueCallback:(YFunctionUpdateCallback)callback
-{ 
-    _callback = callback;
-    if (callback != NULL) {
-        [self _registerFuncCallback];
-    } else {
-        [self _unregisterFuncCallback];
-    }
-}
--(void )    set_objectCallback:(id)object :(SEL)selector
-{ [self setObjectCallback:object withSelector:selector];}
--(void )    setObjectCallback:(id)object :(SEL)selector
-{ [self setObjectCallback:object withSelector:selector];}
--(void )    setObjectCallback:(id)object withSelector:(SEL)selector
-{ 
-    _callbackObject = object;
-    _callbackSel    = selector;
-    if (object != nil) {
-        [self _registerFuncCallback];
-        if([self isOnline]) {
-           yapiLockFunctionCallBack(NULL);
-           yInternalPushNewVal([self functionDescriptor],[self advertisedValue]);
-           yapiUnlockFunctionCallBack(NULL);
-        }
-    } else {
-        [self _unregisterFuncCallback];
-    }
-}
-
-+(YDualPower*) FindDualPower:(NSString*) func
-{
-    YDualPower * retVal=nil;
-    if(func==nil) return nil;
-    // Search in cache
-    if ([YAPI_YFunctions objectForKey:@"YDualPower"] == nil){
-        [YAPI_YFunctions setObject:[NSMutableDictionary dictionary] forKey:@"YDualPower"];
-    }
-    if(nil != [[YAPI_YFunctions objectForKey:@"YDualPower"] objectForKey:func]){
-        retVal = [[YAPI_YFunctions objectForKey:@"YDualPower"] objectForKey:func];
-    } else {
-        retVal = [[YDualPower alloc] initWithFunction:func];
-        [[YAPI_YFunctions objectForKey:@"YDualPower"] setObject:retVal forKey:func];
-        ARC_autorelease(retVal);
-    }
-    return retVal;
+    return [YDualPower FindDualPower:hwid];
 }
 
 +(YDualPower *) FirstDualPower
@@ -321,7 +280,7 @@
     return nil;
 }
 
-//--- (end of YDualPower implementation)
+//--- (end of YDualPower public methods implementation)
 
 @end
 //--- (DualPower functions)

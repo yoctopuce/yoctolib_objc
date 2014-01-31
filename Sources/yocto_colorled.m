@@ -1,8 +1,8 @@
 /*********************************************************************
  *
- * $Id: yocto_colorled.m 12324 2013-08-13 15:10:31Z mvuilleu $
+ * $Id: yocto_colorled.m 14721 2014-01-24 17:58:44Z seb $
  *
- * Implements yFindColorLed(), the high-level API for ColorLed functions
+ * Implements the high-level API for ColorLed functions
  *
  * - - - - - - - - - License information: - - - - - - - - - 
  *
@@ -47,162 +47,87 @@
 @implementation YColorLed
 
 // Constructor is protected, use yFindColorLed factory function to instantiate
--(id)              initWithFunction:(NSString*) func
+-(id)              initWith:(NSString*) func
 {
-//--- (YColorLed attributes)
-   if(!(self = [super initProtected:@"ColorLed":func]))
+   if(!(self = [super initWith:func]))
           return nil;
-    _logicalName = Y_LOGICALNAME_INVALID;
-    _advertisedValue = Y_ADVERTISEDVALUE_INVALID;
+    _className = @"ColorLed";
+//--- (YColorLed attributes initialization)
     _rgbColor = Y_RGBCOLOR_INVALID;
     _hslColor = Y_HSLCOLOR_INVALID;
+    _rgbMove = Y_RGBMOVE_INVALID;
+    _hslMove = Y_HSLMOVE_INVALID;
     _rgbColorAtPowerOn = Y_RGBCOLORATPOWERON_INVALID;
-//--- (end of YColorLed attributes)
+    _valueCallbackColorLed = NULL;
+//--- (end of YColorLed attributes initialization)
     return self;
 }
 // destructor 
 -(void)  dealloc
 {
 //--- (YColorLed cleanup)
-    ARC_release(_logicalName);
-    _logicalName = nil;
-    ARC_release(_advertisedValue);
-    _advertisedValue = nil;
-//--- (end of YColorLed cleanup)
     ARC_dealloc(super);
+//--- (end of YColorLed cleanup)
 }
-//--- (YColorLed implementation)
+//--- (YColorLed private methods implementation)
 
--(int) _parse:(yJsonStateMachine*) j
+-(int) _parseAttr:(yJsonStateMachine*) j
 {
-    if(yJsonParse(j) != YJSON_PARSE_AVAIL || j->st != YJSON_PARSE_STRUCT) {
-    failed:
-        return -1;
+    if(!strcmp(j->token, "rgbColor")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _rgbColor =  atoi(j->token);
+        return 1;
     }
-    while(yJsonParse(j) == YJSON_PARSE_AVAIL && j->st == YJSON_PARSE_MEMBNAME) {
-        if(!strcmp(j->token, "logicalName")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            ARC_release(_logicalName);
-            _logicalName =  [self _parseString:j];
-            ARC_retain(_logicalName);
-        } else if(!strcmp(j->token, "advertisedValue")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            ARC_release(_advertisedValue);
-            _advertisedValue =  [self _parseString:j];
-            ARC_retain(_advertisedValue);
-        } else if(!strcmp(j->token, "rgbColor")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            _rgbColor =  atoi(j->token);
-        } else if(!strcmp(j->token, "hslColor")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            _hslColor =  atoi(j->token);
-        } else if(!strcmp(j->token, "rgbMove")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            if(j->st != YJSON_PARSE_STRUCT) goto failed;
+    if(!strcmp(j->token, "hslColor")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _hslColor =  atoi(j->token);
+        return 1;
+    }
+    if(!strcmp(j->token, "rgbMove")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        if(j->st == YJSON_PARSE_STRUCT) {
             while(yJsonParse(j) == YJSON_PARSE_AVAIL && j->st == YJSON_PARSE_MEMBNAME) {
                 if(!strcmp(j->token, "moving")) {
-                    if(yJsonParse(j) != YJSON_PARSE_AVAIL) goto failed;
-                    _rgbMove.moving = atoi(j->token);
+                    if(yJsonParse(j) == YJSON_PARSE_AVAIL)
+                        _rgbMove.moving = atoi(j->token);
                 } else if(!strcmp(j->token, "target")) {
-                    if(yJsonParse(j) != YJSON_PARSE_AVAIL) goto failed;
-                    _rgbMove.target = atoi(j->token);
+                    if(yJsonParse(j) == YJSON_PARSE_AVAIL)
+                        _rgbMove.target = atoi(j->token);
                 } else if(!strcmp(j->token, "ms")) {
-                    if(yJsonParse(j) != YJSON_PARSE_AVAIL) goto failed;
-                    _rgbMove.ms = atoi(j->token);
+                    if(yJsonParse(j) == YJSON_PARSE_AVAIL)
+                        _rgbMove.ms = atoi(j->token);
                 }
             }
-            if(j->st != YJSON_PARSE_STRUCT) goto failed; 
-            
-        } else if(!strcmp(j->token, "hslMove")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            if(j->st != YJSON_PARSE_STRUCT) goto failed;
-            while(yJsonParse(j) == YJSON_PARSE_AVAIL && j->st == YJSON_PARSE_MEMBNAME) {
-                if(!strcmp(j->token, "moving")) {
-                    if(yJsonParse(j) != YJSON_PARSE_AVAIL) goto failed;
-                    _hslMove.moving = atoi(j->token);
-                } else if(!strcmp(j->token, "target")) {
-                    if(yJsonParse(j) != YJSON_PARSE_AVAIL) goto failed;
-                    _hslMove.target = atoi(j->token);
-                } else if(!strcmp(j->token, "ms")) {
-                    if(yJsonParse(j) != YJSON_PARSE_AVAIL) goto failed;
-                    _hslMove.ms = atoi(j->token);
-                }
-            }
-            if(j->st != YJSON_PARSE_STRUCT) goto failed; 
-            
-        } else if(!strcmp(j->token, "rgbColorAtPowerOn")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            _rgbColorAtPowerOn =  atoi(j->token);
-        } else {
-            // ignore unknown field
-            yJsonSkip(j, 1);
         }
+        return 1;
     }
-    if(j->st != YJSON_PARSE_STRUCT) goto failed;
-    return 0;
-}
-
-/**
- * Returns the logical name of the RGB led.
- * 
- * @return a string corresponding to the logical name of the RGB led
- * 
- * On failure, throws an exception or returns Y_LOGICALNAME_INVALID.
- */
--(NSString*) get_logicalName
-{
-    return [self logicalName];
-}
--(NSString*) logicalName
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_LOGICALNAME_INVALID;
+    if(!strcmp(j->token, "hslMove")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        if(j->st == YJSON_PARSE_STRUCT) {
+            while(yJsonParse(j) == YJSON_PARSE_AVAIL && j->st == YJSON_PARSE_MEMBNAME) {
+                if(!strcmp(j->token, "moving")) {
+                    if(yJsonParse(j) == YJSON_PARSE_AVAIL)
+                        _hslMove.moving = atoi(j->token);
+                } else if(!strcmp(j->token, "target")) {
+                    if(yJsonParse(j) == YJSON_PARSE_AVAIL)
+                        _hslMove.target = atoi(j->token);
+                } else if(!strcmp(j->token, "ms")) {
+                    if(yJsonParse(j) == YJSON_PARSE_AVAIL)
+                        _hslMove.ms = atoi(j->token);
+                }
+            }
+        }
+        return 1;
     }
-    return _logicalName;
-}
-
-/**
- * Changes the logical name of the RGB led. You can use yCheckLogicalName()
- * prior to this call to make sure that your parameter is valid.
- * Remember to call the saveToFlash() method of the module if the
- * modification must be kept.
- * 
- * @param newval : a string corresponding to the logical name of the RGB led
- * 
- * @return YAPI_SUCCESS if the call succeeds.
- * 
- * On failure, throws an exception or returns a negative error code.
- */
--(int) set_logicalName:(NSString*) newval
-{
-    return [self setLogicalName:newval];
-}
--(int) setLogicalName:(NSString*) newval
-{
-    NSString* rest_val;
-    rest_val = newval;
-    return [self _setAttr:@"logicalName" :rest_val];
-}
-
-/**
- * Returns the current value of the RGB led (no more than 6 characters).
- * 
- * @return a string corresponding to the current value of the RGB led (no more than 6 characters)
- * 
- * On failure, throws an exception or returns Y_ADVERTISEDVALUE_INVALID.
- */
--(NSString*) get_advertisedValue
-{
-    return [self advertisedValue];
-}
--(NSString*) advertisedValue
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_ADVERTISEDVALUE_INVALID;
+    if(!strcmp(j->token, "rgbColorAtPowerOn")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _rgbColorAtPowerOn =  atoi(j->token);
+        return 1;
     }
-    return _advertisedValue;
+    return [super _parseAttr:j];
 }
-
+//--- (end of YColorLed private methods implementation)
+//--- (YColorLed public methods implementation)
 /**
  * Returns the current RGB color of the led.
  * 
@@ -210,16 +135,20 @@
  * 
  * On failure, throws an exception or returns Y_RGBCOLOR_INVALID.
  */
--(unsigned) get_rgbColor
+-(int) get_rgbColor
 {
-    return [self rgbColor];
-}
--(unsigned) rgbColor
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_RGBCOLOR_INVALID;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_RGBCOLOR_INVALID;
+        }
     }
     return _rgbColor;
+}
+
+
+-(int) rgbColor
+{
+    return [self get_rgbColor];
 }
 
 /**
@@ -231,17 +160,16 @@
  * 
  * On failure, throws an exception or returns a negative error code.
  */
--(int) set_rgbColor:(unsigned) newval
+-(int) set_rgbColor:(int) newval
 {
     return [self setRgbColor:newval];
 }
--(int) setRgbColor:(unsigned) newval
+-(int) setRgbColor:(int) newval
 {
     NSString* rest_val;
     rest_val = [NSString stringWithFormat:@"0x%06x",newval];
     return [self _setAttr:@"rgbColor" :rest_val];
 }
-
 /**
  * Returns the current HSL color of the led.
  * 
@@ -249,16 +177,20 @@
  * 
  * On failure, throws an exception or returns Y_HSLCOLOR_INVALID.
  */
--(unsigned) get_hslColor
+-(int) get_hslColor
 {
-    return [self hslColor];
-}
--(unsigned) hslColor
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_HSLCOLOR_INVALID;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_HSLCOLOR_INVALID;
+        }
     }
     return _hslColor;
+}
+
+
+-(int) hslColor
+{
+    return [self get_hslColor];
 }
 
 /**
@@ -270,32 +202,40 @@
  * 
  * On failure, throws an exception or returns a negative error code.
  */
--(int) set_hslColor:(unsigned) newval
+-(int) set_hslColor:(int) newval
 {
     return [self setHslColor:newval];
 }
--(int) setHslColor:(unsigned) newval
+-(int) setHslColor:(int) newval
 {
     NSString* rest_val;
     rest_val = [NSString stringWithFormat:@"0x%06x",newval];
     return [self _setAttr:@"hslColor" :rest_val];
 }
-
--(YRETCODE) get_rgbMove :(s32*)target :(s16*)ms :(u8*)moving
+-(YMove) get_rgbMove
 {
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return YAPI_IO_ERROR;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_RGBMOVE_INVALID;
+        }
     }
-    *target = _rgbMove.target;
-    *ms = _rgbMove.ms;
-    *moving = _rgbMove.moving;
-    return YAPI_SUCCESS;
+    return _rgbMove;
 }
 
--(YRETCODE) set_rgbMove :(s32)target :(s16)ms :(u8)moving
+
+-(YMove) rgbMove
+{
+    return [self get_rgbMove];
+}
+
+-(int) set_rgbMove:(YMove) newval
+{
+    return [self setRgbMove:newval];
+}
+-(int) setRgbMove:(YMove) newval
 {
     NSString* rest_val;
-    rest_val = [NSString stringWithFormat:@"%d:%d",target,ms];
+    rest_val = [NSString stringWithFormat:@"%d:%d",newval.target,newval.ms];
     return [self _setAttr:@"rgbMove" :rest_val];
 }
 
@@ -309,28 +249,36 @@
  * 
  * On failure, throws an exception or returns a negative error code.
  */
--(int) rgbMove :(int)rgb_target :(int)ms_duration
+-(int) rgbMove:(int)rgb_target :(int)ms_duration
 {
     NSString* rest_val;
     rest_val = [NSString stringWithFormat:@"%d:%d",rgb_target,ms_duration];
     return [self _setAttr:@"rgbMove" :rest_val];
 }
-
--(YRETCODE) get_hslMove :(s32*)target :(s16*)ms :(u8*)moving
+-(YMove) get_hslMove
 {
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return YAPI_IO_ERROR;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_HSLMOVE_INVALID;
+        }
     }
-    *target = _hslMove.target;
-    *ms = _hslMove.ms;
-    *moving = _hslMove.moving;
-    return YAPI_SUCCESS;
+    return _hslMove;
 }
 
--(YRETCODE) set_hslMove :(s32)target :(s16)ms :(u8)moving
+
+-(YMove) hslMove
+{
+    return [self get_hslMove];
+}
+
+-(int) set_hslMove:(YMove) newval
+{
+    return [self setHslMove:newval];
+}
+-(int) setHslMove:(YMove) newval
 {
     NSString* rest_val;
-    rest_val = [NSString stringWithFormat:@"%d:%d",target,ms];
+    rest_val = [NSString stringWithFormat:@"%d:%d",newval.target,newval.ms];
     return [self _setAttr:@"hslMove" :rest_val];
 }
 
@@ -344,13 +292,12 @@
  * 
  * On failure, throws an exception or returns a negative error code.
  */
--(int) hslMove :(int)hsl_target :(int)ms_duration
+-(int) hslMove:(int)hsl_target :(int)ms_duration
 {
     NSString* rest_val;
     rest_val = [NSString stringWithFormat:@"%d:%d",hsl_target,ms_duration];
     return [self _setAttr:@"hslMove" :rest_val];
 }
-
 /**
  * Returns the configured color to be displayed when the module is turned on.
  * 
@@ -358,16 +305,20 @@
  * 
  * On failure, throws an exception or returns Y_RGBCOLORATPOWERON_INVALID.
  */
--(unsigned) get_rgbColorAtPowerOn
+-(int) get_rgbColorAtPowerOn
 {
-    return [self rgbColorAtPowerOn];
-}
--(unsigned) rgbColorAtPowerOn
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_RGBCOLORATPOWERON_INVALID;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_RGBCOLORATPOWERON_INVALID;
+        }
     }
     return _rgbColorAtPowerOn;
+}
+
+
+-(int) rgbColorAtPowerOn
+{
+    return [self get_rgbColorAtPowerOn];
 }
 
 /**
@@ -383,16 +334,90 @@
  * 
  * On failure, throws an exception or returns a negative error code.
  */
--(int) set_rgbColorAtPowerOn:(unsigned) newval
+-(int) set_rgbColorAtPowerOn:(int) newval
 {
     return [self setRgbColorAtPowerOn:newval];
 }
--(int) setRgbColorAtPowerOn:(unsigned) newval
+-(int) setRgbColorAtPowerOn:(int) newval
 {
     NSString* rest_val;
     rest_val = [NSString stringWithFormat:@"0x%06x",newval];
     return [self _setAttr:@"rgbColorAtPowerOn" :rest_val];
 }
+/**
+ * Retrieves $AFUNCTION$ for a given identifier.
+ * The identifier can be specified using several formats:
+ * <ul>
+ * <li>FunctionLogicalName</li>
+ * <li>ModuleSerialNumber.FunctionIdentifier</li>
+ * <li>ModuleSerialNumber.FunctionLogicalName</li>
+ * <li>ModuleLogicalName.FunctionIdentifier</li>
+ * <li>ModuleLogicalName.FunctionLogicalName</li>
+ * </ul>
+ * 
+ * This function does not require that $THEFUNCTION$ is online at the time
+ * it is invoked. The returned object is nevertheless valid.
+ * Use the method YColorLed.isOnline() to test if $THEFUNCTION$ is
+ * indeed online at a given time. In case of ambiguity when looking for
+ * $AFUNCTION$ by logical name, no error is notified: the first instance
+ * found is returned. The search is performed first by hardware name,
+ * then by logical name.
+ * 
+ * @param func : a string that uniquely characterizes $THEFUNCTION$
+ * 
+ * @return a YColorLed object allowing you to drive $THEFUNCTION$.
+ */
++(YColorLed*) FindColorLed:(NSString*)func
+{
+    YColorLed* obj;
+    obj = (YColorLed*) [YFunction _FindFromCache:@"ColorLed" :func];
+    if (obj == nil) {
+        obj = ARC_sendAutorelease([[YColorLed alloc] initWith:func]);
+        [YFunction _AddToCache:@"ColorLed" : func :obj];
+    }
+    return obj;
+}
+
+/**
+ * Registers the callback function that is invoked on every change of advertised value.
+ * The callback is invoked only during the execution of ySleep or yHandleEvents.
+ * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
+ * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
+ * 
+ * @param callback : the callback function to call, or a null pointer. The callback function should take two
+ *         arguments: the function object of which the value has changed, and the character string describing
+ *         the new advertised value.
+ * @noreturn
+ */
+-(int) registerValueCallback:(YColorLedValueCallback)callback
+{
+    NSString* val;
+    if (callback != NULL) {
+        [YFunction _UpdateValueCallbackList:self :YES];
+    } else {
+        [YFunction _UpdateValueCallbackList:self :NO];
+    }
+    _valueCallbackColorLed = callback;
+    // Immediately invoke value callback with current value
+    if (callback != NULL && [self isOnline]) {
+        val = _advertisedValue;
+        if (!([val isEqualToString:@""])) {
+            [self _invokeValueCallback:val];
+        }
+    }
+    return 0;
+}
+
+-(int) _invokeValueCallback:(NSString*)value
+{
+    if (_valueCallbackColorLed != NULL) {
+        _valueCallbackColorLed(self, value);
+    } else {
+        [super _invokeValueCallback:value];
+    }
+    return 0;
+}
+
 
 -(YColorLed*)   nextColorLed
 {
@@ -401,53 +426,7 @@
     if(YISERR([self _nextFunction:&hwid]) || [hwid isEqualToString:@""]) {
         return NULL;
     }
-    return yFindColorLed(hwid);
-}
--(void )    registerValueCallback:(YFunctionUpdateCallback)callback
-{ 
-    _callback = callback;
-    if (callback != NULL) {
-        [self _registerFuncCallback];
-    } else {
-        [self _unregisterFuncCallback];
-    }
-}
--(void )    set_objectCallback:(id)object :(SEL)selector
-{ [self setObjectCallback:object withSelector:selector];}
--(void )    setObjectCallback:(id)object :(SEL)selector
-{ [self setObjectCallback:object withSelector:selector];}
--(void )    setObjectCallback:(id)object withSelector:(SEL)selector
-{ 
-    _callbackObject = object;
-    _callbackSel    = selector;
-    if (object != nil) {
-        [self _registerFuncCallback];
-        if([self isOnline]) {
-           yapiLockFunctionCallBack(NULL);
-           yInternalPushNewVal([self functionDescriptor],[self advertisedValue]);
-           yapiUnlockFunctionCallBack(NULL);
-        }
-    } else {
-        [self _unregisterFuncCallback];
-    }
-}
-
-+(YColorLed*) FindColorLed:(NSString*) func
-{
-    YColorLed * retVal=nil;
-    if(func==nil) return nil;
-    // Search in cache
-    if ([YAPI_YFunctions objectForKey:@"YColorLed"] == nil){
-        [YAPI_YFunctions setObject:[NSMutableDictionary dictionary] forKey:@"YColorLed"];
-    }
-    if(nil != [[YAPI_YFunctions objectForKey:@"YColorLed"] objectForKey:func]){
-        retVal = [[YAPI_YFunctions objectForKey:@"YColorLed"] objectForKey:func];
-    } else {
-        retVal = [[YColorLed alloc] initWithFunction:func];
-        [[YAPI_YFunctions objectForKey:@"YColorLed"] setObject:retVal forKey:func];
-        ARC_autorelease(retVal);
-    }
-    return retVal;
+    return [YColorLed FindColorLed:hwid];
 }
 
 +(YColorLed *) FirstColorLed
@@ -465,7 +444,7 @@
     return nil;
 }
 
-//--- (end of YColorLed implementation)
+//--- (end of YColorLed public methods implementation)
 
 @end
 //--- (ColorLed functions)

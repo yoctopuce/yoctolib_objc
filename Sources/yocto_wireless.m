@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_wireless.m 12337 2013-08-14 15:22:22Z mvuilleu $
+ * $Id: yocto_wireless.m 14721 2014-01-24 17:58:44Z seb $
  *
  * Implements yFindWireless(), the high-level API for Wireless functions
  *
@@ -46,16 +46,18 @@
 
 @implementation YWlanRecord
 
-//--- (generated code: YWlanRecord attributes)
-//--- (end of generated code: YWlanRecord attributes)
 
 -(id)   initWith:(NSString *)json_str
 {
     yJsonStateMachine j;
     if(!(self = [super init]))
         return nil;
+//--- (generated code: YWlanRecord attributes initialization)
+    _channel = 0;
+    _rssi = 0;
+//--- (end of generated code: YWlanRecord attributes initialization)
     
-    // Parse JSON data 
+    // Parse JSON data
     j.src = STR_oc2y(json_str);
     j.end = j.src + strlen(j.src);
     j.st = YJSON_START;
@@ -99,10 +101,19 @@
 }
 
 
+// destructor
+-(void)  dealloc
+{
+//--- (generated code: YWlanRecord cleanup)
+    ARC_dealloc(super);
+//--- (end of generated code: YWlanRecord cleanup)
+}
 
+//--- (generated code: YWlanRecord private methods implementation)
 
-//--- (generated code: YWlanRecord implementation)
+//--- (end of generated code: YWlanRecord private methods implementation)
 
+//--- (generated code: YWlanRecord public methods implementation)
 -(NSString*) get_ssid
 {
     return _ssid;
@@ -123,7 +134,7 @@
     return _rssi;
 }
 
-//--- (end of generated code: YWlanRecord implementation)
+//--- (end of generated code: YWlanRecord public methods implementation)
 
 @end
 //--- (generated code: WlanRecord functions)
@@ -136,171 +147,104 @@
 @implementation YWireless
 
 // Constructor is protected, use yFindWireless factory function to instantiate
--(id)              initWithFunction:(NSString*) func
+-(id)              initWith:(NSString*) func
 {
-//--- (generated code: YWireless attributes)
-   if(!(self = [super initProtected:@"Wireless":func]))
-          return nil;
-    _logicalName = Y_LOGICALNAME_INVALID;
-    _advertisedValue = Y_ADVERTISEDVALUE_INVALID;
+    if(!(self = [super initWith:func]))
+        return nil;
+    _className = @"Wireless";
+//--- (generated code: YWireless attributes initialization)
     _linkQuality = Y_LINKQUALITY_INVALID;
     _ssid = Y_SSID_INVALID;
     _channel = Y_CHANNEL_INVALID;
     _security = Y_SECURITY_INVALID;
     _message = Y_MESSAGE_INVALID;
     _wlanConfig = Y_WLANCONFIG_INVALID;
-//--- (end of generated code: YWireless attributes)
+    _valueCallbackWireless = NULL;
+//--- (end of generated code: YWireless attributes initialization)
     return self;
 }
+
 // destructor 
 -(void)  dealloc
 {
 //--- (generated code: YWireless cleanup)
-    ARC_release(_logicalName);
-    _logicalName = nil;
-    ARC_release(_advertisedValue);
-    _advertisedValue = nil;
     ARC_release(_ssid);
     _ssid = nil;
     ARC_release(_message);
     _message = nil;
     ARC_release(_wlanConfig);
     _wlanConfig = nil;
-//--- (end of generated code: YWireless cleanup)
     ARC_dealloc(super);
+//--- (end of generated code: YWireless cleanup)
 }
-//--- (generated code: YWireless implementation)
 
--(int) _parse:(yJsonStateMachine*) j
+///--- (generated code: YWireless private methods implementation)
+
+-(int) _parseAttr:(yJsonStateMachine*) j
 {
-    if(yJsonParse(j) != YJSON_PARSE_AVAIL || j->st != YJSON_PARSE_STRUCT) {
-    failed:
-        return -1;
+    if(!strcmp(j->token, "linkQuality")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _linkQuality =  atoi(j->token);
+        return 1;
     }
-    while(yJsonParse(j) == YJSON_PARSE_AVAIL && j->st == YJSON_PARSE_MEMBNAME) {
-        if(!strcmp(j->token, "logicalName")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            ARC_release(_logicalName);
-            _logicalName =  [self _parseString:j];
-            ARC_retain(_logicalName);
-        } else if(!strcmp(j->token, "advertisedValue")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            ARC_release(_advertisedValue);
-            _advertisedValue =  [self _parseString:j];
-            ARC_retain(_advertisedValue);
-        } else if(!strcmp(j->token, "linkQuality")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            _linkQuality =  atoi(j->token);
-        } else if(!strcmp(j->token, "ssid")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            ARC_release(_ssid);
-            _ssid =  [self _parseString:j];
-            ARC_retain(_ssid);
-        } else if(!strcmp(j->token, "channel")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            _channel =  atoi(j->token);
-        } else if(!strcmp(j->token, "security")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            _security =  atoi(j->token);
-        } else if(!strcmp(j->token, "message")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            ARC_release(_message);
-            _message =  [self _parseString:j];
-            ARC_retain(_message);
-        } else if(!strcmp(j->token, "wlanConfig")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            ARC_release(_wlanConfig);
-            _wlanConfig =  [self _parseString:j];
-            ARC_retain(_wlanConfig);
-        } else {
-            // ignore unknown field
-            yJsonSkip(j, 1);
-        }
+    if(!strcmp(j->token, "ssid")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+       ARC_release(_ssid);
+        _ssid =  [self _parseString:j];
+        ARC_retain(_ssid);
+        return 1;
     }
-    if(j->st != YJSON_PARSE_STRUCT) goto failed;
-    return 0;
-}
-
-/**
- * Returns the logical name of the wireless lan interface.
- * 
- * @return a string corresponding to the logical name of the wireless lan interface
- * 
- * On failure, throws an exception or returns Y_LOGICALNAME_INVALID.
- */
--(NSString*) get_logicalName
-{
-    return [self logicalName];
-}
--(NSString*) logicalName
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_LOGICALNAME_INVALID;
+    if(!strcmp(j->token, "channel")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _channel =  atoi(j->token);
+        return 1;
     }
-    return _logicalName;
-}
-
-/**
- * Changes the logical name of the wireless lan interface. You can use yCheckLogicalName()
- * prior to this call to make sure that your parameter is valid.
- * Remember to call the saveToFlash() method of the module if the
- * modification must be kept.
- * 
- * @param newval : a string corresponding to the logical name of the wireless lan interface
- * 
- * @return YAPI_SUCCESS if the call succeeds.
- * 
- * On failure, throws an exception or returns a negative error code.
- */
--(int) set_logicalName:(NSString*) newval
-{
-    return [self setLogicalName:newval];
-}
--(int) setLogicalName:(NSString*) newval
-{
-    NSString* rest_val;
-    rest_val = newval;
-    return [self _setAttr:@"logicalName" :rest_val];
-}
-
-/**
- * Returns the current value of the wireless lan interface (no more than 6 characters).
- * 
- * @return a string corresponding to the current value of the wireless lan interface (no more than 6 characters)
- * 
- * On failure, throws an exception or returns Y_ADVERTISEDVALUE_INVALID.
- */
--(NSString*) get_advertisedValue
-{
-    return [self advertisedValue];
-}
--(NSString*) advertisedValue
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_ADVERTISEDVALUE_INVALID;
+    if(!strcmp(j->token, "security")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _security =  atoi(j->token);
+        return 1;
     }
-    return _advertisedValue;
+    if(!strcmp(j->token, "message")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+       ARC_release(_message);
+        _message =  [self _parseString:j];
+        ARC_retain(_message);
+        return 1;
+    }
+    if(!strcmp(j->token, "wlanConfig")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+       ARC_release(_wlanConfig);
+        _wlanConfig =  [self _parseString:j];
+        ARC_retain(_wlanConfig);
+        return 1;
+    }
+    return [super _parseAttr:j];
 }
+//--- (end of generated code: YWireless private methods implementation)
 
+//--- (generated code: YWireless public methods implementation)
 /**
- * Returns the link quality, expressed in per cents.
+ * Returns the link quality, expressed in percent.
  * 
- * @return an integer corresponding to the link quality, expressed in per cents
+ * @return an integer corresponding to the link quality, expressed in percent
  * 
  * On failure, throws an exception or returns Y_LINKQUALITY_INVALID.
  */
 -(int) get_linkQuality
 {
-    return [self linkQuality];
-}
--(int) linkQuality
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_LINKQUALITY_INVALID;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_LINKQUALITY_INVALID;
+        }
     }
     return _linkQuality;
 }
 
+
+-(int) linkQuality
+{
+    return [self get_linkQuality];
+}
 /**
  * Returns the wireless network name (SSID).
  * 
@@ -310,35 +254,42 @@
  */
 -(NSString*) get_ssid
 {
-    return [self ssid];
-}
--(NSString*) ssid
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_SSID_INVALID;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_SSID_INVALID;
+        }
     }
     return _ssid;
 }
 
+
+-(NSString*) ssid
+{
+    return [self get_ssid];
+}
 /**
  * Returns the 802.11 channel currently used, or 0 when the selected network has not been found.
  * 
- * @return an integer corresponding to the 802
+ * @return an integer corresponding to the 802.11 channel currently used, or 0 when the selected
+ * network has not been found
  * 
  * On failure, throws an exception or returns Y_CHANNEL_INVALID.
  */
--(unsigned) get_channel
+-(int) get_channel
 {
-    return [self channel];
-}
--(unsigned) channel
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_CHANNEL_INVALID;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_CHANNEL_INVALID;
+        }
     }
     return _channel;
 }
 
+
+-(int) channel
+{
+    return [self get_channel];
+}
 /**
  * Returns the security algorithm used by the selected wireless network.
  * 
@@ -349,45 +300,55 @@
  */
 -(Y_SECURITY_enum) get_security
 {
-    return [self security];
-}
--(Y_SECURITY_enum) security
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_SECURITY_INVALID;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_SECURITY_INVALID;
+        }
     }
     return _security;
 }
 
+
+-(Y_SECURITY_enum) security
+{
+    return [self get_security];
+}
 /**
- * Returns the last status message from the wireless interface.
+ * Returns the latest status message from the wireless interface.
  * 
- * @return a string corresponding to the last status message from the wireless interface
+ * @return a string corresponding to the latest status message from the wireless interface
  * 
  * On failure, throws an exception or returns Y_MESSAGE_INVALID.
  */
 -(NSString*) get_message
 {
-    return [self message];
-}
--(NSString*) message
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_MESSAGE_INVALID;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_MESSAGE_INVALID;
+        }
     }
     return _message;
 }
 
+
+-(NSString*) message
+{
+    return [self get_message];
+}
 -(NSString*) get_wlanConfig
 {
-    return [self wlanConfig];
-}
--(NSString*) wlanConfig
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_WLANCONFIG_INVALID;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_WLANCONFIG_INVALID;
+        }
     }
     return _wlanConfig;
+}
+
+
+-(NSString*) wlanConfig
+{
+    return [self get_wlanConfig];
 }
 
 -(int) set_wlanConfig:(NSString*) newval
@@ -413,7 +374,7 @@
  * 
  * On failure, throws an exception or returns a negative error code.
  */
--(int) joinNetwork :(NSString*)ssid :(NSString*)securityKey
+-(int) joinNetwork:(NSString*)ssid :(NSString*)securityKey
 {
     NSString* rest_val;
     rest_val = [NSString stringWithFormat:@"INFRA:%@\\%@",ssid,securityKey];
@@ -434,17 +395,91 @@
  * 
  * On failure, throws an exception or returns a negative error code.
  */
--(int) adhocNetwork :(NSString*)ssid :(NSString*)securityKey
+-(int) adhocNetwork:(NSString*)ssid :(NSString*)securityKey
 {
     NSString* rest_val;
     rest_val = [NSString stringWithFormat:@"ADHOC:%@\\%@",ssid,securityKey];
     return [self _setAttr:@"wlanConfig" :rest_val];
 }
 /**
- * Returns a list of YWlanRecord objects which describe detected Wireless networks.
+ * Retrieves a wireless lan interface for a given identifier.
+ * The identifier can be specified using several formats:
+ * <ul>
+ * <li>FunctionLogicalName</li>
+ * <li>ModuleSerialNumber.FunctionIdentifier</li>
+ * <li>ModuleSerialNumber.FunctionLogicalName</li>
+ * <li>ModuleLogicalName.FunctionIdentifier</li>
+ * <li>ModuleLogicalName.FunctionLogicalName</li>
+ * </ul>
+ * 
+ * This function does not require that the wireless lan interface is online at the time
+ * it is invoked. The returned object is nevertheless valid.
+ * Use the method YWireless.isOnline() to test if the wireless lan interface is
+ * indeed online at a given time. In case of ambiguity when looking for
+ * a wireless lan interface by logical name, no error is notified: the first instance
+ * found is returned. The search is performed first by hardware name,
+ * then by logical name.
+ * 
+ * @param func : a string that uniquely characterizes the wireless lan interface
+ * 
+ * @return a YWireless object allowing you to drive the wireless lan interface.
+ */
++(YWireless*) FindWireless:(NSString*)func
+{
+    YWireless* obj;
+    obj = (YWireless*) [YFunction _FindFromCache:@"Wireless" :func];
+    if (obj == nil) {
+        obj = ARC_sendAutorelease([[YWireless alloc] initWith:func]);
+        [YFunction _AddToCache:@"Wireless" : func :obj];
+    }
+    return obj;
+}
+
+/**
+ * Registers the callback function that is invoked on every change of advertised value.
+ * The callback is invoked only during the execution of ySleep or yHandleEvents.
+ * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
+ * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
+ * 
+ * @param callback : the callback function to call, or a null pointer. The callback function should take two
+ *         arguments: the function object of which the value has changed, and the character string describing
+ *         the new advertised value.
+ * @noreturn
+ */
+-(int) registerValueCallback:(YWirelessValueCallback)callback
+{
+    NSString* val;
+    if (callback != NULL) {
+        [YFunction _UpdateValueCallbackList:self :YES];
+    } else {
+        [YFunction _UpdateValueCallbackList:self :NO];
+    }
+    _valueCallbackWireless = callback;
+    // Immediately invoke value callback with current value
+    if (callback != NULL && [self isOnline]) {
+        val = _advertisedValue;
+        if (!([val isEqualToString:@""])) {
+            [self _invokeValueCallback:val];
+        }
+    }
+    return 0;
+}
+
+-(int) _invokeValueCallback:(NSString*)value
+{
+    if (_valueCallbackWireless != NULL) {
+        _valueCallbackWireless(self, value);
+    } else {
+        [super _invokeValueCallback:value];
+    }
+    return 0;
+}
+
+/**
+ * Returns a list of YWlanRecord objects that describe detected Wireless networks.
  * This list is not updated when the module is already connected to an acces point (infrastructure mode).
  * To force an update of this list, adhocNetwork() must be called to disconnect
- * the module from the current network. The returned list must be unallocated by caller,
+ * the module from the current network. The returned list must be unallocated by the caller.
  * 
  * @return a list of YWlanRecord objects, containing the SSID, channel,
  *         link quality and the type of security of the wireless network.
@@ -454,13 +489,16 @@
 -(NSMutableArray*) get_detectedWlans
 {
     NSData* json;
-    NSMutableArray* list = [NSMutableArray array];
+    NSMutableArray* wlanlist = [NSMutableArray array];
     NSMutableArray* res = [NSMutableArray array];
+    // may throw an exception
     json = [self _download:@"wlan.json?by=name"];
-    list = [self _json_get_array:json];
-    for (NSString* _each  in list) { [res addObject:ARC_sendAutorelease([[YWlanRecord alloc] initWith:_each])];};
+    wlanlist = [self _json_get_array:json];
+    [res removeAllObjects];
+    for (NSString* _each  in wlanlist) {
+        [res addObject:ARC_sendAutorelease([[YWlanRecord alloc] initWith:_each])];
+    }
     return res;
-    
 }
 
 
@@ -471,53 +509,7 @@
     if(YISERR([self _nextFunction:&hwid]) || [hwid isEqualToString:@""]) {
         return NULL;
     }
-    return yFindWireless(hwid);
-}
--(void )    registerValueCallback:(YFunctionUpdateCallback)callback
-{ 
-    _callback = callback;
-    if (callback != NULL) {
-        [self _registerFuncCallback];
-    } else {
-        [self _unregisterFuncCallback];
-    }
-}
--(void )    set_objectCallback:(id)object :(SEL)selector
-{ [self setObjectCallback:object withSelector:selector];}
--(void )    setObjectCallback:(id)object :(SEL)selector
-{ [self setObjectCallback:object withSelector:selector];}
--(void )    setObjectCallback:(id)object withSelector:(SEL)selector
-{ 
-    _callbackObject = object;
-    _callbackSel    = selector;
-    if (object != nil) {
-        [self _registerFuncCallback];
-        if([self isOnline]) {
-           yapiLockFunctionCallBack(NULL);
-           yInternalPushNewVal([self functionDescriptor],[self advertisedValue]);
-           yapiUnlockFunctionCallBack(NULL);
-        }
-    } else {
-        [self _unregisterFuncCallback];
-    }
-}
-
-+(YWireless*) FindWireless:(NSString*) func
-{
-    YWireless * retVal=nil;
-    if(func==nil) return nil;
-    // Search in cache
-    if ([YAPI_YFunctions objectForKey:@"YWireless"] == nil){
-        [YAPI_YFunctions setObject:[NSMutableDictionary dictionary] forKey:@"YWireless"];
-    }
-    if(nil != [[YAPI_YFunctions objectForKey:@"YWireless"] objectForKey:func]){
-        retVal = [[YAPI_YFunctions objectForKey:@"YWireless"] objectForKey:func];
-    } else {
-        retVal = [[YWireless alloc] initWithFunction:func];
-        [[YAPI_YFunctions objectForKey:@"YWireless"] setObject:retVal forKey:func];
-        ARC_autorelease(retVal);
-    }
-    return retVal;
+    return [YWireless FindWireless:hwid];
 }
 
 +(YWireless *) FirstWireless
@@ -535,7 +527,7 @@
     return nil;
 }
 
-//--- (end of generated code: YWireless implementation)
+//--- (end of generated code: YWireless public methods implementation)
 
 @end
 //--- (generated code: Wireless functions)

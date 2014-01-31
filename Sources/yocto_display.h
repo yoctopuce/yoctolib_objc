@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_display.h 12326 2013-08-13 15:52:20Z mvuilleu $
+ * $Id: yocto_display.h 14687 2014-01-23 11:01:59Z seb $
  *
  * Declares yFindDisplay(), the high-level API for Display functions
  *
@@ -39,9 +39,11 @@
 
 #import "yocto_api.h"
 CF_EXTERN_C_BEGIN
+@class YDisplay;
 
-
-//--- (generated code: YDisplayLayer definitions)
+//--- (generated code: YDisplayLayer globals)
+#ifndef _Y_Y_ALIGN
+#define _Y_Y_ALIGN
 typedef enum {
     Y_ALIGN_TOP_LEFT = 0 ,
     Y_ALIGN_CENTER_LEFT = 1 ,
@@ -61,42 +63,86 @@ typedef enum {
     Y_ALIGN_BOTTOM_RIGHT = 15 
 } Y_ALIGN;
 
-//--- (end of generated code: YDisplayLayer definitions)
+#endif
+//--- (end of generated code: YDisplayLayer globals)
+
+//--- (generated code: YDisplay globals)
+typedef void (*YDisplayValueCallback)(YDisplay *func, NSString *functionValue);
+#ifndef _Y_ENABLED_ENUM
+#define _Y_ENABLED_ENUM
+typedef enum {
+    Y_ENABLED_FALSE = 0,
+    Y_ENABLED_TRUE = 1,
+    Y_ENABLED_INVALID = -1,
+} Y_ENABLED_enum;
+#endif
+
+#ifndef _Y_ORIENTATION_ENUM
+#define _Y_ORIENTATION_ENUM
+typedef enum {
+    Y_ORIENTATION_LEFT = 0,
+    Y_ORIENTATION_UP = 1,
+    Y_ORIENTATION_RIGHT = 2,
+    Y_ORIENTATION_DOWN = 3,
+    Y_ORIENTATION_INVALID = -1,
+} Y_ORIENTATION_enum;
+#endif
+
+#ifndef _Y_DISPLAYTYPE_ENUM
+#define _Y_DISPLAYTYPE_ENUM
+typedef enum {
+    Y_DISPLAYTYPE_MONO = 0,
+    Y_DISPLAYTYPE_GRAY = 1,
+    Y_DISPLAYTYPE_RGB = 2,
+    Y_DISPLAYTYPE_INVALID = -1,
+} Y_DISPLAYTYPE_enum;
+#endif
+
+#define Y_STARTUPSEQ_INVALID            YAPI_INVALID_STRING
+#define Y_BRIGHTNESS_INVALID            YAPI_INVALID_UINT
+#define Y_DISPLAYWIDTH_INVALID          YAPI_INVALID_UINT
+#define Y_DISPLAYHEIGHT_INVALID         YAPI_INVALID_UINT
+#define Y_LAYERWIDTH_INVALID            YAPI_INVALID_UINT
+#define Y_LAYERHEIGHT_INVALID           YAPI_INVALID_UINT
+#define Y_LAYERCOUNT_INVALID            YAPI_INVALID_UINT
+#define Y_COMMAND_INVALID               YAPI_INVALID_STRING
+//--- (end of generated code: YDisplay globals)
 
 @class YDisplay;
+
+//--- (generated code: YDisplayLayer class start)
 /**
- * YDisplayLayer Class: Image layer containing data to display
- *
+ * YDisplayLayer Class: DisplayLayer object interface
+ * 
  * A DisplayLayer is an image layer containing objects to display
- * (bitmaps, text, etc.). The content will only be displayed when
+ * (bitmaps, text, etc.). The content is displayed only when
  * the layer is active on the screen (and not masked by other
  * overlapping layers).
  */
 @interface YDisplayLayer : NSObject
+//--- (end of generated code: YDisplayLayer class start)
 {
 @protected
     YDisplay *_display;
     int _id;
     NSMutableString *_cmdbuff;
     bool   _hidden;
-    // Attributes (function value cache)
-    //--- (generated code: YDisplayLayer attributes)
-//--- (end of generated code: YDisplayLayer attributes)
+//--- (generated code: YDisplayLayer attributes declaration)
+//--- (end of generated code: YDisplayLayer attributes declaration)
+
 }
+
+-(id)    initWithDisplay:(YDisplay*)display andLayerID:(int)layerid;
+
 
 // internal function to send a command for this layer
 -(int)   command_push:(NSString*)cmd;
 -(int)   command_flush:(NSString*)cmd;
 -(int)   flush_now;
 
-
--(id)    initWithDisplay:(YDisplay*)display andLayerID:(int)layerid;
-
-//--- (generated code: YDisplayLayer declaration)
-//--- (end of generated code: YDisplayLayer declaration)
-//--- (generated code: YDisplayLayer accessors declaration)
-
-
+//--- (generated code: YDisplayLayer private methods declaration)
+//--- (end of generated code: YDisplayLayer private methods declaration)
+//--- (generated code: YDisplayLayer public methods declaration)
 /**
  * Reverts the layer to its initial state (fully transparent, default settings).
  * Reinitializes the drawing pointer to the upper left position,
@@ -133,7 +179,7 @@ typedef enum {
  * 
  * On failure, throws an exception or returns a negative error code.
  */
--(int)     selectColorPen :(int)color;
+-(int)     selectColorPen:(int)color;
 
 /**
  * Selects the pen gray level for all subsequent drawing functions,
@@ -149,7 +195,7 @@ typedef enum {
  * 
  * On failure, throws an exception or returns a negative error code.
  */
--(int)     selectGrayPen :(int)graylevel;
+-(int)     selectGrayPen:(int)graylevel;
 
 /**
  * Selects an eraser instead of a pen for all subsequent drawing functions,
@@ -179,7 +225,7 @@ typedef enum {
  * 
  * On failure, throws an exception or returns a negative error code.
  */
--(int)     setAntialiasingMode :(bool)mode;
+-(int)     setAntialiasingMode:(bool)mode;
 
 /**
  * Draws a single pixel at the specified position.
@@ -191,7 +237,7 @@ typedef enum {
  * 
  * On failure, throws an exception or returns a negative error code.
  */
--(int)     drawPixel :(int)x :(int)y;
+-(int)     drawPixel:(int)x :(int)y;
 
 /**
  * Draws an empty rectangle at a specified position.
@@ -205,7 +251,7 @@ typedef enum {
  * 
  * On failure, throws an exception or returns a negative error code.
  */
--(int)     drawRect :(int)x1 :(int)y1 :(int)x2 :(int)y2;
+-(int)     drawRect:(int)x1 :(int)y1 :(int)x2 :(int)y2;
 
 /**
  * Draws a filled rectangular bar at a specified position.
@@ -219,7 +265,7 @@ typedef enum {
  * 
  * On failure, throws an exception or returns a negative error code.
  */
--(int)     drawBar :(int)x1 :(int)y1 :(int)x2 :(int)y2;
+-(int)     drawBar:(int)x1 :(int)y1 :(int)x2 :(int)y2;
 
 /**
  * Draws an empty circle at a specified position.
@@ -232,7 +278,7 @@ typedef enum {
  * 
  * On failure, throws an exception or returns a negative error code.
  */
--(int)     drawCircle :(int)x :(int)y :(int)r;
+-(int)     drawCircle:(int)x :(int)y :(int)r;
 
 /**
  * Draws a filled disc at a given position.
@@ -245,7 +291,7 @@ typedef enum {
  * 
  * On failure, throws an exception or returns a negative error code.
  */
--(int)     drawDisc :(int)x :(int)y :(int)r;
+-(int)     drawDisc:(int)x :(int)y :(int)r;
 
 /**
  * Selects a font to use for the next text drawing functions, by providing the name of the
@@ -260,15 +306,15 @@ typedef enum {
  * 
  * On failure, throws an exception or returns a negative error code.
  */
--(int)     selectFont :(NSString*)fontname;
+-(int)     selectFont:(NSString*)fontname;
 
 /**
  * Draws a text string at the specified position. The point of the text that is aligned
  * to the specified pixel position is called the anchor point, and can be chosen among
  * several options. Text is rendered from left to right, without implicit wrapping.
  * 
- * @param x: the distance from left of layer to the text ancor point, in pixels
- * @param y: the distance from top of layer to the text ancor point, in pixels
+ * @param x: the distance from left of layer to the text anchor point, in pixels
+ * @param y: the distance from top of layer to the text anchor point, in pixels
  * @param anchor: the text anchor point, chosen among the Y_ALIGN enumeration:
  *         Y_ALIGN_TOP_LEFT,    Y_ALIGN_CENTER_LEFT,    Y_ALIGN_BASELINE_LEFT,    Y_ALIGN_BOTTOM_LEFT,
  *         Y_ALIGN_TOP_CENTER,  Y_ALIGN_CENTER,         Y_ALIGN_BASELINE_CENTER,  Y_ALIGN_BOTTOM_CENTER,
@@ -280,7 +326,7 @@ typedef enum {
  * 
  * On failure, throws an exception or returns a negative error code.
  */
--(int)     drawText :(int)x :(int)y :(Y_ALIGN)anchor :(NSString*)text;
+-(int)     drawText:(int)x :(int)y :(Y_ALIGN)anchor :(NSString*)text;
 
 /**
  * Draws a GIF image at the specified position. The GIF image must have been previously
@@ -296,7 +342,7 @@ typedef enum {
  * 
  * On failure, throws an exception or returns a negative error code.
  */
--(int)     drawImage :(int)x :(int)y :(NSString*)imagename;
+-(int)     drawImage:(int)x :(int)y :(NSString*)imagename;
 
 /**
  * Draws a bitmap at the specified position. The bitmap is provided as a binary object,
@@ -318,7 +364,7 @@ typedef enum {
  * 
  * On failure, throws an exception or returns a negative error code.
  */
--(int)     drawBitmap :(int)x :(int)y :(int)w :(NSData*)bitmap :(int)bgcol;
+-(int)     drawBitmap:(int)x :(int)y :(int)w :(NSData*)bitmap :(int)bgcol;
 
 /**
  * Moves the drawing pointer of this layer to the specified position.
@@ -330,7 +376,7 @@ typedef enum {
  * 
  * On failure, throws an exception or returns a negative error code.
  */
--(int)     moveTo :(int)x :(int)y;
+-(int)     moveTo:(int)x :(int)y;
 
 /**
  * Draws a line from current drawing pointer position to the specified position.
@@ -344,7 +390,7 @@ typedef enum {
  * 
  * On failure, throws an exception or returns a negative error code.
  */
--(int)     lineTo :(int)x :(int)y;
+-(int)     lineTo:(int)x :(int)y;
 
 /**
  * Outputs a message in the console area, and advances the console pointer accordingly.
@@ -359,7 +405,7 @@ typedef enum {
  * 
  * On failure, throws an exception or returns a negative error code.
  */
--(int)     consoleOut :(NSString*)text;
+-(int)     consoleOut:(NSString*)text;
 
 /**
  * Sets up display margins for the consoleOut function.
@@ -373,7 +419,7 @@ typedef enum {
  * 
  * On failure, throws an exception or returns a negative error code.
  */
--(int)     setConsoleMargins :(int)x1 :(int)y1 :(int)x2 :(int)y2;
+-(int)     setConsoleMargins:(int)x1 :(int)y1 :(int)x2 :(int)y2;
 
 /**
  * Sets up the background color used by the clearConsole function and by
@@ -386,7 +432,7 @@ typedef enum {
  * 
  * On failure, throws an exception or returns a negative error code.
  */
--(int)     setConsoleBackground :(int)bgcol;
+-(int)     setConsoleBackground:(int)bgcol;
 
 /**
  * Sets up the wrapping behaviour used by the consoleOut function.
@@ -398,7 +444,7 @@ typedef enum {
  * 
  * On failure, throws an exception or returns a negative error code.
  */
--(int)     setConsoleWordWrap :(bool)wordwrap;
+-(int)     setConsoleWordWrap:(bool)wordwrap;
 
 /**
  * Blanks the console area within console margins, and resets the console pointer
@@ -424,7 +470,7 @@ typedef enum {
  * 
  * On failure, throws an exception or returns a negative error code.
  */
--(int)     setLayerPosition :(int)x :(int)y :(int)scrollTime;
+-(int)     setLayerPosition:(int)x :(int)y :(int)scrollTime;
 
 /**
  * Hides the layer. The state of the layer is perserved but the layer is not displayed
@@ -493,453 +539,55 @@ typedef enum {
 -(int)     resetHiddenFlag;
 
 
-//--- (end of generated code: YDisplayLayer accessors declaration)
+//--- (end of generated code: YDisplayLayer public methods declaration)
+
 @end
 
 //--- (generated code: DisplayLayer functions declaration)
-
 //--- (end of generated code: DisplayLayer functions declaration)
 
-//--- (generated code: YDisplay definitions)
-typedef enum {
-    Y_POWERSTATE_OFF = 0,
-    Y_POWERSTATE_ON = 1,
-    Y_POWERSTATE_INVALID = -1
-} Y_POWERSTATE_enum;
 
-typedef enum {
-    Y_ORIENTATION_LEFT = 0,
-    Y_ORIENTATION_UP = 1,
-    Y_ORIENTATION_RIGHT = 2,
-    Y_ORIENTATION_DOWN = 3,
-    Y_ORIENTATION_INVALID = -1
-} Y_ORIENTATION_enum;
-
-typedef enum {
-    Y_DISPLAYTYPE_MONO = 0,
-    Y_DISPLAYTYPE_GRAY = 1,
-    Y_DISPLAYTYPE_RGB = 2,
-    Y_DISPLAYTYPE_INVALID = -1
-} Y_DISPLAYTYPE_enum;
-
-#define Y_LOGICALNAME_INVALID           [YAPI  INVALID_STRING]
-#define Y_ADVERTISEDVALUE_INVALID       [YAPI  INVALID_STRING]
-#define Y_STARTUPSEQ_INVALID            [YAPI  INVALID_STRING]
-#define Y_BRIGHTNESS_INVALID            (-1)
-#define Y_DISPLAYWIDTH_INVALID          (0xffffffff)
-#define Y_DISPLAYHEIGHT_INVALID         (0xffffffff)
-#define Y_LAYERWIDTH_INVALID            (0xffffffff)
-#define Y_LAYERHEIGHT_INVALID           (0xffffffff)
-#define Y_LAYERCOUNT_INVALID            (0xffffffff)
-#define Y_COMMAND_INVALID               [YAPI  INVALID_STRING]
-//--- (end of generated code: YDisplay definitions)
-#define NB_MAX_LAYERS                   10
+//--- (generated code: YDisplay class start)
 /**
  * YDisplay Class: Display function interface
  * 
- * Yoctopuce display interface rocks. More details to come...
+ * Yoctopuce display interface has been designed to easily
+ * show information and images. The device provides built-in
+ * multi-layer rendering. Layers can be drawn offline, individually,
+ * and freely moved on the display. It can also replay recorded
+ * sequences (animations).
  */
 @interface YDisplay : YFunction
+//--- (end of generated code: YDisplay class start)
 {
 @protected
-
-    // Attributes (function value cache)
-//--- (generated code: YDisplay attributes)
-    NSString*       _logicalName;
-    NSString*       _advertisedValue;
-    Y_POWERSTATE_enum _powerState;
+//--- (generated code: YDisplay attributes declaration)
+    Y_ENABLED_enum  _enabled;
     NSString*       _startupSeq;
     int             _brightness;
     Y_ORIENTATION_enum _orientation;
-    unsigned        _displayWidth;
-    unsigned        _displayHeight;
+    int             _displayWidth;
+    int             _displayHeight;
     Y_DISPLAYTYPE_enum _displayType;
-    unsigned        _layerWidth;
-    unsigned        _layerHeight;
-    unsigned        _layerCount;
+    int             _layerWidth;
+    int             _layerHeight;
+    int             _layerCount;
     NSString*       _command;
-//--- (end of generated code: YDisplay attributes)
+    YDisplayValueCallback _valueCallbackDisplay;
+//--- (end of generated code: YDisplay attributes declaration)
     NSMutableArray   *_allDisplayLayers;
     bool             _recording;
     NSString  *_sequence;
 }
-//--- (generated code: YDisplay accessors declaration)
+// Constructor is protected, use yFindDisplay factory function to instantiate
+-(id)    initWith:(NSString*) func;
 
-/**
- * Continues the enumeration of displays started using yFirstDisplay().
- * 
- * @return a pointer to a YDisplay object, corresponding to
- *         a display currently online, or a null pointer
- *         if there are no more displays to enumerate.
- */
--(YDisplay*) nextDisplay;
-/**
- * Retrieves a display for a given identifier.
- * The identifier can be specified using several formats:
- * <ul>
- * <li>FunctionLogicalName</li>
- * <li>ModuleSerialNumber.FunctionIdentifier</li>
- * <li>ModuleSerialNumber.FunctionLogicalName</li>
- * <li>ModuleLogicalName.FunctionIdentifier</li>
- * <li>ModuleLogicalName.FunctionLogicalName</li>
- * </ul>
- * 
- * This function does not require that the display is online at the time
- * it is invoked. The returned object is nevertheless valid.
- * Use the method YDisplay.isOnline() to test if the display is
- * indeed online at a given time. In case of ambiguity when looking for
- * a display by logical name, no error is notified: the first instance
- * found is returned. The search is performed first by hardware name,
- * then by logical name.
- * 
- * @param func : a string that uniquely characterizes the display
- * 
- * @return a YDisplay object allowing you to drive the display.
- */
-+(YDisplay*) FindDisplay:(NSString*) func;
-/**
- * Starts the enumeration of displays currently accessible.
- * Use the method YDisplay.nextDisplay() to iterate on
- * next displays.
- * 
- * @return a pointer to a YDisplay object, corresponding to
- *         the first display currently online, or a null pointer
- *         if there are none.
- */
-+(YDisplay*) FirstDisplay;
+//--- (generated code: YDisplay private methods declaration)
+// Function-specific method for parsing of JSON output and caching result
+-(int)             _parseAttr:(yJsonStateMachine*) j;
 
-/**
- * Returns the logical name of the display.
- * 
- * @return a string corresponding to the logical name of the display
- * 
- * On failure, throws an exception or returns Y_LOGICALNAME_INVALID.
- */
--(NSString*) get_logicalName;
--(NSString*) logicalName;
+//--- (end of generated code: YDisplay private methods declaration)
 
-/**
- * Changes the logical name of the display. You can use yCheckLogicalName()
- * prior to this call to make sure that your parameter is valid.
- * Remember to call the saveToFlash() method of the module if the
- * modification must be kept.
- * 
- * @param newval : a string corresponding to the logical name of the display
- * 
- * @return YAPI_SUCCESS if the call succeeds.
- * 
- * On failure, throws an exception or returns a negative error code.
- */
--(int)     set_logicalName:(NSString*) newval;
--(int)     setLogicalName:(NSString*) newval;
-
-/**
- * Returns the current value of the display (no more than 6 characters).
- * 
- * @return a string corresponding to the current value of the display (no more than 6 characters)
- * 
- * On failure, throws an exception or returns Y_ADVERTISEDVALUE_INVALID.
- */
--(NSString*) get_advertisedValue;
--(NSString*) advertisedValue;
-
-/**
- * Returns the power state of the display.
- * 
- * @return either Y_POWERSTATE_OFF or Y_POWERSTATE_ON, according to the power state of the display
- * 
- * On failure, throws an exception or returns Y_POWERSTATE_INVALID.
- */
--(Y_POWERSTATE_enum) get_powerState;
--(Y_POWERSTATE_enum) powerState;
-
-/**
- * Changes the power state of the display.
- * 
- * @param newval : either Y_POWERSTATE_OFF or Y_POWERSTATE_ON, according to the power state of the display
- * 
- * @return YAPI_SUCCESS if the call succeeds.
- * 
- * On failure, throws an exception or returns a negative error code.
- */
--(int)     set_powerState:(Y_POWERSTATE_enum) newval;
--(int)     setPowerState:(Y_POWERSTATE_enum) newval;
-
-/**
- * Returns the name of the sequence to play when the displayed is powered on.
- * 
- * @return a string corresponding to the name of the sequence to play when the displayed is powered on
- * 
- * On failure, throws an exception or returns Y_STARTUPSEQ_INVALID.
- */
--(NSString*) get_startupSeq;
--(NSString*) startupSeq;
-
-/**
- * Changes the name of the sequence to play when the displayed is powered on.
- * Remember to call the saveToFlash() method of the module if the
- * modification must be kept.
- * 
- * @param newval : a string corresponding to the name of the sequence to play when the displayed is powered on
- * 
- * @return YAPI_SUCCESS if the call succeeds.
- * 
- * On failure, throws an exception or returns a negative error code.
- */
--(int)     set_startupSeq:(NSString*) newval;
--(int)     setStartupSeq:(NSString*) newval;
-
-/**
- * Returns the luminosity of the  module informative leds (from 0 to 100).
- * 
- * @return an integer corresponding to the luminosity of the  module informative leds (from 0 to 100)
- * 
- * On failure, throws an exception or returns Y_BRIGHTNESS_INVALID.
- */
--(int) get_brightness;
--(int) brightness;
-
-/**
- * Changes the brightness of the display. The parameter is a value between 0 and
- * 100. Remember to call the saveToFlash() method of the module if the
- * modification must be kept.
- * 
- * @param newval : an integer corresponding to the brightness of the display
- * 
- * @return YAPI_SUCCESS if the call succeeds.
- * 
- * On failure, throws an exception or returns a negative error code.
- */
--(int)     set_brightness:(int) newval;
--(int)     setBrightness:(int) newval;
-
-/**
- * Returns the currently selected display orientation.
- * 
- * @return a value among Y_ORIENTATION_LEFT, Y_ORIENTATION_UP, Y_ORIENTATION_RIGHT and
- * Y_ORIENTATION_DOWN corresponding to the currently selected display orientation
- * 
- * On failure, throws an exception or returns Y_ORIENTATION_INVALID.
- */
--(Y_ORIENTATION_enum) get_orientation;
--(Y_ORIENTATION_enum) orientation;
-
-/**
- * Changes the display orientation. Remember to call the saveToFlash()
- * method of the module if the modification must be kept.
- * 
- * @param newval : a value among Y_ORIENTATION_LEFT, Y_ORIENTATION_UP, Y_ORIENTATION_RIGHT and
- * Y_ORIENTATION_DOWN corresponding to the display orientation
- * 
- * @return YAPI_SUCCESS if the call succeeds.
- * 
- * On failure, throws an exception or returns a negative error code.
- */
--(int)     set_orientation:(Y_ORIENTATION_enum) newval;
--(int)     setOrientation:(Y_ORIENTATION_enum) newval;
-
-/**
- * Returns the display width, in pixels.
- * 
- * @return an integer corresponding to the display width, in pixels
- * 
- * On failure, throws an exception or returns Y_DISPLAYWIDTH_INVALID.
- */
--(unsigned) get_displayWidth;
--(unsigned) displayWidth;
-
-/**
- * Returns the display height, in pixels.
- * 
- * @return an integer corresponding to the display height, in pixels
- * 
- * On failure, throws an exception or returns Y_DISPLAYHEIGHT_INVALID.
- */
--(unsigned) get_displayHeight;
--(unsigned) displayHeight;
-
-/**
- * Returns the display type: monochrome, gray levels or full color.
- * 
- * @return a value among Y_DISPLAYTYPE_MONO, Y_DISPLAYTYPE_GRAY and Y_DISPLAYTYPE_RGB corresponding to
- * the display type: monochrome, gray levels or full color
- * 
- * On failure, throws an exception or returns Y_DISPLAYTYPE_INVALID.
- */
--(Y_DISPLAYTYPE_enum) get_displayType;
--(Y_DISPLAYTYPE_enum) displayType;
-
-/**
- * Returns the width of the layers to draw on, in pixels.
- * 
- * @return an integer corresponding to the width of the layers to draw on, in pixels
- * 
- * On failure, throws an exception or returns Y_LAYERWIDTH_INVALID.
- */
--(unsigned) get_layerWidth;
--(unsigned) layerWidth;
-
-/**
- * Returns the height of the layers to draw on, in pixels.
- * 
- * @return an integer corresponding to the height of the layers to draw on, in pixels
- * 
- * On failure, throws an exception or returns Y_LAYERHEIGHT_INVALID.
- */
--(unsigned) get_layerHeight;
--(unsigned) layerHeight;
-
-/**
- * Returns the number of available layers to draw on.
- * 
- * @return an integer corresponding to the number of available layers to draw on
- * 
- * On failure, throws an exception or returns Y_LAYERCOUNT_INVALID.
- */
--(unsigned) get_layerCount;
--(unsigned) layerCount;
-
--(NSString*) get_command;
--(NSString*) command;
-
--(int)     set_command:(NSString*) newval;
--(int)     setCommand:(NSString*) newval;
-
-/**
- * Clears the display screen and resets all display layers to their default state.
- * 
- * @return YAPI_SUCCESS if the call succeeds.
- * 
- * On failure, throws an exception or returns a negative error code.
- */
--(int)     resetAll;
-
-/**
- * Smoothly changes the brightness of the screen to produce a fade-in or fade-out
- * effect.
- * 
- * @param brightness: the new screen brightness
- * @param duration: duration of the brightness transition, in milliseconds.
- * 
- * @return YAPI_SUCCESS if the call succeeds.
- * 
- * On failure, throws an exception or returns a negative error code.
- */
--(int)     fade :(int)brightness :(int)duration;
-
-/**
- * Starts to record all display commands into a sequence, for later replay.
- * The name used to store the sequence is specified when calling
- * saveSequence(), once the recording is complete.
- * 
- * @return YAPI_SUCCESS if the call succeeds.
- * 
- * On failure, throws an exception or returns a negative error code.
- */
--(int)     newSequence;
-
-/**
- * Stops recording display commands and saves the sequence into the specified
- * file on the display internal memory. The sequence can be later replayed
- * using playSequence().
- * 
- * @param sequenceName : the name of the newly created sequence
- * 
- * @return YAPI_SUCCESS if the call succeeds.
- * 
- * On failure, throws an exception or returns a negative error code.
- */
--(int)     saveSequence :(NSString*)sequenceName;
-
-/**
- * Replays a display sequence previously recorded using
- * newSequence() and saveSequence().
- * 
- * @param sequenceName : the name of the newly created sequence
- * 
- * @return YAPI_SUCCESS if the call succeeds.
- * 
- * On failure, throws an exception or returns a negative error code.
- */
--(int)     playSequence :(NSString*)sequenceName;
-
-/**
- * Waits for a specified delay (in milliseconds) before playing next
- * commands in current sequence. This method can be used while
- * recording a display sequence, to insert a timed wait in the sequence
- * (without any immediate effect). It can also be used dynamically while
- * playing a pre-recorded sequence, to suspend or resume the execution of
- * the sequence. To cancel a delay, call the same method with a zero delay.
- * 
- * @param delay_ms : the duration to wait, in milliseconds
- * 
- * @return YAPI_SUCCESS if the call succeeds.
- * 
- * On failure, throws an exception or returns a negative error code.
- */
--(int)     pauseSequence :(int)delay_ms;
-
-/**
- * Stops immediately any ongoing sequence replay.
- * The display is left as is.
- * 
- * @return YAPI_SUCCESS if the call succeeds.
- * 
- * On failure, throws an exception or returns a negative error code.
- */
--(int)     stopSequence;
-
-/**
- * Uploads an arbitrary file (for instance a GIF file) to the display, to the
- * specified full path name. If a file already exists with the same path name,
- * its content is overwritten.
- * 
- * @param pathname : path and name of the new file to create
- * @param content : binary buffer with the content to set
- * 
- * @return YAPI_SUCCESS if the call succeeds.
- * 
- * On failure, throws an exception or returns a negative error code.
- */
--(int)     upload :(NSString*)pathname :(NSData*)content;
-
-/**
- * Copies the whole content of a layer to another layer. The color and transparency
- * of all the pixels from the destination layer are set to match the source pixels.
- * This method only affects the displayed content, but does not change any
- * property of the layer object.
- * Note that layer 0 has no transparency support (it is always completely opaque).
- * 
- * @param srcLayerId : the identifier of the source layer (a number in range 0..layerCount-1)
- * @param dstLayerId : the identifier of the destination layer (a number in range 0..layerCount-1)
- * 
- * @return YAPI_SUCCESS if the call succeeds.
- * 
- * On failure, throws an exception or returns a negative error code.
- */
--(int)     copyLayerContent :(int)srcLayerId :(int)dstLayerId;
-
-/**
- * Swaps the whole content of two layers. The color and transparency of all the pixels from
- * the two layers are swapped. This method only affects the displayed content, but does
- * not change any property of the layer objects. In particular, the visibility of each
- * layer stays unchanged. When used between onae hidden layer and a visible layer,
- * this method makes it possible to easily implement double-buffering.
- * Note that layer 0 has no transparency support (it is always completely opaque).
- * 
- * @param layerIdA : the first layer (a number in range 0..layerCount-1)
- * @param layerIdB : the second layer (a number in range 0..layerCount-1)
- * 
- * @return YAPI_SUCCESS if the call succeeds.
- * 
- * On failure, throws an exception or returns a negative error code.
- */
--(int)     swapLayerContent :(int)layerIdA :(int)layerIdB;
-
-
-//--- (end of generated code: YDisplay accessors declaration)
-
-    
 /**
  * Returns a YDisplayLayer object that can be used to draw on the specified
  * layer. The content is displayed only when the layer is active on the
@@ -974,10 +622,377 @@ typedef enum {
  */
 -(int) sendCommand:(NSString*)cmd;
 
+//--- (generated code: YDisplay public methods declaration)
+/**
+ * Returns true if the screen is powered, false otherwise.
+ * 
+ * @return either Y_ENABLED_FALSE or Y_ENABLED_TRUE, according to true if the screen is powered, false otherwise
+ * 
+ * On failure, throws an exception or returns Y_ENABLED_INVALID.
+ */
+-(Y_ENABLED_enum)     get_enabled;
+
+
+-(Y_ENABLED_enum) enabled;
+/**
+ * Changes the power state of the display.
+ * 
+ * @param newval : either Y_ENABLED_FALSE or Y_ENABLED_TRUE, according to the power state of the display
+ * 
+ * @return YAPI_SUCCESS if the call succeeds.
+ * 
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     set_enabled:(Y_ENABLED_enum) newval;
+-(int)     setEnabled:(Y_ENABLED_enum) newval;
+
+/**
+ * Returns the name of the sequence to play when the displayed is powered on.
+ * 
+ * @return a string corresponding to the name of the sequence to play when the displayed is powered on
+ * 
+ * On failure, throws an exception or returns Y_STARTUPSEQ_INVALID.
+ */
+-(NSString*)     get_startupSeq;
+
+
+-(NSString*) startupSeq;
+/**
+ * Changes the name of the sequence to play when the displayed is powered on.
+ * Remember to call the saveToFlash() method of the module if the
+ * modification must be kept.
+ * 
+ * @param newval : a string corresponding to the name of the sequence to play when the displayed is powered on
+ * 
+ * @return YAPI_SUCCESS if the call succeeds.
+ * 
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     set_startupSeq:(NSString*) newval;
+-(int)     setStartupSeq:(NSString*) newval;
+
+/**
+ * Returns the luminosity of the  module informative leds (from 0 to 100).
+ * 
+ * @return an integer corresponding to the luminosity of the  module informative leds (from 0 to 100)
+ * 
+ * On failure, throws an exception or returns Y_BRIGHTNESS_INVALID.
+ */
+-(int)     get_brightness;
+
+
+-(int) brightness;
+/**
+ * Changes the brightness of the display. The parameter is a value between 0 and
+ * 100. Remember to call the saveToFlash() method of the module if the
+ * modification must be kept.
+ * 
+ * @param newval : an integer corresponding to the brightness of the display
+ * 
+ * @return YAPI_SUCCESS if the call succeeds.
+ * 
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     set_brightness:(int) newval;
+-(int)     setBrightness:(int) newval;
+
+/**
+ * Returns the currently selected display orientation.
+ * 
+ * @return a value among Y_ORIENTATION_LEFT, Y_ORIENTATION_UP, Y_ORIENTATION_RIGHT and
+ * Y_ORIENTATION_DOWN corresponding to the currently selected display orientation
+ * 
+ * On failure, throws an exception or returns Y_ORIENTATION_INVALID.
+ */
+-(Y_ORIENTATION_enum)     get_orientation;
+
+
+-(Y_ORIENTATION_enum) orientation;
+/**
+ * Changes the display orientation. Remember to call the saveToFlash()
+ * method of the module if the modification must be kept.
+ * 
+ * @param newval : a value among Y_ORIENTATION_LEFT, Y_ORIENTATION_UP, Y_ORIENTATION_RIGHT and
+ * Y_ORIENTATION_DOWN corresponding to the display orientation
+ * 
+ * @return YAPI_SUCCESS if the call succeeds.
+ * 
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     set_orientation:(Y_ORIENTATION_enum) newval;
+-(int)     setOrientation:(Y_ORIENTATION_enum) newval;
+
+/**
+ * Returns the display width, in pixels.
+ * 
+ * @return an integer corresponding to the display width, in pixels
+ * 
+ * On failure, throws an exception or returns Y_DISPLAYWIDTH_INVALID.
+ */
+-(int)     get_displayWidth;
+
+
+-(int) displayWidth;
+/**
+ * Returns the display height, in pixels.
+ * 
+ * @return an integer corresponding to the display height, in pixels
+ * 
+ * On failure, throws an exception or returns Y_DISPLAYHEIGHT_INVALID.
+ */
+-(int)     get_displayHeight;
+
+
+-(int) displayHeight;
+/**
+ * Returns the display type: monochrome, gray levels or full color.
+ * 
+ * @return a value among Y_DISPLAYTYPE_MONO, Y_DISPLAYTYPE_GRAY and Y_DISPLAYTYPE_RGB corresponding to
+ * the display type: monochrome, gray levels or full color
+ * 
+ * On failure, throws an exception or returns Y_DISPLAYTYPE_INVALID.
+ */
+-(Y_DISPLAYTYPE_enum)     get_displayType;
+
+
+-(Y_DISPLAYTYPE_enum) displayType;
+/**
+ * Returns the width of the layers to draw on, in pixels.
+ * 
+ * @return an integer corresponding to the width of the layers to draw on, in pixels
+ * 
+ * On failure, throws an exception or returns Y_LAYERWIDTH_INVALID.
+ */
+-(int)     get_layerWidth;
+
+
+-(int) layerWidth;
+/**
+ * Returns the height of the layers to draw on, in pixels.
+ * 
+ * @return an integer corresponding to the height of the layers to draw on, in pixels
+ * 
+ * On failure, throws an exception or returns Y_LAYERHEIGHT_INVALID.
+ */
+-(int)     get_layerHeight;
+
+
+-(int) layerHeight;
+/**
+ * Returns the number of available layers to draw on.
+ * 
+ * @return an integer corresponding to the number of available layers to draw on
+ * 
+ * On failure, throws an exception or returns Y_LAYERCOUNT_INVALID.
+ */
+-(int)     get_layerCount;
+
+
+-(int) layerCount;
+-(NSString*)     get_command;
+
+
+-(NSString*) command;
+-(int)     set_command:(NSString*) newval;
+-(int)     setCommand:(NSString*) newval;
+
+/**
+ * Retrieves a display for a given identifier.
+ * The identifier can be specified using several formats:
+ * <ul>
+ * <li>FunctionLogicalName</li>
+ * <li>ModuleSerialNumber.FunctionIdentifier</li>
+ * <li>ModuleSerialNumber.FunctionLogicalName</li>
+ * <li>ModuleLogicalName.FunctionIdentifier</li>
+ * <li>ModuleLogicalName.FunctionLogicalName</li>
+ * </ul>
+ * 
+ * This function does not require that the display is online at the time
+ * it is invoked. The returned object is nevertheless valid.
+ * Use the method YDisplay.isOnline() to test if the display is
+ * indeed online at a given time. In case of ambiguity when looking for
+ * a display by logical name, no error is notified: the first instance
+ * found is returned. The search is performed first by hardware name,
+ * then by logical name.
+ * 
+ * @param func : a string that uniquely characterizes the display
+ * 
+ * @return a YDisplay object allowing you to drive the display.
+ */
++(YDisplay*)     FindDisplay:(NSString*)func;
+
+/**
+ * Registers the callback function that is invoked on every change of advertised value.
+ * The callback is invoked only during the execution of ySleep or yHandleEvents.
+ * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
+ * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
+ * 
+ * @param callback : the callback function to call, or a null pointer. The callback function should take two
+ *         arguments: the function object of which the value has changed, and the character string describing
+ *         the new advertised value.
+ * @noreturn
+ */
+-(int)     registerValueCallback:(YDisplayValueCallback)callback;
+
+-(int)     _invokeValueCallback:(NSString*)value;
+
+/**
+ * Clears the display screen and resets all display layers to their default state.
+ * 
+ * @return YAPI_SUCCESS if the call succeeds.
+ * 
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     resetAll;
+
+/**
+ * Smoothly changes the brightness of the screen to produce a fade-in or fade-out
+ * effect.
+ * 
+ * @param brightness: the new screen brightness
+ * @param duration: duration of the brightness transition, in milliseconds.
+ * 
+ * @return YAPI_SUCCESS if the call succeeds.
+ * 
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     fade:(int)brightness :(int)duration;
+
+/**
+ * Starts to record all display commands into a sequence, for later replay.
+ * The name used to store the sequence is specified when calling
+ * saveSequence(), once the recording is complete.
+ * 
+ * @return YAPI_SUCCESS if the call succeeds.
+ * 
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     newSequence;
+
+/**
+ * Stops recording display commands and saves the sequence into the specified
+ * file on the display internal memory. The sequence can be later replayed
+ * using playSequence().
+ * 
+ * @param sequenceName : the name of the newly created sequence
+ * 
+ * @return YAPI_SUCCESS if the call succeeds.
+ * 
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     saveSequence:(NSString*)sequenceName;
+
+/**
+ * Replays a display sequence previously recorded using
+ * newSequence() and saveSequence().
+ * 
+ * @param sequenceName : the name of the newly created sequence
+ * 
+ * @return YAPI_SUCCESS if the call succeeds.
+ * 
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     playSequence:(NSString*)sequenceName;
+
+/**
+ * Waits for a specified delay (in milliseconds) before playing next
+ * commands in current sequence. This method can be used while
+ * recording a display sequence, to insert a timed wait in the sequence
+ * (without any immediate effect). It can also be used dynamically while
+ * playing a pre-recorded sequence, to suspend or resume the execution of
+ * the sequence. To cancel a delay, call the same method with a zero delay.
+ * 
+ * @param delay_ms : the duration to wait, in milliseconds
+ * 
+ * @return YAPI_SUCCESS if the call succeeds.
+ * 
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     pauseSequence:(int)delay_ms;
+
+/**
+ * Stops immediately any ongoing sequence replay.
+ * The display is left as is.
+ * 
+ * @return YAPI_SUCCESS if the call succeeds.
+ * 
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     stopSequence;
+
+/**
+ * Uploads an arbitrary file (for instance a GIF file) to the display, to the
+ * specified full path name. If a file already exists with the same path name,
+ * its content is overwritten.
+ * 
+ * @param pathname : path and name of the new file to create
+ * @param content : binary buffer with the content to set
+ * 
+ * @return YAPI_SUCCESS if the call succeeds.
+ * 
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     upload:(NSString*)pathname :(NSData*)content;
+
+/**
+ * Copies the whole content of a layer to another layer. The color and transparency
+ * of all the pixels from the destination layer are set to match the source pixels.
+ * This method only affects the displayed content, but does not change any
+ * property of the layer object.
+ * Note that layer 0 has no transparency support (it is always completely opaque).
+ * 
+ * @param srcLayerId : the identifier of the source layer (a number in range 0..layerCount-1)
+ * @param dstLayerId : the identifier of the destination layer (a number in range 0..layerCount-1)
+ * 
+ * @return YAPI_SUCCESS if the call succeeds.
+ * 
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     copyLayerContent:(int)srcLayerId :(int)dstLayerId;
+
+/**
+ * Swaps the whole content of two layers. The color and transparency of all the pixels from
+ * the two layers are swapped. This method only affects the displayed content, but does
+ * not change any property of the layer objects. In particular, the visibility of each
+ * layer stays unchanged. When used between onae hidden layer and a visible layer,
+ * this method makes it possible to easily implement double-buffering.
+ * Note that layer 0 has no transparency support (it is always completely opaque).
+ * 
+ * @param layerIdA : the first layer (a number in range 0..layerCount-1)
+ * @param layerIdB : the second layer (a number in range 0..layerCount-1)
+ * 
+ * @return YAPI_SUCCESS if the call succeeds.
+ * 
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     swapLayerContent:(int)layerIdA :(int)layerIdB;
+
+
+/**
+ * Continues the enumeration of displays started using yFirstDisplay().
+ * 
+ * @return a pointer to a YDisplay object, corresponding to
+ *         a display currently online, or a null pointer
+ *         if there are no more displays to enumerate.
+ */
+-(YDisplay*) nextDisplay;
+/**
+ * Starts the enumeration of displays currently accessible.
+ * Use the method YDisplay.nextDisplay() to iterate on
+ * next displays.
+ * 
+ * @return a pointer to a YDisplay object, corresponding to
+ *         the first display currently online, or a null pointer
+ *         if there are none.
+ */
++(YDisplay*) FirstDisplay;
+//--- (end of generated code: YDisplay public methods declaration)
+
+
+
 @end
 
 //--- (generated code: Display functions declaration)
-
 /**
  * Retrieves a display for a given identifier.
  * The identifier can be specified using several formats:

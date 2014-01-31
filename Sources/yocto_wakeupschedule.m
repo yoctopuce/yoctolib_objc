@@ -1,8 +1,8 @@
 /*********************************************************************
  *
- * $Id: yocto_wakeupschedule.m 12469 2013-08-22 10:11:58Z seb $
+ * $Id: yocto_wakeupschedule.m 14721 2014-01-24 17:58:44Z seb $
  *
- * Implements yFindWakeUpSchedule(), the high-level API for WakeUpSchedule functions
+ * Implements the high-level API for WakeUpSchedule functions
  *
  * - - - - - - - - - License information: - - - - - - - - - 
  *
@@ -47,13 +47,12 @@
 @implementation YWakeUpSchedule
 
 // Constructor is protected, use yFindWakeUpSchedule factory function to instantiate
--(id)              initWithFunction:(NSString*) func
+-(id)              initWith:(NSString*) func
 {
-//--- (YWakeUpSchedule attributes)
-   if(!(self = [super initProtected:@"WakeUpSchedule":func]))
+   if(!(self = [super initWith:func]))
           return nil;
-    _logicalName = Y_LOGICALNAME_INVALID;
-    _advertisedValue = Y_ADVERTISEDVALUE_INVALID;
+    _className = @"WakeUpSchedule";
+//--- (YWakeUpSchedule attributes initialization)
     _minutesA = Y_MINUTESA_INVALID;
     _minutesB = Y_MINUTESB_INVALID;
     _hours = Y_HOURS_INVALID;
@@ -61,231 +60,171 @@
     _monthDays = Y_MONTHDAYS_INVALID;
     _months = Y_MONTHS_INVALID;
     _nextOccurence = Y_NEXTOCCURENCE_INVALID;
-//--- (end of YWakeUpSchedule attributes)
+    _valueCallbackWakeUpSchedule = NULL;
+//--- (end of YWakeUpSchedule attributes initialization)
     return self;
 }
 // destructor 
 -(void)  dealloc
 {
 //--- (YWakeUpSchedule cleanup)
-    ARC_release(_logicalName);
-    _logicalName = nil;
-    ARC_release(_advertisedValue);
-    _advertisedValue = nil;
-//--- (end of YWakeUpSchedule cleanup)
     ARC_dealloc(super);
+//--- (end of YWakeUpSchedule cleanup)
 }
-//--- (YWakeUpSchedule implementation)
+//--- (YWakeUpSchedule private methods implementation)
 
--(int) _parse:(yJsonStateMachine*) j
+-(int) _parseAttr:(yJsonStateMachine*) j
 {
-    if(yJsonParse(j) != YJSON_PARSE_AVAIL || j->st != YJSON_PARSE_STRUCT) {
-    failed:
-        return -1;
+    if(!strcmp(j->token, "minutesA")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _minutesA =  atoi(j->token);
+        return 1;
     }
-    while(yJsonParse(j) == YJSON_PARSE_AVAIL && j->st == YJSON_PARSE_MEMBNAME) {
-        if(!strcmp(j->token, "logicalName")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            ARC_release(_logicalName);
-            _logicalName =  [self _parseString:j];
-            ARC_retain(_logicalName);
-        } else if(!strcmp(j->token, "advertisedValue")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            ARC_release(_advertisedValue);
-            _advertisedValue =  [self _parseString:j];
-            ARC_retain(_advertisedValue);
-        } else if(!strcmp(j->token, "minutesA")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            _minutesA =  atoi(j->token);
-        } else if(!strcmp(j->token, "minutesB")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            _minutesB =  atoi(j->token);
-        } else if(!strcmp(j->token, "hours")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            _hours =  atoi(j->token);
-        } else if(!strcmp(j->token, "weekDays")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            _weekDays =  atoi(j->token);
-        } else if(!strcmp(j->token, "monthDays")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            _monthDays =  atoi(j->token);
-        } else if(!strcmp(j->token, "months")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            _months =  atoi(j->token);
-        } else if(!strcmp(j->token, "nextOccurence")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            _nextOccurence =  atoi(j->token);
-        } else {
-            // ignore unknown field
-            yJsonSkip(j, 1);
-        }
+    if(!strcmp(j->token, "minutesB")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _minutesB =  atoi(j->token);
+        return 1;
     }
-    if(j->st != YJSON_PARSE_STRUCT) goto failed;
-    return 0;
-}
-
-/**
- * Returns the logical name of the wake-up schedule.
- * 
- * @return a string corresponding to the logical name of the wake-up schedule
- * 
- * On failure, throws an exception or returns Y_LOGICALNAME_INVALID.
- */
--(NSString*) get_logicalName
-{
-    return [self logicalName];
-}
--(NSString*) logicalName
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_LOGICALNAME_INVALID;
+    if(!strcmp(j->token, "hours")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _hours =  atoi(j->token);
+        return 1;
     }
-    return _logicalName;
-}
-
-/**
- * Changes the logical name of the wake-up schedule. You can use yCheckLogicalName()
- * prior to this call to make sure that your parameter is valid.
- * Remember to call the saveToFlash() method of the module if the
- * modification must be kept.
- * 
- * @param newval : a string corresponding to the logical name of the wake-up schedule
- * 
- * @return YAPI_SUCCESS if the call succeeds.
- * 
- * On failure, throws an exception or returns a negative error code.
- */
--(int) set_logicalName:(NSString*) newval
-{
-    return [self setLogicalName:newval];
-}
--(int) setLogicalName:(NSString*) newval
-{
-    NSString* rest_val;
-    rest_val = newval;
-    return [self _setAttr:@"logicalName" :rest_val];
-}
-
-/**
- * Returns the current value of the wake-up schedule (no more than 6 characters).
- * 
- * @return a string corresponding to the current value of the wake-up schedule (no more than 6 characters)
- * 
- * On failure, throws an exception or returns Y_ADVERTISEDVALUE_INVALID.
- */
--(NSString*) get_advertisedValue
-{
-    return [self advertisedValue];
-}
--(NSString*) advertisedValue
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_ADVERTISEDVALUE_INVALID;
+    if(!strcmp(j->token, "weekDays")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _weekDays =  atoi(j->token);
+        return 1;
     }
-    return _advertisedValue;
+    if(!strcmp(j->token, "monthDays")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _monthDays =  atoi(j->token);
+        return 1;
+    }
+    if(!strcmp(j->token, "months")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _months =  atoi(j->token);
+        return 1;
+    }
+    if(!strcmp(j->token, "nextOccurence")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _nextOccurence =  atol(j->token);
+        return 1;
+    }
+    return [super _parseAttr:j];
 }
-
+//--- (end of YWakeUpSchedule private methods implementation)
+//--- (YWakeUpSchedule public methods implementation)
 /**
- * Returns the minutes 00-29 of each hour scheduled for wake-up.
+ * Returns the minutes in the 00-29 interval of each hour scheduled for wake up.
  * 
- * @return an integer corresponding to the minutes 00-29 of each hour scheduled for wake-up
+ * @return an integer corresponding to the minutes in the 00-29 interval of each hour scheduled for wake up
  * 
  * On failure, throws an exception or returns Y_MINUTESA_INVALID.
  */
--(unsigned) get_minutesA
+-(int) get_minutesA
 {
-    return [self minutesA];
-}
--(unsigned) minutesA
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_MINUTESA_INVALID;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_MINUTESA_INVALID;
+        }
     }
     return _minutesA;
 }
 
+
+-(int) minutesA
+{
+    return [self get_minutesA];
+}
+
 /**
- * Changes the minutes 00-29 where a wake up must take place.
+ * Changes the minutes in the 00-29 interval when a wake up must take place.
  * 
- * @param newval : an integer corresponding to the minutes 00-29 where a wake up must take place
+ * @param newval : an integer corresponding to the minutes in the 00-29 interval when a wake up must take place
  * 
  * @return YAPI_SUCCESS if the call succeeds.
  * 
  * On failure, throws an exception or returns a negative error code.
  */
--(int) set_minutesA:(unsigned) newval
+-(int) set_minutesA:(int) newval
 {
     return [self setMinutesA:newval];
 }
--(int) setMinutesA:(unsigned) newval
+-(int) setMinutesA:(int) newval
 {
     NSString* rest_val;
-    rest_val = [NSString stringWithFormat:@"%u", newval];
+    rest_val = [NSString stringWithFormat:@"%d", newval];
     return [self _setAttr:@"minutesA" :rest_val];
 }
-
 /**
- * Returns the minutes 30-59 of each hour scheduled for wake-up.
+ * Returns the minutes in the 30-59 intervalof each hour scheduled for wake up.
  * 
- * @return an integer corresponding to the minutes 30-59 of each hour scheduled for wake-up
+ * @return an integer corresponding to the minutes in the 30-59 intervalof each hour scheduled for wake up
  * 
  * On failure, throws an exception or returns Y_MINUTESB_INVALID.
  */
--(unsigned) get_minutesB
+-(int) get_minutesB
 {
-    return [self minutesB];
-}
--(unsigned) minutesB
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_MINUTESB_INVALID;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_MINUTESB_INVALID;
+        }
     }
     return _minutesB;
 }
 
+
+-(int) minutesB
+{
+    return [self get_minutesB];
+}
+
 /**
- * Changes the minutes 30-59 where a wake up must take place.
+ * Changes the minutes in the 30-59 interval when a wake up must take place.
  * 
- * @param newval : an integer corresponding to the minutes 30-59 where a wake up must take place
+ * @param newval : an integer corresponding to the minutes in the 30-59 interval when a wake up must take place
  * 
  * @return YAPI_SUCCESS if the call succeeds.
  * 
  * On failure, throws an exception or returns a negative error code.
  */
--(int) set_minutesB:(unsigned) newval
+-(int) set_minutesB:(int) newval
 {
     return [self setMinutesB:newval];
 }
--(int) setMinutesB:(unsigned) newval
+-(int) setMinutesB:(int) newval
 {
     NSString* rest_val;
-    rest_val = [NSString stringWithFormat:@"%u", newval];
+    rest_val = [NSString stringWithFormat:@"%d", newval];
     return [self _setAttr:@"minutesB" :rest_val];
 }
-
 /**
- * Returns the hours  scheduled for wake-up.
+ * Returns the hours scheduled for wake up.
  * 
- * @return an integer corresponding to the hours  scheduled for wake-up
+ * @return an integer corresponding to the hours scheduled for wake up
  * 
  * On failure, throws an exception or returns Y_HOURS_INVALID.
  */
 -(int) get_hours
 {
-    return [self hours];
-}
--(int) hours
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_HOURS_INVALID;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_HOURS_INVALID;
+        }
     }
     return _hours;
 }
 
+
+-(int) hours
+{
+    return [self get_hours];
+}
+
 /**
- * Changes the hours where a wake up must take place.
+ * Changes the hours when a wake up must take place.
  * 
- * @param newval : an integer corresponding to the hours where a wake up must take place
+ * @param newval : an integer corresponding to the hours when a wake up must take place
  * 
  * @return YAPI_SUCCESS if the call succeeds.
  * 
@@ -298,33 +237,36 @@
 -(int) setHours:(int) newval
 {
     NSString* rest_val;
-    rest_val = [NSString stringWithFormat:@"%u", newval];
+    rest_val = [NSString stringWithFormat:@"%d", newval];
     return [self _setAttr:@"hours" :rest_val];
 }
-
 /**
- * Returns the days of week scheduled for wake-up.
+ * Returns the days of the week scheduled for wake up.
  * 
- * @return an integer corresponding to the days of week scheduled for wake-up
+ * @return an integer corresponding to the days of the week scheduled for wake up
  * 
  * On failure, throws an exception or returns Y_WEEKDAYS_INVALID.
  */
 -(int) get_weekDays
 {
-    return [self weekDays];
-}
--(int) weekDays
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_WEEKDAYS_INVALID;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_WEEKDAYS_INVALID;
+        }
     }
     return _weekDays;
 }
 
+
+-(int) weekDays
+{
+    return [self get_weekDays];
+}
+
 /**
- * Changes the days of the week where a wake up must take place.
+ * Changes the days of the week when a wake up must take place.
  * 
- * @param newval : an integer corresponding to the days of the week where a wake up must take place
+ * @param newval : an integer corresponding to the days of the week when a wake up must take place
  * 
  * @return YAPI_SUCCESS if the call succeeds.
  * 
@@ -337,72 +279,78 @@
 -(int) setWeekDays:(int) newval
 {
     NSString* rest_val;
-    rest_val = [NSString stringWithFormat:@"%u", newval];
+    rest_val = [NSString stringWithFormat:@"%d", newval];
     return [self _setAttr:@"weekDays" :rest_val];
 }
-
 /**
- * Returns the days of week scheduled for wake-up.
+ * Returns the days of the month scheduled for wake up.
  * 
- * @return an integer corresponding to the days of week scheduled for wake-up
+ * @return an integer corresponding to the days of the month scheduled for wake up
  * 
  * On failure, throws an exception or returns Y_MONTHDAYS_INVALID.
  */
--(unsigned) get_monthDays
+-(int) get_monthDays
 {
-    return [self monthDays];
-}
--(unsigned) monthDays
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_MONTHDAYS_INVALID;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_MONTHDAYS_INVALID;
+        }
     }
     return _monthDays;
 }
 
+
+-(int) monthDays
+{
+    return [self get_monthDays];
+}
+
 /**
- * Changes the days of the week where a wake up must take place.
+ * Changes the days of the month when a wake up must take place.
  * 
- * @param newval : an integer corresponding to the days of the week where a wake up must take place
+ * @param newval : an integer corresponding to the days of the month when a wake up must take place
  * 
  * @return YAPI_SUCCESS if the call succeeds.
  * 
  * On failure, throws an exception or returns a negative error code.
  */
--(int) set_monthDays:(unsigned) newval
+-(int) set_monthDays:(int) newval
 {
     return [self setMonthDays:newval];
 }
--(int) setMonthDays:(unsigned) newval
+-(int) setMonthDays:(int) newval
 {
     NSString* rest_val;
-    rest_val = [NSString stringWithFormat:@"%u", newval];
+    rest_val = [NSString stringWithFormat:@"%d", newval];
     return [self _setAttr:@"monthDays" :rest_val];
 }
-
 /**
- * Returns the days of week scheduled for wake-up.
+ * Returns the months scheduled for wake up.
  * 
- * @return an integer corresponding to the days of week scheduled for wake-up
+ * @return an integer corresponding to the months scheduled for wake up
  * 
  * On failure, throws an exception or returns Y_MONTHS_INVALID.
  */
 -(int) get_months
 {
-    return [self months];
-}
--(int) months
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_MONTHS_INVALID;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_MONTHS_INVALID;
+        }
     }
     return _months;
 }
 
+
+-(int) months
+{
+    return [self get_months];
+}
+
 /**
- * Changes the days of the week where a wake up must take place.
+ * Changes the months when a wake up must take place.
  * 
- * @param newval : an integer corresponding to the days of the week where a wake up must take place
+ * @param newval : an integer corresponding to the months when a wake up must take place
  * 
  * @return YAPI_SUCCESS if the call succeeds.
  * 
@@ -415,56 +363,132 @@
 -(int) setMonths:(int) newval
 {
     NSString* rest_val;
-    rest_val = [NSString stringWithFormat:@"%u", newval];
+    rest_val = [NSString stringWithFormat:@"%d", newval];
     return [self _setAttr:@"months" :rest_val];
 }
-
 /**
- * Returns the  nextwake up date/time (seconds) wake up occurence
+ * Returns the date/time (seconds) of the next wake up occurence
  * 
- * @return an integer corresponding to the  nextwake up date/time (seconds) wake up occurence
+ * @return an integer corresponding to the date/time (seconds) of the next wake up occurence
  * 
  * On failure, throws an exception or returns Y_NEXTOCCURENCE_INVALID.
  */
--(unsigned) get_nextOccurence
+-(s64) get_nextOccurence
 {
-    return [self nextOccurence];
-}
--(unsigned) nextOccurence
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_NEXTOCCURENCE_INVALID;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_NEXTOCCURENCE_INVALID;
+        }
     }
     return _nextOccurence;
 }
-/**
- * Returns every the minutes of each hour scheduled for wake-up.
- */
--(long) get_minutes
+
+
+-(s64) nextOccurence
 {
-    long res;
+    return [self get_nextOccurence];
+}
+/**
+ * Retrieves $AFUNCTION$ for a given identifier.
+ * The identifier can be specified using several formats:
+ * <ul>
+ * <li>FunctionLogicalName</li>
+ * <li>ModuleSerialNumber.FunctionIdentifier</li>
+ * <li>ModuleSerialNumber.FunctionLogicalName</li>
+ * <li>ModuleLogicalName.FunctionIdentifier</li>
+ * <li>ModuleLogicalName.FunctionLogicalName</li>
+ * </ul>
+ * 
+ * This function does not require that $THEFUNCTION$ is online at the time
+ * it is invoked. The returned object is nevertheless valid.
+ * Use the method YWakeUpSchedule.isOnline() to test if $THEFUNCTION$ is
+ * indeed online at a given time. In case of ambiguity when looking for
+ * $AFUNCTION$ by logical name, no error is notified: the first instance
+ * found is returned. The search is performed first by hardware name,
+ * then by logical name.
+ * 
+ * @param func : a string that uniquely characterizes $THEFUNCTION$
+ * 
+ * @return a YWakeUpSchedule object allowing you to drive $THEFUNCTION$.
+ */
++(YWakeUpSchedule*) FindWakeUpSchedule:(NSString*)func
+{
+    YWakeUpSchedule* obj;
+    obj = (YWakeUpSchedule*) [YFunction _FindFromCache:@"WakeUpSchedule" :func];
+    if (obj == nil) {
+        obj = ARC_sendAutorelease([[YWakeUpSchedule alloc] initWith:func]);
+        [YFunction _AddToCache:@"WakeUpSchedule" : func :obj];
+    }
+    return obj;
+}
+
+/**
+ * Registers the callback function that is invoked on every change of advertised value.
+ * The callback is invoked only during the execution of ySleep or yHandleEvents.
+ * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
+ * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
+ * 
+ * @param callback : the callback function to call, or a null pointer. The callback function should take two
+ *         arguments: the function object of which the value has changed, and the character string describing
+ *         the new advertised value.
+ * @noreturn
+ */
+-(int) registerValueCallback:(YWakeUpScheduleValueCallback)callback
+{
+    NSString* val;
+    if (callback != NULL) {
+        [YFunction _UpdateValueCallbackList:self :YES];
+    } else {
+        [YFunction _UpdateValueCallbackList:self :NO];
+    }
+    _valueCallbackWakeUpSchedule = callback;
+    // Immediately invoke value callback with current value
+    if (callback != NULL && [self isOnline]) {
+        val = _advertisedValue;
+        if (!([val isEqualToString:@""])) {
+            [self _invokeValueCallback:val];
+        }
+    }
+    return 0;
+}
+
+-(int) _invokeValueCallback:(NSString*)value
+{
+    if (_valueCallbackWakeUpSchedule != NULL) {
+        _valueCallbackWakeUpSchedule(self, value);
+    } else {
+        [super _invokeValueCallback:value];
+    }
+    return 0;
+}
+
+/**
+ * Returns all the minutes of each hour that are scheduled for wake up.
+ */
+-(s64) get_minutes
+{
+    s64 res = 0;
+    // may throw an exception
     res = [self get_minutesB];
-    res = res << 30;
+    res = ((res) << (30));
     res = res + [self get_minutesA];
     return res;
-    
 }
 
 /**
  * Changes all the minutes where a wake up must take place.
  * 
- * @param bitmap : Minutes 00-59 of each hour scheduled for wake-up.,
+ * @param bitmap : Minutes 00-59 of each hour scheduled for wake up.
  * 
  * @return YAPI_SUCCESS if the call succeeds.
  * 
  * On failure, throws an exception or returns a negative error code.
  */
--(int) set_minutes :(long)bitmap
+-(int) set_minutes:(s64)bitmap
 {
-    [self set_minutesA:bitmap & 0x3fffffff];
-    bitmap = bitmap >> 30;
-    return [self set_minutesB:bitmap & 0x3fffffff];
-    
+    [self set_minutesA:(int)(((bitmap) & (0x3fffffff)))];
+    bitmap = ((bitmap) >> (30));
+    return [self set_minutesB:(int)(((bitmap) & (0x3fffffff)))];
 }
 
 
@@ -475,53 +499,7 @@
     if(YISERR([self _nextFunction:&hwid]) || [hwid isEqualToString:@""]) {
         return NULL;
     }
-    return yFindWakeUpSchedule(hwid);
-}
--(void )    registerValueCallback:(YFunctionUpdateCallback)callback
-{ 
-    _callback = callback;
-    if (callback != NULL) {
-        [self _registerFuncCallback];
-    } else {
-        [self _unregisterFuncCallback];
-    }
-}
--(void )    set_objectCallback:(id)object :(SEL)selector
-{ [self setObjectCallback:object withSelector:selector];}
--(void )    setObjectCallback:(id)object :(SEL)selector
-{ [self setObjectCallback:object withSelector:selector];}
--(void )    setObjectCallback:(id)object withSelector:(SEL)selector
-{ 
-    _callbackObject = object;
-    _callbackSel    = selector;
-    if (object != nil) {
-        [self _registerFuncCallback];
-        if([self isOnline]) {
-           yapiLockFunctionCallBack(NULL);
-           yInternalPushNewVal([self functionDescriptor],[self advertisedValue]);
-           yapiUnlockFunctionCallBack(NULL);
-        }
-    } else {
-        [self _unregisterFuncCallback];
-    }
-}
-
-+(YWakeUpSchedule*) FindWakeUpSchedule:(NSString*) func
-{
-    YWakeUpSchedule * retVal=nil;
-    if(func==nil) return nil;
-    // Search in cache
-    if ([YAPI_YFunctions objectForKey:@"YWakeUpSchedule"] == nil){
-        [YAPI_YFunctions setObject:[NSMutableDictionary dictionary] forKey:@"YWakeUpSchedule"];
-    }
-    if(nil != [[YAPI_YFunctions objectForKey:@"YWakeUpSchedule"] objectForKey:func]){
-        retVal = [[YAPI_YFunctions objectForKey:@"YWakeUpSchedule"] objectForKey:func];
-    } else {
-        retVal = [[YWakeUpSchedule alloc] initWithFunction:func];
-        [[YAPI_YFunctions objectForKey:@"YWakeUpSchedule"] setObject:retVal forKey:func];
-        ARC_autorelease(retVal);
-    }
-    return retVal;
+    return [YWakeUpSchedule FindWakeUpSchedule:hwid];
 }
 
 +(YWakeUpSchedule *) FirstWakeUpSchedule
@@ -539,7 +517,7 @@
     return nil;
 }
 
-//--- (end of YWakeUpSchedule implementation)
+//--- (end of YWakeUpSchedule public methods implementation)
 
 @end
 //--- (WakeUpSchedule functions)

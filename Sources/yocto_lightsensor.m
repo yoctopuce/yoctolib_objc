@@ -1,8 +1,8 @@
 /*********************************************************************
  *
- * $Id: yocto_lightsensor.m 12324 2013-08-13 15:10:31Z mvuilleu $
+ * $Id: yocto_lightsensor.m 14721 2014-01-24 17:58:44Z seb $
  *
- * Implements yFindLightSensor(), the high-level API for LightSensor functions
+ * Implements the high-level API for LightSensor functions
  *
  * - - - - - - - - - License information: - - - - - - - - - 
  *
@@ -47,171 +47,32 @@
 @implementation YLightSensor
 
 // Constructor is protected, use yFindLightSensor factory function to instantiate
--(id)              initWithFunction:(NSString*) func
+-(id)              initWith:(NSString*) func
 {
-//--- (YLightSensor attributes)
-   if(!(self = [super initProtected:@"LightSensor":func]))
+   if(!(self = [super initWith:func]))
           return nil;
-    _logicalName = Y_LOGICALNAME_INVALID;
-    _advertisedValue = Y_ADVERTISEDVALUE_INVALID;
-    _unit = Y_UNIT_INVALID;
-    _currentValue = Y_CURRENTVALUE_INVALID;
-    _lowestValue = Y_LOWESTVALUE_INVALID;
-    _highestValue = Y_HIGHESTVALUE_INVALID;
-    _currentRawValue = Y_CURRENTRAWVALUE_INVALID;
-    _calibrationParam = Y_CALIBRATIONPARAM_INVALID;
-    _resolution = Y_RESOLUTION_INVALID;
-    _calibrationOffset = 0;
-//--- (end of YLightSensor attributes)
+    _className = @"LightSensor";
+//--- (YLightSensor attributes initialization)
+    _valueCallbackLightSensor = NULL;
+    _timedReportCallbackLightSensor = NULL;
+//--- (end of YLightSensor attributes initialization)
     return self;
 }
 // destructor 
 -(void)  dealloc
 {
 //--- (YLightSensor cleanup)
-    ARC_release(_logicalName);
-    _logicalName = nil;
-    ARC_release(_advertisedValue);
-    _advertisedValue = nil;
-    ARC_release(_unit);
-    _unit = nil;
-    ARC_release(_calibrationParam);
-    _calibrationParam = nil;
-//--- (end of YLightSensor cleanup)
     ARC_dealloc(super);
+//--- (end of YLightSensor cleanup)
 }
-//--- (YLightSensor implementation)
+//--- (YLightSensor private methods implementation)
 
--(int) _parse:(yJsonStateMachine*) j
+-(int) _parseAttr:(yJsonStateMachine*) j
 {
-    if(yJsonParse(j) != YJSON_PARSE_AVAIL || j->st != YJSON_PARSE_STRUCT) {
-    failed:
-        return -1;
-    }
-    while(yJsonParse(j) == YJSON_PARSE_AVAIL && j->st == YJSON_PARSE_MEMBNAME) {
-        if(!strcmp(j->token, "logicalName")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            ARC_release(_logicalName);
-            _logicalName =  [self _parseString:j];
-            ARC_retain(_logicalName);
-        } else if(!strcmp(j->token, "advertisedValue")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            ARC_release(_advertisedValue);
-            _advertisedValue =  [self _parseString:j];
-            ARC_retain(_advertisedValue);
-        } else if(!strcmp(j->token, "unit")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            ARC_release(_unit);
-            _unit =  [self _parseString:j];
-            ARC_retain(_unit);
-        } else if(!strcmp(j->token, "currentValue")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            _currentValue =  floor(atof(j->token)/6553.6+.5) / 10;
-        } else if(!strcmp(j->token, "lowestValue")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            _lowestValue =  floor(atof(j->token)/6553.6+.5) / 10;
-        } else if(!strcmp(j->token, "highestValue")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            _highestValue =  floor(atof(j->token)/6553.6+.5) / 10;
-        } else if(!strcmp(j->token, "currentRawValue")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            _currentRawValue =  atof(j->token)/65536.0;
-        } else if(!strcmp(j->token, "calibrationParam")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            ARC_release(_calibrationParam);
-            _calibrationParam =  [self _parseString:j];
-            ARC_retain(_calibrationParam);
-        } else if(!strcmp(j->token, "resolution")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            _resolution =  (atoi(j->token) > 100 ? 1.0 / floor(65536.0/atof(j->token)+.5) : 0.001 / floor(67.0/atof(j->token)+.5));
-        } else {
-            // ignore unknown field
-            yJsonSkip(j, 1);
-        }
-    }
-    if(j->st != YJSON_PARSE_STRUCT) goto failed;
-    return 0;
+    return [super _parseAttr:j];
 }
-
-/**
- * Returns the logical name of the light sensor.
- * 
- * @return a string corresponding to the logical name of the light sensor
- * 
- * On failure, throws an exception or returns Y_LOGICALNAME_INVALID.
- */
--(NSString*) get_logicalName
-{
-    return [self logicalName];
-}
--(NSString*) logicalName
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_LOGICALNAME_INVALID;
-    }
-    return _logicalName;
-}
-
-/**
- * Changes the logical name of the light sensor. You can use yCheckLogicalName()
- * prior to this call to make sure that your parameter is valid.
- * Remember to call the saveToFlash() method of the module if the
- * modification must be kept.
- * 
- * @param newval : a string corresponding to the logical name of the light sensor
- * 
- * @return YAPI_SUCCESS if the call succeeds.
- * 
- * On failure, throws an exception or returns a negative error code.
- */
--(int) set_logicalName:(NSString*) newval
-{
-    return [self setLogicalName:newval];
-}
--(int) setLogicalName:(NSString*) newval
-{
-    NSString* rest_val;
-    rest_val = newval;
-    return [self _setAttr:@"logicalName" :rest_val];
-}
-
-/**
- * Returns the current value of the light sensor (no more than 6 characters).
- * 
- * @return a string corresponding to the current value of the light sensor (no more than 6 characters)
- * 
- * On failure, throws an exception or returns Y_ADVERTISEDVALUE_INVALID.
- */
--(NSString*) get_advertisedValue
-{
-    return [self advertisedValue];
-}
--(NSString*) advertisedValue
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_ADVERTISEDVALUE_INVALID;
-    }
-    return _advertisedValue;
-}
-
-/**
- * Returns the measuring unit for the measured value.
- * 
- * @return a string corresponding to the measuring unit for the measured value
- * 
- * On failure, throws an exception or returns Y_UNIT_INVALID.
- */
--(NSString*) get_unit
-{
-    return [self unit];
-}
--(NSString*) unit
-{
-    if(_unit == Y_UNIT_INVALID) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_UNIT_INVALID;
-    }
-    return _unit;
-}
+//--- (end of YLightSensor private methods implementation)
+//--- (YLightSensor public methods implementation)
 
 -(int) set_currentValue:(double) newval
 {
@@ -222,27 +83,6 @@
     NSString* rest_val;
     rest_val = [NSString stringWithFormat:@"%d",(int)floor(newval*65536.0+0.5)];
     return [self _setAttr:@"currentValue" :rest_val];
-}
-
-/**
- * Returns the current measured value.
- * 
- * @return a floating point number corresponding to the current measured value
- * 
- * On failure, throws an exception or returns Y_CURRENTVALUE_INVALID.
- */
--(double) get_currentValue
-{
-    return [self currentValue];
-}
--(double) currentValue
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_CURRENTVALUE_INVALID;
-    }
-    double res = [YAPI _applyCalibration:_currentRawValue: _calibrationParam: _calibrationOffset: _resolution];
-    if(res != Y_CURRENTVALUE_INVALID) return res;
-    return _currentValue;
 }
 
 /**
@@ -258,188 +98,118 @@
  * 
  * On failure, throws an exception or returns a negative error code.
  */
--(int) calibrate :(double)calibratedVal
+-(int) calibrate:(double)calibratedVal
 {
     NSString* rest_val;
     rest_val = [NSString stringWithFormat:@"%d",(int)floor(calibratedVal*65536.0+0.5)];
     return [self _setAttr:@"currentValue" :rest_val];
 }
-
 /**
- * Changes the recorded minimal value observed.
+ * Retrieves $AFUNCTION$ for a given identifier.
+ * The identifier can be specified using several formats:
+ * <ul>
+ * <li>FunctionLogicalName</li>
+ * <li>ModuleSerialNumber.FunctionIdentifier</li>
+ * <li>ModuleSerialNumber.FunctionLogicalName</li>
+ * <li>ModuleLogicalName.FunctionIdentifier</li>
+ * <li>ModuleLogicalName.FunctionLogicalName</li>
+ * </ul>
  * 
- * @param newval : a floating point number corresponding to the recorded minimal value observed
+ * This function does not require that $THEFUNCTION$ is online at the time
+ * it is invoked. The returned object is nevertheless valid.
+ * Use the method YLightSensor.isOnline() to test if $THEFUNCTION$ is
+ * indeed online at a given time. In case of ambiguity when looking for
+ * $AFUNCTION$ by logical name, no error is notified: the first instance
+ * found is returned. The search is performed first by hardware name,
+ * then by logical name.
  * 
- * @return YAPI_SUCCESS if the call succeeds.
+ * @param func : a string that uniquely characterizes $THEFUNCTION$
  * 
- * On failure, throws an exception or returns a negative error code.
+ * @return a YLightSensor object allowing you to drive $THEFUNCTION$.
  */
--(int) set_lowestValue:(double) newval
++(YLightSensor*) FindLightSensor:(NSString*)func
 {
-    return [self setLowestValue:newval];
-}
--(int) setLowestValue:(double) newval
-{
-    NSString* rest_val;
-    rest_val = [NSString stringWithFormat:@"%d",(int)floor(newval*65536.0+0.5)];
-    return [self _setAttr:@"lowestValue" :rest_val];
-}
-
-/**
- * Returns the minimal value observed.
- * 
- * @return a floating point number corresponding to the minimal value observed
- * 
- * On failure, throws an exception or returns Y_LOWESTVALUE_INVALID.
- */
--(double) get_lowestValue
-{
-    return [self lowestValue];
-}
--(double) lowestValue
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_LOWESTVALUE_INVALID;
+    YLightSensor* obj;
+    obj = (YLightSensor*) [YFunction _FindFromCache:@"LightSensor" :func];
+    if (obj == nil) {
+        obj = ARC_sendAutorelease([[YLightSensor alloc] initWith:func]);
+        [YFunction _AddToCache:@"LightSensor" : func :obj];
     }
-    return _lowestValue;
+    return obj;
 }
 
 /**
- * Changes the recorded maximal value observed.
+ * Registers the callback function that is invoked on every change of advertised value.
+ * The callback is invoked only during the execution of ySleep or yHandleEvents.
+ * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
+ * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
  * 
- * @param newval : a floating point number corresponding to the recorded maximal value observed
- * 
- * @return YAPI_SUCCESS if the call succeeds.
- * 
- * On failure, throws an exception or returns a negative error code.
+ * @param callback : the callback function to call, or a null pointer. The callback function should take two
+ *         arguments: the function object of which the value has changed, and the character string describing
+ *         the new advertised value.
+ * @noreturn
  */
--(int) set_highestValue:(double) newval
+-(int) registerValueCallback:(YLightSensorValueCallback)callback
 {
-    return [self setHighestValue:newval];
+    NSString* val;
+    if (callback != NULL) {
+        [YFunction _UpdateValueCallbackList:self :YES];
+    } else {
+        [YFunction _UpdateValueCallbackList:self :NO];
+    }
+    _valueCallbackLightSensor = callback;
+    // Immediately invoke value callback with current value
+    if (callback != NULL && [self isOnline]) {
+        val = _advertisedValue;
+        if (!([val isEqualToString:@""])) {
+            [self _invokeValueCallback:val];
+        }
+    }
+    return 0;
 }
--(int) setHighestValue:(double) newval
+
+-(int) _invokeValueCallback:(NSString*)value
 {
-    NSString* rest_val;
-    rest_val = [NSString stringWithFormat:@"%d",(int)floor(newval*65536.0+0.5)];
-    return [self _setAttr:@"highestValue" :rest_val];
+    if (_valueCallbackLightSensor != NULL) {
+        _valueCallbackLightSensor(self, value);
+    } else {
+        [super _invokeValueCallback:value];
+    }
+    return 0;
 }
 
 /**
- * Returns the maximal value observed.
+ * Registers the callback function that is invoked on every periodic timed notification.
+ * The callback is invoked only during the execution of ySleep or yHandleEvents.
+ * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
+ * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
  * 
- * @return a floating point number corresponding to the maximal value observed
- * 
- * On failure, throws an exception or returns Y_HIGHESTVALUE_INVALID.
+ * @param callback : the callback function to call, or a null pointer. The callback function should take two
+ *         arguments: the function object of which the value has changed, and an YMeasure object describing
+ *         the new advertised value.
+ * @noreturn
  */
--(double) get_highestValue
+-(int) registerTimedReportCallback:(YLightSensorTimedReportCallback)callback
 {
-    return [self highestValue];
-}
--(double) highestValue
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_HIGHESTVALUE_INVALID;
+    if (callback != NULL) {
+        [YFunction _UpdateTimedReportCallbackList:self :YES];
+    } else {
+        [YFunction _UpdateTimedReportCallbackList:self :NO];
     }
-    return _highestValue;
+    _timedReportCallbackLightSensor = callback;
+    return 0;
 }
 
-/**
- * Returns the unrounded and uncalibrated raw value returned by the sensor.
- * 
- * @return a floating point number corresponding to the unrounded and uncalibrated raw value returned by the sensor
- * 
- * On failure, throws an exception or returns Y_CURRENTRAWVALUE_INVALID.
- */
--(double) get_currentRawValue
+-(int) _invokeTimedReportCallback:(YMeasure*)value
 {
-    return [self currentRawValue];
-}
--(double) currentRawValue
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_CURRENTRAWVALUE_INVALID;
+    if (_timedReportCallbackLightSensor != NULL) {
+        _timedReportCallbackLightSensor(self, value);
+    } else {
+        [super _invokeTimedReportCallback:value];
     }
-    return _currentRawValue;
+    return 0;
 }
 
--(NSString*) get_calibrationParam
-{
-    return [self calibrationParam];
-}
--(NSString*) calibrationParam
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_CALIBRATIONPARAM_INVALID;
-    }
-    return _calibrationParam;
-}
-
--(int) set_calibrationParam:(NSString*) newval
-{
-    return [self setCalibrationParam:newval];
-}
--(int) setCalibrationParam:(NSString*) newval
-{
-    NSString* rest_val;
-    rest_val = newval;
-    return [self _setAttr:@"calibrationParam" :rest_val];
-}
-
-/**
- * Configures error correction data points, in particular to compensate for
- * a possible perturbation of the measure caused by an enclosure. It is possible
- * to configure up to five correction points. Correction points must be provided
- * in ascending order, and be in the range of the sensor. The device will automatically
- * perform a linear interpolation of the error correction between specified
- * points. Remember to call the saveToFlash() method of the module if the
- * modification must be kept.
- * 
- * For more information on advanced capabilities to refine the calibration of
- * sensors, please contact support@yoctopuce.com.
- * 
- * @param rawValues : array of floating point numbers, corresponding to the raw
- *         values returned by the sensor for the correction points.
- * @param refValues : array of floating point numbers, corresponding to the corrected
- *         values for the correction points.
- * 
- * @return YAPI_SUCCESS if the call succeeds.
- * 
- * On failure, throws an exception or returns a negative error code.
- */
--(int) calibrateFromPoints :(NSMutableArray*)rawValues :(NSMutableArray*)refValues
-{
-    NSString* rest_val;
-    rest_val = [YAPI _encodeCalibrationPoints:rawValues:refValues:_resolution:_calibrationOffset:_calibrationParam];
-    return [self _setAttr:@"calibrationParam" :rest_val];
-}
-
--(int) loadCalibrationPoints :(NSMutableArray*)rawValues :(NSMutableArray*)refValues
-{
-    if(_cacheExpiration <= [YAPI GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return (int)[_lastError code];
-    }
-    return [YAPI _decodeCalibrationPoints:_calibrationParam:nil:rawValues:refValues withResolution:_resolution andOffset:_calibrationOffset];
-}
-
-/**
- * Returns the resolution of the measured values. The resolution corresponds to the numerical precision
- * of the values, which is not always the same as the actual precision of the sensor.
- * 
- * @return a floating point number corresponding to the resolution of the measured values
- * 
- * On failure, throws an exception or returns Y_RESOLUTION_INVALID.
- */
--(double) get_resolution
-{
-    return [self resolution];
-}
--(double) resolution
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_RESOLUTION_INVALID;
-    }
-    return _resolution;
-}
 
 -(YLightSensor*)   nextLightSensor
 {
@@ -448,53 +218,7 @@
     if(YISERR([self _nextFunction:&hwid]) || [hwid isEqualToString:@""]) {
         return NULL;
     }
-    return yFindLightSensor(hwid);
-}
--(void )    registerValueCallback:(YFunctionUpdateCallback)callback
-{ 
-    _callback = callback;
-    if (callback != NULL) {
-        [self _registerFuncCallback];
-    } else {
-        [self _unregisterFuncCallback];
-    }
-}
--(void )    set_objectCallback:(id)object :(SEL)selector
-{ [self setObjectCallback:object withSelector:selector];}
--(void )    setObjectCallback:(id)object :(SEL)selector
-{ [self setObjectCallback:object withSelector:selector];}
--(void )    setObjectCallback:(id)object withSelector:(SEL)selector
-{ 
-    _callbackObject = object;
-    _callbackSel    = selector;
-    if (object != nil) {
-        [self _registerFuncCallback];
-        if([self isOnline]) {
-           yapiLockFunctionCallBack(NULL);
-           yInternalPushNewVal([self functionDescriptor],[self advertisedValue]);
-           yapiUnlockFunctionCallBack(NULL);
-        }
-    } else {
-        [self _unregisterFuncCallback];
-    }
-}
-
-+(YLightSensor*) FindLightSensor:(NSString*) func
-{
-    YLightSensor * retVal=nil;
-    if(func==nil) return nil;
-    // Search in cache
-    if ([YAPI_YFunctions objectForKey:@"YLightSensor"] == nil){
-        [YAPI_YFunctions setObject:[NSMutableDictionary dictionary] forKey:@"YLightSensor"];
-    }
-    if(nil != [[YAPI_YFunctions objectForKey:@"YLightSensor"] objectForKey:func]){
-        retVal = [[YAPI_YFunctions objectForKey:@"YLightSensor"] objectForKey:func];
-    } else {
-        retVal = [[YLightSensor alloc] initWithFunction:func];
-        [[YAPI_YFunctions objectForKey:@"YLightSensor"] setObject:retVal forKey:func];
-        ARC_autorelease(retVal);
-    }
-    return retVal;
+    return [YLightSensor FindLightSensor:hwid];
 }
 
 +(YLightSensor *) FirstLightSensor
@@ -512,7 +236,7 @@
     return nil;
 }
 
-//--- (end of YLightSensor implementation)
+//--- (end of YLightSensor public methods implementation)
 
 @end
 //--- (LightSensor functions)

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_network.h 12337 2013-08-14 15:22:22Z mvuilleu $
+ * $Id: yocto_network.h 14325 2014-01-11 01:42:47Z seb $
  *
  * Declares yFindNetwork(), the high-level API for Network functions
  *
@@ -40,57 +40,71 @@
 #include "yocto_api.h"
 CF_EXTERN_C_BEGIN
 
-//--- (YNetwork definitions)
+@class YNetwork;
+
+//--- (YNetwork globals)
+typedef void (*YNetworkValueCallback)(YNetwork *func, NSString *functionValue);
+#ifndef _Y_READINESS_ENUM
+#define _Y_READINESS_ENUM
 typedef enum {
     Y_READINESS_DOWN = 0,
     Y_READINESS_EXISTS = 1,
     Y_READINESS_LINKED = 2,
     Y_READINESS_LAN_OK = 3,
     Y_READINESS_WWW_OK = 4,
-    Y_READINESS_INVALID = -1
+    Y_READINESS_INVALID = -1,
 } Y_READINESS_enum;
+#endif
 
+#ifndef _Y_DISCOVERABLE_ENUM
+#define _Y_DISCOVERABLE_ENUM
 typedef enum {
     Y_DISCOVERABLE_FALSE = 0,
     Y_DISCOVERABLE_TRUE = 1,
-    Y_DISCOVERABLE_INVALID = -1
+    Y_DISCOVERABLE_INVALID = -1,
 } Y_DISCOVERABLE_enum;
+#endif
 
+#ifndef _Y_CALLBACKMETHOD_ENUM
+#define _Y_CALLBACKMETHOD_ENUM
 typedef enum {
     Y_CALLBACKMETHOD_POST = 0,
     Y_CALLBACKMETHOD_GET = 1,
     Y_CALLBACKMETHOD_PUT = 2,
-    Y_CALLBACKMETHOD_INVALID = -1
+    Y_CALLBACKMETHOD_INVALID = -1,
 } Y_CALLBACKMETHOD_enum;
+#endif
 
+#ifndef _Y_CALLBACKENCODING_ENUM
+#define _Y_CALLBACKENCODING_ENUM
 typedef enum {
     Y_CALLBACKENCODING_FORM = 0,
     Y_CALLBACKENCODING_JSON = 1,
     Y_CALLBACKENCODING_JSON_ARRAY = 2,
     Y_CALLBACKENCODING_CSV = 3,
     Y_CALLBACKENCODING_YOCTO_API = 4,
-    Y_CALLBACKENCODING_INVALID = -1
+    Y_CALLBACKENCODING_INVALID = -1,
 } Y_CALLBACKENCODING_enum;
+#endif
 
-#define Y_LOGICALNAME_INVALID           [YAPI  INVALID_STRING]
-#define Y_ADVERTISEDVALUE_INVALID       [YAPI  INVALID_STRING]
-#define Y_MACADDRESS_INVALID            [YAPI  INVALID_STRING]
-#define Y_IPADDRESS_INVALID             [YAPI  INVALID_STRING]
-#define Y_SUBNETMASK_INVALID            [YAPI  INVALID_STRING]
-#define Y_ROUTER_INVALID                [YAPI  INVALID_STRING]
-#define Y_IPCONFIG_INVALID              [YAPI  INVALID_STRING]
-#define Y_PRIMARYDNS_INVALID            [YAPI  INVALID_STRING]
-#define Y_SECONDARYDNS_INVALID          [YAPI  INVALID_STRING]
-#define Y_USERPASSWORD_INVALID          [YAPI  INVALID_STRING]
-#define Y_ADMINPASSWORD_INVALID         [YAPI  INVALID_STRING]
-#define Y_WWWWATCHDOGDELAY_INVALID      (0xffffffff)
-#define Y_CALLBACKURL_INVALID           [YAPI  INVALID_STRING]
-#define Y_CALLBACKCREDENTIALS_INVALID   [YAPI  INVALID_STRING]
-#define Y_CALLBACKMINDELAY_INVALID      (0xffffffff)
-#define Y_CALLBACKMAXDELAY_INVALID      (0xffffffff)
-#define Y_POECURRENT_INVALID            (0xffffffff)
-//--- (end of YNetwork definitions)
+#define Y_MACADDRESS_INVALID            YAPI_INVALID_STRING
+#define Y_IPADDRESS_INVALID             YAPI_INVALID_STRING
+#define Y_SUBNETMASK_INVALID            YAPI_INVALID_STRING
+#define Y_ROUTER_INVALID                YAPI_INVALID_STRING
+#define Y_IPCONFIG_INVALID              YAPI_INVALID_STRING
+#define Y_PRIMARYDNS_INVALID            YAPI_INVALID_STRING
+#define Y_SECONDARYDNS_INVALID          YAPI_INVALID_STRING
+#define Y_USERPASSWORD_INVALID          YAPI_INVALID_STRING
+#define Y_ADMINPASSWORD_INVALID         YAPI_INVALID_STRING
+#define Y_WWWWATCHDOGDELAY_INVALID      YAPI_INVALID_UINT
+#define Y_CALLBACKURL_INVALID           YAPI_INVALID_STRING
+#define Y_CALLBACKCREDENTIALS_INVALID   YAPI_INVALID_STRING
+#define Y_CALLBACKMINDELAY_INVALID      YAPI_INVALID_UINT
+#define Y_CALLBACKMAXDELAY_INVALID      YAPI_INVALID_UINT
+#define Y_POECURRENT_INVALID            YAPI_INVALID_UINT
+//--- (end of YNetwork globals)
 
+//--- (YNetwork class start)
 /**
  * YNetwork Class: Network function interface
  * 
@@ -98,13 +112,10 @@ typedef enum {
  * modules that include a built-in network interface.
  */
 @interface YNetwork : YFunction
+//--- (end of YNetwork class start)
 {
 @protected
-
-// Attributes (function value cache)
-//--- (YNetwork attributes)
-    NSString*       _logicalName;
-    NSString*       _advertisedValue;
+//--- (YNetwork attributes declaration)
     Y_READINESS_enum _readiness;
     NSString*       _macAddress;
     NSString*       _ipAddress;
@@ -116,131 +127,31 @@ typedef enum {
     NSString*       _userPassword;
     NSString*       _adminPassword;
     Y_DISCOVERABLE_enum _discoverable;
-    unsigned        _wwwWatchdogDelay;
+    int             _wwwWatchdogDelay;
     NSString*       _callbackUrl;
     Y_CALLBACKMETHOD_enum _callbackMethod;
     Y_CALLBACKENCODING_enum _callbackEncoding;
     NSString*       _callbackCredentials;
-    unsigned        _callbackMinDelay;
-    unsigned        _callbackMaxDelay;
-    unsigned        _poeCurrent;
-//--- (end of YNetwork attributes)
+    int             _callbackMinDelay;
+    int             _callbackMaxDelay;
+    int             _poeCurrent;
+    YNetworkValueCallback _valueCallbackNetwork;
+//--- (end of YNetwork attributes declaration)
 }
-//--- (YNetwork declaration)
 // Constructor is protected, use yFindNetwork factory function to instantiate
--(id)    initWithFunction:(NSString*) func;
+-(id)    initWith:(NSString*) func;
 
+//--- (YNetwork private methods declaration)
 // Function-specific method for parsing of JSON output and caching result
--(int)             _parse:(yJsonStateMachine*) j;
+-(int)             _parseAttr:(yJsonStateMachine*) j;
 
-/**
- * Registers the callback function that is invoked on every change of advertised value.
- * The callback is invoked only during the execution of ySleep or yHandleEvents.
- * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
- * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
- * 
- * @param callback : the callback function to call, or a null pointer. The callback function should take two
- *         arguments: the function object of which the value has changed, and the character string describing
- *         the new advertised value.
- * @noreturn
- */
--(void)     registerValueCallback:(YFunctionUpdateCallback) callback;   
-/**
- * comment from .yc definition
- */
--(void)     set_objectCallback:(id) object :(SEL)selector;
--(void)     setObjectCallback:(id) object :(SEL)selector;
--(void)     setObjectCallback:(id) object withSelector:(SEL)selector;
-
-//--- (end of YNetwork declaration)
-//--- (YNetwork accessors declaration)
-
-/**
- * Continues the enumeration of network interfaces started using yFirstNetwork().
- * 
- * @return a pointer to a YNetwork object, corresponding to
- *         a network interface currently online, or a null pointer
- *         if there are no more network interfaces to enumerate.
- */
--(YNetwork*) nextNetwork;
-/**
- * Retrieves a network interface for a given identifier.
- * The identifier can be specified using several formats:
- * <ul>
- * <li>FunctionLogicalName</li>
- * <li>ModuleSerialNumber.FunctionIdentifier</li>
- * <li>ModuleSerialNumber.FunctionLogicalName</li>
- * <li>ModuleLogicalName.FunctionIdentifier</li>
- * <li>ModuleLogicalName.FunctionLogicalName</li>
- * </ul>
- * 
- * This function does not require that the network interface is online at the time
- * it is invoked. The returned object is nevertheless valid.
- * Use the method YNetwork.isOnline() to test if the network interface is
- * indeed online at a given time. In case of ambiguity when looking for
- * a network interface by logical name, no error is notified: the first instance
- * found is returned. The search is performed first by hardware name,
- * then by logical name.
- * 
- * @param func : a string that uniquely characterizes the network interface
- * 
- * @return a YNetwork object allowing you to drive the network interface.
- */
-+(YNetwork*) FindNetwork:(NSString*) func;
-/**
- * Starts the enumeration of network interfaces currently accessible.
- * Use the method YNetwork.nextNetwork() to iterate on
- * next network interfaces.
- * 
- * @return a pointer to a YNetwork object, corresponding to
- *         the first network interface currently online, or a null pointer
- *         if there are none.
- */
-+(YNetwork*) FirstNetwork;
-
-/**
- * Returns the logical name of the network interface, corresponding to the network name of the module.
- * 
- * @return a string corresponding to the logical name of the network interface, corresponding to the
- * network name of the module
- * 
- * On failure, throws an exception or returns Y_LOGICALNAME_INVALID.
- */
--(NSString*) get_logicalName;
--(NSString*) logicalName;
-
-/**
- * Changes the logical name of the network interface, corresponding to the network name of the module.
- * You can use yCheckLogicalName()
- * prior to this call to make sure that your parameter is valid.
- * Remember to call the saveToFlash() method of the module if the
- * modification must be kept.
- * 
- * @param newval : a string corresponding to the logical name of the network interface, corresponding
- * to the network name of the module
- * 
- * @return YAPI_SUCCESS if the call succeeds.
- * 
- * On failure, throws an exception or returns a negative error code.
- */
--(int)     set_logicalName:(NSString*) newval;
--(int)     setLogicalName:(NSString*) newval;
-
-/**
- * Returns the current value of the network interface (no more than 6 characters).
- * 
- * @return a string corresponding to the current value of the network interface (no more than 6 characters)
- * 
- * On failure, throws an exception or returns Y_ADVERTISEDVALUE_INVALID.
- */
--(NSString*) get_advertisedValue;
--(NSString*) advertisedValue;
-
+//--- (end of YNetwork private methods declaration)
+//--- (YNetwork public methods declaration)
 /**
  * Returns the current established working mode of the network interface.
  * Level zero (DOWN_0) means that no hardware link has been detected. Either there is no signal
  * on the network cable, or the selected wireless access point cannot be detected.
- * Level 1 (LIVE_1) is reached when the network is detected, but is not yet connected,
+ * Level 1 (LIVE_1) is reached when the network is detected, but is not yet connected.
  * For a wireless network, this shows that the requested SSID is present.
  * Level 2 (LINK_2) is reached when the hardware connection is established.
  * For a wired network connection, level 2 means that the cable is attached at both ends.
@@ -257,9 +168,10 @@ typedef enum {
  * 
  * On failure, throws an exception or returns Y_READINESS_INVALID.
  */
--(Y_READINESS_enum) get_readiness;
--(Y_READINESS_enum) readiness;
+-(Y_READINESS_enum)     get_readiness;
 
+
+-(Y_READINESS_enum) readiness;
 /**
  * Returns the MAC address of the network interface. The MAC address is also available on a sticker
  * on the module, in both numeric and barcode forms.
@@ -268,20 +180,22 @@ typedef enum {
  * 
  * On failure, throws an exception or returns Y_MACADDRESS_INVALID.
  */
--(NSString*) get_macAddress;
--(NSString*) macAddress;
+-(NSString*)     get_macAddress;
 
+
+-(NSString*) macAddress;
 /**
- * Returns the IP address currently in use by the device. The adress may have been configured
+ * Returns the IP address currently in use by the device. The address may have been configured
  * statically, or provided by a DHCP server.
  * 
  * @return a string corresponding to the IP address currently in use by the device
  * 
  * On failure, throws an exception or returns Y_IPADDRESS_INVALID.
  */
--(NSString*) get_ipAddress;
--(NSString*) ipAddress;
+-(NSString*)     get_ipAddress;
 
+
+-(NSString*) ipAddress;
 /**
  * Returns the subnet mask currently used by the device.
  * 
@@ -289,9 +203,10 @@ typedef enum {
  * 
  * On failure, throws an exception or returns Y_SUBNETMASK_INVALID.
  */
--(NSString*) get_subnetMask;
--(NSString*) subnetMask;
+-(NSString*)     get_subnetMask;
 
+
+-(NSString*) subnetMask;
 /**
  * Returns the IP address of the router on the device subnet (default gateway).
  * 
@@ -299,12 +214,14 @@ typedef enum {
  * 
  * On failure, throws an exception or returns Y_ROUTER_INVALID.
  */
--(NSString*) get_router;
+-(NSString*)     get_router;
+
+
 -(NSString*) router;
+-(NSString*)     get_ipConfig;
 
--(NSString*) get_ipConfig;
+
 -(NSString*) ipConfig;
-
 -(int)     set_ipConfig:(NSString*) newval;
 -(int)     setIpConfig:(NSString*) newval;
 
@@ -323,7 +240,7 @@ typedef enum {
  * 
  * On failure, throws an exception or returns a negative error code.
  */
--(int)     useDHCP :(NSString*)fallbackIpAddr :(int)fallbackSubnetMaskLen :(NSString*)fallbackRouter;
+-(int)     useDHCP:(NSString*)fallbackIpAddr :(int)fallbackSubnetMaskLen :(NSString*)fallbackRouter;
 
 /**
  * Changes the configuration of the network interface to use a static IP address.
@@ -337,7 +254,7 @@ typedef enum {
  * 
  * On failure, throws an exception or returns a negative error code.
  */
--(int)     useStaticIP :(NSString*)ipAddress :(int)subnetMaskLen :(NSString*)router;
+-(int)     useStaticIP:(NSString*)ipAddress :(int)subnetMaskLen :(NSString*)router;
 
 /**
  * Returns the IP address of the primary name server to be used by the module.
@@ -346,9 +263,10 @@ typedef enum {
  * 
  * On failure, throws an exception or returns Y_PRIMARYDNS_INVALID.
  */
--(NSString*) get_primaryDNS;
--(NSString*) primaryDNS;
+-(NSString*)     get_primaryDNS;
 
+
+-(NSString*) primaryDNS;
 /**
  * Changes the IP address of the primary name server to be used by the module.
  * When using DHCP, if a value is specified, it overrides the value received from the DHCP server.
@@ -370,15 +288,16 @@ typedef enum {
  * 
  * On failure, throws an exception or returns Y_SECONDARYDNS_INVALID.
  */
--(NSString*) get_secondaryDNS;
--(NSString*) secondaryDNS;
+-(NSString*)     get_secondaryDNS;
 
+
+-(NSString*) secondaryDNS;
 /**
- * Changes the IP address of the secondarz name server to be used by the module.
+ * Changes the IP address of the secondary name server to be used by the module.
  * When using DHCP, if a value is specified, it overrides the value received from the DHCP server.
  * Remember to call the saveToFlash() method and then to reboot the module to apply this setting.
  * 
- * @param newval : a string corresponding to the IP address of the secondarz name server to be used by the module
+ * @param newval : a string corresponding to the IP address of the secondary name server to be used by the module
  * 
  * @return YAPI_SUCCESS if the call succeeds.
  * 
@@ -396,9 +315,10 @@ typedef enum {
  * 
  * On failure, throws an exception or returns Y_USERPASSWORD_INVALID.
  */
--(NSString*) get_userPassword;
--(NSString*) userPassword;
+-(NSString*)     get_userPassword;
 
+
+-(NSString*) userPassword;
 /**
  * Changes the password for the "user" user. This password becomes instantly required
  * to perform any use of the module. If the specified value is an
@@ -424,9 +344,10 @@ typedef enum {
  * 
  * On failure, throws an exception or returns Y_ADMINPASSWORD_INVALID.
  */
--(NSString*) get_adminPassword;
--(NSString*) adminPassword;
+-(NSString*)     get_adminPassword;
 
+
+-(NSString*) adminPassword;
 /**
  * Changes the password for the "admin" user. This password becomes instantly required
  * to perform any change of the module state. If the specified value is an
@@ -453,9 +374,10 @@ typedef enum {
  * 
  * On failure, throws an exception or returns Y_DISCOVERABLE_INVALID.
  */
--(Y_DISCOVERABLE_enum) get_discoverable;
--(Y_DISCOVERABLE_enum) discoverable;
+-(Y_DISCOVERABLE_enum)     get_discoverable;
 
+
+-(Y_DISCOVERABLE_enum) discoverable;
 /**
  * Changes the activation state of the multicast announce protocols to allow easy
  * discovery of the module in the network neighborhood (uPnP/Bonjour protocol).
@@ -482,12 +404,13 @@ typedef enum {
  * 
  * On failure, throws an exception or returns Y_WWWWATCHDOGDELAY_INVALID.
  */
--(unsigned) get_wwwWatchdogDelay;
--(unsigned) wwwWatchdogDelay;
+-(int)     get_wwwWatchdogDelay;
 
+
+-(int) wwwWatchdogDelay;
 /**
  * Changes the allowed downtime of the WWW link (in seconds) before triggering an automated
- * reboot to try to recover Internet connectivity. A zero value disable automated reboot
+ * reboot to try to recover Internet connectivity. A zero value disables automated reboot
  * in case of Internet connectivity loss. The smallest valid non-zero timeout is
  * 90 seconds.
  * 
@@ -499,8 +422,8 @@ typedef enum {
  * 
  * On failure, throws an exception or returns a negative error code.
  */
--(int)     set_wwwWatchdogDelay:(unsigned) newval;
--(int)     setWwwWatchdogDelay:(unsigned) newval;
+-(int)     set_wwwWatchdogDelay:(int) newval;
+-(int)     setWwwWatchdogDelay:(int) newval;
 
 /**
  * Returns the callback URL to notify of significant state changes.
@@ -509,9 +432,10 @@ typedef enum {
  * 
  * On failure, throws an exception or returns Y_CALLBACKURL_INVALID.
  */
--(NSString*) get_callbackUrl;
--(NSString*) callbackUrl;
+-(NSString*)     get_callbackUrl;
 
+
+-(NSString*) callbackUrl;
 /**
  * Changes the callback URL to notify significant state changes. Remember to call the
  * saveToFlash() method of the module if the modification must be kept.
@@ -533,9 +457,10 @@ typedef enum {
  * 
  * On failure, throws an exception or returns Y_CALLBACKMETHOD_INVALID.
  */
--(Y_CALLBACKMETHOD_enum) get_callbackMethod;
--(Y_CALLBACKMETHOD_enum) callbackMethod;
+-(Y_CALLBACKMETHOD_enum)     get_callbackMethod;
 
+
+-(Y_CALLBACKMETHOD_enum) callbackMethod;
 /**
  * Changes the HTTP method used to notify callbacks for significant state changes.
  * 
@@ -558,9 +483,10 @@ typedef enum {
  * 
  * On failure, throws an exception or returns Y_CALLBACKENCODING_INVALID.
  */
--(Y_CALLBACKENCODING_enum) get_callbackEncoding;
--(Y_CALLBACKENCODING_enum) callbackEncoding;
+-(Y_CALLBACKENCODING_enum)     get_callbackEncoding;
 
+
+-(Y_CALLBACKENCODING_enum) callbackEncoding;
 /**
  * Changes the encoding standard to use for representing notification values.
  * 
@@ -584,9 +510,10 @@ typedef enum {
  * 
  * On failure, throws an exception or returns Y_CALLBACKCREDENTIALS_INVALID.
  */
--(NSString*) get_callbackCredentials;
--(NSString*) callbackCredentials;
+-(NSString*)     get_callbackCredentials;
 
+
+-(NSString*) callbackCredentials;
 /**
  * Changes the credentials required to connect to the callback address. The credentials
  * must be provided as returned by function get_callbackCredentials,
@@ -620,7 +547,7 @@ typedef enum {
  * 
  * On failure, throws an exception or returns a negative error code.
  */
--(int)     callbackLogin :(NSString*)username :(NSString*)password;
+-(int)     callbackLogin:(NSString*)username :(NSString*)password;
 
 /**
  * Returns the minimum waiting time between two callback notifications, in seconds.
@@ -629,9 +556,10 @@ typedef enum {
  * 
  * On failure, throws an exception or returns Y_CALLBACKMINDELAY_INVALID.
  */
--(unsigned) get_callbackMinDelay;
--(unsigned) callbackMinDelay;
+-(int)     get_callbackMinDelay;
 
+
+-(int) callbackMinDelay;
 /**
  * Changes the minimum waiting time between two callback notifications, in seconds.
  * 
@@ -642,8 +570,8 @@ typedef enum {
  * 
  * On failure, throws an exception or returns a negative error code.
  */
--(int)     set_callbackMinDelay:(unsigned) newval;
--(int)     setCallbackMinDelay:(unsigned) newval;
+-(int)     set_callbackMinDelay:(int) newval;
+-(int)     setCallbackMinDelay:(int) newval;
 
 /**
  * Returns the maximum waiting time between two callback notifications, in seconds.
@@ -652,9 +580,10 @@ typedef enum {
  * 
  * On failure, throws an exception or returns Y_CALLBACKMAXDELAY_INVALID.
  */
--(unsigned) get_callbackMaxDelay;
--(unsigned) callbackMaxDelay;
+-(int)     get_callbackMaxDelay;
 
+
+-(int) callbackMaxDelay;
 /**
  * Changes the maximum waiting time between two callback notifications, in seconds.
  * 
@@ -665,8 +594,8 @@ typedef enum {
  * 
  * On failure, throws an exception or returns a negative error code.
  */
--(int)     set_callbackMaxDelay:(unsigned) newval;
--(int)     setCallbackMaxDelay:(unsigned) newval;
+-(int)     set_callbackMaxDelay:(int) newval;
+-(int)     setCallbackMaxDelay:(int) newval;
 
 /**
  * Returns the current consumed by the module from Power-over-Ethernet (PoE), in milli-amps.
@@ -678,26 +607,85 @@ typedef enum {
  * 
  * On failure, throws an exception or returns Y_POECURRENT_INVALID.
  */
--(unsigned) get_poeCurrent;
--(unsigned) poeCurrent;
+-(int)     get_poeCurrent;
+
+
+-(int) poeCurrent;
+/**
+ * Retrieves a network interface for a given identifier.
+ * The identifier can be specified using several formats:
+ * <ul>
+ * <li>FunctionLogicalName</li>
+ * <li>ModuleSerialNumber.FunctionIdentifier</li>
+ * <li>ModuleSerialNumber.FunctionLogicalName</li>
+ * <li>ModuleLogicalName.FunctionIdentifier</li>
+ * <li>ModuleLogicalName.FunctionLogicalName</li>
+ * </ul>
+ * 
+ * This function does not require that the network interface is online at the time
+ * it is invoked. The returned object is nevertheless valid.
+ * Use the method YNetwork.isOnline() to test if the network interface is
+ * indeed online at a given time. In case of ambiguity when looking for
+ * a network interface by logical name, no error is notified: the first instance
+ * found is returned. The search is performed first by hardware name,
+ * then by logical name.
+ * 
+ * @param func : a string that uniquely characterizes the network interface
+ * 
+ * @return a YNetwork object allowing you to drive the network interface.
+ */
++(YNetwork*)     FindNetwork:(NSString*)func;
 
 /**
- * Pings str_host to test the network connectivity. Sends four requests ICMP ECHO_REQUEST from the
+ * Registers the callback function that is invoked on every change of advertised value.
+ * The callback is invoked only during the execution of ySleep or yHandleEvents.
+ * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
+ * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
+ * 
+ * @param callback : the callback function to call, or a null pointer. The callback function should take two
+ *         arguments: the function object of which the value has changed, and the character string describing
+ *         the new advertised value.
+ * @noreturn
+ */
+-(int)     registerValueCallback:(YNetworkValueCallback)callback;
+
+-(int)     _invokeValueCallback:(NSString*)value;
+
+/**
+ * Pings str_host to test the network connectivity. Sends four ICMP ECHO_REQUEST requests from the
  * module to the target str_host. This method returns a string with the result of the
- * 4 ICMP ECHO_REQUEST result.
+ * 4 ICMP ECHO_REQUEST requests.
  * 
  * @param host : the hostname or the IP address of the target
  * 
  * @return a string with the result of the ping.
  */
--(NSString*)     ping :(NSString*)host;
+-(NSString*)     ping:(NSString*)host;
 
 
-//--- (end of YNetwork accessors declaration)
+/**
+ * Continues the enumeration of network interfaces started using yFirstNetwork().
+ * 
+ * @return a pointer to a YNetwork object, corresponding to
+ *         a network interface currently online, or a null pointer
+ *         if there are no more network interfaces to enumerate.
+ */
+-(YNetwork*) nextNetwork;
+/**
+ * Starts the enumeration of network interfaces currently accessible.
+ * Use the method YNetwork.nextNetwork() to iterate on
+ * next network interfaces.
+ * 
+ * @return a pointer to a YNetwork object, corresponding to
+ *         the first network interface currently online, or a null pointer
+ *         if there are none.
+ */
++(YNetwork*) FirstNetwork;
+//--- (end of YNetwork public methods declaration)
+
 @end
 
 //--- (Network functions declaration)
-
 /**
  * Retrieves a network interface for a given identifier.
  * The identifier can be specified using several formats:

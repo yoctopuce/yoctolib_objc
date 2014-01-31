@@ -1,8 +1,8 @@
 /*********************************************************************
  *
- * $Id: yocto_wakeupmonitor.m 12324 2013-08-13 15:10:31Z mvuilleu $
+ * $Id: yocto_wakeupmonitor.m 14721 2014-01-24 17:58:44Z seb $
  *
- * Implements yFindWakeUpMonitor(), the high-level API for WakeUpMonitor functions
+ * Implements the high-level API for WakeUpMonitor functions
  *
  * - - - - - - - - - License information: - - - - - - - - - 
  *
@@ -47,13 +47,12 @@
 @implementation YWakeUpMonitor
 
 // Constructor is protected, use yFindWakeUpMonitor factory function to instantiate
--(id)              initWithFunction:(NSString*) func
+-(id)              initWith:(NSString*) func
 {
-//--- (YWakeUpMonitor attributes)
-   if(!(self = [super initProtected:@"WakeUpMonitor":func]))
+   if(!(self = [super initWith:func]))
           return nil;
-    _logicalName = Y_LOGICALNAME_INVALID;
-    _advertisedValue = Y_ADVERTISEDVALUE_INVALID;
+    _className = @"WakeUpMonitor";
+//--- (YWakeUpMonitor attributes initialization)
     _powerDuration = Y_POWERDURATION_INVALID;
     _sleepCountdown = Y_SLEEPCOUNTDOWN_INVALID;
     _nextWakeUp = Y_NEXTWAKEUP_INVALID;
@@ -61,151 +60,83 @@
     _wakeUpState = Y_WAKEUPSTATE_INVALID;
     _rtcTime = Y_RTCTIME_INVALID;
     _endOfTime = 2145960000;
-//--- (end of YWakeUpMonitor attributes)
+    _valueCallbackWakeUpMonitor = NULL;
+//--- (end of YWakeUpMonitor attributes initialization)
     return self;
 }
 // destructor 
 -(void)  dealloc
 {
 //--- (YWakeUpMonitor cleanup)
-    ARC_release(_logicalName);
-    _logicalName = nil;
-    ARC_release(_advertisedValue);
-    _advertisedValue = nil;
-//--- (end of YWakeUpMonitor cleanup)
     ARC_dealloc(super);
+//--- (end of YWakeUpMonitor cleanup)
 }
-//--- (YWakeUpMonitor implementation)
+//--- (YWakeUpMonitor private methods implementation)
 
--(int) _parse:(yJsonStateMachine*) j
+-(int) _parseAttr:(yJsonStateMachine*) j
 {
-    if(yJsonParse(j) != YJSON_PARSE_AVAIL || j->st != YJSON_PARSE_STRUCT) {
-    failed:
-        return -1;
+    if(!strcmp(j->token, "powerDuration")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _powerDuration =  atoi(j->token);
+        return 1;
     }
-    while(yJsonParse(j) == YJSON_PARSE_AVAIL && j->st == YJSON_PARSE_MEMBNAME) {
-        if(!strcmp(j->token, "logicalName")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            ARC_release(_logicalName);
-            _logicalName =  [self _parseString:j];
-            ARC_retain(_logicalName);
-        } else if(!strcmp(j->token, "advertisedValue")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            ARC_release(_advertisedValue);
-            _advertisedValue =  [self _parseString:j];
-            ARC_retain(_advertisedValue);
-        } else if(!strcmp(j->token, "powerDuration")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            _powerDuration =  atoi(j->token);
-        } else if(!strcmp(j->token, "sleepCountdown")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            _sleepCountdown =  atoi(j->token);
-        } else if(!strcmp(j->token, "nextWakeUp")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            _nextWakeUp =  atoi(j->token);
-        } else if(!strcmp(j->token, "wakeUpReason")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            _wakeUpReason =  atoi(j->token);
-        } else if(!strcmp(j->token, "wakeUpState")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            _wakeUpState =  atoi(j->token);
-        } else if(!strcmp(j->token, "rtcTime")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            _rtcTime =  atoi(j->token);
-        } else {
-            // ignore unknown field
-            yJsonSkip(j, 1);
-        }
+    if(!strcmp(j->token, "sleepCountdown")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _sleepCountdown =  atoi(j->token);
+        return 1;
     }
-    if(j->st != YJSON_PARSE_STRUCT) goto failed;
-    return 0;
-}
-
-/**
- * Returns the logical name of the monitor.
- * 
- * @return a string corresponding to the logical name of the monitor
- * 
- * On failure, throws an exception or returns Y_LOGICALNAME_INVALID.
- */
--(NSString*) get_logicalName
-{
-    return [self logicalName];
-}
--(NSString*) logicalName
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_LOGICALNAME_INVALID;
+    if(!strcmp(j->token, "nextWakeUp")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _nextWakeUp =  atol(j->token);
+        return 1;
     }
-    return _logicalName;
-}
-
-/**
- * Changes the logical name of the monitor. You can use yCheckLogicalName()
- * prior to this call to make sure that your parameter is valid.
- * Remember to call the saveToFlash() method of the module if the
- * modification must be kept.
- * 
- * @param newval : a string corresponding to the logical name of the monitor
- * 
- * @return YAPI_SUCCESS if the call succeeds.
- * 
- * On failure, throws an exception or returns a negative error code.
- */
--(int) set_logicalName:(NSString*) newval
-{
-    return [self setLogicalName:newval];
-}
--(int) setLogicalName:(NSString*) newval
-{
-    NSString* rest_val;
-    rest_val = newval;
-    return [self _setAttr:@"logicalName" :rest_val];
-}
-
-/**
- * Returns the current value of the monitor (no more than 6 characters).
- * 
- * @return a string corresponding to the current value of the monitor (no more than 6 characters)
- * 
- * On failure, throws an exception or returns Y_ADVERTISEDVALUE_INVALID.
- */
--(NSString*) get_advertisedValue
-{
-    return [self advertisedValue];
-}
--(NSString*) advertisedValue
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_ADVERTISEDVALUE_INVALID;
+    if(!strcmp(j->token, "wakeUpReason")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _wakeUpReason =  atoi(j->token);
+        return 1;
     }
-    return _advertisedValue;
+    if(!strcmp(j->token, "wakeUpState")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _wakeUpState =  atoi(j->token);
+        return 1;
+    }
+    if(!strcmp(j->token, "rtcTime")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _rtcTime =  atol(j->token);
+        return 1;
+    }
+    return [super _parseAttr:j];
 }
-
+//--- (end of YWakeUpMonitor private methods implementation)
+//--- (YWakeUpMonitor public methods implementation)
 /**
- * Returns the maximal wake up time (seconds) before going to sleep automatically.
+ * Returns the maximal wake up time (in seconds) before automatically going to sleep.
  * 
- * @return an integer corresponding to the maximal wake up time (seconds) before going to sleep automatically
+ * @return an integer corresponding to the maximal wake up time (in seconds) before automatically going to sleep
  * 
  * On failure, throws an exception or returns Y_POWERDURATION_INVALID.
  */
 -(int) get_powerDuration
 {
-    return [self powerDuration];
-}
--(int) powerDuration
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_POWERDURATION_INVALID;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_POWERDURATION_INVALID;
+        }
     }
     return _powerDuration;
 }
 
+
+-(int) powerDuration
+{
+    return [self get_powerDuration];
+}
+
 /**
- * Changes the maximal wake up time (seconds) before going to sleep automatically.
+ * Changes the maximal wake up time (seconds) before automatically going to sleep.
  * 
- * @param newval : an integer corresponding to the maximal wake up time (seconds) before going to
- * sleep automatically
+ * @param newval : an integer corresponding to the maximal wake up time (seconds) before automatically
+ * going to sleep
  * 
  * @return YAPI_SUCCESS if the call succeeds.
  * 
@@ -221,30 +152,33 @@
     rest_val = [NSString stringWithFormat:@"%d", newval];
     return [self _setAttr:@"powerDuration" :rest_val];
 }
-
 /**
- * Returns the delay before next sleep.
+ * Returns the delay before the  next sleep period.
  * 
- * @return an integer corresponding to the delay before next sleep
+ * @return an integer corresponding to the delay before the  next sleep period
  * 
  * On failure, throws an exception or returns Y_SLEEPCOUNTDOWN_INVALID.
  */
 -(int) get_sleepCountdown
 {
-    return [self sleepCountdown];
-}
--(int) sleepCountdown
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_SLEEPCOUNTDOWN_INVALID;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_SLEEPCOUNTDOWN_INVALID;
+        }
     }
     return _sleepCountdown;
 }
 
+
+-(int) sleepCountdown
+{
+    return [self get_sleepCountdown];
+}
+
 /**
- * Changes the delay before next sleep.
+ * Changes the delay before the next sleep period.
  * 
- * @param newval : an integer corresponding to the delay before next sleep
+ * @param newval : an integer corresponding to the delay before the next sleep period
  * 
  * @return YAPI_SUCCESS if the call succeeds.
  * 
@@ -260,68 +194,74 @@
     rest_val = [NSString stringWithFormat:@"%d", newval];
     return [self _setAttr:@"sleepCountdown" :rest_val];
 }
-
 /**
- * Returns the next scheduled wake-up date/time (UNIX format)
+ * Returns the next scheduled wake up date/time (UNIX format)
  * 
- * @return an integer corresponding to the next scheduled wake-up date/time (UNIX format)
+ * @return an integer corresponding to the next scheduled wake up date/time (UNIX format)
  * 
  * On failure, throws an exception or returns Y_NEXTWAKEUP_INVALID.
  */
--(unsigned) get_nextWakeUp
+-(s64) get_nextWakeUp
 {
-    return [self nextWakeUp];
-}
--(unsigned) nextWakeUp
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_NEXTWAKEUP_INVALID;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_NEXTWAKEUP_INVALID;
+        }
     }
     return _nextWakeUp;
 }
 
+
+-(s64) nextWakeUp
+{
+    return [self get_nextWakeUp];
+}
+
 /**
- * Changes the days of the week where a wake up must take place.
+ * Changes the days of the week when a wake up must take place.
  * 
- * @param newval : an integer corresponding to the days of the week where a wake up must take place
+ * @param newval : an integer corresponding to the days of the week when a wake up must take place
  * 
  * @return YAPI_SUCCESS if the call succeeds.
  * 
  * On failure, throws an exception or returns a negative error code.
  */
--(int) set_nextWakeUp:(unsigned) newval
+-(int) set_nextWakeUp:(s64) newval
 {
     return [self setNextWakeUp:newval];
 }
--(int) setNextWakeUp:(unsigned) newval
+-(int) setNextWakeUp:(s64) newval
 {
     NSString* rest_val;
-    rest_val = [NSString stringWithFormat:@"%u", newval];
+    rest_val = [NSString stringWithFormat:@"%u", (u32)newval];
     return [self _setAttr:@"nextWakeUp" :rest_val];
 }
-
 /**
- * Return the last wake up reason.
+ * Returns the latest wake up reason.
  * 
  * @return a value among Y_WAKEUPREASON_USBPOWER, Y_WAKEUPREASON_EXTPOWER, Y_WAKEUPREASON_ENDOFSLEEP,
  * Y_WAKEUPREASON_EXTSIG1, Y_WAKEUPREASON_EXTSIG2, Y_WAKEUPREASON_EXTSIG3, Y_WAKEUPREASON_EXTSIG4,
  * Y_WAKEUPREASON_SCHEDULE1, Y_WAKEUPREASON_SCHEDULE2, Y_WAKEUPREASON_SCHEDULE3,
- * Y_WAKEUPREASON_SCHEDULE4, Y_WAKEUPREASON_SCHEDULE5 and Y_WAKEUPREASON_SCHEDULE6
+ * Y_WAKEUPREASON_SCHEDULE4, Y_WAKEUPREASON_SCHEDULE5 and Y_WAKEUPREASON_SCHEDULE6 corresponding to
+ * the latest wake up reason
  * 
  * On failure, throws an exception or returns Y_WAKEUPREASON_INVALID.
  */
 -(Y_WAKEUPREASON_enum) get_wakeUpReason
 {
-    return [self wakeUpReason];
-}
--(Y_WAKEUPREASON_enum) wakeUpReason
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_WAKEUPREASON_INVALID;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_WAKEUPREASON_INVALID;
+        }
     }
     return _wakeUpReason;
 }
 
+
+-(Y_WAKEUPREASON_enum) wakeUpReason
+{
+    return [self get_wakeUpReason];
+}
 /**
  * Returns  the current state of the monitor
  * 
@@ -331,14 +271,18 @@
  */
 -(Y_WAKEUPSTATE_enum) get_wakeUpState
 {
-    return [self wakeUpState];
-}
--(Y_WAKEUPSTATE_enum) wakeUpState
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_WAKEUPSTATE_INVALID;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_WAKEUPSTATE_INVALID;
+        }
     }
     return _wakeUpState;
+}
+
+
+-(Y_WAKEUPSTATE_enum) wakeUpState
+{
+    return [self get_wakeUpState];
 }
 
 -(int) set_wakeUpState:(Y_WAKEUPSTATE_enum) newval
@@ -348,32 +292,108 @@
 -(int) setWakeUpState:(Y_WAKEUPSTATE_enum) newval
 {
     NSString* rest_val;
-    rest_val = [NSString stringWithFormat:@"%u", newval];
+    rest_val = [NSString stringWithFormat:@"%d", newval];
     return [self _setAttr:@"wakeUpState" :rest_val];
 }
-
--(unsigned) get_rtcTime
+-(s64) get_rtcTime
 {
-    return [self rtcTime];
-}
--(unsigned) rtcTime
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_RTCTIME_INVALID;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_RTCTIME_INVALID;
+        }
     }
     return _rtcTime;
 }
+
+
+-(s64) rtcTime
+{
+    return [self get_rtcTime];
+}
 /**
- * Forces a wakeup.
+ * Retrieves $AFUNCTION$ for a given identifier.
+ * The identifier can be specified using several formats:
+ * <ul>
+ * <li>FunctionLogicalName</li>
+ * <li>ModuleSerialNumber.FunctionIdentifier</li>
+ * <li>ModuleSerialNumber.FunctionLogicalName</li>
+ * <li>ModuleLogicalName.FunctionIdentifier</li>
+ * <li>ModuleLogicalName.FunctionLogicalName</li>
+ * </ul>
+ * 
+ * This function does not require that $THEFUNCTION$ is online at the time
+ * it is invoked. The returned object is nevertheless valid.
+ * Use the method YWakeUpMonitor.isOnline() to test if $THEFUNCTION$ is
+ * indeed online at a given time. In case of ambiguity when looking for
+ * $AFUNCTION$ by logical name, no error is notified: the first instance
+ * found is returned. The search is performed first by hardware name,
+ * then by logical name.
+ * 
+ * @param func : a string that uniquely characterizes $THEFUNCTION$
+ * 
+ * @return a YWakeUpMonitor object allowing you to drive $THEFUNCTION$.
+ */
++(YWakeUpMonitor*) FindWakeUpMonitor:(NSString*)func
+{
+    YWakeUpMonitor* obj;
+    obj = (YWakeUpMonitor*) [YFunction _FindFromCache:@"WakeUpMonitor" :func];
+    if (obj == nil) {
+        obj = ARC_sendAutorelease([[YWakeUpMonitor alloc] initWith:func]);
+        [YFunction _AddToCache:@"WakeUpMonitor" : func :obj];
+    }
+    return obj;
+}
+
+/**
+ * Registers the callback function that is invoked on every change of advertised value.
+ * The callback is invoked only during the execution of ySleep or yHandleEvents.
+ * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
+ * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
+ * 
+ * @param callback : the callback function to call, or a null pointer. The callback function should take two
+ *         arguments: the function object of which the value has changed, and the character string describing
+ *         the new advertised value.
+ * @noreturn
+ */
+-(int) registerValueCallback:(YWakeUpMonitorValueCallback)callback
+{
+    NSString* val;
+    if (callback != NULL) {
+        [YFunction _UpdateValueCallbackList:self :YES];
+    } else {
+        [YFunction _UpdateValueCallbackList:self :NO];
+    }
+    _valueCallbackWakeUpMonitor = callback;
+    // Immediately invoke value callback with current value
+    if (callback != NULL && [self isOnline]) {
+        val = _advertisedValue;
+        if (!([val isEqualToString:@""])) {
+            [self _invokeValueCallback:val];
+        }
+    }
+    return 0;
+}
+
+-(int) _invokeValueCallback:(NSString*)value
+{
+    if (_valueCallbackWakeUpMonitor != NULL) {
+        _valueCallbackWakeUpMonitor(self, value);
+    } else {
+        [super _invokeValueCallback:value];
+    }
+    return 0;
+}
+
+/**
+ * Forces a wake up.
  */
 -(int) wakeUp
 {
     return [self set_wakeUpState:Y_WAKEUPSTATE_AWAKE];
-    
 }
 
 /**
- * Go to sleep until the next wakeup condition is met,  the
+ * Goes to sleep until the next wake up condition is met,  the
  * RTC time must have been set before calling this function.
  * 
  * @param secBeforeSleep : number of seconds before going into sleep mode,
@@ -382,19 +402,18 @@
  * 
  * On failure, throws an exception or returns a negative error code.
  */
--(int) sleep :(int)secBeforeSleep
+-(int) sleep:(int)secBeforeSleep
 {
-    int currTime;
-    currTime = [self get_rtcTime];
-    if (!(currTime != 0)) {[self _throw: YAPI_RTC_NOT_READY: @"RTC time not set"]; return  YAPI_RTC_NOT_READY;};
+    int currTime = 0;
+    currTime = (int)([self get_rtcTime]);
+    if (!(currTime != 0)) {[self _throw: YAPI_RTC_NOT_READY: @"RTC time not set"]; return YAPI_RTC_NOT_READY;}
     [self set_nextWakeUp:_endOfTime];
     [self set_sleepCountdown:secBeforeSleep];
-    return YAPI_SUCCESS; 
-    
+    return YAPI_SUCCESS;
 }
 
 /**
- * Go to sleep for a specific time or until the next wakeup condition is met, the
+ * Goes to sleep for a specific duration or until the next wake up condition is met, the
  * RTC time must have been set before calling this function. The count down before sleep
  * can be canceled with resetSleepCountDown.
  * 
@@ -405,19 +424,18 @@
  * 
  * On failure, throws an exception or returns a negative error code.
  */
--(int) sleepFor :(int)secUntilWakeUp :(int)secBeforeSleep
+-(int) sleepFor:(int)secUntilWakeUp :(int)secBeforeSleep
 {
-    int currTime;
-    currTime = [self get_rtcTime];
-    if (!(currTime != 0)) {[self _throw: YAPI_RTC_NOT_READY: @"RTC time not set"]; return  YAPI_RTC_NOT_READY;};
+    int currTime = 0;
+    currTime = (int)([self get_rtcTime]);
+    if (!(currTime != 0)) {[self _throw: YAPI_RTC_NOT_READY: @"RTC time not set"]; return YAPI_RTC_NOT_READY;}
     [self set_nextWakeUp:currTime+secUntilWakeUp];
     [self set_sleepCountdown:secBeforeSleep];
-    return YAPI_SUCCESS; 
-    
+    return YAPI_SUCCESS;
 }
 
 /**
- * Go to sleep until a specific date is reached or until the next wakeup condition is met, the
+ * Go to sleep until a specific date is reached or until the next wake up condition is met, the
  * RTC time must have been set before calling this function. The count down before sleep
  * can be canceled with resetSleepCountDown.
  * 
@@ -428,19 +446,18 @@
  * 
  * On failure, throws an exception or returns a negative error code.
  */
--(int) sleepUntil :(int)wakeUpTime :(int)secBeforeSleep
+-(int) sleepUntil:(int)wakeUpTime :(int)secBeforeSleep
 {
-    int currTime;
-    currTime = [self get_rtcTime];
-    if (!(currTime != 0)) {[self _throw: YAPI_RTC_NOT_READY: @"RTC time not set"]; return  YAPI_RTC_NOT_READY;};
+    int currTime = 0;
+    currTime = (int)([self get_rtcTime]);
+    if (!(currTime != 0)) {[self _throw: YAPI_RTC_NOT_READY: @"RTC time not set"]; return YAPI_RTC_NOT_READY;}
     [self set_nextWakeUp:wakeUpTime];
     [self set_sleepCountdown:secBeforeSleep];
-    return YAPI_SUCCESS; 
-    
+    return YAPI_SUCCESS;
 }
 
 /**
- * Reset the sleep countdown.
+ * Resets the sleep countdown.
  * 
  * @return YAPI_SUCCESS if the call succeeds.
  *         On failure, throws an exception or returns a negative error code.
@@ -449,8 +466,7 @@
 {
     [self set_sleepCountdown:0];
     [self set_nextWakeUp:0];
-    return YAPI_SUCCESS; 
-    
+    return YAPI_SUCCESS;
 }
 
 
@@ -461,53 +477,7 @@
     if(YISERR([self _nextFunction:&hwid]) || [hwid isEqualToString:@""]) {
         return NULL;
     }
-    return yFindWakeUpMonitor(hwid);
-}
--(void )    registerValueCallback:(YFunctionUpdateCallback)callback
-{ 
-    _callback = callback;
-    if (callback != NULL) {
-        [self _registerFuncCallback];
-    } else {
-        [self _unregisterFuncCallback];
-    }
-}
--(void )    set_objectCallback:(id)object :(SEL)selector
-{ [self setObjectCallback:object withSelector:selector];}
--(void )    setObjectCallback:(id)object :(SEL)selector
-{ [self setObjectCallback:object withSelector:selector];}
--(void )    setObjectCallback:(id)object withSelector:(SEL)selector
-{ 
-    _callbackObject = object;
-    _callbackSel    = selector;
-    if (object != nil) {
-        [self _registerFuncCallback];
-        if([self isOnline]) {
-           yapiLockFunctionCallBack(NULL);
-           yInternalPushNewVal([self functionDescriptor],[self advertisedValue]);
-           yapiUnlockFunctionCallBack(NULL);
-        }
-    } else {
-        [self _unregisterFuncCallback];
-    }
-}
-
-+(YWakeUpMonitor*) FindWakeUpMonitor:(NSString*) func
-{
-    YWakeUpMonitor * retVal=nil;
-    if(func==nil) return nil;
-    // Search in cache
-    if ([YAPI_YFunctions objectForKey:@"YWakeUpMonitor"] == nil){
-        [YAPI_YFunctions setObject:[NSMutableDictionary dictionary] forKey:@"YWakeUpMonitor"];
-    }
-    if(nil != [[YAPI_YFunctions objectForKey:@"YWakeUpMonitor"] objectForKey:func]){
-        retVal = [[YAPI_YFunctions objectForKey:@"YWakeUpMonitor"] objectForKey:func];
-    } else {
-        retVal = [[YWakeUpMonitor alloc] initWithFunction:func];
-        [[YAPI_YFunctions objectForKey:@"YWakeUpMonitor"] setObject:retVal forKey:func];
-        ARC_autorelease(retVal);
-    }
-    return retVal;
+    return [YWakeUpMonitor FindWakeUpMonitor:hwid];
 }
 
 +(YWakeUpMonitor *) FirstWakeUpMonitor
@@ -525,7 +495,7 @@
     return nil;
 }
 
-//--- (end of YWakeUpMonitor implementation)
+//--- (end of YWakeUpMonitor public methods implementation)
 
 @end
 //--- (WakeUpMonitor functions)

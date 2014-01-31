@@ -1,8 +1,8 @@
 /*********************************************************************
  *
- * $Id: yocto_watchdog.m 12324 2013-08-13 15:10:31Z mvuilleu $
+ * $Id: yocto_watchdog.m 14721 2014-01-24 17:58:44Z seb $
  *
- * Implements yFindWatchdog(), the high-level API for Watchdog functions
+ * Implements the high-level API for Watchdog functions
  *
  * - - - - - - - - - License information: - - - - - - - - - 
  *
@@ -47,165 +47,116 @@
 @implementation YWatchdog
 
 // Constructor is protected, use yFindWatchdog factory function to instantiate
--(id)              initWithFunction:(NSString*) func
+-(id)              initWith:(NSString*) func
 {
-//--- (YWatchdog attributes)
-   if(!(self = [super initProtected:@"Watchdog":func]))
+   if(!(self = [super initWith:func]))
           return nil;
-    _logicalName = Y_LOGICALNAME_INVALID;
-    _advertisedValue = Y_ADVERTISEDVALUE_INVALID;
+    _className = @"Watchdog";
+//--- (YWatchdog attributes initialization)
     _state = Y_STATE_INVALID;
+    _stateAtPowerOn = Y_STATEATPOWERON_INVALID;
+    _maxTimeOnStateA = Y_MAXTIMEONSTATEA_INVALID;
+    _maxTimeOnStateB = Y_MAXTIMEONSTATEB_INVALID;
     _output = Y_OUTPUT_INVALID;
     _pulseTimer = Y_PULSETIMER_INVALID;
+    _delayedPulseTimer = Y_DELAYEDPULSETIMER_INVALID;
     _countdown = Y_COUNTDOWN_INVALID;
     _autoStart = Y_AUTOSTART_INVALID;
     _running = Y_RUNNING_INVALID;
     _triggerDelay = Y_TRIGGERDELAY_INVALID;
     _triggerDuration = Y_TRIGGERDURATION_INVALID;
-//--- (end of YWatchdog attributes)
+    _valueCallbackWatchdog = NULL;
+//--- (end of YWatchdog attributes initialization)
     return self;
 }
 // destructor 
 -(void)  dealloc
 {
 //--- (YWatchdog cleanup)
-    ARC_release(_logicalName);
-    _logicalName = nil;
-    ARC_release(_advertisedValue);
-    _advertisedValue = nil;
-//--- (end of YWatchdog cleanup)
     ARC_dealloc(super);
+//--- (end of YWatchdog cleanup)
 }
-//--- (YWatchdog implementation)
+//--- (YWatchdog private methods implementation)
 
--(int) _parse:(yJsonStateMachine*) j
+-(int) _parseAttr:(yJsonStateMachine*) j
 {
-    if(yJsonParse(j) != YJSON_PARSE_AVAIL || j->st != YJSON_PARSE_STRUCT) {
-    failed:
-        return -1;
+    if(!strcmp(j->token, "state")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _state =  (Y_STATE_enum)atoi(j->token);
+        return 1;
     }
-    while(yJsonParse(j) == YJSON_PARSE_AVAIL && j->st == YJSON_PARSE_MEMBNAME) {
-        if(!strcmp(j->token, "logicalName")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            ARC_release(_logicalName);
-            _logicalName =  [self _parseString:j];
-            ARC_retain(_logicalName);
-        } else if(!strcmp(j->token, "advertisedValue")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            ARC_release(_advertisedValue);
-            _advertisedValue =  [self _parseString:j];
-            ARC_retain(_advertisedValue);
-        } else if(!strcmp(j->token, "state")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            _state =  (Y_STATE_enum)atoi(j->token);
-        } else if(!strcmp(j->token, "output")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            _output =  (Y_OUTPUT_enum)atoi(j->token);
-        } else if(!strcmp(j->token, "pulseTimer")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            _pulseTimer =  atoi(j->token);
-        } else if(!strcmp(j->token, "delayedPulseTimer")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            if(j->st != YJSON_PARSE_STRUCT) goto failed;
+    if(!strcmp(j->token, "stateAtPowerOn")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _stateAtPowerOn =  atoi(j->token);
+        return 1;
+    }
+    if(!strcmp(j->token, "maxTimeOnStateA")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _maxTimeOnStateA =  atol(j->token);
+        return 1;
+    }
+    if(!strcmp(j->token, "maxTimeOnStateB")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _maxTimeOnStateB =  atol(j->token);
+        return 1;
+    }
+    if(!strcmp(j->token, "output")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _output =  (Y_OUTPUT_enum)atoi(j->token);
+        return 1;
+    }
+    if(!strcmp(j->token, "pulseTimer")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _pulseTimer =  atol(j->token);
+        return 1;
+    }
+    if(!strcmp(j->token, "delayedPulseTimer")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        if(j->st == YJSON_PARSE_STRUCT) {
             while(yJsonParse(j) == YJSON_PARSE_AVAIL && j->st == YJSON_PARSE_MEMBNAME) {
                 if(!strcmp(j->token, "moving")) {
-                    if(yJsonParse(j) != YJSON_PARSE_AVAIL) goto failed;
-                    _delayedPulseTimer.moving = atoi(j->token);
+                    if(yJsonParse(j) == YJSON_PARSE_AVAIL)
+                        _delayedPulseTimer.moving = atoi(j->token);
                 } else if(!strcmp(j->token, "target")) {
-                    if(yJsonParse(j) != YJSON_PARSE_AVAIL) goto failed;
-                    _delayedPulseTimer.target = atoi(j->token);
+                    if(yJsonParse(j) == YJSON_PARSE_AVAIL)
+                        _delayedPulseTimer.target = atoi(j->token);
                 } else if(!strcmp(j->token, "ms")) {
-                    if(yJsonParse(j) != YJSON_PARSE_AVAIL) goto failed;
-                    _delayedPulseTimer.ms = atoi(j->token);
+                    if(yJsonParse(j) == YJSON_PARSE_AVAIL)
+                        _delayedPulseTimer.ms = atoi(j->token);
                 }
             }
-            if(j->st != YJSON_PARSE_STRUCT) goto failed; 
-            
-        } else if(!strcmp(j->token, "countdown")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            _countdown =  atoi(j->token);
-        } else if(!strcmp(j->token, "autoStart")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            _autoStart =  (Y_AUTOSTART_enum)atoi(j->token);
-        } else if(!strcmp(j->token, "running")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            _running =  (Y_RUNNING_enum)atoi(j->token);
-        } else if(!strcmp(j->token, "triggerDelay")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            _triggerDelay =  atoi(j->token);
-        } else if(!strcmp(j->token, "triggerDuration")) {
-            if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-            _triggerDuration =  atoi(j->token);
-        } else {
-            // ignore unknown field
-            yJsonSkip(j, 1);
         }
+        return 1;
     }
-    if(j->st != YJSON_PARSE_STRUCT) goto failed;
-    return 0;
-}
-
-/**
- * Returns the logical name of the watchdog.
- * 
- * @return a string corresponding to the logical name of the watchdog
- * 
- * On failure, throws an exception or returns Y_LOGICALNAME_INVALID.
- */
--(NSString*) get_logicalName
-{
-    return [self logicalName];
-}
--(NSString*) logicalName
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_LOGICALNAME_INVALID;
+    if(!strcmp(j->token, "countdown")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _countdown =  atol(j->token);
+        return 1;
     }
-    return _logicalName;
-}
-
-/**
- * Changes the logical name of the watchdog. You can use yCheckLogicalName()
- * prior to this call to make sure that your parameter is valid.
- * Remember to call the saveToFlash() method of the module if the
- * modification must be kept.
- * 
- * @param newval : a string corresponding to the logical name of the watchdog
- * 
- * @return YAPI_SUCCESS if the call succeeds.
- * 
- * On failure, throws an exception or returns a negative error code.
- */
--(int) set_logicalName:(NSString*) newval
-{
-    return [self setLogicalName:newval];
-}
--(int) setLogicalName:(NSString*) newval
-{
-    NSString* rest_val;
-    rest_val = newval;
-    return [self _setAttr:@"logicalName" :rest_val];
-}
-
-/**
- * Returns the current value of the watchdog (no more than 6 characters).
- * 
- * @return a string corresponding to the current value of the watchdog (no more than 6 characters)
- * 
- * On failure, throws an exception or returns Y_ADVERTISEDVALUE_INVALID.
- */
--(NSString*) get_advertisedValue
-{
-    return [self advertisedValue];
-}
--(NSString*) advertisedValue
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_ADVERTISEDVALUE_INVALID;
+    if(!strcmp(j->token, "autoStart")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _autoStart =  (Y_AUTOSTART_enum)atoi(j->token);
+        return 1;
     }
-    return _advertisedValue;
+    if(!strcmp(j->token, "running")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _running =  (Y_RUNNING_enum)atoi(j->token);
+        return 1;
+    }
+    if(!strcmp(j->token, "triggerDelay")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _triggerDelay =  atol(j->token);
+        return 1;
+    }
+    if(!strcmp(j->token, "triggerDuration")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _triggerDuration =  atol(j->token);
+        return 1;
+    }
+    return [super _parseAttr:j];
 }
-
+//--- (end of YWatchdog private methods implementation)
+//--- (YWatchdog public methods implementation)
 /**
  * Returns the state of the watchdog (A for the idle position, B for the active position).
  * 
@@ -216,14 +167,18 @@
  */
 -(Y_STATE_enum) get_state
 {
-    return [self state];
-}
--(Y_STATE_enum) state
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_STATE_INVALID;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_STATE_INVALID;
+        }
     }
     return _state;
+}
+
+
+-(Y_STATE_enum) state
+{
+    return [self get_state];
 }
 
 /**
@@ -246,7 +201,141 @@
     rest_val = (newval ? @"1" : @"0");
     return [self _setAttr:@"state" :rest_val];
 }
+/**
+ * Returns the state of the watchdog at device startup (A for the idle position, B for the active
+ * position, UNCHANGED for no change).
+ * 
+ * @return a value among Y_STATEATPOWERON_UNCHANGED, Y_STATEATPOWERON_A and Y_STATEATPOWERON_B
+ * corresponding to the state of the watchdog at device startup (A for the idle position, B for the
+ * active position, UNCHANGED for no change)
+ * 
+ * On failure, throws an exception or returns Y_STATEATPOWERON_INVALID.
+ */
+-(Y_STATEATPOWERON_enum) get_stateAtPowerOn
+{
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_STATEATPOWERON_INVALID;
+        }
+    }
+    return _stateAtPowerOn;
+}
 
+
+-(Y_STATEATPOWERON_enum) stateAtPowerOn
+{
+    return [self get_stateAtPowerOn];
+}
+
+/**
+ * Preset the state of the watchdog at device startup (A for the idle position,
+ * B for the active position, UNCHANGED for no modification). Remember to call the matching module saveToFlash()
+ * method, otherwise this call will have no effect.
+ * 
+ * @param newval : a value among Y_STATEATPOWERON_UNCHANGED, Y_STATEATPOWERON_A and Y_STATEATPOWERON_B
+ * 
+ * @return YAPI_SUCCESS if the call succeeds.
+ * 
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) set_stateAtPowerOn:(Y_STATEATPOWERON_enum) newval
+{
+    return [self setStateAtPowerOn:newval];
+}
+-(int) setStateAtPowerOn:(Y_STATEATPOWERON_enum) newval
+{
+    NSString* rest_val;
+    rest_val = [NSString stringWithFormat:@"%d", newval];
+    return [self _setAttr:@"stateAtPowerOn" :rest_val];
+}
+/**
+ * Retourne the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state A before automatically
+ * switching back in to B state. Zero means no maximum time.
+ * 
+ * @return an integer
+ * 
+ * On failure, throws an exception or returns Y_MAXTIMEONSTATEA_INVALID.
+ */
+-(s64) get_maxTimeOnStateA
+{
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_MAXTIMEONSTATEA_INVALID;
+        }
+    }
+    return _maxTimeOnStateA;
+}
+
+
+-(s64) maxTimeOnStateA
+{
+    return [self get_maxTimeOnStateA];
+}
+
+/**
+ * Sets the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state A before automatically
+ * switching back in to B state. Use zero for no maximum time.
+ * 
+ * @param newval : an integer
+ * 
+ * @return YAPI_SUCCESS if the call succeeds.
+ * 
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) set_maxTimeOnStateA:(s64) newval
+{
+    return [self setMaxTimeOnStateA:newval];
+}
+-(int) setMaxTimeOnStateA:(s64) newval
+{
+    NSString* rest_val;
+    rest_val = [NSString stringWithFormat:@"%u", (u32)newval];
+    return [self _setAttr:@"maxTimeOnStateA" :rest_val];
+}
+/**
+ * Retourne the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state B before automatically
+ * switching back in to A state. Zero means no maximum time.
+ * 
+ * @return an integer
+ * 
+ * On failure, throws an exception or returns Y_MAXTIMEONSTATEB_INVALID.
+ */
+-(s64) get_maxTimeOnStateB
+{
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_MAXTIMEONSTATEB_INVALID;
+        }
+    }
+    return _maxTimeOnStateB;
+}
+
+
+-(s64) maxTimeOnStateB
+{
+    return [self get_maxTimeOnStateB];
+}
+
+/**
+ * Sets the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state B before automatically
+ * switching back in to A state. Use zero for no maximum time.
+ * 
+ * @param newval : an integer
+ * 
+ * @return YAPI_SUCCESS if the call succeeds.
+ * 
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) set_maxTimeOnStateB:(s64) newval
+{
+    return [self setMaxTimeOnStateB:newval];
+}
+-(int) setMaxTimeOnStateB:(s64) newval
+{
+    NSString* rest_val;
+    rest_val = [NSString stringWithFormat:@"%u", (u32)newval];
+    return [self _setAttr:@"maxTimeOnStateB" :rest_val];
+}
 /**
  * Returns the output state of the watchdog, when used as a simple switch (single throw).
  * 
@@ -257,14 +346,18 @@
  */
 -(Y_OUTPUT_enum) get_output
 {
-    return [self output];
-}
--(Y_OUTPUT_enum) output
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_OUTPUT_INVALID;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_OUTPUT_INVALID;
+        }
     }
     return _output;
+}
+
+
+-(Y_OUTPUT_enum) output
+{
+    return [self get_output];
 }
 
 /**
@@ -287,7 +380,6 @@
     rest_val = (newval ? @"1" : @"0");
     return [self _setAttr:@"output" :rest_val];
 }
-
 /**
  * Returns the number of milliseconds remaining before the watchdog is returned to idle position
  * (state A), during a measured pulse generation. When there is no ongoing pulse, returns zero.
@@ -298,26 +390,30 @@
  * 
  * On failure, throws an exception or returns Y_PULSETIMER_INVALID.
  */
--(unsigned) get_pulseTimer
+-(s64) get_pulseTimer
 {
-    return [self pulseTimer];
-}
--(unsigned) pulseTimer
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_PULSETIMER_INVALID;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_PULSETIMER_INVALID;
+        }
     }
     return _pulseTimer;
 }
 
--(int) set_pulseTimer:(unsigned) newval
+
+-(s64) pulseTimer
+{
+    return [self get_pulseTimer];
+}
+
+-(int) set_pulseTimer:(s64) newval
 {
     return [self setPulseTimer:newval];
 }
--(int) setPulseTimer:(unsigned) newval
+-(int) setPulseTimer:(s64) newval
 {
     NSString* rest_val;
-    rest_val = [NSString stringWithFormat:@"%u", newval];
+    rest_val = [NSString stringWithFormat:@"%u", (u32)newval];
     return [self _setAttr:@"pulseTimer" :rest_val];
 }
 
@@ -331,28 +427,36 @@
  * 
  * On failure, throws an exception or returns a negative error code.
  */
--(int) pulse :(int)ms_duration
+-(int) pulse:(int)ms_duration
 {
     NSString* rest_val;
-    rest_val = [NSString stringWithFormat:@"%u", ms_duration];
+    rest_val = [NSString stringWithFormat:@"%u", (u32)ms_duration];
     return [self _setAttr:@"pulseTimer" :rest_val];
 }
-
--(YRETCODE) get_delayedPulseTimer :(s32*)target :(s32*)ms :(u8*)moving
+-(YDelayedPulse) get_delayedPulseTimer
 {
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return YAPI_IO_ERROR;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_DELAYEDPULSETIMER_INVALID;
+        }
     }
-    *target = _delayedPulseTimer.target;
-    *ms = _delayedPulseTimer.ms;
-    *moving = _delayedPulseTimer.moving;
-    return YAPI_SUCCESS;
+    return _delayedPulseTimer;
 }
 
--(YRETCODE) set_delayedPulseTimer :(s32)target :(s32)ms :(u8)moving
+
+-(YDelayedPulse) delayedPulseTimer
+{
+    return [self get_delayedPulseTimer];
+}
+
+-(int) set_delayedPulseTimer:(YDelayedPulse) newval
+{
+    return [self setDelayedPulseTimer:newval];
+}
+-(int) setDelayedPulseTimer:(YDelayedPulse) newval
 {
     NSString* rest_val;
-    rest_val = [NSString stringWithFormat:@"%d:%d",target,ms];
+    rest_val = [NSString stringWithFormat:@"%d:%d",newval.target,newval.ms];
     return [self _setAttr:@"delayedPulseTimer" :rest_val];
 }
 
@@ -366,13 +470,12 @@
  * 
  * On failure, throws an exception or returns a negative error code.
  */
--(int) delayedPulse :(int)ms_delay :(int)ms_duration
+-(int) delayedPulse:(int)ms_delay :(int)ms_duration
 {
     NSString* rest_val;
     rest_val = [NSString stringWithFormat:@"%d:%d",ms_delay,ms_duration];
     return [self _setAttr:@"delayedPulseTimer" :rest_val];
 }
-
 /**
  * Returns the number of milliseconds remaining before a pulse (delayedPulse() call)
  * When there is no scheduled pulse, returns zero.
@@ -382,18 +485,21 @@
  * 
  * On failure, throws an exception or returns Y_COUNTDOWN_INVALID.
  */
--(unsigned) get_countdown
+-(s64) get_countdown
 {
-    return [self countdown];
-}
--(unsigned) countdown
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_COUNTDOWN_INVALID;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_COUNTDOWN_INVALID;
+        }
     }
     return _countdown;
 }
 
+
+-(s64) countdown
+{
+    return [self get_countdown];
+}
 /**
  * Returns the watchdog runing state at module power up.
  * 
@@ -403,14 +509,18 @@
  */
 -(Y_AUTOSTART_enum) get_autoStart
 {
-    return [self autoStart];
-}
--(Y_AUTOSTART_enum) autoStart
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_AUTOSTART_INVALID;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_AUTOSTART_INVALID;
+        }
     }
     return _autoStart;
+}
+
+
+-(Y_AUTOSTART_enum) autoStart
+{
+    return [self get_autoStart];
 }
 
 /**
@@ -434,7 +544,6 @@
     rest_val = (newval ? @"1" : @"0");
     return [self _setAttr:@"autoStart" :rest_val];
 }
-
 /**
  * Returns the watchdog running state.
  * 
@@ -444,14 +553,18 @@
  */
 -(Y_RUNNING_enum) get_running
 {
-    return [self running];
-}
--(Y_RUNNING_enum) running
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_RUNNING_INVALID;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_RUNNING_INVALID;
+        }
     }
     return _running;
+}
+
+
+-(Y_RUNNING_enum) running
+{
+    return [self get_running];
 }
 
 /**
@@ -489,7 +602,6 @@
     rest_val = @"1";
     return [self _setAttr:@"running" :rest_val];
 }
-
 /**
  * Returns  the waiting duration before a reset is automatically triggered by the watchdog, in milliseconds.
  * 
@@ -498,16 +610,20 @@
  * 
  * On failure, throws an exception or returns Y_TRIGGERDELAY_INVALID.
  */
--(unsigned) get_triggerDelay
+-(s64) get_triggerDelay
 {
-    return [self triggerDelay];
-}
--(unsigned) triggerDelay
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_TRIGGERDELAY_INVALID;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_TRIGGERDELAY_INVALID;
+        }
     }
     return _triggerDelay;
+}
+
+
+-(s64) triggerDelay
+{
+    return [self get_triggerDelay];
 }
 
 /**
@@ -520,17 +636,16 @@
  * 
  * On failure, throws an exception or returns a negative error code.
  */
--(int) set_triggerDelay:(unsigned) newval
+-(int) set_triggerDelay:(s64) newval
 {
     return [self setTriggerDelay:newval];
 }
--(int) setTriggerDelay:(unsigned) newval
+-(int) setTriggerDelay:(s64) newval
 {
     NSString* rest_val;
-    rest_val = [NSString stringWithFormat:@"%u", newval];
+    rest_val = [NSString stringWithFormat:@"%u", (u32)newval];
     return [self _setAttr:@"triggerDelay" :rest_val];
 }
-
 /**
  * Returns the duration of resets caused by the watchdog, in milliseconds.
  * 
@@ -538,16 +653,20 @@
  * 
  * On failure, throws an exception or returns Y_TRIGGERDURATION_INVALID.
  */
--(unsigned) get_triggerDuration
+-(s64) get_triggerDuration
 {
-    return [self triggerDuration];
-}
--(unsigned) triggerDuration
-{
-    if(_cacheExpiration <= [YAPI  GetTickCount]) {
-        if(YISERR([self load:[YAPI DefaultCacheValidity]])) return Y_TRIGGERDURATION_INVALID;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_TRIGGERDURATION_INVALID;
+        }
     }
     return _triggerDuration;
+}
+
+
+-(s64) triggerDuration
+{
+    return [self get_triggerDuration];
 }
 
 /**
@@ -559,16 +678,90 @@
  * 
  * On failure, throws an exception or returns a negative error code.
  */
--(int) set_triggerDuration:(unsigned) newval
+-(int) set_triggerDuration:(s64) newval
 {
     return [self setTriggerDuration:newval];
 }
--(int) setTriggerDuration:(unsigned) newval
+-(int) setTriggerDuration:(s64) newval
 {
     NSString* rest_val;
-    rest_val = [NSString stringWithFormat:@"%u", newval];
+    rest_val = [NSString stringWithFormat:@"%u", (u32)newval];
     return [self _setAttr:@"triggerDuration" :rest_val];
 }
+/**
+ * Retrieves $AFUNCTION$ for a given identifier.
+ * The identifier can be specified using several formats:
+ * <ul>
+ * <li>FunctionLogicalName</li>
+ * <li>ModuleSerialNumber.FunctionIdentifier</li>
+ * <li>ModuleSerialNumber.FunctionLogicalName</li>
+ * <li>ModuleLogicalName.FunctionIdentifier</li>
+ * <li>ModuleLogicalName.FunctionLogicalName</li>
+ * </ul>
+ * 
+ * This function does not require that $THEFUNCTION$ is online at the time
+ * it is invoked. The returned object is nevertheless valid.
+ * Use the method YWatchdog.isOnline() to test if $THEFUNCTION$ is
+ * indeed online at a given time. In case of ambiguity when looking for
+ * $AFUNCTION$ by logical name, no error is notified: the first instance
+ * found is returned. The search is performed first by hardware name,
+ * then by logical name.
+ * 
+ * @param func : a string that uniquely characterizes $THEFUNCTION$
+ * 
+ * @return a YWatchdog object allowing you to drive $THEFUNCTION$.
+ */
++(YWatchdog*) FindWatchdog:(NSString*)func
+{
+    YWatchdog* obj;
+    obj = (YWatchdog*) [YFunction _FindFromCache:@"Watchdog" :func];
+    if (obj == nil) {
+        obj = ARC_sendAutorelease([[YWatchdog alloc] initWith:func]);
+        [YFunction _AddToCache:@"Watchdog" : func :obj];
+    }
+    return obj;
+}
+
+/**
+ * Registers the callback function that is invoked on every change of advertised value.
+ * The callback is invoked only during the execution of ySleep or yHandleEvents.
+ * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
+ * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
+ * 
+ * @param callback : the callback function to call, or a null pointer. The callback function should take two
+ *         arguments: the function object of which the value has changed, and the character string describing
+ *         the new advertised value.
+ * @noreturn
+ */
+-(int) registerValueCallback:(YWatchdogValueCallback)callback
+{
+    NSString* val;
+    if (callback != NULL) {
+        [YFunction _UpdateValueCallbackList:self :YES];
+    } else {
+        [YFunction _UpdateValueCallbackList:self :NO];
+    }
+    _valueCallbackWatchdog = callback;
+    // Immediately invoke value callback with current value
+    if (callback != NULL && [self isOnline]) {
+        val = _advertisedValue;
+        if (!([val isEqualToString:@""])) {
+            [self _invokeValueCallback:val];
+        }
+    }
+    return 0;
+}
+
+-(int) _invokeValueCallback:(NSString*)value
+{
+    if (_valueCallbackWatchdog != NULL) {
+        _valueCallbackWatchdog(self, value);
+    } else {
+        [super _invokeValueCallback:value];
+    }
+    return 0;
+}
+
 
 -(YWatchdog*)   nextWatchdog
 {
@@ -577,53 +770,7 @@
     if(YISERR([self _nextFunction:&hwid]) || [hwid isEqualToString:@""]) {
         return NULL;
     }
-    return yFindWatchdog(hwid);
-}
--(void )    registerValueCallback:(YFunctionUpdateCallback)callback
-{ 
-    _callback = callback;
-    if (callback != NULL) {
-        [self _registerFuncCallback];
-    } else {
-        [self _unregisterFuncCallback];
-    }
-}
--(void )    set_objectCallback:(id)object :(SEL)selector
-{ [self setObjectCallback:object withSelector:selector];}
--(void )    setObjectCallback:(id)object :(SEL)selector
-{ [self setObjectCallback:object withSelector:selector];}
--(void )    setObjectCallback:(id)object withSelector:(SEL)selector
-{ 
-    _callbackObject = object;
-    _callbackSel    = selector;
-    if (object != nil) {
-        [self _registerFuncCallback];
-        if([self isOnline]) {
-           yapiLockFunctionCallBack(NULL);
-           yInternalPushNewVal([self functionDescriptor],[self advertisedValue]);
-           yapiUnlockFunctionCallBack(NULL);
-        }
-    } else {
-        [self _unregisterFuncCallback];
-    }
-}
-
-+(YWatchdog*) FindWatchdog:(NSString*) func
-{
-    YWatchdog * retVal=nil;
-    if(func==nil) return nil;
-    // Search in cache
-    if ([YAPI_YFunctions objectForKey:@"YWatchdog"] == nil){
-        [YAPI_YFunctions setObject:[NSMutableDictionary dictionary] forKey:@"YWatchdog"];
-    }
-    if(nil != [[YAPI_YFunctions objectForKey:@"YWatchdog"] objectForKey:func]){
-        retVal = [[YAPI_YFunctions objectForKey:@"YWatchdog"] objectForKey:func];
-    } else {
-        retVal = [[YWatchdog alloc] initWithFunction:func];
-        [[YAPI_YFunctions objectForKey:@"YWatchdog"] setObject:retVal forKey:func];
-        ARC_autorelease(retVal);
-    }
-    return retVal;
+    return [YWatchdog FindWatchdog:hwid];
 }
 
 +(YWatchdog *) FirstWatchdog
@@ -641,7 +788,7 @@
     return nil;
 }
 
-//--- (end of YWatchdog implementation)
+//--- (end of YWatchdog public methods implementation)
 
 @end
 //--- (Watchdog functions)

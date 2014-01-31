@@ -1,7 +1,2 @@
-- clarify license agreement
-- Improve robustness of low-level USB stack 
-- fix 5 seconds timeout on yapiFreeAPI() when connected through the network
-- fix value notifications that were dropped on plugged devices
-- fix possible 100% CPU load when the API was connecting to an IP Hub
-- rename Windows resources files (this allow simple drag and drop into Visual Studio)
-- fix libyocto.dylib compilation (bug reported and fixed by Ludovic Rousseau)
+- add YAPI.RegisterHubDiscoveryCallback and YAPI.TriggerHubDiscovery
+- minor bug fixes
