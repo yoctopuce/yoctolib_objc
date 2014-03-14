@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.h 14799 2014-01-31 14:59:44Z seb $
+ * $Id: yocto_api.h 15091 2014-02-27 09:36:28Z mvuilleu $
  *
  * High-level programming interface, common to all modules
  *
@@ -111,6 +111,7 @@ typedef void (*YFunctionValueCallback)(YFunction *func, NSString *functionValue)
 //--- (end of generated code: YFunction globals)
 
 //--- (generated code: YModule globals)
+typedef void (*YModuleLogCallback)(YModule *module, NSString *logline);
 typedef void (*YModuleValueCallback)(YModule *func, NSString *functionValue);
 #ifndef _Y_PERSISTENTSETTINGS_ENUM
 #define _Y_PERSISTENTSETTINGS_ENUM
@@ -520,7 +521,7 @@ int _ystrpos(NSString* haystack, NSString* needle);
 
 /**
  * Force a hub discovery, if a callback as been registered with yRegisterDeviceRemovalCallback it
- * will be called for each net work hub that will respond to the discovery
+ * will be called for each net work hub that will respond to the discovery.
  * 
  * @param errmsg : a string passed by reference to receive any error message.
  * 
@@ -796,7 +797,8 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
  */
 -(NSString*)    description;
 /**
- * Returns a short text that describes the function in the form TYPE(NAME)=SERIAL&#46;FUNCTIONID.
+ * Returns a short text that describes unambiguously the instance of the function in the form
+ * TYPE(NAME)=SERIAL&#46;FUNCTIONID.
  * More precisely,
  * TYPE       is the type of the function,
  * NAME       it the name used for the first access to the function,
@@ -979,6 +981,7 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
     int             _rebootCountdown;
     Y_USBBANDWIDTH_enum _usbBandwidth;
     YModuleValueCallback _valueCallbackModule;
+    YModuleLogCallback _logCallback;
 //--- (end of generated code: YModule attributes declaration)
 }
 
@@ -1037,6 +1040,21 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
  * On failure, throws an exception or returns an empty string.
  */
 -(NSString*)           functionValue:(int) functionIndex;
+
+/**
+ * todo
+ * 
+ * @param callback : the callback function to call, or a null pointer. The callback function should take two
+ *         arguments: the function object of which the value has changed, and the character string describing
+ *         the new advertised value.
+ * @noreturn
+ */
+-(void)            registerLogCallback:(YModuleLogCallback) callback;
+
+
+-(YModuleLogCallback) get_logCallback;
+
+
 
 //--- (generated code: YModule public methods declaration)
 /**
@@ -1676,6 +1694,10 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
  *         values returned by the sensor for the correction points.
  * @param refValues : array of floating point numbers, corresponding to the corrected
  *         values for the correction points.
+ * 
+ * @return YAPI_SUCCESS if the call succeeds.
+ * 
+ * On failure, throws an exception or returns a negative error code.
  */
 -(int)     calibrateFromPoints:(NSMutableArray*)rawValues :(NSMutableArray*)refValues;
 

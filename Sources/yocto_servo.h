@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_servo.h 14325 2014-01-11 01:42:47Z seb $
+ * $Id: yocto_servo.h 15256 2014-03-06 10:19:01Z seb $
  *
  * Declares yFindServo(), the high-level API for Servo functions
  *
@@ -10,24 +10,24 @@
  *
  *  Yoctopuce Sarl (hereafter Licensor) grants to you a perpetual
  *  non-exclusive license to use, modify, copy and integrate this
- *  file into your software for the sole purpose of interfacing 
- *  with Yoctopuce products. 
+ *  file into your software for the sole purpose of interfacing
+ *  with Yoctopuce products.
  *
- *  You may reproduce and distribute copies of this file in 
+ *  You may reproduce and distribute copies of this file in
  *  source or object form, as long as the sole purpose of this
- *  code is to interface with Yoctopuce products. You must retain 
+ *  code is to interface with Yoctopuce products. You must retain
  *  this notice in the distributed source file.
  *
  *  You should refer to Yoctopuce General Terms and Conditions
- *  for additional information regarding your rights and 
+ *  for additional information regarding your rights and
  *  obligations.
  *
  *  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
  *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
- *  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS 
+ *  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS
  *  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
  *  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
- *  INDIRECT OR CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA, 
+ *  INDIRECT OR CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA,
  *  COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY OR 
  *  SERVICES, ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT 
  *  LIMITED TO ANY DEFENSE THEREOF), ANY CLAIMS FOR INDEMNITY OR
@@ -44,6 +44,15 @@ CF_EXTERN_C_BEGIN
 
 //--- (YServo globals)
 typedef void (*YServoValueCallback)(YServo *func, NSString *functionValue);
+#ifndef _Y_ENABLED_ENUM
+#define _Y_ENABLED_ENUM
+typedef enum {
+    Y_ENABLED_FALSE = 0,
+    Y_ENABLED_TRUE = 1,
+    Y_ENABLED_INVALID = -1,
+} Y_ENABLED_enum;
+#endif
+
 #ifndef _STRUCT_MOVE
 #define _STRUCT_MOVE
 typedef struct _YMove {
@@ -53,9 +62,19 @@ typedef struct _YMove {
 } YMove;
 #endif
 #define Y_MOVE_INVALID (YMove){YAPI_INVALID_INT,YAPI_INVALID_INT,YAPI_INVALID_UINT}
+#ifndef _Y_ENABLEDATPOWERON_ENUM
+#define _Y_ENABLEDATPOWERON_ENUM
+typedef enum {
+    Y_ENABLEDATPOWERON_FALSE = 0,
+    Y_ENABLEDATPOWERON_TRUE = 1,
+    Y_ENABLEDATPOWERON_INVALID = -1,
+} Y_ENABLEDATPOWERON_enum;
+#endif
+
 #define Y_POSITION_INVALID              YAPI_INVALID_INT
 #define Y_RANGE_INVALID                 YAPI_INVALID_UINT
 #define Y_NEUTRAL_INVALID               YAPI_INVALID_UINT
+#define Y_POSITIONATPOWERON_INVALID     YAPI_INVALID_INT
 //--- (end of YServo globals)
 
 //--- (YServo class start)
@@ -73,9 +92,12 @@ typedef struct _YMove {
 @protected
 //--- (YServo attributes declaration)
     int             _position;
+    Y_ENABLED_enum  _enabled;
     int             _range;
     int             _neutral;
     YMove           _move;
+    int             _positionAtPowerOn;
+    Y_ENABLEDATPOWERON_enum _enabledAtPowerOn;
     YServoValueCallback _valueCallbackServo;
 //--- (end of YServo attributes declaration)
 }
@@ -110,6 +132,29 @@ typedef struct _YMove {
  */
 -(int)     set_position:(int) newval;
 -(int)     setPosition:(int) newval;
+
+/**
+ * Returns the state of the servos.
+ * 
+ * @return either Y_ENABLED_FALSE or Y_ENABLED_TRUE, according to the state of the servos
+ * 
+ * On failure, throws an exception or returns Y_ENABLED_INVALID.
+ */
+-(Y_ENABLED_enum)     get_enabled;
+
+
+-(Y_ENABLED_enum) enabled;
+/**
+ * Stops or starts the servo.
+ * 
+ * @param newval : either Y_ENABLED_FALSE or Y_ENABLED_TRUE
+ * 
+ * @return YAPI_SUCCESS if the call succeeds.
+ * 
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     set_enabled:(Y_ENABLED_enum) newval;
+-(int)     setEnabled:(Y_ENABLED_enum) newval;
 
 /**
  * Returns the current range of use of the servo.
@@ -185,6 +230,55 @@ typedef struct _YMove {
  * On failure, throws an exception or returns a negative error code.
  */
 -(int)     move:(int)target :(int)ms_duration;
+
+/**
+ * Returns the servo position at device power up.
+ * 
+ * @return an integer corresponding to the servo position at device power up
+ * 
+ * On failure, throws an exception or returns Y_POSITIONATPOWERON_INVALID.
+ */
+-(int)     get_positionAtPowerOn;
+
+
+-(int) positionAtPowerOn;
+/**
+ * Configure the servo position at device power up. Remember to call the matching
+ * module saveToFlash() method, otherwise this call will have no effect.
+ * 
+ * @param newval : an integer
+ * 
+ * @return YAPI_SUCCESS if the call succeeds.
+ * 
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     set_positionAtPowerOn:(int) newval;
+-(int)     setPositionAtPowerOn:(int) newval;
+
+/**
+ * Returns the servo signal generator state at power up.
+ * 
+ * @return either Y_ENABLEDATPOWERON_FALSE or Y_ENABLEDATPOWERON_TRUE, according to the servo signal
+ * generator state at power up
+ * 
+ * On failure, throws an exception or returns Y_ENABLEDATPOWERON_INVALID.
+ */
+-(Y_ENABLEDATPOWERON_enum)     get_enabledAtPowerOn;
+
+
+-(Y_ENABLEDATPOWERON_enum) enabledAtPowerOn;
+/**
+ * Configure the servo signal generator state at power up. Remember to call the matching module saveToFlash()
+ * method, otherwise this call will have no effect.
+ * 
+ * @param newval : either Y_ENABLEDATPOWERON_FALSE or Y_ENABLEDATPOWERON_TRUE
+ * 
+ * @return YAPI_SUCCESS if the call succeeds.
+ * 
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     set_enabledAtPowerOn:(Y_ENABLEDATPOWERON_enum) newval;
+-(int)     setEnabledAtPowerOn:(Y_ENABLEDATPOWERON_enum) newval;
 
 /**
  * Retrieves a servo for a given identifier.

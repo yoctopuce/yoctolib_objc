@@ -14,7 +14,7 @@ int main (int argc, const char * argv[])
 
     @autoreleasepool {
         // Setup the API to use local USB devices
-        if(yRegisterHub(@"usb", &error) != YAPI_SUCCESS) {
+        if([YAPI RegisterHub:@"usb" :&error] != YAPI_SUCCESS) {
             NSLog(@"RegisterHub error: %@", [error localizedDescription]);
             return 1;
         }
@@ -23,12 +23,12 @@ int main (int argc, const char * argv[])
             usage(argv[0]);
 
         NSString *serial_or_name =[NSString stringWithUTF8String:argv[1]];
-        YModule *module = yFindModule(serial_or_name);  // use serial or logical name
+        YModule *module = [YModule FindModule:serial_or_name];  // use serial or logical name
       
         if (module.isOnline) {
             if (argc >= 3){
                 NSString *newname =  [NSString stringWithUTF8String:argv[2]];
-                if (!yCheckLogicalName(newname)){
+                if (![YAPI CheckLogicalName:newname]){
                     NSLog(@"Invalid name (%@)\n", newname);
                     usage(argv[0]);
                 }

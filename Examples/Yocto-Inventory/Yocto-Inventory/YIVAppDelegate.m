@@ -29,7 +29,7 @@
     [YAPI DisableExceptions];
     // Insert code here to initialize your application
     // Setup the API to use local USB devices
-    if(yRegisterHub(@"usb",&error) != YAPI_SUCCESS) {
+    if([YAPI RegisterHub:@"usb" :&error] != YAPI_SUCCESS) {
         NSString *message = [NSString stringWithFormat:@"RegisterHub error: %@",[error localizedDescription]];
         [_message setStringValue:message];
         NSLog(@"%@\n",message);
@@ -44,14 +44,14 @@
     NSError *error;
     NSString *message;
     
-    if(YISERR(yUpdateDeviceList(&error))) {
+    if(YISERR([YAPI UpdateDeviceList:&error])) {
         message = [NSString stringWithFormat:@"yUpdateDeviceList has failled:%@",[error localizedDescription]];
         [_message setStringValue:message];
         NSLog(@"%@\n",message);
         return;
     }
     [_modulelist removeAllObjects];
-    YModule *mod =  yFirstModule();
+    YModule *mod = [YModule FirstModule];
     while(mod){
         [_modulelist addObject:mod];
         mod = [mod nextModule]; 

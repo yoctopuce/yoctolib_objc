@@ -7,14 +7,14 @@ int main (int argc, const char * argv[])
     
     @autoreleasepool {
         // Setup the API to use local USB devices
-        if(yRegisterHub(@"usb", &error) != YAPI_SUCCESS) {
+        if([YAPI RegisterHub:@"usb" :&error] != YAPI_SUCCESS) {
             NSLog(@"RegisterHub error: %@\n", [error localizedDescription]);
             return 1;
         }
 
         NSLog(@"Device list:\n");
 
-        YModule *module = yFirstModule();
+        YModule *module = [YModule FirstModule];
         while (module != nil) {
             NSLog(@"%@ %@",module.serialNumber, module.productName);
             module = [module nextModule]; 

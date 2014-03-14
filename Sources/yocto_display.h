@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_display.h 14687 2014-01-23 11:01:59Z seb $
+ * $Id: yocto_display.h 14830 2014-02-04 14:44:24Z seb $
  *
  * Declares yFindDisplay(), the high-level API for Display functions
  *
@@ -602,24 +602,10 @@ typedef enum {
 -(YDisplayLayer*) get_displayLayer:(unsigned)layerId;
     
       
-/**
- * Force a flush of all commands buffered by all layers.
- *
- * @return YAPI_SUCCESS if the call succeeds.
- *
- * On failure, throws an exception or returns a negative error code.
- */
 -(int) flushLayers;    
 
 -(void) resetHiddenLayerFlags;    
 
-/**
- * Add a given command string to the currently recorded display sequence
- *
- * @return YAPI_SUCCESS if the call succeeds.
- *
- * On failure, throws an exception or returns a negative error code.
- */
 -(int) sendCommand:(NSString*)cmd;
 
 //--- (generated code: YDisplay public methods declaration)

@@ -21,7 +21,7 @@ int main(int argc, const char * argv[])
     
     @autoreleasepool {
         // Setup the API to use local USB devices
-        if(yRegisterHub(@"usb", &error) != YAPI_SUCCESS) {
+        if([YAPI RegisterHub:@"usb" :&error] != YAPI_SUCCESS) {
             NSLog(@"RegisterHub error: %@", [error localizedDescription]);
             return 1;
         }
@@ -30,13 +30,13 @@ int main(int argc, const char * argv[])
         YWatchdog   *watchdog;
         
         if ([target isEqualToString:@"any"]) {
-            watchdog =  yFirstWatchdog();        
+            watchdog =  [YWatchdog FirstWatchdog];        
             if (watchdog==NULL) {
                 NSLog(@"No module connected (check USB cable)");
                 return 1;
             }
         }else{
-            watchdog =  yFindWatchdog([target stringByAppendingString:@".watchdog1"]);        
+            watchdog =  [YWatchdog FindWatchdog:[target stringByAppendingString:@".watchdog1"]];
         }        
         if ([watchdog isOnline]) {
             if ([state isEqualToString:@"on"])

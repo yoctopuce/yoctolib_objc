@@ -45,10 +45,10 @@
 {
     // Insert code here to initialize your application
     NSError *error;
-    if(YISERR(yRegisterHub(@"usb", &error))){
+    if(YISERR([YAPI RegisterHub:@"usb" :&error])){
         NSLog(@"errmgs=%@\n",[error localizedDescription]);
     }
-    _tempSensor = yFirstTemperature();
+    _tempSensor = [YTemperature FirstTemperature];
     _timer = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(update) userInfo:nil repeats:YES];
 
     

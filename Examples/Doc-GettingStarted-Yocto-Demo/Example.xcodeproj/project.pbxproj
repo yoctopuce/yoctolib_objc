@@ -13,8 +13,16 @@
 		49FB814617B2539C0049F7E9 /* yocto_realtimeclock.m in Sources */ = {isa = PBXBuildFile; fileRef = 49FB814517B2539C0049F7E9 /* yocto_realtimeclock.m */; };
 		49FB814B17B253C70049F7E9 /* yocto_wakeupmonitor.m in Sources */ = {isa = PBXBuildFile; fileRef = 49FB814817B253C70049F7E9 /* yocto_wakeupmonitor.m */; };
 		49FB814C17B253C70049F7E9 /* yocto_wakeupschedule.m in Sources */ = {isa = PBXBuildFile; fileRef = 49FB814A17B253C70049F7E9 /* yocto_wakeupschedule.m */; };
+		B8140ABD18C0E814000A935D /* yocto_accelerometer.m in Sources */ = {isa = PBXBuildFile; fileRef = B8140ABC18C0E814000A935D /* yocto_accelerometer.m */; };
+		B8140AC018C0E81F000A935D /* yocto_compass.m in Sources */ = {isa = PBXBuildFile; fileRef = B8140ABF18C0E81F000A935D /* yocto_compass.m */; };
+		B8140AC318C0E82E000A935D /* yocto_gyro.m in Sources */ = {isa = PBXBuildFile; fileRef = B8140AC218C0E82E000A935D /* yocto_gyro.m */; };
+		B8140AC618C0E839000A935D /* yocto_magnetometer.m in Sources */ = {isa = PBXBuildFile; fileRef = B8140AC518C0E839000A935D /* yocto_magnetometer.m */; };
+		B8140AC918C0E845000A935D /* yocto_refframe.m in Sources */ = {isa = PBXBuildFile; fileRef = B8140AC818C0E845000A935D /* yocto_refframe.m */; };
+		B8140ACC18C0E851000A935D /* yocto_tilt.m in Sources */ = {isa = PBXBuildFile; fileRef = B8140ACB18C0E851000A935D /* yocto_tilt.m */; };
 		B82227BF1631721F00392D9B /* yocto_voc.m in Sources */ = {isa = PBXBuildFile; fileRef = B82227BC1631721F00392D9B /* yocto_voc.m */; };
 		B82227C01631721F00392D9B /* yocto_watchdog.m in Sources */ = {isa = PBXBuildFile; fileRef = B82227BE1631721F00392D9B /* yocto_watchdog.m */; };
+		B82F4E9118C9D66A009320CE /* yocto_pwmoutput.m in Sources */ = {isa = PBXBuildFile; fileRef = B82F4E8E18C9D66A009320CE /* yocto_pwmoutput.m */; };
+		B82F4E9218C9D66A009320CE /* yocto_pwmpowersource.m in Sources */ = {isa = PBXBuildFile; fileRef = B82F4E9018C9D66A009320CE /* yocto_pwmpowersource.m */; };
 		B8376D6F161B574D0074590C /* yocto_carbondioxide.m in Sources */ = {isa = PBXBuildFile; fileRef = B8376D68161B574D0074590C /* yocto_carbondioxide.m */; };
 		B8376D70161B574D0074590C /* yocto_network.m in Sources */ = {isa = PBXBuildFile; fileRef = B8376D6A161B574D0074590C /* yocto_network.m */; };
 		B8376D72161B574D0074590C /* yocto_wireless.m in Sources */ = {isa = PBXBuildFile; fileRef = B8376D6E161B574D0074590C /* yocto_wireless.m */; };
@@ -79,10 +87,26 @@
 		49FB814817B253C70049F7E9 /* yocto_wakeupmonitor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = yocto_wakeupmonitor.m; path = ../../../Sources/yocto_wakeupmonitor.m; sourceTree = "<group>"; };
 		49FB814917B253C70049F7E9 /* yocto_wakeupschedule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yocto_wakeupschedule.h; path = ../../../Sources/yocto_wakeupschedule.h; sourceTree = "<group>"; };
 		49FB814A17B253C70049F7E9 /* yocto_wakeupschedule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = yocto_wakeupschedule.m; path = ../../../Sources/yocto_wakeupschedule.m; sourceTree = "<group>"; };
+		B8140ABB18C0E814000A935D /* yocto_accelerometer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yocto_accelerometer.h; path = ../../../Sources/yocto_accelerometer.h; sourceTree = "<group>"; };
+		B8140ABC18C0E814000A935D /* yocto_accelerometer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = yocto_accelerometer.m; path = ../../../Sources/yocto_accelerometer.m; sourceTree = "<group>"; };
+		B8140ABE18C0E81F000A935D /* yocto_compass.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yocto_compass.h; path = ../../../Sources/yocto_compass.h; sourceTree = "<group>"; };
+		B8140ABF18C0E81F000A935D /* yocto_compass.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = yocto_compass.m; path = ../../../Sources/yocto_compass.m; sourceTree = "<group>"; };
+		B8140AC118C0E82E000A935D /* yocto_gyro.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yocto_gyro.h; path = ../../../Sources/yocto_gyro.h; sourceTree = "<group>"; };
+		B8140AC218C0E82E000A935D /* yocto_gyro.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = yocto_gyro.m; path = ../../../Sources/yocto_gyro.m; sourceTree = "<group>"; };
+		B8140AC418C0E839000A935D /* yocto_magnetometer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yocto_magnetometer.h; path = ../../../Sources/yocto_magnetometer.h; sourceTree = "<group>"; };
+		B8140AC518C0E839000A935D /* yocto_magnetometer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = yocto_magnetometer.m; path = ../../../Sources/yocto_magnetometer.m; sourceTree = "<group>"; };
+		B8140AC718C0E845000A935D /* yocto_refframe.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yocto_refframe.h; path = ../../../Sources/yocto_refframe.h; sourceTree = "<group>"; };
+		B8140AC818C0E845000A935D /* yocto_refframe.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = yocto_refframe.m; path = ../../../Sources/yocto_refframe.m; sourceTree = "<group>"; };
+		B8140ACA18C0E851000A935D /* yocto_tilt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yocto_tilt.h; path = ../../../Sources/yocto_tilt.h; sourceTree = "<group>"; };
+		B8140ACB18C0E851000A935D /* yocto_tilt.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = yocto_tilt.m; path = ../../../Sources/yocto_tilt.m; sourceTree = "<group>"; };
 		B82227BB1631721F00392D9B /* yocto_voc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yocto_voc.h; path = ../../../Sources/yocto_voc.h; sourceTree = "<group>"; };
 		B82227BC1631721F00392D9B /* yocto_voc.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = yocto_voc.m; path = ../../../Sources/yocto_voc.m; sourceTree = "<group>"; };
 		B82227BD1631721F00392D9B /* yocto_watchdog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yocto_watchdog.h; path = ../../../Sources/yocto_watchdog.h; sourceTree = "<group>"; };
 		B82227BE1631721F00392D9B /* yocto_watchdog.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = yocto_watchdog.m; path = ../../../Sources/yocto_watchdog.m; sourceTree = "<group>"; };
+		B82F4E8D18C9D66A009320CE /* yocto_pwmoutput.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yocto_pwmoutput.h; path = ../../../Sources/yocto_pwmoutput.h; sourceTree = "<group>"; };
+		B82F4E8E18C9D66A009320CE /* yocto_pwmoutput.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = yocto_pwmoutput.m; path = ../../../Sources/yocto_pwmoutput.m; sourceTree = "<group>"; };
+		B82F4E8F18C9D66A009320CE /* yocto_pwmpowersource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yocto_pwmpowersource.h; path = ../../../Sources/yocto_pwmpowersource.h; sourceTree = "<group>"; };
+		B82F4E9018C9D66A009320CE /* yocto_pwmpowersource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = yocto_pwmpowersource.m; path = ../../../Sources/yocto_pwmpowersource.m; sourceTree = "<group>"; };
 		B8376D67161B574D0074590C /* yocto_carbondioxide.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yocto_carbondioxide.h; path = ../../../Sources/yocto_carbondioxide.h; sourceTree = "<group>"; };
 		B8376D68161B574D0074590C /* yocto_carbondioxide.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = yocto_carbondioxide.m; path = ../../../Sources/yocto_carbondioxide.m; sourceTree = "<group>"; };
 		B8376D69161B574D0074590C /* yocto_network.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yocto_network.h; path = ../../../Sources/yocto_network.h; sourceTree = "<group>"; };
@@ -220,12 +244,16 @@
 				B8DD8C1314A936F5008A9E8F /* yapi */,
 				B8DD8BEB14A936EF008A9E8F /* yocto_api.h */,
 				B8DD8BEC14A936EF008A9E8F /* yocto_api.m */,
+				B8140ABB18C0E814000A935D /* yocto_accelerometer.h */,
+				B8140ABC18C0E814000A935D /* yocto_accelerometer.m */,
 				B8DD8BE914A936EF008A9E8F /* yocto_anbutton.h */,
 				B8DD8BEA14A936EF008A9E8F /* yocto_anbutton.m */,
 				B8376D67161B574D0074590C /* yocto_carbondioxide.h */,
 				B8376D68161B574D0074590C /* yocto_carbondioxide.m */,
 				B8DD8BED14A936EF008A9E8F /* yocto_colorled.h */,
 				B8DD8BEE14A936EF008A9E8F /* yocto_colorled.m */,
+				B8140ABE18C0E81F000A935D /* yocto_compass.h */,
+				B8140ABF18C0E81F000A935D /* yocto_compass.m */,
 				B89BD766152DFE2D00EC253E /* yocto_current.h */,
 				B89BD767152DFE2D00EC253E /* yocto_current.m */,
 				B845588914DC2CDE00425F49 /* yocto_datalogger.h */,
@@ -240,6 +268,8 @@
 				49A0FFA91704341000BD8B86 /* yocto_files.m */,
 				49FB813E17B2534F0049F7E9 /* yocto_genericsensor.h */,
 				49FB813F17B2534F0049F7E9 /* yocto_genericsensor.m */,
+				B8140AC118C0E82E000A935D /* yocto_gyro.h */,
+				B8140AC218C0E82E000A935D /* yocto_gyro.m */,
 				B8DD8BF114A936EF008A9E8F /* yocto_hubport.h */,
 				B8DD8BF214A936EF008A9E8F /* yocto_hubport.m */,
 				B8DD8BF514A936EF008A9E8F /* yocto_humidity.h */,
@@ -248,6 +278,8 @@
 				B8DD8BF814A936EF008A9E8F /* yocto_led.m */,
 				B8DD8BF914A936EF008A9E8F /* yocto_lightsensor.h */,
 				B8DD8BFA14A936EF008A9E8F /* yocto_lightsensor.m */,
+				B8140AC418C0E839000A935D /* yocto_magnetometer.h */,
+				B8140AC518C0E839000A935D /* yocto_magnetometer.m */,
 				B8376D69161B574D0074590C /* yocto_network.h */,
 				B8376D6A161B574D0074590C /* yocto_network.m */,
 				49FB814117B253700049F7E9 /* yocto_oscontrol.h */,
@@ -256,14 +288,22 @@
 				B8E72EE3166DF011000E2AF6 /* yocto_power.m */,
 				B8DD8BFD14A936EF008A9E8F /* yocto_pressure.h */,
 				B8DD8BFE14A936EF008A9E8F /* yocto_pressure.m */,
+				B82F4E8D18C9D66A009320CE /* yocto_pwmoutput.h */,
+				B82F4E8E18C9D66A009320CE /* yocto_pwmoutput.m */,
+				B82F4E8F18C9D66A009320CE /* yocto_pwmpowersource.h */,
+				B82F4E9018C9D66A009320CE /* yocto_pwmpowersource.m */,
 				49FB814417B2539C0049F7E9 /* yocto_realtimeclock.h */,
 				49FB814517B2539C0049F7E9 /* yocto_realtimeclock.m */,
+				B8140AC718C0E845000A935D /* yocto_refframe.h */,
+				B8140AC818C0E845000A935D /* yocto_refframe.m */,
 				B8DD8BFF14A936EF008A9E8F /* yocto_relay.h */,
 				B8DD8C0014A936EF008A9E8F /* yocto_relay.m */,
 				B8DD8C0114A936EF008A9E8F /* yocto_servo.h */,
 				B8DD8C0214A936EF008A9E8F /* yocto_servo.m */,
 				B8DD8C0314A936EF008A9E8F /* yocto_temperature.h */,
 				B8DD8C0414A936EF008A9E8F /* yocto_temperature.m */,
+				B8140ACA18C0E851000A935D /* yocto_tilt.h */,
+				B8140ACB18C0E851000A935D /* yocto_tilt.m */,
 				B82227BB1631721F00392D9B /* yocto_voc.h */,
 				B82227BC1631721F00392D9B /* yocto_voc.m */,
 				B89BD768152DFE2D00EC253E /* yocto_voltage.h */,
@@ -406,6 +446,14 @@
 				49FB814B17B253C70049F7E9 /* yocto_wakeupmonitor.m in Sources */,
 				49FB814C17B253C70049F7E9 /* yocto_wakeupschedule.m in Sources */,
 				B8FE48F417CCC2CA000070E2 /* yocto_digitalio.m in Sources */,
+				B8140ABD18C0E814000A935D /* yocto_accelerometer.m in Sources */,
+				B8140AC018C0E81F000A935D /* yocto_compass.m in Sources */,
+				B8140AC318C0E82E000A935D /* yocto_gyro.m in Sources */,
+				B8140AC618C0E839000A935D /* yocto_magnetometer.m in Sources */,
+				B8140AC918C0E845000A935D /* yocto_refframe.m in Sources */,
+				B8140ACC18C0E851000A935D /* yocto_tilt.m in Sources */,
+				B82F4E9118C9D66A009320CE /* yocto_pwmoutput.m in Sources */,
+				B82F4E9218C9D66A009320CE /* yocto_pwmpowersource.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

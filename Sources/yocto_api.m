@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.m 14799 2014-01-31 14:59:44Z seb $
+ * $Id: yocto_api.m 15312 2014-03-07 10:49:54Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -255,6 +255,24 @@ static void yapiLogFunctionFwd(const char *clog,u32 loglen)
     }
 }
 
+static void yapiDeviceLogCallbackFwd(YDEV_DESCR devdescr, const char* line)
+{
+    YModule             *module;
+    yDeviceSt           infos;
+    YModuleLogCallback  callback;
+    
+    if(YISERR(yapiGetDeviceInfo(devdescr,&infos,NULL))) {
+        return;
+    }
+    module = [YModule FindModule:[STR_y2oc(infos.serial) stringByAppendingFormat:@".module"]];
+    callback = [module get_logCallback];
+    if (callback) {
+        callback(module, STR_y2oc(line));
+    }
+}
+
+
+
 static void yapiDeviceArrivalCallbackFwd(YAPI_DEVICE devdescr)
 {
     YapiEvent    *ev;
@@ -274,7 +292,7 @@ static void yapiDeviceArrivalCallbackFwd(YAPI_DEVICE devdescr)
         if(YISERR(yapiGetDeviceInfo(devdescr,&infos,NULL))) {
             return;
         }
-        module = yFindModule([STR_y2oc(infos.serial) stringByAppendingFormat:@".module"]);
+        module = [YModule FindModule:[STR_y2oc(infos.serial) stringByAppendingFormat:@".module"]];
         if(!YAPI_deviceArrivalCallback && YAPI_delegate==nil) return;
         ev =[[YapiEvent alloc] initDeviceEvent:YAPI_DEV_ARRIVAL forModule:module];
         [YAPI_plug_events addObject:ev];
@@ -620,6 +638,7 @@ static double decExp[16] = {
     }
     
     yapiRegisterLogFunction(yapiLogFunctionFwd);
+    yapiRegisterDeviceLogCallback(yapiDeviceLogCallbackFwd);
     YAPI_plug_events = [[NSMutableArray alloc ] initWithCapacity:16];
     yapiRegisterDeviceArrivalCallback(yapiDeviceArrivalCallbackFwd);
     yapiRegisterDeviceRemovalCallback(yapiDeviceRemovalCallbackFwd);
@@ -889,17 +908,17 @@ static double decExp[16] = {
  * 
  * On failure, throws an exception or returns a negative error code.
  */
-+(YRETCODE)   PreregisterHub:(NSString*)url :(NSError**)error
++(YRETCODE)   PreregisterHub:(NSString*)url :(NSError**)errmsg
 {
     char        errbuf[YOCTO_ERRMSG_LEN];
     YRETCODE    res;
     
     if (!YAPI_apiInitialized) {
-        res = [YAPI InitAPI:0:error];
+        res = [YAPI InitAPI:0:errmsg];
         if(YISERR(res)) return res;
     }
     res = yapiPreregisterHub(STR_oc2y(url), errbuf);
-    return yFormatRetVal(error, res, errbuf);
+    return yFormatRetVal(errmsg, res, errbuf);
 }
 
 /**
@@ -1068,26 +1087,26 @@ static double decExp[16] = {
 
 /**
  * Force a hub discovery, if a callback as been registered with yRegisterDeviceRemovalCallback it
- * will be called for each net work hub that will respond to the discovery
+ * will be called for each net work hub that will respond to the discovery.
  * 
  * @param errmsg : a string passed by reference to receive any error message.
  * 
  * @return YAPI_SUCCESS when the call succeeds.
  *         On failure, throws an exception or returns a negative error code.
  */
- +(YRETCODE)    TriggerHubDiscovery:(NSError**) error
+ +(YRETCODE)    TriggerHubDiscovery:(NSError**) errmsg
  {
     char        errbuf[YOCTO_ERRMSG_LEN];
     YRETCODE    res;
 
     if (!YAPI_apiInitialized) {
-        res = [YAPI InitAPI:0:error];
+        res = [YAPI InitAPI:0:errmsg];
         if(YISERR(res)) return res;
     }
     @autoreleasepool {
         res = yapiTriggerHubDiscovery(errbuf);
     }
-    return yFormatRetVal(error, res, errbuf);
+    return yFormatRetVal(errmsg, res, errbuf);
  }
 
 
@@ -2339,7 +2358,8 @@ static double decExp[16] = {
 
 
 /**
- * Returns a short text that describes the function in the form TYPE(NAME)=SERIAL&#46;FUNCTIONID.
+ * Returns a short text that describes unambiguously the instance of the function in the form
+ * TYPE(NAME)=SERIAL&#46;FUNCTIONID.
  * More precisely,
  * TYPE       is the type of the function,
  * NAME       it the name used for the first access to the function,
@@ -2922,7 +2942,7 @@ static double decExp[16] = {
         res = _currentValue;
     }
     res = res * _iresol;
-    return ((int)(res < 0.0 ? ceil(res-0.5) : floor(res+0.5))) / _iresol;
+    return ((res < 0.0 ? ceil(res-0.5) : floor(res+0.5))) / _iresol;
 }
 
 
@@ -2967,7 +2987,7 @@ static double decExp[16] = {
         }
     }
     res = _lowestValue * _iresol;
-    return ((int)(res < 0.0 ? ceil(res-0.5) : floor(res+0.5))) / _iresol;
+    return ((res < 0.0 ? ceil(res-0.5) : floor(res+0.5))) / _iresol;
 }
 
 
@@ -3012,7 +3032,7 @@ static double decExp[16] = {
         }
     }
     res = _highestValue * _iresol;
-    return ((int)(res < 0.0 ? ceil(res-0.5) : floor(res+0.5))) / _iresol;
+    return ((res < 0.0 ? ceil(res-0.5) : floor(res+0.5))) / _iresol;
 }
 
 
@@ -3293,7 +3313,7 @@ static double decExp[16] = {
     double fRef = 0;
     // Store inverted resolution, to provide better rounding
     if (_resolution > 0) {
-        _iresol = ((int)(1.0 / _resolution < 0.0 ? ceil(1.0 / _resolution-0.5) : floor(1.0 / _resolution+0.5)));
+        _iresol = ((1.0 / _resolution < 0.0 ? ceil(1.0 / _resolution-0.5) : floor(1.0 / _resolution+0.5)));
     } else {
         return 0;
     }
@@ -3474,6 +3494,10 @@ static double decExp[16] = {
  *         values returned by the sensor for the correction points.
  * @param refValues : array of floating point numbers, corresponding to the corrected
  *         values for the correction points.
+ * 
+ * @return YAPI_SUCCESS if the call succeeds.
+ * 
+ * On failure, throws an exception or returns a negative error code.
  */
 -(int) calibrateFromPoints:(NSMutableArray*)rawValues :(NSMutableArray*)refValues
 {
@@ -3558,8 +3582,8 @@ static double decExp[16] = {
         res = [NSString stringWithFormat:@"%d",npt];
         idx = 0;
         while (idx < npt) {
-            iRaw = (int) ((int)([[rawValues objectAtIndex:idx] doubleValue] * _scale - _offset < 0.0 ? ceil([[rawValues objectAtIndex:idx] doubleValue] * _scale - _offset-0.5) : floor([[rawValues objectAtIndex:idx] doubleValue] * _scale - _offset+0.5)));
-            iRef = (int) ((int)([[refValues objectAtIndex:idx] doubleValue] * _scale - _offset < 0.0 ? ceil([[refValues objectAtIndex:idx] doubleValue] * _scale - _offset-0.5) : floor([[refValues objectAtIndex:idx] doubleValue] * _scale - _offset+0.5)));
+            iRaw = (int) (([[rawValues objectAtIndex:idx] doubleValue] * _scale - _offset < 0.0 ? ceil([[rawValues objectAtIndex:idx] doubleValue] * _scale - _offset-0.5) : floor([[rawValues objectAtIndex:idx] doubleValue] * _scale - _offset+0.5)));
+            iRef = (int) (([[refValues objectAtIndex:idx] doubleValue] * _scale - _offset < 0.0 ? ceil([[refValues objectAtIndex:idx] doubleValue] * _scale - _offset-0.5) : floor([[refValues objectAtIndex:idx] doubleValue] * _scale - _offset+0.5)));
             res = [NSString stringWithFormat:@"%@,%d,%d", res, iRaw,iRef];
             idx = idx + 1;
         }
@@ -3735,6 +3759,7 @@ static double decExp[16] = {
     _rebootCountdown = Y_REBOOTCOUNTDOWN_INVALID;
     _usbBandwidth = Y_USBBANDWIDTH_INVALID;
     _valueCallbackModule = NULL;
+    _logCallback = NULL;
 //--- (end of generated code: YModule attributes initialization)
     return self;
 }
@@ -3861,6 +3886,26 @@ static double decExp[16] = {
     return [super _parseAttr:j];
 }
 //--- (end of generated code: YModule private methods implementation)
+
+/**
+ * todo
+ * 
+ * @param callback : the callback function to call, or a null pointer. The callback function should take two
+ *         arguments: the function object of which the value has changed, and the character string describing
+ *         the new advertised value.
+ * @noreturn
+ */
+-(void)            registerLogCallback:(YModuleLogCallback) callback
+{
+    _logCallback = callback;
+    yapiStartStopDeviceLogCallback(STR_oc2y(_serial), _logCallback!=NULL);
+}
+
+
+-(YModuleLogCallback) get_logCallback
+{
+    return _logCallback;    
+}
 
 //--- (generated code: YModule public methods implementation)
 /**
@@ -4627,7 +4672,7 @@ static double decExp[16] = {
     }
     _nRows = val;
     duration_float = _nRows * 3600 / _samplesPerHour;
-    _duration = (int) ((int)(duration_float < 0.0 ? ceil(duration_float-0.5) : floor(duration_float+0.5)));
+    _duration = (int) ((duration_float < 0.0 ? ceil(duration_float-0.5) : floor(duration_float+0.5)));
     // precompute decoding parameters
     _decexp = 1.0;
     if (_scale == 0) {
@@ -5260,7 +5305,7 @@ static double decExp[16] = {
                     }
                 }
             }
-            if([_streams count] > 0) {
+            if(([_streams count] > 0) && (summaryTotalTime>0)) {
                 // update time boundaries with actual data
                 stream = [_streams objectAtIndex:[_streams count]-1];
                 long endtime = [stream get_startTimeUTC] + [stream get_duration];

@@ -76,15 +76,15 @@ static void  DeviceUnplug(YModule * module)
     // Setup the API to use local USB devices
     NSError *errmsg;
     yDisableExceptions();
-    if(yRegisterHub(@"usb",&errmsg) != YAPI_SUCCESS) {
+    if([YAPI RegisterHub:@"usb" :&errmsg] != YAPI_SUCCESS) {
         NSString *message = [NSString stringWithFormat:@"RegisterHub error: %@",[errmsg localizedDescription]];
         NSLog(@"%@\n",message);
         return;
     }
     appdelegate = self;
-    yRegisterDeviceChangeCallback(DeviceUpdate);
-    yRegisterDeviceArrivalCallback(DevicePlug);
-    yRegisterDeviceRemovalCallback(DeviceUnplug);
+    [YAPI RegisterDeviceChangeCallback:DeviceUpdate];
+    [YAPI RegisterDeviceArrivalCallback:DevicePlug];
+    [YAPI RegisterDeviceRemovalCallback:DeviceUnplug];
     [self updateModuleList:nil];
     [self refreshInfos];
 
@@ -132,12 +132,12 @@ static void  DeviceUnplug(YModule * module)
     NSError *errmsg;
     NSString *message;
     
-    if(YISERR(yUpdateDeviceList(&errmsg))) {
+    if(YISERR([YAPI UpdateDeviceList:&errmsg])) {
         message = [NSString stringWithFormat:@"yUpdateDeviceList has failled:%@",[errmsg localizedDescription]];
         NSLog(@"%@\n",message);
         return;
     }
-    if(YISERR(yHandleEvents(&errmsg))) {
+    if(YISERR([YAPI HandleEvents:&errmsg])) {
         message = [NSString stringWithFormat:@"yHandleEvents has failled:%@",[errmsg localizedDescription]];
         NSLog(@"%@\n",message);
         return;
@@ -216,11 +216,11 @@ static NSInteger RGBFromColor(NSColor *color)
         }
         [_luminosity setIntValue:[_ledmodule get_luminosity]];
     
-        YColorLed *led1 = yFindColorLed([serial stringByAppendingString:@".colorLed1"]);
+        YColorLed *led1 = [YColorLed FindColorLed:[serial stringByAppendingString:@".colorLed1"]];
         NSInteger color = [led1 get_rgbColor];
         [_led1 setColor:colorFromRGB(color)];
     
-        YColorLed *led2 = yFindColorLed([serial stringByAppendingString:@".colorLed2"]);
+        YColorLed *led2 = [YColorLed FindColorLed:[serial stringByAppendingString:@".colorLed2"]];
         NSInteger color2 = [led2 get_rgbColor];
         [_led2 setColor:colorFromRGB(color2)];
     }
@@ -241,10 +241,10 @@ static NSInteger RGBFromColor(NSColor *color)
     [_ledmodule set_luminosity:[_luminosity intValue]];
 
     NSString *serial = [_ledmodule get_serialNumber];
-    YColorLed *led1 = yFindColorLed([serial stringByAppendingString:@".colorLed1"]);
+    YColorLed *led1 = [YColorLed FindColorLed:[serial stringByAppendingString:@".colorLed1"]];
     [led1 set_rgbColor:(int)RGBFromColor([_led1 color])];
     
-    YColorLed *led2 = yFindColorLed([serial stringByAppendingString:@".colorLed2"]);
+    YColorLed *led2 = [YColorLed FindColorLed:[serial stringByAppendingString:@".colorLed2"]];
     [led2 set_rgbColor:(int)RGBFromColor([_led2 color])];
   
         

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_servo.m 14721 2014-01-24 17:58:44Z seb $
+ * $Id: yocto_servo.m 15256 2014-03-06 10:19:01Z seb $
  *
  * Implements the high-level API for Servo functions
  *
@@ -10,24 +10,24 @@
  *
  *  Yoctopuce Sarl (hereafter Licensor) grants to you a perpetual
  *  non-exclusive license to use, modify, copy and integrate this
- *  file into your software for the sole purpose of interfacing 
- *  with Yoctopuce products. 
+ *  file into your software for the sole purpose of interfacing
+ *  with Yoctopuce products.
  *
- *  You may reproduce and distribute copies of this file in 
+ *  You may reproduce and distribute copies of this file in
  *  source or object form, as long as the sole purpose of this
- *  code is to interface with Yoctopuce products. You must retain 
+ *  code is to interface with Yoctopuce products. You must retain
  *  this notice in the distributed source file.
  *
  *  You should refer to Yoctopuce General Terms and Conditions
- *  for additional information regarding your rights and 
+ *  for additional information regarding your rights and
  *  obligations.
  *
  *  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
  *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
- *  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS 
+ *  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS
  *  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
  *  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
- *  INDIRECT OR CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA, 
+ *  INDIRECT OR CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA,
  *  COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY OR 
  *  SERVICES, ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT 
  *  LIMITED TO ANY DEFENSE THEREOF), ANY CLAIMS FOR INDEMNITY OR
@@ -54,9 +54,12 @@
     _className = @"Servo";
 //--- (YServo attributes initialization)
     _position = Y_POSITION_INVALID;
+    _enabled = Y_ENABLED_INVALID;
     _range = Y_RANGE_INVALID;
     _neutral = Y_NEUTRAL_INVALID;
     _move = Y_MOVE_INVALID;
+    _positionAtPowerOn = Y_POSITIONATPOWERON_INVALID;
+    _enabledAtPowerOn = Y_ENABLEDATPOWERON_INVALID;
     _valueCallbackServo = NULL;
 //--- (end of YServo attributes initialization)
     return self;
@@ -75,6 +78,11 @@
     if(!strcmp(j->token, "position")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
         _position =  atoi(j->token);
+        return 1;
+    }
+    if(!strcmp(j->token, "enabled")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _enabled =  (Y_ENABLED_enum)atoi(j->token);
         return 1;
     }
     if(!strcmp(j->token, "range")) {
@@ -103,6 +111,16 @@
                 }
             }
         }
+        return 1;
+    }
+    if(!strcmp(j->token, "positionAtPowerOn")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _positionAtPowerOn =  atoi(j->token);
+        return 1;
+    }
+    if(!strcmp(j->token, "enabledAtPowerOn")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _enabledAtPowerOn =  (Y_ENABLEDATPOWERON_enum)atoi(j->token);
         return 1;
     }
     return [super _parseAttr:j];
@@ -150,6 +168,48 @@
     NSString* rest_val;
     rest_val = [NSString stringWithFormat:@"%d", newval];
     return [self _setAttr:@"position" :rest_val];
+}
+/**
+ * Returns the state of the servos.
+ * 
+ * @return either Y_ENABLED_FALSE or Y_ENABLED_TRUE, according to the state of the servos
+ * 
+ * On failure, throws an exception or returns Y_ENABLED_INVALID.
+ */
+-(Y_ENABLED_enum) get_enabled
+{
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_ENABLED_INVALID;
+        }
+    }
+    return _enabled;
+}
+
+
+-(Y_ENABLED_enum) enabled
+{
+    return [self get_enabled];
+}
+
+/**
+ * Stops or starts the servo.
+ * 
+ * @param newval : either Y_ENABLED_FALSE or Y_ENABLED_TRUE
+ * 
+ * @return YAPI_SUCCESS if the call succeeds.
+ * 
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) set_enabled:(Y_ENABLED_enum) newval
+{
+    return [self setEnabled:newval];
+}
+-(int) setEnabled:(Y_ENABLED_enum) newval
+{
+    NSString* rest_val;
+    rest_val = (newval ? @"1" : @"0");
+    return [self _setAttr:@"enabled" :rest_val];
 }
 /**
  * Returns the current range of use of the servo.
@@ -287,6 +347,93 @@
     NSString* rest_val;
     rest_val = [NSString stringWithFormat:@"%d:%d",target,ms_duration];
     return [self _setAttr:@"move" :rest_val];
+}
+/**
+ * Returns the servo position at device power up.
+ * 
+ * @return an integer corresponding to the servo position at device power up
+ * 
+ * On failure, throws an exception or returns Y_POSITIONATPOWERON_INVALID.
+ */
+-(int) get_positionAtPowerOn
+{
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_POSITIONATPOWERON_INVALID;
+        }
+    }
+    return _positionAtPowerOn;
+}
+
+
+-(int) positionAtPowerOn
+{
+    return [self get_positionAtPowerOn];
+}
+
+/**
+ * Configure the servo position at device power up. Remember to call the matching
+ * module saveToFlash() method, otherwise this call will have no effect.
+ * 
+ * @param newval : an integer
+ * 
+ * @return YAPI_SUCCESS if the call succeeds.
+ * 
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) set_positionAtPowerOn:(int) newval
+{
+    return [self setPositionAtPowerOn:newval];
+}
+-(int) setPositionAtPowerOn:(int) newval
+{
+    NSString* rest_val;
+    rest_val = [NSString stringWithFormat:@"%d", newval];
+    return [self _setAttr:@"positionAtPowerOn" :rest_val];
+}
+/**
+ * Returns the servo signal generator state at power up.
+ * 
+ * @return either Y_ENABLEDATPOWERON_FALSE or Y_ENABLEDATPOWERON_TRUE, according to the servo signal
+ * generator state at power up
+ * 
+ * On failure, throws an exception or returns Y_ENABLEDATPOWERON_INVALID.
+ */
+-(Y_ENABLEDATPOWERON_enum) get_enabledAtPowerOn
+{
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_ENABLEDATPOWERON_INVALID;
+        }
+    }
+    return _enabledAtPowerOn;
+}
+
+
+-(Y_ENABLEDATPOWERON_enum) enabledAtPowerOn
+{
+    return [self get_enabledAtPowerOn];
+}
+
+/**
+ * Configure the servo signal generator state at power up. Remember to call the matching module saveToFlash()
+ * method, otherwise this call will have no effect.
+ * 
+ * @param newval : either Y_ENABLEDATPOWERON_FALSE or Y_ENABLEDATPOWERON_TRUE
+ * 
+ * @return YAPI_SUCCESS if the call succeeds.
+ * 
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) set_enabledAtPowerOn:(Y_ENABLEDATPOWERON_enum) newval
+{
+    return [self setEnabledAtPowerOn:newval];
+}
+-(int) setEnabledAtPowerOn:(Y_ENABLEDATPOWERON_enum) newval
+{
+    NSString* rest_val;
+    rest_val = (newval ? @"1" : @"0");
+    return [self _setAttr:@"enabledAtPowerOn" :rest_val];
 }
 /**
  * Retrieves $AFUNCTION$ for a given identifier.
