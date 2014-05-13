@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_display.h 14830 2014-02-04 14:44:24Z seb $
+ * $Id: yocto_display.h 15998 2014-05-01 08:25:18Z seb $
  *
  * Declares yFindDisplay(), the high-level API for Display functions
  *
@@ -173,7 +173,7 @@ typedef enum {
  * For grayscale or monochrome displays, the value is
  * automatically converted to the proper range.
  * 
- * @param color: the desired pen color, as a 24-bit RGB value
+ * @param color : the desired pen color, as a 24-bit RGB value
  * 
  * @return YAPI_SUCCESS if the call succeeds.
  * 
@@ -189,7 +189,7 @@ typedef enum {
  * lower than 128 is rendered as black, and any value equal
  * or above to 128 is non-black.
  * 
- * @param graylevel: the desired gray level, from 0 to 255
+ * @param graylevel : the desired gray level, from 0 to 255
  * 
  * @return YAPI_SUCCESS if the call succeeds.
  * 
@@ -218,7 +218,7 @@ typedef enum {
  * but you can disable it if you prefer. This setting has no effect
  * on monochrome displays.
  * 
- * @param mode: <t>true</t> to enable antialiasing, <t>false</t> to
+ * @param mode : <t>true</t> to enable antialiasing, <t>false</t> to
  *         disable it.
  * 
  * @return YAPI_SUCCESS if the call succeeds.
@@ -230,8 +230,8 @@ typedef enum {
 /**
  * Draws a single pixel at the specified position.
  * 
- * @param x: the distance from left of layer, in pixels
- * @param y: the distance from top of layer, in pixels
+ * @param x : the distance from left of layer, in pixels
+ * @param y : the distance from top of layer, in pixels
  * 
  * @return YAPI_SUCCESS if the call succeeds.
  * 
@@ -242,10 +242,10 @@ typedef enum {
 /**
  * Draws an empty rectangle at a specified position.
  * 
- * @param x1: the distance from left of layer to the left border of the rectangle, in pixels
- * @param y1: the distance from top of layer to the top border of the rectangle, in pixels
- * @param x2: the distance from left of layer to the right border of the rectangle, in pixels
- * @param y2: the distance from top of layer to the bottom border of the rectangle, in pixels
+ * @param x1 : the distance from left of layer to the left border of the rectangle, in pixels
+ * @param y1 : the distance from top of layer to the top border of the rectangle, in pixels
+ * @param x2 : the distance from left of layer to the right border of the rectangle, in pixels
+ * @param y2 : the distance from top of layer to the bottom border of the rectangle, in pixels
  * 
  * @return YAPI_SUCCESS if the call succeeds.
  * 
@@ -256,10 +256,10 @@ typedef enum {
 /**
  * Draws a filled rectangular bar at a specified position.
  * 
- * @param x1: the distance from left of layer to the left border of the rectangle, in pixels
- * @param y1: the distance from top of layer to the top border of the rectangle, in pixels
- * @param x2: the distance from left of layer to the right border of the rectangle, in pixels
- * @param y2: the distance from top of layer to the bottom border of the rectangle, in pixels
+ * @param x1 : the distance from left of layer to the left border of the rectangle, in pixels
+ * @param y1 : the distance from top of layer to the top border of the rectangle, in pixels
+ * @param x2 : the distance from left of layer to the right border of the rectangle, in pixels
+ * @param y2 : the distance from top of layer to the bottom border of the rectangle, in pixels
  * 
  * @return YAPI_SUCCESS if the call succeeds.
  * 
@@ -270,9 +270,9 @@ typedef enum {
 /**
  * Draws an empty circle at a specified position.
  * 
- * @param x: the distance from left of layer to the center of the circle, in pixels
- * @param y: the distance from top of layer to the center of the circle, in pixels
- * @param r: the radius of the circle, in pixels
+ * @param x : the distance from left of layer to the center of the circle, in pixels
+ * @param y : the distance from top of layer to the center of the circle, in pixels
+ * @param r : the radius of the circle, in pixels
  * 
  * @return YAPI_SUCCESS if the call succeeds.
  * 
@@ -283,9 +283,9 @@ typedef enum {
 /**
  * Draws a filled disc at a given position.
  * 
- * @param x: the distance from left of layer to the center of the disc, in pixels
- * @param y: the distance from top of layer to the center of the disc, in pixels
- * @param r: the radius of the disc, in pixels
+ * @param x : the distance from left of layer to the center of the disc, in pixels
+ * @param y : the distance from top of layer to the center of the disc, in pixels
+ * @param r : the radius of the disc, in pixels
  * 
  * @return YAPI_SUCCESS if the call succeeds.
  * 
@@ -300,7 +300,7 @@ typedef enum {
  * file, check the device logs for any error message such as missing font file or bad font
  * file format.
  * 
- * @param fontname: the font file name
+ * @param fontname : the font file name
  * 
  * @return YAPI_SUCCESS if the call succeeds.
  * 
@@ -313,14 +313,14 @@ typedef enum {
  * to the specified pixel position is called the anchor point, and can be chosen among
  * several options. Text is rendered from left to right, without implicit wrapping.
  * 
- * @param x: the distance from left of layer to the text anchor point, in pixels
- * @param y: the distance from top of layer to the text anchor point, in pixels
- * @param anchor: the text anchor point, chosen among the Y_ALIGN enumeration:
+ * @param x : the distance from left of layer to the text anchor point, in pixels
+ * @param y : the distance from top of layer to the text anchor point, in pixels
+ * @param anchor : the text anchor point, chosen among the Y_ALIGN enumeration:
  *         Y_ALIGN_TOP_LEFT,    Y_ALIGN_CENTER_LEFT,    Y_ALIGN_BASELINE_LEFT,    Y_ALIGN_BOTTOM_LEFT,
  *         Y_ALIGN_TOP_CENTER,  Y_ALIGN_CENTER,         Y_ALIGN_BASELINE_CENTER,  Y_ALIGN_BOTTOM_CENTER,
  *         Y_ALIGN_TOP_DECIMAL, Y_ALIGN_CENTER_DECIMAL, Y_ALIGN_BASELINE_DECIMAL, Y_ALIGN_BOTTOM_DECIMAL,
  *         Y_ALIGN_TOP_RIGHT,   Y_ALIGN_CENTER_RIGHT,   Y_ALIGN_BASELINE_RIGHT,   Y_ALIGN_BOTTOM_RIGHT.
- * @param text: the text string to draw
+ * @param text : the text string to draw
  * 
  * @return YAPI_SUCCESS if the call succeeds.
  * 
@@ -334,9 +334,9 @@ typedef enum {
  * file, check the device logs for any error message such as missing image file or bad
  * image file format.
  * 
- * @param x: the distance from left of layer to the left of the image, in pixels
- * @param y: the distance from top of layer to the top of the image, in pixels
- * @param imagename: the GIF file name
+ * @param x : the distance from left of layer to the left of the image, in pixels
+ * @param y : the distance from top of layer to the top of the image, in pixels
+ * @param imagename : the GIF file name
  * 
  * @return YAPI_SUCCESS if the call succeeds.
  * 
@@ -353,11 +353,11 @@ typedef enum {
  * gray level, unless -1 is specified, in which case they are not drawn at all
  * (as if transparent).
  * 
- * @param x: the distance from left of layer to the left of the bitmap, in pixels
- * @param y: the distance from top of layer to the top of the bitmap, in pixels
- * @param w: the width of the bitmap, in pixels
- * @param bitmap: a binary object
- * @param bgcol: the background gray level to use for zero bits (0 = black,
+ * @param x : the distance from left of layer to the left of the bitmap, in pixels
+ * @param y : the distance from top of layer to the top of the bitmap, in pixels
+ * @param w : the width of the bitmap, in pixels
+ * @param bitmap : a binary object
+ * @param bgcol : the background gray level to use for zero bits (0 = black,
  *         255 = white), or -1 to leave the pixels unchanged
  * 
  * @return YAPI_SUCCESS if the call succeeds.
@@ -369,8 +369,8 @@ typedef enum {
 /**
  * Moves the drawing pointer of this layer to the specified position.
  * 
- * @param x: the distance from left of layer, in pixels
- * @param y: the distance from top of layer, in pixels
+ * @param x : the distance from left of layer, in pixels
+ * @param y : the distance from top of layer, in pixels
  * 
  * @return YAPI_SUCCESS if the call succeeds.
  * 
@@ -383,8 +383,8 @@ typedef enum {
  * The specified destination pixel is included in the line. The pointer position
  * is then moved to the end point of the line.
  * 
- * @param x: the distance from left of layer to the end point of the line, in pixels
- * @param y: the distance from top of layer to the end point of the line, in pixels
+ * @param x : the distance from left of layer to the end point of the line, in pixels
+ * @param y : the distance from top of layer to the end point of the line, in pixels
  * 
  * @return YAPI_SUCCESS if the call succeeds.
  * 
@@ -399,7 +399,7 @@ typedef enum {
  * is hit. When the new text to display extends below the lower margin, the
  * console area is automatically scrolled up.
  * 
- * @param text: the message to display
+ * @param text : the message to display
  * 
  * @return YAPI_SUCCESS if the call succeeds.
  * 
@@ -410,10 +410,10 @@ typedef enum {
 /**
  * Sets up display margins for the consoleOut function.
  * 
- * @param x1: the distance from left of layer to the left margin, in pixels
- * @param y1: the distance from top of layer to the top margin, in pixels
- * @param x2: the distance from left of layer to the right margin, in pixels
- * @param y2: the distance from top of layer to the bottom margin, in pixels
+ * @param x1 : the distance from left of layer to the left margin, in pixels
+ * @param y1 : the distance from top of layer to the top margin, in pixels
+ * @param x2 : the distance from left of layer to the right margin, in pixels
+ * @param y2 : the distance from top of layer to the bottom margin, in pixels
  * 
  * @return YAPI_SUCCESS if the call succeeds.
  * 
@@ -425,7 +425,7 @@ typedef enum {
  * Sets up the background color used by the clearConsole function and by
  * the console scrolling feature.
  * 
- * @param bgcol: the background gray level to use when scrolling (0 = black,
+ * @param bgcol : the background gray level to use when scrolling (0 = black,
  *         255 = white), or -1 for transparent
  * 
  * @return YAPI_SUCCESS if the call succeeds.
@@ -437,7 +437,7 @@ typedef enum {
 /**
  * Sets up the wrapping behaviour used by the consoleOut function.
  * 
- * @param wordwrap: true to wrap only between words,
+ * @param wordwrap : true to wrap only between words,
  *         false to wrap on the last column anyway.
  * 
  * @return YAPI_SUCCESS if the call succeeds.
@@ -461,9 +461,9 @@ typedef enum {
  * When smooth scrolling is used, the display offset of the layer is
  * automatically updated during the next milliseconds to animate the move of the layer.
  * 
- * @param x: the distance from left of display to the upper left corner of the layer
- * @param y: the distance from top of display to the upper left corner of the layer
- * @param scrollTime: number of milliseconds to use for smooth scrolling, or
+ * @param x : the distance from left of display to the upper left corner of the layer
+ * @param y : the distance from top of display to the upper left corner of the layer
+ * @param scrollTime : number of milliseconds to use for smooth scrolling, or
  *         0 if the scrolling should be immediate.
  * 
  * @return YAPI_SUCCESS if the call succeeds.
@@ -835,8 +835,8 @@ typedef enum {
  * Smoothly changes the brightness of the screen to produce a fade-in or fade-out
  * effect.
  * 
- * @param brightness: the new screen brightness
- * @param duration: duration of the brightness transition, in milliseconds.
+ * @param brightness : the new screen brightness
+ * @param duration : duration of the brightness transition, in milliseconds.
  * 
  * @return YAPI_SUCCESS if the call succeeds.
  * 

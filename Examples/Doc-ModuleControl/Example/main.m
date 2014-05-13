@@ -21,7 +21,8 @@ int main (int argc, const char * argv[])
         if(argc < 2)
             usage(argv[0]);
         NSString *serial_or_name =[NSString stringWithUTF8String:argv[1]];
-        YModule *module = [YModule FindModule:serial_or_name];  // use serial or logical name
+        // use serial or logical name
+        YModule *module = [YModule FindModule:serial_or_name];  
         if ([module isOnline]) {
             if (argc > 2) {
                 if (strcmp(argv[2], "ON")==0) 
@@ -41,7 +42,8 @@ int main (int argc, const char * argv[])
             NSLog(@"USB current:  %d mA\n",  [module usbCurrent]);
             NSLog(@"logs:  %@\n",  [module get_lastLogs]);
         } else {
-            NSLog(@"%@ not connected (check identification and USB cable)\n",serial_or_name);
+            NSLog(@"%@ not connected (check identification and USB cable)\n",
+                serial_or_name);
         }
     }
     return 0;

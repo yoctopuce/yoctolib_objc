@@ -23,7 +23,8 @@ int main (int argc, const char * argv[])
             usage(argv[0]);
 
         NSString *serial_or_name =[NSString stringWithUTF8String:argv[1]];
-        YModule *module = [YModule FindModule:serial_or_name];  // use serial or logical name
+        // use serial or logical name
+        YModule *module = [YModule FindModule:serial_or_name];
       
         if (module.isOnline) {
             if (argc >= 3){
@@ -37,7 +38,8 @@ int main (int argc, const char * argv[])
             }
             NSLog(@"Current name: %@\n", module.logicalName);
         } else {
-            NSLog(@"%@ not connected (check identification and USB cable)\n",serial_or_name);
+            NSLog(@"%@ not connected (check identification and USB cable)\n",
+                serial_or_name);
         }
     }
     return 0;

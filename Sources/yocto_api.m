@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.m 15312 2014-03-07 10:49:54Z seb $
+ * $Id: yocto_api.m 16091 2014-05-08 12:10:31Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -1829,7 +1829,7 @@ static double decExp[16] = {
             }
         }
     }
-    [buffer appendString:@" \r\n\r\n"];
+    [buffer appendString:@"&. \r\n\r\n"];
     *request = [NSString stringWithString:buffer];
     return YAPI_SUCCESS;
 }
@@ -1873,7 +1873,9 @@ static double decExp[16] = {
 
     
     }
-    _cacheExpiration=0;
+    if (_cacheExpiration != 0) {
+        _cacheExpiration = yapiGetTickCount();
+    }
     return YAPI_SUCCESS;
 }
 
@@ -2420,7 +2422,7 @@ static double decExp[16] = {
 /**
  * Returns the unique hardware identifier of the function in the form SERIAL.FUNCTIONID.
  * The unique hardware identifier is composed of the device serial
- * number and of the hardware identifier of the function. (for example RELAYLO1-123456.relay1)
+ * number and of the hardware identifier of the function (for example RELAYLO1-123456.relay1).
  * 
  * @return a string that uniquely identifies the function (ex: RELAYLO1-123456.relay1)
  * 
@@ -3582,8 +3584,8 @@ static double decExp[16] = {
         res = [NSString stringWithFormat:@"%d",npt];
         idx = 0;
         while (idx < npt) {
-            iRaw = (int) (([[rawValues objectAtIndex:idx] doubleValue] * _scale - _offset < 0.0 ? ceil([[rawValues objectAtIndex:idx] doubleValue] * _scale - _offset-0.5) : floor([[rawValues objectAtIndex:idx] doubleValue] * _scale - _offset+0.5)));
-            iRef = (int) (([[refValues objectAtIndex:idx] doubleValue] * _scale - _offset < 0.0 ? ceil([[refValues objectAtIndex:idx] doubleValue] * _scale - _offset-0.5) : floor([[refValues objectAtIndex:idx] doubleValue] * _scale - _offset+0.5)));
+            iRaw = (int) (([[rawValues objectAtIndex:idx] doubleValue] * _scale + _offset < 0.0 ? ceil([[rawValues objectAtIndex:idx] doubleValue] * _scale + _offset-0.5) : floor([[rawValues objectAtIndex:idx] doubleValue] * _scale + _offset+0.5)));
+            iRef = (int) (([[refValues objectAtIndex:idx] doubleValue] * _scale + _offset < 0.0 ? ceil([[refValues objectAtIndex:idx] doubleValue] * _scale + _offset-0.5) : floor([[refValues objectAtIndex:idx] doubleValue] * _scale + _offset+0.5)));
             res = [NSString stringWithFormat:@"%@,%d,%d", res, iRaw,iRef];
             idx = idx + 1;
         }
@@ -3888,11 +3890,11 @@ static double decExp[16] = {
 //--- (end of generated code: YModule private methods implementation)
 
 /**
- * todo
+ * Registers a device log callback function. This callback will be called each time
+ * that a module sends a new log message. Mostly useful to debug a Yoctopuce module.
  * 
  * @param callback : the callback function to call, or a null pointer. The callback function should take two
- *         arguments: the function object of which the value has changed, and the character string describing
- *         the new advertised value.
+ *         arguments: the module object that emitted the log message, and the character string containing the log.
  * @noreturn
  */
 -(void)            registerLogCallback:(YModuleLogCallback) callback
@@ -4240,28 +4242,6 @@ static double decExp[16] = {
 -(Y_USBBANDWIDTH_enum) usbBandwidth
 {
     return [self get_usbBandwidth];
-}
-
-/**
- * Changes the number of USB interfaces used by the module. You must reboot the module
- * after changing this setting.
- * 
- * @param newval : either Y_USBBANDWIDTH_SIMPLE or Y_USBBANDWIDTH_DOUBLE, according to the number of
- * USB interfaces used by the module
- * 
- * @return YAPI_SUCCESS if the call succeeds.
- * 
- * On failure, throws an exception or returns a negative error code.
- */
--(int) set_usbBandwidth:(Y_USBBANDWIDTH_enum) newval
-{
-    return [self setUsbBandwidth:newval];
-}
--(int) setUsbBandwidth:(Y_USBBANDWIDTH_enum) newval
-{
-    NSString* rest_val;
-    rest_val = [NSString stringWithFormat:@"%d", newval];
-    return [self _setAttr:@"usbBandwidth" :rest_val];
 }
 /**
  * Allows you to find a module from its serial number or from its logical name.
@@ -5133,7 +5113,7 @@ static double decExp[16] = {
 
 /**
  * Returns the end time of the measure, relative to the Jan 1, 1970 UTC
- * (Unix timestamp). When the recording rate is higher then 1 sample
+ * (Unix timestamp). When the recording rate is higher than 1 sample
  * per second, the timestamp may have a fractional part.
  * 
  * @return an floating point number corresponding to the number of seconds
