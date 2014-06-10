@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.m 16091 2014-05-08 12:10:31Z seb $
+ * $Id: yocto_api.m 16246 2014-05-16 12:09:39Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -2206,6 +2206,10 @@ static double decExp[16] = {
 -(int) setLogicalName:(NSString*) newval
 {
     NSString* rest_val;
+        if (! [YAPI CheckLogicalName:newval]) {
+            [self _throw:YAPI_INVALID_ARGUMENT :[@"Invalid name :" stringByAppendingString:newval]];
+            return YAPI_INVALID_ARGUMENT;
+        }
     rest_val = newval;
     return [self _setAttr:@"logicalName" :rest_val];
 }
