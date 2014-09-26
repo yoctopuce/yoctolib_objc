@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_network.h 15256 2014-03-06 10:19:01Z seb $
+ * $Id: yocto_network.h 17582 2014-09-10 17:12:40Z mvuilleu $
  *
  * Declares yFindNetwork(), the high-level API for Network functions
  *
@@ -224,37 +224,6 @@ typedef enum {
 -(NSString*) ipConfig;
 -(int)     set_ipConfig:(NSString*) newval;
 -(int)     setIpConfig:(NSString*) newval;
-
-/**
- * Changes the configuration of the network interface to enable the use of an
- * IP address received from a DHCP server. Until an address is received from a DHCP
- * server, the module uses the IP parameters specified to this function.
- * Remember to call the saveToFlash() method and then to reboot the module to apply this setting.
- * 
- * @param fallbackIpAddr : fallback IP address, to be used when no DHCP reply is received
- * @param fallbackSubnetMaskLen : fallback subnet mask length when no DHCP reply is received, as an
- *         integer (eg. 24 means 255.255.255.0)
- * @param fallbackRouter : fallback router IP address, to be used when no DHCP reply is received
- * 
- * @return YAPI_SUCCESS if the call succeeds.
- * 
- * On failure, throws an exception or returns a negative error code.
- */
--(int)     useDHCP:(NSString*)fallbackIpAddr :(int)fallbackSubnetMaskLen :(NSString*)fallbackRouter;
-
-/**
- * Changes the configuration of the network interface to use a static IP address.
- * Remember to call the saveToFlash() method and then to reboot the module to apply this setting.
- * 
- * @param ipAddress : device IP address
- * @param subnetMaskLen : subnet mask length, as an integer (eg. 24 means 255.255.255.0)
- * @param router : router IP address (default gateway)
- * 
- * @return YAPI_SUCCESS if the call succeeds.
- * 
- * On failure, throws an exception or returns a negative error code.
- */
--(int)     useStaticIP:(NSString*)ipAddress :(int)subnetMaskLen :(NSString*)router;
 
 /**
  * Returns the IP address of the primary name server to be used by the module.
@@ -650,6 +619,37 @@ typedef enum {
 -(int)     registerValueCallback:(YNetworkValueCallback)callback;
 
 -(int)     _invokeValueCallback:(NSString*)value;
+
+/**
+ * Changes the configuration of the network interface to enable the use of an
+ * IP address received from a DHCP server. Until an address is received from a DHCP
+ * server, the module uses the IP parameters specified to this function.
+ * Remember to call the saveToFlash() method and then to reboot the module to apply this setting.
+ * 
+ * @param fallbackIpAddr : fallback IP address, to be used when no DHCP reply is received
+ * @param fallbackSubnetMaskLen : fallback subnet mask length when no DHCP reply is received, as an
+ *         integer (eg. 24 means 255.255.255.0)
+ * @param fallbackRouter : fallback router IP address, to be used when no DHCP reply is received
+ * 
+ * @return YAPI_SUCCESS when the call succeeds.
+ * 
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     useDHCP:(NSString*)fallbackIpAddr :(int)fallbackSubnetMaskLen :(NSString*)fallbackRouter;
+
+/**
+ * Changes the configuration of the network interface to use a static IP address.
+ * Remember to call the saveToFlash() method and then to reboot the module to apply this setting.
+ * 
+ * @param ipAddress : device IP address
+ * @param subnetMaskLen : subnet mask length, as an integer (eg. 24 means 255.255.255.0)
+ * @param router : router IP address (default gateway)
+ * 
+ * @return YAPI_SUCCESS when the call succeeds.
+ * 
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     useStaticIP:(NSString*)ipAddress :(int)subnetMaskLen :(NSString*)router;
 
 /**
  * Pings str_host to test the network connectivity. Sends four ICMP ECHO_REQUEST requests from the

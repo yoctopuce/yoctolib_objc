@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_lightsensor.h 15256 2014-03-06 10:19:01Z seb $
+ * $Id: yocto_lightsensor.h 17655 2014-09-16 12:24:27Z mvuilleu $
  *
  * Declares yFindLightSensor(), the high-level API for LightSensor functions
  *
@@ -45,6 +45,18 @@ CF_EXTERN_C_BEGIN
 //--- (YLightSensor globals)
 typedef void (*YLightSensorValueCallback)(YLightSensor *func, NSString *functionValue);
 typedef void (*YLightSensorTimedReportCallback)(YLightSensor *func, YMeasure *measure);
+#ifndef _Y_MEASURETYPE_ENUM
+#define _Y_MEASURETYPE_ENUM
+typedef enum {
+    Y_MEASURETYPE_HUMAN_EYE = 0,
+    Y_MEASURETYPE_WIDE_SPECTRUM = 1,
+    Y_MEASURETYPE_INFRARED = 2,
+    Y_MEASURETYPE_HIGH_RATE = 3,
+    Y_MEASURETYPE_HIGH_ENERGY = 4,
+    Y_MEASURETYPE_INVALID = -1,
+} Y_MEASURETYPE_enum;
+#endif
+
 //--- (end of YLightSensor globals)
 
 //--- (YLightSensor class start)
@@ -59,6 +71,7 @@ typedef void (*YLightSensorTimedReportCallback)(YLightSensor *func, YMeasure *me
 {
 @protected
 //--- (YLightSensor attributes declaration)
+    Y_MEASURETYPE_enum _measureType;
     YLightSensorValueCallback _valueCallbackLightSensor;
     YLightSensorTimedReportCallback _timedReportCallbackLightSensor;
 //--- (end of YLightSensor attributes declaration)
@@ -89,6 +102,35 @@ typedef void (*YLightSensorTimedReportCallback)(YLightSensor *func, YMeasure *me
  * On failure, throws an exception or returns a negative error code.
  */
 -(int)     calibrate:(double)calibratedVal;
+
+/**
+ * Returns the type of light measure.
+ * 
+ * @return a value among Y_MEASURETYPE_HUMAN_EYE, Y_MEASURETYPE_WIDE_SPECTRUM, Y_MEASURETYPE_INFRARED,
+ * Y_MEASURETYPE_HIGH_RATE and Y_MEASURETYPE_HIGH_ENERGY corresponding to the type of light measure
+ * 
+ * On failure, throws an exception or returns Y_MEASURETYPE_INVALID.
+ */
+-(Y_MEASURETYPE_enum)     get_measureType;
+
+
+-(Y_MEASURETYPE_enum) measureType;
+/**
+ * Modify the light sensor type used in the device. The measure can either
+ * approximate the response of the human eye, focus on a specific light
+ * spectrum, depending on the capabilities of the light-sensitive cell.
+ * Remember to call the saveToFlash() method of the module if the
+ * modification must be kept.
+ * 
+ * @param newval : a value among Y_MEASURETYPE_HUMAN_EYE, Y_MEASURETYPE_WIDE_SPECTRUM,
+ * Y_MEASURETYPE_INFRARED, Y_MEASURETYPE_HIGH_RATE and Y_MEASURETYPE_HIGH_ENERGY
+ * 
+ * @return YAPI_SUCCESS if the call succeeds.
+ * 
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     set_measureType:(Y_MEASURETYPE_enum) newval;
+-(int)     setMeasureType:(Y_MEASURETYPE_enum) newval;
 
 /**
  * Retrieves a light sensor for a given identifier.

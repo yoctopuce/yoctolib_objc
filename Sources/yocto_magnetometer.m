@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_magnetometer.m 15256 2014-03-06 10:19:01Z seb $
+ * $Id: yocto_magnetometer.m 16895 2014-07-18 00:12:08Z mvuilleu $
  *
  * Implements the high-level API for Magnetometer functions
  *
@@ -74,17 +74,17 @@
 {
     if(!strcmp(j->token, "xValue")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-        _xValue =  atof(j->token)/65536;
+        _xValue =  floor(atof(j->token) * 1000.0 / 65536.0 + 0.5) / 1000.0;
         return 1;
     }
     if(!strcmp(j->token, "yValue")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-        _yValue =  atof(j->token)/65536;
+        _yValue =  floor(atof(j->token) * 1000.0 / 65536.0 + 0.5) / 1000.0;
         return 1;
     }
     if(!strcmp(j->token, "zValue")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-        _zValue =  atof(j->token)/65536;
+        _zValue =  floor(atof(j->token) * 1000.0 / 65536.0 + 0.5) / 1000.0;
         return 1;
     }
     return [super _parseAttr:j];

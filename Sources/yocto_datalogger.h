@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_datalogger.h 14562 2014-01-17 09:25:56Z mvuilleu $
+ * $Id: yocto_datalogger.h 17675 2014-09-16 16:19:20Z seb $
  *
  * Declares yFindDataLogger(), the high-level API for DataLogger functions
  *
@@ -60,6 +60,15 @@ typedef enum {
     Y_AUTOSTART_ON = 1,
     Y_AUTOSTART_INVALID = -1,
 } Y_AUTOSTART_enum;
+#endif
+
+#ifndef _Y_BEACONDRIVEN_ENUM
+#define _Y_BEACONDRIVEN_ENUM
+typedef enum {
+    Y_BEACONDRIVEN_OFF = 0,
+    Y_BEACONDRIVEN_ON = 1,
+    Y_BEACONDRIVEN_INVALID = -1,
+} Y_BEACONDRIVEN_enum;
 #endif
 
 #ifndef _Y_CLEARHISTORY_ENUM
@@ -160,6 +169,7 @@ typedef enum {
     s64             _timeUTC;
     Y_RECORDING_enum _recording;
     Y_AUTOSTART_enum _autoStart;
+    Y_BEACONDRIVEN_enum _beaconDriven;
     Y_CLEARHISTORY_enum _clearHistory;
     YDataLoggerValueCallback _valueCallbackDataLogger;
 //--- (end of generated code: YDataLogger attributes declaration)
@@ -284,6 +294,32 @@ typedef enum {
  */
 -(int)     set_autoStart:(Y_AUTOSTART_enum) newval;
 -(int)     setAutoStart:(Y_AUTOSTART_enum) newval;
+
+/**
+ * Return true if the data logger is synchronised with the localization beacon.
+ * 
+ * @return either Y_BEACONDRIVEN_OFF or Y_BEACONDRIVEN_ON
+ * 
+ * On failure, throws an exception or returns Y_BEACONDRIVEN_INVALID.
+ */
+-(Y_BEACONDRIVEN_enum)     get_beaconDriven;
+
+
+-(Y_BEACONDRIVEN_enum) beaconDriven;
+/**
+ * Changes the type of synchronisation of the data logger.
+ * Remember to call the saveToFlash() method of the module if the
+ * modification must be kept.
+ * 
+ * @param newval : either Y_BEACONDRIVEN_OFF or Y_BEACONDRIVEN_ON, according to the type of
+ * synchronisation of the data logger
+ * 
+ * @return YAPI_SUCCESS if the call succeeds.
+ * 
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     set_beaconDriven:(Y_BEACONDRIVEN_enum) newval;
+-(int)     setBeaconDriven:(Y_BEACONDRIVEN_enum) newval;
 
 -(Y_CLEARHISTORY_enum)     get_clearHistory;
 

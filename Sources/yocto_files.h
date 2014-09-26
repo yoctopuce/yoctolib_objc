@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_files.h 14325 2014-01-11 01:42:47Z seb $
+ * $Id: yocto_files.h 17675 2014-09-16 16:19:20Z seb $
  *
  * Declares yFindFiles(), the high-level API for Files functions
  *
@@ -181,10 +181,10 @@ typedef void (*YFilesValueCallback)(YFiles *func, NSString *functionValue);
 
 -(int)     _invokeValueCallback:(NSString*)value;
 
--(NSData*)     sendCommand:(NSString*)command;
+-(NSMutableData*)     sendCommand:(NSString*)command;
 
 /**
- * Reinitializes the filesystem to its clean, unfragmented, empty state.
+ * Reinitialize the filesystem to its clean, unfragmented, empty state.
  * All files previously uploaded are permanently lost.
  * 
  * @return YAPI_SUCCESS if the call succeeds.
@@ -217,7 +217,7 @@ typedef void (*YFilesValueCallback)(YFiles *func, NSString *functionValue);
  * 
  * On failure, throws an exception or returns an empty content.
  */
--(NSData*)     download:(NSString*)pathname;
+-(NSMutableData*)     download:(NSString*)pathname;
 
 /**
  * Uploads a file to the filesystem, to the specified full path name.

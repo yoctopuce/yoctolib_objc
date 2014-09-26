@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_lightsensor.m 15256 2014-03-06 10:19:01Z seb $
+ * $Id: yocto_lightsensor.m 17655 2014-09-16 12:24:27Z mvuilleu $
  *
  * Implements the high-level API for LightSensor functions
  *
@@ -53,6 +53,7 @@
           return nil;
     _className = @"LightSensor";
 //--- (YLightSensor attributes initialization)
+    _measureType = Y_MEASURETYPE_INVALID;
     _valueCallbackLightSensor = NULL;
     _timedReportCallbackLightSensor = NULL;
 //--- (end of YLightSensor attributes initialization)
@@ -69,6 +70,11 @@
 
 -(int) _parseAttr:(yJsonStateMachine*) j
 {
+    if(!strcmp(j->token, "measureType")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _measureType =  atoi(j->token);
+        return 1;
+    }
     return [super _parseAttr:j];
 }
 //--- (end of YLightSensor private methods implementation)
@@ -81,7 +87,7 @@
 -(int) setCurrentValue:(double) newval
 {
     NSString* rest_val;
-    rest_val = [NSString stringWithFormat:@"%d",(int)floor(newval*65536.0+0.5)];
+    rest_val = [NSString stringWithFormat:@"%d",(int)floor(newval * 65536.0 + 0.5)];
     return [self _setAttr:@"currentValue" :rest_val];
 }
 
@@ -101,8 +107,56 @@
 -(int) calibrate:(double)calibratedVal
 {
     NSString* rest_val;
-    rest_val = [NSString stringWithFormat:@"%d",(int)floor(calibratedVal*65536.0+0.5)];
+    rest_val = [NSString stringWithFormat:@"%d",(int)floor(calibratedVal * 65536.0 + 0.5)];
     return [self _setAttr:@"currentValue" :rest_val];
+}
+/**
+ * Returns the type of light measure.
+ * 
+ * @return a value among Y_MEASURETYPE_HUMAN_EYE, Y_MEASURETYPE_WIDE_SPECTRUM, Y_MEASURETYPE_INFRARED,
+ * Y_MEASURETYPE_HIGH_RATE and Y_MEASURETYPE_HIGH_ENERGY corresponding to the type of light measure
+ * 
+ * On failure, throws an exception or returns Y_MEASURETYPE_INVALID.
+ */
+-(Y_MEASURETYPE_enum) get_measureType
+{
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_MEASURETYPE_INVALID;
+        }
+    }
+    return _measureType;
+}
+
+
+-(Y_MEASURETYPE_enum) measureType
+{
+    return [self get_measureType];
+}
+
+/**
+ * Modify the light sensor type used in the device. The measure can either
+ * approximate the response of the human eye, focus on a specific light
+ * spectrum, depending on the capabilities of the light-sensitive cell.
+ * Remember to call the saveToFlash() method of the module if the
+ * modification must be kept.
+ * 
+ * @param newval : a value among Y_MEASURETYPE_HUMAN_EYE, Y_MEASURETYPE_WIDE_SPECTRUM,
+ * Y_MEASURETYPE_INFRARED, Y_MEASURETYPE_HIGH_RATE and Y_MEASURETYPE_HIGH_ENERGY
+ * 
+ * @return YAPI_SUCCESS if the call succeeds.
+ * 
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) set_measureType:(Y_MEASURETYPE_enum) newval
+{
+    return [self setMeasureType:newval];
+}
+-(int) setMeasureType:(Y_MEASURETYPE_enum) newval
+{
+    NSString* rest_val;
+    rest_val = [NSString stringWithFormat:@"%d", newval];
+    return [self _setAttr:@"measureType" :rest_val];
 }
 /**
  * Retrieves $AFUNCTION$ for a given identifier.

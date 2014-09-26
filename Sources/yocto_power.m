@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_power.m 15256 2014-03-06 10:19:01Z seb $
+ * $Id: yocto_power.m 16895 2014-07-18 00:12:08Z mvuilleu $
  *
  * Implements the high-level API for Power functions
  *
@@ -74,12 +74,12 @@
 {
     if(!strcmp(j->token, "cosPhi")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-        _cosPhi =  atof(j->token)/65536;
+        _cosPhi =  floor(atof(j->token) * 1000.0 / 65536.0 + 0.5) / 1000.0;
         return 1;
     }
     if(!strcmp(j->token, "meter")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-        _meter =  atof(j->token)/65536;
+        _meter =  floor(atof(j->token) * 1000.0 / 65536.0 + 0.5) / 1000.0;
         return 1;
     }
     if(!strcmp(j->token, "meterTimer")) {
@@ -123,7 +123,7 @@
 -(int) setMeter:(double) newval
 {
     NSString* rest_val;
-    rest_val = [NSString stringWithFormat:@"%d",(int)floor(newval*65536.0+0.5)];
+    rest_val = [NSString stringWithFormat:@"%d",(int)floor(newval * 65536.0 + 0.5)];
     return [self _setAttr:@"meter" :rest_val];
 }
 /**

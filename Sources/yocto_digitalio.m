@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_digitalio.m 15998 2014-05-01 08:25:18Z seb $
+ * $Id: yocto_digitalio.m 17481 2014-09-03 09:38:35Z mvuilleu $
  *
  * Implements the high-level API for DigitalIO functions
  *
@@ -492,7 +492,7 @@
  */
 -(int) get_bitState:(int)bitno
 {
-    int portVal = 0;
+    int portVal;
     portVal = [self get_portState];
     return ((((portVal) >> (bitno))) & (1));
 }
@@ -540,7 +540,7 @@
  */
 -(int) get_bitDirection:(int)bitno
 {
-    int portDir = 0;
+    int portDir;
     portDir = [self get_portDirection];
     return ((((portDir) >> (bitno))) & (1));
 }
@@ -576,7 +576,7 @@
  */
 -(int) get_bitPolarity:(int)bitno
 {
-    int portPol = 0;
+    int portPol;
     portPol = [self get_portPolarity];
     return ((((portPol) >> (bitno))) & (1));
 }
@@ -613,7 +613,7 @@
  */
 -(int) get_bitOpenDrain:(int)bitno
 {
-    int portOpenDrain = 0;
+    int portOpenDrain;
     portOpenDrain = [self get_portOpenDrain];
     return ((((portOpenDrain) >> (bitno))) & (1));
 }

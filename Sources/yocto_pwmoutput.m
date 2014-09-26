@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_pwmoutput.m 15529 2014-03-20 17:54:15Z seb $
+ * $Id: yocto_pwmoutput.m 17481 2014-09-03 09:38:35Z mvuilleu $
  *
  * Implements the high-level API for PwmOutput functions
  *
@@ -54,10 +54,10 @@
     _className = @"PwmOutput";
 //--- (YPwmOutput attributes initialization)
     _enabled = Y_ENABLED_INVALID;
-    _dutyCycle = Y_DUTYCYCLE_INVALID;
-    _pulseDuration = Y_PULSEDURATION_INVALID;
     _frequency = Y_FREQUENCY_INVALID;
     _period = Y_PERIOD_INVALID;
+    _dutyCycle = Y_DUTYCYCLE_INVALID;
+    _pulseDuration = Y_PULSEDURATION_INVALID;
     _pwmTransition = Y_PWMTRANSITION_INVALID;
     _enabledAtPowerOn = Y_ENABLEDATPOWERON_INVALID;
     _dutyCycleAtPowerOn = Y_DUTYCYCLEATPOWERON_INVALID;
@@ -83,24 +83,24 @@
         _enabled =  (Y_ENABLED_enum)atoi(j->token);
         return 1;
     }
-    if(!strcmp(j->token, "dutyCycle")) {
-        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-        _dutyCycle =  atof(j->token)/65536;
-        return 1;
-    }
-    if(!strcmp(j->token, "pulseDuration")) {
-        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-        _pulseDuration =  atof(j->token)/65536;
-        return 1;
-    }
     if(!strcmp(j->token, "frequency")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-        _frequency =  atoi(j->token);
+        _frequency =  floor(atof(j->token) * 1000.0 / 65536.0 + 0.5) / 1000.0;
         return 1;
     }
     if(!strcmp(j->token, "period")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-        _period =  atof(j->token)/65536;
+        _period =  floor(atof(j->token) * 1000.0 / 65536.0 + 0.5) / 1000.0;
+        return 1;
+    }
+    if(!strcmp(j->token, "dutyCycle")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _dutyCycle =  floor(atof(j->token) * 1000.0 / 65536.0 + 0.5) / 1000.0;
+        return 1;
+    }
+    if(!strcmp(j->token, "pulseDuration")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _pulseDuration =  floor(atof(j->token) * 1000.0 / 65536.0 + 0.5) / 1000.0;
         return 1;
     }
     if(!strcmp(j->token, "pwmTransition")) {
@@ -117,7 +117,7 @@
     }
     if(!strcmp(j->token, "dutyCycleAtPowerOn")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-        _dutyCycleAtPowerOn =  atof(j->token)/65536;
+        _dutyCycleAtPowerOn =  floor(atof(j->token) * 1000.0 / 65536.0 + 0.5) / 1000.0;
         return 1;
     }
     return [super _parseAttr:j];
@@ -168,6 +168,91 @@
 }
 
 /**
+ * Changes the PWM frequency. The duty cycle is kept unchanged thanks to an
+ * automatic pulse width change.
+ * 
+ * @param newval : a floating point number corresponding to the PWM frequency
+ * 
+ * @return YAPI_SUCCESS if the call succeeds.
+ * 
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) set_frequency:(double) newval
+{
+    return [self setFrequency:newval];
+}
+-(int) setFrequency:(double) newval
+{
+    NSString* rest_val;
+    rest_val = [NSString stringWithFormat:@"%d",(int)floor(newval * 65536.0 + 0.5)];
+    return [self _setAttr:@"frequency" :rest_val];
+}
+/**
+ * Returns the PWM frequency in Hz.
+ * 
+ * @return a floating point number corresponding to the PWM frequency in Hz
+ * 
+ * On failure, throws an exception or returns Y_FREQUENCY_INVALID.
+ */
+-(double) get_frequency
+{
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_FREQUENCY_INVALID;
+        }
+    }
+    return _frequency;
+}
+
+
+-(double) frequency
+{
+    return [self get_frequency];
+}
+
+/**
+ * Changes the PWM period in milliseconds.
+ * 
+ * @param newval : a floating point number corresponding to the PWM period in milliseconds
+ * 
+ * @return YAPI_SUCCESS if the call succeeds.
+ * 
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) set_period:(double) newval
+{
+    return [self setPeriod:newval];
+}
+-(int) setPeriod:(double) newval
+{
+    NSString* rest_val;
+    rest_val = [NSString stringWithFormat:@"%d",(int)floor(newval * 65536.0 + 0.5)];
+    return [self _setAttr:@"period" :rest_val];
+}
+/**
+ * Returns the PWM period in milliseconds.
+ * 
+ * @return a floating point number corresponding to the PWM period in milliseconds
+ * 
+ * On failure, throws an exception or returns Y_PERIOD_INVALID.
+ */
+-(double) get_period
+{
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_PERIOD_INVALID;
+        }
+    }
+    return _period;
+}
+
+
+-(double) period
+{
+    return [self get_period];
+}
+
+/**
  * Changes the PWM duty cycle, in per cents.
  * 
  * @param newval : a floating point number corresponding to the PWM duty cycle, in per cents
@@ -183,7 +268,7 @@
 -(int) setDutyCycle:(double) newval
 {
     NSString* rest_val;
-    rest_val = [NSString stringWithFormat:@"%d",(int)floor(newval*65536.0+0.5)];
+    rest_val = [NSString stringWithFormat:@"%d",(int)floor(newval * 65536.0 + 0.5)];
     return [self _setAttr:@"dutyCycle" :rest_val];
 }
 /**
@@ -226,13 +311,14 @@
 -(int) setPulseDuration:(double) newval
 {
     NSString* rest_val;
-    rest_val = [NSString stringWithFormat:@"%d",(int)floor(newval*65536.0+0.5)];
+    rest_val = [NSString stringWithFormat:@"%d",(int)floor(newval * 65536.0 + 0.5)];
     return [self _setAttr:@"pulseDuration" :rest_val];
 }
 /**
- * Returns the PWM pulse length in milliseconds.
+ * Returns the PWM pulse length in milliseconds, as a floating point number.
  * 
- * @return a floating point number corresponding to the PWM pulse length in milliseconds
+ * @return a floating point number corresponding to the PWM pulse length in milliseconds, as a
+ * floating point number
  * 
  * On failure, throws an exception or returns Y_PULSEDURATION_INVALID.
  */
@@ -250,91 +336,6 @@
 -(double) pulseDuration
 {
     return [self get_pulseDuration];
-}
-/**
- * Returns the PWM frequency in Hz.
- * 
- * @return an integer corresponding to the PWM frequency in Hz
- * 
- * On failure, throws an exception or returns Y_FREQUENCY_INVALID.
- */
--(int) get_frequency
-{
-    if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
-            return Y_FREQUENCY_INVALID;
-        }
-    }
-    return _frequency;
-}
-
-
--(int) frequency
-{
-    return [self get_frequency];
-}
-
-/**
- * Changes the PWM frequency. The duty cycle is kept unchanged thanks to an
- * automatic pulse width change.
- * 
- * @param newval : an integer corresponding to the PWM frequency
- * 
- * @return YAPI_SUCCESS if the call succeeds.
- * 
- * On failure, throws an exception or returns a negative error code.
- */
--(int) set_frequency:(int) newval
-{
-    return [self setFrequency:newval];
-}
--(int) setFrequency:(int) newval
-{
-    NSString* rest_val;
-    rest_val = [NSString stringWithFormat:@"%d", newval];
-    return [self _setAttr:@"frequency" :rest_val];
-}
-
-/**
- * Changes the PWM period.
- * 
- * @param newval : a floating point number corresponding to the PWM period
- * 
- * @return YAPI_SUCCESS if the call succeeds.
- * 
- * On failure, throws an exception or returns a negative error code.
- */
--(int) set_period:(double) newval
-{
-    return [self setPeriod:newval];
-}
--(int) setPeriod:(double) newval
-{
-    NSString* rest_val;
-    rest_val = [NSString stringWithFormat:@"%d",(int)floor(newval*65536.0+0.5)];
-    return [self _setAttr:@"period" :rest_val];
-}
-/**
- * Returns the PWM period in milliseconds.
- * 
- * @return a floating point number corresponding to the PWM period in milliseconds
- * 
- * On failure, throws an exception or returns Y_PERIOD_INVALID.
- */
--(double) get_period
-{
-    if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
-            return Y_PERIOD_INVALID;
-        }
-    }
-    return _period;
-}
-
-
--(double) period
-{
-    return [self get_period];
 }
 -(NSString*) get_pwmTransition
 {
@@ -425,7 +426,7 @@
 -(int) setDutyCycleAtPowerOn:(double) newval
 {
     NSString* rest_val;
-    rest_val = [NSString stringWithFormat:@"%d",(int)floor(newval*65536.0+0.5)];
+    rest_val = [NSString stringWithFormat:@"%d",(int)floor(newval * 65536.0 + 0.5)];
     return [self _setAttr:@"dutyCycleAtPowerOn" :rest_val];
 }
 /**
@@ -543,7 +544,7 @@
     if (ms_target < 0.0) {
         ms_target = 0.0;
     }
-    newval = [NSString stringWithFormat:@"%dms:%d", (int) ((ms_target*65536 < 0.0 ? ceil(ms_target*65536-0.5) : floor(ms_target*65536+0.5))),ms_duration];
+    newval = [NSString stringWithFormat:@"%dms:%d", (int) floor(ms_target*65536+0.5),ms_duration];
     return [self set_pwmTransition:newval];
 }
 
@@ -567,7 +568,7 @@
     if (target > 100.0) {
         target = 100.0;
     }
-    newval = [NSString stringWithFormat:@"%d:%d", (int) ((target*65536 < 0.0 ? ceil(target*65536-0.5) : floor(target*65536+0.5))),ms_duration];
+    newval = [NSString stringWithFormat:@"%d:%d", (int) floor(target*65536+0.5),ms_duration];
     return [self set_pwmTransition:newval];
 }
 

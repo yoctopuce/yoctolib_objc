@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_anbutton.h 15256 2014-03-06 10:19:01Z seb $
+ * $Id: yocto_anbutton.h 17675 2014-09-16 16:19:20Z seb $
  *
  * Declares yFindAnButton(), the high-level API for AnButton functions
  *
@@ -258,11 +258,11 @@ typedef enum {
 -(Y_ISPRESSED_enum) isPressed;
 /**
  * Returns the number of elapsed milliseconds between the module power on and the last time
- * the input button was pressed (the input contact transitionned from open to closed).
+ * the input button was pressed (the input contact transitioned from open to closed).
  * 
  * @return an integer corresponding to the number of elapsed milliseconds between the module power on
  * and the last time
- *         the input button was pressed (the input contact transitionned from open to closed)
+ *         the input button was pressed (the input contact transitioned from open to closed)
  * 
  * On failure, throws an exception or returns Y_LASTTIMEPRESSED_INVALID.
  */
@@ -272,11 +272,11 @@ typedef enum {
 -(s64) lastTimePressed;
 /**
  * Returns the number of elapsed milliseconds between the module power on and the last time
- * the input button was released (the input contact transitionned from closed to open).
+ * the input button was released (the input contact transitioned from closed to open).
  * 
  * @return an integer corresponding to the number of elapsed milliseconds between the module power on
  * and the last time
- *         the input button was released (the input contact transitionned from closed to open)
+ *         the input button was released (the input contact transitioned from closed to open)
  * 
  * On failure, throws an exception or returns Y_LASTTIMERELEASED_INVALID.
  */

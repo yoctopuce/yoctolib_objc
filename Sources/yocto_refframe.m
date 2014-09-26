@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_refframe.m 15998 2014-05-01 08:25:18Z seb $
+ * $Id: yocto_refframe.m 17481 2014-09-03 09:38:35Z mvuilleu $
  *
  * Implements the high-level API for RefFrame functions
  *
@@ -97,7 +97,7 @@
     }
     if(!strcmp(j->token, "bearing")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-        _bearing =  atof(j->token)/65536;
+        _bearing =  floor(atof(j->token) * 1000.0 / 65536.0 + 0.5) / 1000.0;
         return 1;
     }
     if(!strcmp(j->token, "calibrationParam")) {
@@ -167,7 +167,7 @@
 -(int) setBearing:(double) newval
 {
     NSString* rest_val;
-    rest_val = [NSString stringWithFormat:@"%d",(int)floor(newval*65536.0+0.5)];
+    rest_val = [NSString stringWithFormat:@"%d",(int)floor(newval * 65536.0 + 0.5)];
     return [self _setAttr:@"bearing" :rest_val];
 }
 /**
@@ -309,9 +309,9 @@
  */
 -(Y_MOUNTPOSITION) get_mountPosition
 {
-    int pos = 0;
-    pos = [self get_mountPos];
-    return (Y_MOUNTPOSITION) ((pos) >> (2));
+    int position;
+    position = [self get_mountPos];
+    return (Y_MOUNTPOSITION) ((position) >> (2));
 }
 
 /**
@@ -331,9 +331,9 @@
  */
 -(Y_MOUNTORIENTATION) get_mountOrientation
 {
-    int pos = 0;
-    pos = [self get_mountPos];
-    return (Y_MOUNTORIENTATION) ((pos) & (3));
+    int position;
+    position = [self get_mountPos];
+    return (Y_MOUNTORIENTATION) ((position) & (3));
 }
 
 /**
@@ -363,19 +363,19 @@
  */
 -(int) set_mountPosition:(Y_MOUNTPOSITION)position :(Y_MOUNTORIENTATION)orientation
 {
-    int pos = 0;
-    pos = ((position) << (2)) + orientation;
-    return [self set_mountPos:pos];
+    int mixedPos;
+    mixedPos = ((position) << (2)) + orientation;
+    return [self set_mountPos:mixedPos];
 }
 
 -(int) _calibSort:(int)start :(int)stopidx
 {
-    int idx = 0;
-    int changed = 0;
-    double a = 0;
-    double b = 0;
-    double xa = 0;
-    double xb = 0;
+    int idx;
+    int changed;
+    double a;
+    double b;
+    double xa;
+    double xb;
     
     // bubble sort is good since we will re-sort again after offset adjustment
     changed = 1;
@@ -463,19 +463,19 @@
  */
 -(int) more3DCalibration
 {
-    int currTick = 0;
-    NSData* jsonData;
-    double xVal = 0;
-    double yVal = 0;
-    double zVal = 0;
-    double xSq = 0;
-    double ySq = 0;
-    double zSq = 0;
-    double norm = 0;
-    int orient = 0;
-    int idx = 0;
-    int pos = 0;
-    int err = 0;
+    int currTick;
+    NSMutableData* jsonData;
+    double xVal;
+    double yVal;
+    double zVal;
+    double xSq;
+    double ySq;
+    double zSq;
+    double norm;
+    int orient;
+    int idx;
+    int intpos;
+    int err;
     // make sure calibration has been started
     if (_calibStage == 0) {
         return YAPI_INVALID_ARGUMENT;
@@ -525,6 +525,7 @@
     _calibPrevTick = currTick;
     
     // Determine the device orientation index
+    orient = 0;
     if (zSq > 0.5) {
         if (zVal > 0) {
             orient = 0;
@@ -583,12 +584,12 @@
     }
     
     // Stage done, compute preliminary result
-    pos = (_calibStage - 1) * _calibCount;
-    [self _calibSort:pos :pos + _calibCount];
-    pos = pos + ((_calibCount) / (2));
+    intpos = (_calibStage - 1) * _calibCount;
+    [self _calibSort:intpos :intpos + _calibCount];
+    intpos = intpos + ((_calibCount) / (2));
     _calibLogMsg = [NSString stringWithFormat:@"Stage %d: median is %d,%d,%d", _calibStage,
-    (int) ((1000*[[_calibDataAccX objectAtIndex:pos] doubleValue] < 0.0 ? ceil(1000*[[_calibDataAccX objectAtIndex:pos] doubleValue]-0.5) : floor(1000*[[_calibDataAccX objectAtIndex:pos] doubleValue]+0.5))),
-    (int) ((1000*[[_calibDataAccY objectAtIndex:pos] doubleValue] < 0.0 ? ceil(1000*[[_calibDataAccY objectAtIndex:pos] doubleValue]-0.5) : floor(1000*[[_calibDataAccY objectAtIndex:pos] doubleValue]+0.5))),(int) ((1000*[[_calibDataAccZ objectAtIndex:pos] doubleValue] < 0.0 ? ceil(1000*[[_calibDataAccZ objectAtIndex:pos] doubleValue]-0.5) : floor(1000*[[_calibDataAccZ objectAtIndex:pos] doubleValue]+0.5)))];
+    (int) floor(1000*[[_calibDataAccX objectAtIndex:intpos] doubleValue]+0.5),
+    (int) floor(1000*[[_calibDataAccY objectAtIndex:intpos] doubleValue]+0.5),(int) floor(1000*[[_calibDataAccZ objectAtIndex:intpos] doubleValue]+0.5)];
     
     // move to next stage
     _calibStage = _calibStage + 1;
@@ -605,16 +606,16 @@
     zVal = 0;
     idx = 0;
     while (idx < 6) {
-        pos = idx * _calibCount + ((_calibCount) / (2));
+        intpos = idx * _calibCount + ((_calibCount) / (2));
         orient = [[_calibOrient objectAtIndex:idx] intValue];
         if (orient == 0 || orient == 1) {
-            zVal = zVal + [[_calibDataAccZ objectAtIndex:pos] doubleValue];
+            zVal = zVal + [[_calibDataAccZ objectAtIndex:intpos] doubleValue];
         }
         if (orient == 2 || orient == 3) {
-            xVal = xVal + [[_calibDataAccX objectAtIndex:pos] doubleValue];
+            xVal = xVal + [[_calibDataAccX objectAtIndex:intpos] doubleValue];
         }
         if (orient == 4 || orient == 5) {
-            yVal = yVal + [[_calibDataAccY objectAtIndex:pos] doubleValue];
+            yVal = yVal + [[_calibDataAccY objectAtIndex:intpos] doubleValue];
         }
         idx = idx + 1;
     }
@@ -623,19 +624,19 @@
     _calibAccZOfs = zVal / 2.0;
     
     // Recompute all norms, taking into account the computed shift, and re-sort
-    pos = 0;
-    while (pos < (int)[_calibDataAcc count]) {
-        xVal = [[_calibDataAccX objectAtIndex:pos] doubleValue] - _calibAccXOfs;
-        yVal = [[_calibDataAccY objectAtIndex:pos] doubleValue] - _calibAccYOfs;
-        zVal = [[_calibDataAccZ objectAtIndex:pos] doubleValue] - _calibAccZOfs;
+    intpos = 0;
+    while (intpos < (int)[_calibDataAcc count]) {
+        xVal = [[_calibDataAccX objectAtIndex:intpos] doubleValue] - _calibAccXOfs;
+        yVal = [[_calibDataAccY objectAtIndex:intpos] doubleValue] - _calibAccYOfs;
+        zVal = [[_calibDataAccZ objectAtIndex:intpos] doubleValue] - _calibAccZOfs;
         norm = sqrt(xVal * xVal + yVal * yVal + zVal * zVal);
-        [_calibDataAcc replaceObjectAtIndex: pos withObject:[NSNumber numberWithDouble:norm]];
-        pos = pos + 1;
+        [_calibDataAcc replaceObjectAtIndex: intpos withObject:[NSNumber numberWithDouble:norm]];
+        intpos = intpos + 1;
     }
     idx = 0;
     while (idx < 6) {
-        pos = idx * _calibCount;
-        [self _calibSort:pos :pos + _calibCount];
+        intpos = idx * _calibCount;
+        [self _calibSort:intpos :intpos + _calibCount];
         idx = idx + 1;
     }
     
@@ -645,16 +646,16 @@
     zVal = 0;
     idx = 0;
     while (idx < 6) {
-        pos = idx * _calibCount + ((_calibCount) / (2));
+        intpos = idx * _calibCount + ((_calibCount) / (2));
         orient = [[_calibOrient objectAtIndex:idx] intValue];
         if (orient == 0 || orient == 1) {
-            zVal = zVal + [[_calibDataAcc objectAtIndex:pos] doubleValue];
+            zVal = zVal + [[_calibDataAcc objectAtIndex:intpos] doubleValue];
         }
         if (orient == 2 || orient == 3) {
-            xVal = xVal + [[_calibDataAcc objectAtIndex:pos] doubleValue];
+            xVal = xVal + [[_calibDataAcc objectAtIndex:intpos] doubleValue];
         }
         if (orient == 4 || orient == 5) {
-            yVal = yVal + [[_calibDataAcc objectAtIndex:pos] doubleValue];
+            yVal = yVal + [[_calibDataAcc objectAtIndex:intpos] doubleValue];
         }
         idx = idx + 1;
     }
@@ -735,40 +736,42 @@
  */
 -(int) save3DCalibration
 {
-    int shiftX = 0;
-    int shiftY = 0;
-    int shiftZ = 0;
-    int scaleExp = 0;
-    int scaleX = 0;
-    int scaleY = 0;
-    int scaleZ = 0;
-    int scaleLo = 0;
-    int scaleHi = 0;
+    int shiftX;
+    int shiftY;
+    int shiftZ;
+    int scaleExp;
+    int scaleX;
+    int scaleY;
+    int scaleZ;
+    int scaleLo;
+    int scaleHi;
     NSString* newcalib;
     if (_calibProgress != 100) {
         return YAPI_INVALID_ARGUMENT;
     }
     
     // Compute integer values (correction unit is 732ug/count)
-    shiftX = -(int) ((_calibAccXOfs / 0.000732 < 0.0 ? ceil(_calibAccXOfs / 0.000732-0.5) : floor(_calibAccXOfs / 0.000732+0.5)));
+    shiftX = -(int) floor(_calibAccXOfs / 0.000732+0.5);
     if (shiftX < 0) {
         shiftX = shiftX + 65536;
     }
-    shiftY = -(int) ((_calibAccYOfs / 0.000732 < 0.0 ? ceil(_calibAccYOfs / 0.000732-0.5) : floor(_calibAccYOfs / 0.000732+0.5)));
+    shiftY = -(int) floor(_calibAccYOfs / 0.000732+0.5);
     if (shiftY < 0) {
         shiftY = shiftY + 65536;
     }
-    shiftZ = -(int) ((_calibAccZOfs / 0.000732 < 0.0 ? ceil(_calibAccZOfs / 0.000732-0.5) : floor(_calibAccZOfs / 0.000732+0.5)));
+    shiftZ = -(int) floor(_calibAccZOfs / 0.000732+0.5);
     if (shiftZ < 0) {
         shiftZ = shiftZ + 65536;
     }
-    scaleX = (int) ((2048.0 / _calibAccXScale < 0.0 ? ceil(2048.0 / _calibAccXScale-0.5) : floor(2048.0 / _calibAccXScale+0.5))) - 2048;
-    scaleY = (int) ((2048.0 / _calibAccYScale < 0.0 ? ceil(2048.0 / _calibAccYScale-0.5) : floor(2048.0 / _calibAccYScale+0.5))) - 2048;
-    scaleZ = (int) ((2048.0 / _calibAccZScale < 0.0 ? ceil(2048.0 / _calibAccZScale-0.5) : floor(2048.0 / _calibAccZScale+0.5))) - 2048;
+    scaleX = (int) floor(2048.0 / _calibAccXScale+0.5) - 2048;
+    scaleY = (int) floor(2048.0 / _calibAccYScale+0.5) - 2048;
+    scaleZ = (int) floor(2048.0 / _calibAccZScale+0.5) - 2048;
     if (scaleX < -2048 || scaleX >= 2048 || scaleY < -2048 || scaleY >= 2048 || scaleZ < -2048 || scaleZ >= 2048) {
         scaleExp = 3;
+    } else {
         if (scaleX < -1024 || scaleX >= 1024 || scaleY < -1024 || scaleY >= 1024 || scaleZ < -1024 || scaleZ >= 1024) {
             scaleExp = 2;
+        } else {
             if (scaleX < -512 || scaleX >= 512 || scaleY < -512 || scaleY >= 512 || scaleZ < -512 || scaleZ >= 512) {
                 scaleExp = 1;
             } else {

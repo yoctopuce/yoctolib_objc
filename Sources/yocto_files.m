@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_files.m 14721 2014-01-24 17:58:44Z seb $
+ * $Id: yocto_files.m 17675 2014-09-16 16:19:20Z seb $
  *
  * Implements yFindFiles(), the high-level API for Files functions
  *
@@ -290,7 +290,7 @@
     return 0;
 }
 
--(NSData*) sendCommand:(NSString*)command
+-(NSMutableData*) sendCommand:(NSString*)command
 {
     NSString* url;
     url = [NSString stringWithFormat:@"files.json?a=%@",command];
@@ -299,7 +299,7 @@
 }
 
 /**
- * Reinitializes the filesystem to its clean, unfragmented, empty state.
+ * Reinitialize the filesystem to its clean, unfragmented, empty state.
  * All files previously uploaded are permanently lost.
  * 
  * @return YAPI_SUCCESS if the call succeeds.
@@ -308,7 +308,7 @@
  */
 -(int) format_fs
 {
-    NSData* json;
+    NSMutableData* json;
     NSString* res;
     json = [self sendCommand:@"format"];
     res = [self _json_get_key:json :@"res"];
@@ -331,7 +331,7 @@
  */
 -(NSMutableArray*) get_list:(NSString*)pattern
 {
-    NSData* json;
+    NSMutableData* json;
     NSMutableArray* filelist = [NSMutableArray array];
     NSMutableArray* res = [NSMutableArray array];
     json = [self sendCommand:[NSString stringWithFormat:@"dir&f=%@",pattern]];
@@ -352,7 +352,7 @@
  * 
  * On failure, throws an exception or returns an empty content.
  */
--(NSData*) download:(NSString*)pathname
+-(NSMutableData*) download:(NSString*)pathname
 {
     return [self _download:pathname];
 }
@@ -389,7 +389,7 @@
  */
 -(int) remove:(NSString*)pathname
 {
-    NSData* json;
+    NSMutableData* json;
     NSString* res;
     json = [self sendCommand:[NSString stringWithFormat:@"del&f=%@",pathname]];
     res  = [self _json_get_key:json :@"res"];

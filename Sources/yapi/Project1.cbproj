@@ -1,0 +1,468 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{50AF073A-839A-4D87-8365-A4BFB8BFA7FE}</ProjectGuid>
+        <ProjectVersion>14.6</ProjectVersion>
+        <FrameworkType>None</FrameworkType>
+        <Base>True</Base>
+        <Config Condition="'$(Config)'==''">Debug</Config>
+        <Platform Condition="'$(Platform)'==''">Win32</Platform>
+        <TargetedPlatforms>1</TargetedPlatforms>
+        <AppType>Console</AppType>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Config)'=='Base' or '$(Base)'!=''">
+        <Base>true</Base>
+    </PropertyGroup>
+    <PropertyGroup Condition="('$(Platform)'=='Win32' and '$(Base)'=='true') or '$(Base_Win32)'!=''">
+        <Base_Win32>true</Base_Win32>
+        <CfgParent>Base</CfgParent>
+        <Base>true</Base>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Config)'=='Debug' or '$(Cfg_1)'!=''">
+        <Cfg_1>true</Cfg_1>
+        <CfgParent>Base</CfgParent>
+        <Base>true</Base>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Config)'=='Release' or '$(Cfg_2)'!=''">
+        <Cfg_2>true</Cfg_2>
+        <CfgParent>Base</CfgParent>
+        <Base>true</Base>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Base)'!=''">
+        <Multithreaded>true</Multithreaded>
+        <_TCHARMapping>char</_TCHARMapping>
+        <ILINK_LibraryPath>C:\Users\seb\Documents\RAD Studio\Projects\;..\;C:\Users\seb\Desktop\;..\..\..\Desktop\;C:\data\yoctoprod\yoctolib\v1.0\Public\cpp\Sources\yapi\;C:\data\yoctoprod\yoctolib\v1.0\Public\cpp\Sources\;$(ILINK_LibraryPath)</ILINK_LibraryPath>
+        <ProjectType>CppConsoleApplication</ProjectType>
+        <IncludePath>C:\Users\seb\Documents\RAD Studio\Projects\;..\;C:\Users\seb\Desktop\;..\..\..\Desktop\;C:\data\yoctoprod\yoctolib\v1.0\Public\cpp\Sources\yapi\;C:\data\yoctoprod\yoctolib\v1.0\Public\cpp\Sources\;$(IncludePath)</IncludePath>
+        <DCC_Namespace>System;Xml;Data;Datasnap;Web;Soap;$(DCC_Namespace)</DCC_Namespace>
+        <DCC_CBuilderOutput>JPHNE</DCC_CBuilderOutput>
+        <IntermediateOutputDir>.\$(Platform)\$(Config)</IntermediateOutputDir>
+        <FinalOutputDir>.\$(Platform)\$(Config)</FinalOutputDir>
+        <BCC_wpar>false</BCC_wpar>
+        <BCC_OptimizeForSpeed>true</BCC_OptimizeForSpeed>
+        <BCC_ExtendedErrorInfo>true</BCC_ExtendedErrorInfo>
+        <ILINK_TranslatedLibraryPath>$(BDSLIB)\$(PLATFORM)\release\$(LANGDIR);$(ILINK_TranslatedLibraryPath)</ILINK_TranslatedLibraryPath>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Base_Win32)'!=''">
+        <PackageImports>bcbie;bcbsmp;bindcomp;bindcompfmx;bindcompvcl;bindengine;dbrtl;dsnap;fmx;fmxase;fmxdae;fmxobj;IndyCore;IndyProtocols;IndySystem;MetropolisUILiveTile;rtl;svn;vcl;vclactnband;vcldb;vcldsnap;vclimg;vclribbon;vcltouch;vclx;xmlrtl;$(PackageImports)</PackageImports>
+        <VerInfo_Locale>1033</VerInfo_Locale>
+        <VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
+        <DCC_Namespace>Winapi;System.Win;Data.Win;Datasnap.Win;Web.Win;Soap.Win;Xml.Win;Bde;$(DCC_Namespace)</DCC_Namespace>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Cfg_1)'!=''">
+        <VerInfo_Locale>4108</VerInfo_Locale>
+        <BCC_PCHUsage>None</BCC_PCHUsage>
+        <Manifest_File>None</Manifest_File>
+        <BCC_OptimizeForSpeed>false</BCC_OptimizeForSpeed>
+        <BCC_DisableOptimizations>true</BCC_DisableOptimizations>
+        <DCC_Optimize>false</DCC_Optimize>
+        <DCC_DebugInfoInExe>true</DCC_DebugInfoInExe>
+        <Defines>_DEBUG;$(Defines)</Defines>
+        <BCC_InlineFunctionExpansion>false</BCC_InlineFunctionExpansion>
+        <BCC_UseRegisterVariables>None</BCC_UseRegisterVariables>
+        <DCC_Define>DEBUG</DCC_Define>
+        <BCC_DebugLineNumbers>true</BCC_DebugLineNumbers>
+        <TASM_DisplaySourceLines>true</TASM_DisplaySourceLines>
+        <BCC_StackFrames>true</BCC_StackFrames>
+        <ILINK_FullDebugInfo>true</ILINK_FullDebugInfo>
+        <TASM_Debugging>Full</TASM_Debugging>
+        <BCC_SourceDebuggingOn>true</BCC_SourceDebuggingOn>
+        <BCC_EnableCPPExceptions>true</BCC_EnableCPPExceptions>
+        <BCC_DisableFramePtrElimOpt>true</BCC_DisableFramePtrElimOpt>
+        <BCC_DisableSpellChecking>true</BCC_DisableSpellChecking>
+        <CLANG_UnwindTables>true</CLANG_UnwindTables>
+        <ILINK_LibraryPath>$(BDSLIB)\$(PLATFORM)\debug;$(ILINK_LibraryPath)</ILINK_LibraryPath>
+        <ILINK_TranslatedLibraryPath>$(BDSLIB)\$(PLATFORM)\debug\$(LANGDIR);$(ILINK_TranslatedLibraryPath)</ILINK_TranslatedLibraryPath>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Cfg_2)'!=''">
+        <Defines>NDEBUG;$(Defines)</Defines>
+        <TASM_Debugging>None</TASM_Debugging>
+    </PropertyGroup>
+    <ItemGroup>
+        <CppCompile Include="yapi.c">
+            <BuildOrder>83</BuildOrder>
+        </CppCompile>
+        <None Include="yapi.h">
+            <BuildOrder>85</BuildOrder>
+        </None>
+        <None Include="ydef.h">
+            <BuildOrder>89</BuildOrder>
+        </None>
+        <CppCompile Include="yfifo.c">
+            <BuildOrder>90</BuildOrder>
+        </CppCompile>
+        <None Include="yfifo.h">
+            <BuildOrder>91</BuildOrder>
+        </None>
+        <CppCompile Include="yhash.c">
+            <BuildOrder>92</BuildOrder>
+        </CppCompile>
+        <None Include="yhash.h">
+            <BuildOrder>93</BuildOrder>
+        </None>
+        <CppCompile Include="yjson.c">
+            <BuildOrder>94</BuildOrder>
+        </CppCompile>
+        <None Include="yjson.h">
+            <BuildOrder>95</BuildOrder>
+        </None>
+        <CppCompile Include="ykey.c">
+            <BuildOrder>96</BuildOrder>
+        </CppCompile>
+        <None Include="ykey.h">
+            <BuildOrder>97</BuildOrder>
+        </None>
+        <CppCompile Include="ymemory.c">
+            <BuildOrder>98</BuildOrder>
+        </CppCompile>
+        <None Include="ymemory.h">
+            <BuildOrder>99</BuildOrder>
+        </None>
+        <CppCompile Include="ypkt_lin.c">
+            <BuildOrder>100</BuildOrder>
+        </CppCompile>
+        <CppCompile Include="ypkt_osx.c">
+            <BuildOrder>101</BuildOrder>
+        </CppCompile>
+        <CppCompile Include="ypkt_win.c">
+            <BuildOrder>102</BuildOrder>
+        </CppCompile>
+        <CppCompile Include="yprog.c">
+            <BuildOrder>103</BuildOrder>
+        </CppCompile>
+        <None Include="yprog.h">
+            <BuildOrder>104</BuildOrder>
+        </None>
+        <None Include="yproto.h">
+            <BuildOrder>105</BuildOrder>
+        </None>
+        <CppCompile Include="ystream.c">
+            <BuildOrder>106</BuildOrder>
+        </CppCompile>
+        <CppCompile Include="ytcp.c">
+            <BuildOrder>107</BuildOrder>
+        </CppCompile>
+        <None Include="ytcp.h">
+            <BuildOrder>108</BuildOrder>
+        </None>
+        <CppCompile Include="ythread.c">
+            <BuildOrder>109</BuildOrder>
+        </CppCompile>
+        <None Include="ythread.h">
+            <BuildOrder>110</BuildOrder>
+        </None>
+        <None Include="yversion.h">
+            <BuildOrder>111</BuildOrder>
+        </None>
+        <CppCompile Include="..\yocto_accelerometer.cpp">
+            <BuildOrder>5</BuildOrder>
+        </CppCompile>
+        <None Include="..\yocto_accelerometer.h">
+            <BuildOrder>6</BuildOrder>
+        </None>
+        <CppCompile Include="..\yocto_altitude.cpp">
+            <BuildOrder>7</BuildOrder>
+        </CppCompile>
+        <None Include="..\yocto_altitude.h">
+            <BuildOrder>8</BuildOrder>
+        </None>
+        <CppCompile Include="..\yocto_anbutton.cpp">
+            <BuildOrder>9</BuildOrder>
+        </CppCompile>
+        <None Include="..\yocto_anbutton.h">
+            <BuildOrder>10</BuildOrder>
+        </None>
+        <CppCompile Include="..\yocto_api.cpp">
+            <BuildOrder>11</BuildOrder>
+        </CppCompile>
+        <None Include="..\yocto_api.h">
+            <BuildOrder>12</BuildOrder>
+        </None>
+        <CppCompile Include="..\yocto_carbondioxide.cpp">
+            <BuildOrder>13</BuildOrder>
+        </CppCompile>
+        <None Include="..\yocto_carbondioxide.h">
+            <BuildOrder>14</BuildOrder>
+        </None>
+        <CppCompile Include="..\yocto_colorled.cpp">
+            <BuildOrder>15</BuildOrder>
+        </CppCompile>
+        <None Include="..\yocto_colorled.h">
+            <BuildOrder>16</BuildOrder>
+        </None>
+        <CppCompile Include="..\yocto_compass.cpp">
+            <BuildOrder>17</BuildOrder>
+        </CppCompile>
+        <None Include="..\yocto_compass.h">
+            <BuildOrder>18</BuildOrder>
+        </None>
+        <CppCompile Include="..\yocto_current.cpp">
+            <BuildOrder>19</BuildOrder>
+        </CppCompile>
+        <None Include="..\yocto_current.h">
+            <BuildOrder>20</BuildOrder>
+        </None>
+        <CppCompile Include="..\yocto_datalogger.cpp">
+            <BuildOrder>21</BuildOrder>
+        </CppCompile>
+        <None Include="..\yocto_datalogger.h">
+            <BuildOrder>22</BuildOrder>
+        </None>
+        <CppCompile Include="..\yocto_digitalio.cpp">
+            <BuildOrder>23</BuildOrder>
+        </CppCompile>
+        <None Include="..\yocto_digitalio.h">
+            <BuildOrder>24</BuildOrder>
+        </None>
+        <CppCompile Include="..\yocto_display.cpp">
+            <BuildOrder>25</BuildOrder>
+        </CppCompile>
+        <None Include="..\yocto_display.h">
+            <BuildOrder>26</BuildOrder>
+        </None>
+        <CppCompile Include="..\yocto_dualpower.cpp">
+            <BuildOrder>27</BuildOrder>
+        </CppCompile>
+        <None Include="..\yocto_dualpower.h">
+            <BuildOrder>28</BuildOrder>
+        </None>
+        <CppCompile Include="..\yocto_files.cpp">
+            <BuildOrder>29</BuildOrder>
+        </CppCompile>
+        <None Include="..\yocto_files.h">
+            <BuildOrder>30</BuildOrder>
+        </None>
+        <CppCompile Include="..\yocto_genericsensor.cpp">
+            <BuildOrder>31</BuildOrder>
+        </CppCompile>
+        <None Include="..\yocto_genericsensor.h">
+            <BuildOrder>32</BuildOrder>
+        </None>
+        <CppCompile Include="..\yocto_gyro.cpp">
+            <BuildOrder>33</BuildOrder>
+        </CppCompile>
+        <None Include="..\yocto_gyro.h">
+            <BuildOrder>34</BuildOrder>
+        </None>
+        <CppCompile Include="..\yocto_hubport.cpp">
+            <BuildOrder>35</BuildOrder>
+        </CppCompile>
+        <None Include="..\yocto_hubport.h">
+            <BuildOrder>36</BuildOrder>
+        </None>
+        <CppCompile Include="..\yocto_humidity.cpp">
+            <BuildOrder>37</BuildOrder>
+        </CppCompile>
+        <None Include="..\yocto_humidity.h">
+            <BuildOrder>38</BuildOrder>
+        </None>
+        <CppCompile Include="..\yocto_led.cpp">
+            <BuildOrder>39</BuildOrder>
+        </CppCompile>
+        <None Include="..\yocto_led.h">
+            <BuildOrder>40</BuildOrder>
+        </None>
+        <CppCompile Include="..\yocto_lightsensor.cpp">
+            <BuildOrder>41</BuildOrder>
+        </CppCompile>
+        <None Include="..\yocto_lightsensor.h">
+            <BuildOrder>42</BuildOrder>
+        </None>
+        <CppCompile Include="..\yocto_magnetometer.cpp">
+            <BuildOrder>43</BuildOrder>
+        </CppCompile>
+        <None Include="..\yocto_magnetometer.h">
+            <BuildOrder>44</BuildOrder>
+        </None>
+        <CppCompile Include="..\yocto_motor.cpp">
+            <BuildOrder>45</BuildOrder>
+        </CppCompile>
+        <None Include="..\yocto_motor.h">
+            <BuildOrder>46</BuildOrder>
+        </None>
+        <CppCompile Include="..\yocto_network.cpp">
+            <BuildOrder>47</BuildOrder>
+        </CppCompile>
+        <None Include="..\yocto_network.h">
+            <BuildOrder>48</BuildOrder>
+        </None>
+        <CppCompile Include="..\yocto_oscontrol.cpp">
+            <BuildOrder>49</BuildOrder>
+        </CppCompile>
+        <None Include="..\yocto_oscontrol.h">
+            <BuildOrder>50</BuildOrder>
+        </None>
+        <CppCompile Include="..\yocto_power.cpp">
+            <BuildOrder>51</BuildOrder>
+        </CppCompile>
+        <None Include="..\yocto_power.h">
+            <BuildOrder>52</BuildOrder>
+        </None>
+        <CppCompile Include="..\yocto_pressure.cpp">
+            <BuildOrder>53</BuildOrder>
+        </CppCompile>
+        <None Include="..\yocto_pressure.h">
+            <BuildOrder>54</BuildOrder>
+        </None>
+        <CppCompile Include="..\yocto_pwmoutput.cpp">
+            <BuildOrder>55</BuildOrder>
+        </CppCompile>
+        <None Include="..\yocto_pwmoutput.h">
+            <BuildOrder>56</BuildOrder>
+        </None>
+        <CppCompile Include="..\yocto_pwmpowersource.cpp">
+            <BuildOrder>57</BuildOrder>
+        </CppCompile>
+        <None Include="..\yocto_pwmpowersource.h">
+            <BuildOrder>58</BuildOrder>
+        </None>
+        <CppCompile Include="..\yocto_realtimeclock.cpp">
+            <BuildOrder>59</BuildOrder>
+        </CppCompile>
+        <None Include="..\yocto_realtimeclock.h">
+            <BuildOrder>60</BuildOrder>
+        </None>
+        <CppCompile Include="..\yocto_refframe.cpp">
+            <BuildOrder>61</BuildOrder>
+        </CppCompile>
+        <None Include="..\yocto_refframe.h">
+            <BuildOrder>62</BuildOrder>
+        </None>
+        <CppCompile Include="..\yocto_relay.cpp">
+            <BuildOrder>63</BuildOrder>
+        </CppCompile>
+        <None Include="..\yocto_relay.h">
+            <BuildOrder>64</BuildOrder>
+        </None>
+        <CppCompile Include="..\yocto_servo.cpp">
+            <BuildOrder>65</BuildOrder>
+        </CppCompile>
+        <None Include="..\yocto_servo.h">
+            <BuildOrder>66</BuildOrder>
+        </None>
+        <CppCompile Include="..\yocto_temperature.cpp">
+            <BuildOrder>67</BuildOrder>
+        </CppCompile>
+        <None Include="..\yocto_temperature.h">
+            <BuildOrder>68</BuildOrder>
+        </None>
+        <CppCompile Include="..\yocto_tilt.cpp">
+            <BuildOrder>69</BuildOrder>
+        </CppCompile>
+        <None Include="..\yocto_tilt.h">
+            <BuildOrder>70</BuildOrder>
+        </None>
+        <CppCompile Include="..\yocto_voc.cpp">
+            <BuildOrder>71</BuildOrder>
+        </CppCompile>
+        <None Include="..\yocto_voc.h">
+            <BuildOrder>72</BuildOrder>
+        </None>
+        <CppCompile Include="..\yocto_voltage.cpp">
+            <BuildOrder>73</BuildOrder>
+        </CppCompile>
+        <None Include="..\yocto_voltage.h">
+            <BuildOrder>74</BuildOrder>
+        </None>
+        <CppCompile Include="..\yocto_wakeupmonitor.cpp">
+            <BuildOrder>75</BuildOrder>
+        </CppCompile>
+        <None Include="..\yocto_wakeupmonitor.h">
+            <BuildOrder>76</BuildOrder>
+        </None>
+        <CppCompile Include="..\yocto_wakeupschedule.cpp">
+            <BuildOrder>77</BuildOrder>
+        </CppCompile>
+        <None Include="..\yocto_wakeupschedule.h">
+            <BuildOrder>78</BuildOrder>
+        </None>
+        <CppCompile Include="..\yocto_watchdog.cpp">
+            <BuildOrder>79</BuildOrder>
+        </CppCompile>
+        <None Include="..\yocto_watchdog.h">
+            <BuildOrder>80</BuildOrder>
+        </None>
+        <CppCompile Include="..\yocto_wireless.cpp">
+            <BuildOrder>81</BuildOrder>
+        </CppCompile>
+        <None Include="..\yocto_wireless.h">
+            <BuildOrder>82</BuildOrder>
+        </None>
+        <PCHCompile Include="C:\Users\seb\Desktop\Project1PCH1.h">
+            <BuildOrder>0</BuildOrder>
+        </PCHCompile>
+        <CppCompile Include="C:\Users\seb\Documents\RAD Studio\Projects\doc-inventory.cpp">
+            <BuildOrder>1</BuildOrder>
+        </CppCompile>
+        <BuildConfiguration Include="Release">
+            <Key>Cfg_2</Key>
+            <CfgParent>Base</CfgParent>
+        </BuildConfiguration>
+        <BuildConfiguration Include="Base">
+            <Key>Base</Key>
+        </BuildConfiguration>
+        <BuildConfiguration Include="Debug">
+            <Key>Cfg_1</Key>
+            <CfgParent>Base</CfgParent>
+        </BuildConfiguration>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>CPlusPlusBuilder.Personality.12</Borland.Personality>
+        <Borland.ProjectType>CppConsoleApplication</Borland.ProjectType>
+        <BorlandProject>
+            <CPlusPlusBuilder.Personality>
+                <VersionInfo>
+                    <VersionInfo Name="IncludeVerInfo">False</VersionInfo>
+                    <VersionInfo Name="AutoIncBuild">False</VersionInfo>
+                    <VersionInfo Name="MajorVer">1</VersionInfo>
+                    <VersionInfo Name="MinorVer">0</VersionInfo>
+                    <VersionInfo Name="Release">0</VersionInfo>
+                    <VersionInfo Name="Build">0</VersionInfo>
+                    <VersionInfo Name="Debug">False</VersionInfo>
+                    <VersionInfo Name="PreRelease">False</VersionInfo>
+                    <VersionInfo Name="Special">False</VersionInfo>
+                    <VersionInfo Name="Private">False</VersionInfo>
+                    <VersionInfo Name="DLL">False</VersionInfo>
+                    <VersionInfo Name="Locale">4108</VersionInfo>
+                    <VersionInfo Name="CodePage">1252</VersionInfo>
+                </VersionInfo>
+                <VersionInfoKeys>
+                    <VersionInfoKeys Name="CompanyName"/>
+                    <VersionInfoKeys Name="FileDescription"/>
+                    <VersionInfoKeys Name="FileVersion">1.0.0.0</VersionInfoKeys>
+                    <VersionInfoKeys Name="InternalName"/>
+                    <VersionInfoKeys Name="LegalCopyright"/>
+                    <VersionInfoKeys Name="LegalTrademarks"/>
+                    <VersionInfoKeys Name="OriginalFilename"/>
+                    <VersionInfoKeys Name="ProductName"/>
+                    <VersionInfoKeys Name="ProductVersion">1.0.0.0</VersionInfoKeys>
+                    <VersionInfoKeys Name="Comments"/>
+                    <VersionInfoKeys Name="CFBundleName"/>
+                    <VersionInfoKeys Name="CFBundleDisplayName"/>
+                    <VersionInfoKeys Name="UIDeviceFamily"/>
+                    <VersionInfoKeys Name="CFBundleIdentifier"/>
+                    <VersionInfoKeys Name="CFBundleVersion"/>
+                    <VersionInfoKeys Name="CFBundlePackageType"/>
+                    <VersionInfoKeys Name="CFBundleSignature"/>
+                    <VersionInfoKeys Name="CFBundleAllowMixedLocalizations"/>
+                    <VersionInfoKeys Name="UISupportedInterfaceOrientations"/>
+                    <VersionInfoKeys Name="CFBundleExecutable"/>
+                    <VersionInfoKeys Name="CFBundleResourceSpecification"/>
+                    <VersionInfoKeys Name="LSRequiresIPhoneOS"/>
+                    <VersionInfoKeys Name="CFBundleInfoDictionaryVersion"/>
+                    <VersionInfoKeys Name="CFBundleDevelopmentRegion"/>
+                </VersionInfoKeys>
+                <ProjectProperties>
+                    <ProjectProperties Name="AutoShowDeps">False</ProjectProperties>
+                    <ProjectProperties Name="ManagePaths">True</ProjectProperties>
+                    <ProjectProperties Name="VerifyPackages">True</ProjectProperties>
+                </ProjectProperties>
+            </CPlusPlusBuilder.Personality>
+            <Platforms>
+                <Platform value="Win32">True</Platform>
+            </Platforms>
+        </BorlandProject>
+        <ProjectFileVersion>12</ProjectFileVersion>
+    </ProjectExtensions>
+    <Import Project="$(BDS)\Bin\CodeGear.Cpp.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Cpp.Targets')"/>
+    <Import Project="$(APPDATA)\Embarcadero\$(BDSAPPDATABASEDIR)\$(PRODUCTVERSION)\UserTools.proj" Condition="Exists('$(APPDATA)\Embarcadero\$(BDSAPPDATABASEDIR)\$(PRODUCTVERSION)\UserTools.proj')"/>
+</Project>

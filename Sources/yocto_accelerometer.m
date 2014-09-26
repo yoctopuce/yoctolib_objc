@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_accelerometer.m 15256 2014-03-06 10:19:01Z seb $
+ * $Id: yocto_accelerometer.m 17252 2014-08-21 14:44:20Z seb $
  *
  * Implements the high-level API for Accelerometer functions
  *
@@ -56,6 +56,7 @@
     _xValue = Y_XVALUE_INVALID;
     _yValue = Y_YVALUE_INVALID;
     _zValue = Y_ZVALUE_INVALID;
+    _gravityCancellation = Y_GRAVITYCANCELLATION_INVALID;
     _valueCallbackAccelerometer = NULL;
     _timedReportCallbackAccelerometer = NULL;
 //--- (end of YAccelerometer attributes initialization)
@@ -74,17 +75,22 @@
 {
     if(!strcmp(j->token, "xValue")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-        _xValue =  atof(j->token)/65536;
+        _xValue =  floor(atof(j->token) * 1000.0 / 65536.0 + 0.5) / 1000.0;
         return 1;
     }
     if(!strcmp(j->token, "yValue")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-        _yValue =  atof(j->token)/65536;
+        _yValue =  floor(atof(j->token) * 1000.0 / 65536.0 + 0.5) / 1000.0;
         return 1;
     }
     if(!strcmp(j->token, "zValue")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-        _zValue =  atof(j->token)/65536;
+        _zValue =  floor(atof(j->token) * 1000.0 / 65536.0 + 0.5) / 1000.0;
+        return 1;
+    }
+    if(!strcmp(j->token, "gravityCancellation")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _gravityCancellation =  (Y_GRAVITYCANCELLATION_enum)atoi(j->token);
         return 1;
     }
     return [super _parseAttr:j];
@@ -156,6 +162,32 @@
 -(double) zValue
 {
     return [self get_zValue];
+}
+-(Y_GRAVITYCANCELLATION_enum) get_gravityCancellation
+{
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_GRAVITYCANCELLATION_INVALID;
+        }
+    }
+    return _gravityCancellation;
+}
+
+
+-(Y_GRAVITYCANCELLATION_enum) gravityCancellation
+{
+    return [self get_gravityCancellation];
+}
+
+-(int) set_gravityCancellation:(Y_GRAVITYCANCELLATION_enum) newval
+{
+    return [self setGravityCancellation:newval];
+}
+-(int) setGravityCancellation:(Y_GRAVITYCANCELLATION_enum) newval
+{
+    NSString* rest_val;
+    rest_val = (newval ? @"1" : @"0");
+    return [self _setAttr:@"gravityCancellation" :rest_val];
 }
 /**
  * Retrieves $AFUNCTION$ for a given identifier.

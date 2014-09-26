@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_datalogger.m 14721 2014-01-24 17:58:44Z seb $
+ * $Id: yocto_datalogger.m 17675 2014-09-16 16:19:20Z seb $
  *
  * Implements yFindDataLogger(), the high-level API for DataLogger functions
  *
@@ -349,6 +349,7 @@
     _timeUTC = Y_TIMEUTC_INVALID;
     _recording = Y_RECORDING_INVALID;
     _autoStart = Y_AUTOSTART_INVALID;
+    _beaconDriven = Y_BEACONDRIVEN_INVALID;
     _clearHistory = Y_CLEARHISTORY_INVALID;
     _valueCallbackDataLogger = NULL;
 //--- (end of generated code: YDataLogger attributes initialization)
@@ -388,6 +389,11 @@
         _autoStart =  (Y_AUTOSTART_enum)atoi(j->token);
         return 1;
     }
+    if(!strcmp(j->token, "beaconDriven")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _beaconDriven =  (Y_BEACONDRIVEN_enum)atoi(j->token);
+        return 1;
+    }
     if(!strcmp(j->token, "clearHistory")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
         _clearHistory =  (Y_CLEARHISTORY_enum)atoi(j->token);
@@ -402,7 +408,7 @@
 -(int) _getData:(unsigned)runIdx  :(unsigned)timeIdx :(NSString**) buffer :(yJsonStateMachine*) j
 {
     YDevice     *dev;
-    NSData      *raw_buffer;
+    NSMutableData      *raw_buffer;
     NSString    *query;
     NSError     *error;
     int         res;
@@ -701,6 +707,51 @@
     NSString* rest_val;
     rest_val = (newval ? @"1" : @"0");
     return [self _setAttr:@"autoStart" :rest_val];
+}
+/**
+ * Return true if the data logger is synchronised with the localization beacon.
+ * 
+ * @return either Y_BEACONDRIVEN_OFF or Y_BEACONDRIVEN_ON
+ * 
+ * On failure, throws an exception or returns Y_BEACONDRIVEN_INVALID.
+ */
+-(Y_BEACONDRIVEN_enum) get_beaconDriven
+{
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_BEACONDRIVEN_INVALID;
+        }
+    }
+    return _beaconDriven;
+}
+
+
+-(Y_BEACONDRIVEN_enum) beaconDriven
+{
+    return [self get_beaconDriven];
+}
+
+/**
+ * Changes the type of synchronisation of the data logger.
+ * Remember to call the saveToFlash() method of the module if the
+ * modification must be kept.
+ * 
+ * @param newval : either Y_BEACONDRIVEN_OFF or Y_BEACONDRIVEN_ON, according to the type of
+ * synchronisation of the data logger
+ * 
+ * @return YAPI_SUCCESS if the call succeeds.
+ * 
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) set_beaconDriven:(Y_BEACONDRIVEN_enum) newval
+{
+    return [self setBeaconDriven:newval];
+}
+-(int) setBeaconDriven:(Y_BEACONDRIVEN_enum) newval
+{
+    NSString* rest_val;
+    rest_val = (newval ? @"1" : @"0");
+    return [self _setAttr:@"beaconDriven" :rest_val];
 }
 -(Y_CLEARHISTORY_enum) get_clearHistory
 {

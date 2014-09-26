@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_compass.m 15256 2014-03-06 10:19:01Z seb $
+ * $Id: yocto_compass.m 16895 2014-07-18 00:12:08Z mvuilleu $
  *
  * Implements the high-level API for Compass functions
  *
@@ -78,7 +78,7 @@
     }
     if(!strcmp(j->token, "magneticHeading")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-        _magneticHeading =  atof(j->token)/65536;
+        _magneticHeading =  floor(atof(j->token) * 1000.0 / 65536.0 + 0.5) / 1000.0;
         return 1;
     }
     return [super _parseAttr:j];

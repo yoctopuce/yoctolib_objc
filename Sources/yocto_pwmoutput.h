@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_pwmoutput.h 15529 2014-03-20 17:54:15Z seb $
+ * $Id: yocto_pwmoutput.h 17481 2014-09-03 09:38:35Z mvuilleu $
  *
  * Declares yFindPwmOutput(), the high-level API for PwmOutput functions
  *
@@ -62,10 +62,10 @@ typedef enum {
 } Y_ENABLEDATPOWERON_enum;
 #endif
 
+#define Y_FREQUENCY_INVALID             YAPI_INVALID_DOUBLE
+#define Y_PERIOD_INVALID                YAPI_INVALID_DOUBLE
 #define Y_DUTYCYCLE_INVALID             YAPI_INVALID_DOUBLE
 #define Y_PULSEDURATION_INVALID         YAPI_INVALID_DOUBLE
-#define Y_FREQUENCY_INVALID             YAPI_INVALID_UINT
-#define Y_PERIOD_INVALID                YAPI_INVALID_DOUBLE
 #define Y_PWMTRANSITION_INVALID         YAPI_INVALID_STRING
 #define Y_DUTYCYCLEATPOWERON_INVALID    YAPI_INVALID_DOUBLE
 //--- (end of YPwmOutput globals)
@@ -82,10 +82,10 @@ typedef enum {
 @protected
 //--- (YPwmOutput attributes declaration)
     Y_ENABLED_enum  _enabled;
+    double          _frequency;
+    double          _period;
     double          _dutyCycle;
     double          _pulseDuration;
-    int             _frequency;
-    double          _period;
     NSString*       _pwmTransition;
     Y_ENABLEDATPOWERON_enum _enabledAtPowerOn;
     double          _dutyCycleAtPowerOn;
@@ -125,6 +125,53 @@ typedef enum {
 -(int)     setEnabled:(Y_ENABLED_enum) newval;
 
 /**
+ * Changes the PWM frequency. The duty cycle is kept unchanged thanks to an
+ * automatic pulse width change.
+ * 
+ * @param newval : a floating point number corresponding to the PWM frequency
+ * 
+ * @return YAPI_SUCCESS if the call succeeds.
+ * 
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     set_frequency:(double) newval;
+-(int)     setFrequency:(double) newval;
+
+/**
+ * Returns the PWM frequency in Hz.
+ * 
+ * @return a floating point number corresponding to the PWM frequency in Hz
+ * 
+ * On failure, throws an exception or returns Y_FREQUENCY_INVALID.
+ */
+-(double)     get_frequency;
+
+
+-(double) frequency;
+/**
+ * Changes the PWM period in milliseconds.
+ * 
+ * @param newval : a floating point number corresponding to the PWM period in milliseconds
+ * 
+ * @return YAPI_SUCCESS if the call succeeds.
+ * 
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     set_period:(double) newval;
+-(int)     setPeriod:(double) newval;
+
+/**
+ * Returns the PWM period in milliseconds.
+ * 
+ * @return a floating point number corresponding to the PWM period in milliseconds
+ * 
+ * On failure, throws an exception or returns Y_PERIOD_INVALID.
+ */
+-(double)     get_period;
+
+
+-(double) period;
+/**
  * Changes the PWM duty cycle, in per cents.
  * 
  * @param newval : a floating point number corresponding to the PWM duty cycle, in per cents
@@ -161,9 +208,10 @@ typedef enum {
 -(int)     setPulseDuration:(double) newval;
 
 /**
- * Returns the PWM pulse length in milliseconds.
+ * Returns the PWM pulse length in milliseconds, as a floating point number.
  * 
- * @return a floating point number corresponding to the PWM pulse length in milliseconds
+ * @return a floating point number corresponding to the PWM pulse length in milliseconds, as a
+ * floating point number
  * 
  * On failure, throws an exception or returns Y_PULSEDURATION_INVALID.
  */
@@ -171,53 +219,6 @@ typedef enum {
 
 
 -(double) pulseDuration;
-/**
- * Returns the PWM frequency in Hz.
- * 
- * @return an integer corresponding to the PWM frequency in Hz
- * 
- * On failure, throws an exception or returns Y_FREQUENCY_INVALID.
- */
--(int)     get_frequency;
-
-
--(int) frequency;
-/**
- * Changes the PWM frequency. The duty cycle is kept unchanged thanks to an
- * automatic pulse width change.
- * 
- * @param newval : an integer corresponding to the PWM frequency
- * 
- * @return YAPI_SUCCESS if the call succeeds.
- * 
- * On failure, throws an exception or returns a negative error code.
- */
--(int)     set_frequency:(int) newval;
--(int)     setFrequency:(int) newval;
-
-/**
- * Changes the PWM period.
- * 
- * @param newval : a floating point number corresponding to the PWM period
- * 
- * @return YAPI_SUCCESS if the call succeeds.
- * 
- * On failure, throws an exception or returns a negative error code.
- */
--(int)     set_period:(double) newval;
--(int)     setPeriod:(double) newval;
-
-/**
- * Returns the PWM period in milliseconds.
- * 
- * @return a floating point number corresponding to the PWM period in milliseconds
- * 
- * On failure, throws an exception or returns Y_PERIOD_INVALID.
- */
--(double)     get_period;
-
-
--(double) period;
 -(NSString*)     get_pwmTransition;
 
 

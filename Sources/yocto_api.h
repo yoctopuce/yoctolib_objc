@@ -1,35 +1,35 @@
 /*********************************************************************
  *
- * $Id: yocto_api.h 16091 2014-05-08 12:10:31Z seb $
+ * $Id: yocto_api.h 17816 2014-09-24 14:47:30Z seb $
  *
  * High-level programming interface, common to all modules
  *
- * - - - - - - - - - License information: - - - - - - - - - 
+ * - - - - - - - - - License information: - - - - - - - - -
  *
  *  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
  *
  *  Yoctopuce Sarl (hereafter Licensor) grants to you a perpetual
  *  non-exclusive license to use, modify, copy and integrate this
- *  file into your software for the sole purpose of interfacing 
- *  with Yoctopuce products. 
+ *  file into your software for the sole purpose of interfacing
+ *  with Yoctopuce products.
  *
- *  You may reproduce and distribute copies of this file in 
+ *  You may reproduce and distribute copies of this file in
  *  source or object form, as long as the sole purpose of this
- *  code is to interface with Yoctopuce products. You must retain 
+ *  code is to interface with Yoctopuce products. You must retain
  *  this notice in the distributed source file.
  *
  *  You should refer to Yoctopuce General Terms and Conditions
- *  for additional information regarding your rights and 
+ *  for additional information regarding your rights and
  *  obligations.
  *
  *  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED "AS IS" WITHOUT
- *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
- *  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS 
+ *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING
+ *  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS
  *  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
  *  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
- *  INDIRECT OR CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA, 
- *  COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY OR 
- *  SERVICES, ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT 
+ *  INDIRECT OR CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA,
+ *  COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY OR
+ *  SERVICES, ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT
  *  LIMITED TO ANY DEFENSE THEREOF), ANY CLAIMS FOR INDEMNITY OR
  *  CONTRIBUTION, OR OTHER SIMILAR COSTS, WHETHER ASSERTED ON THE
  *  BASIS OF CONTRACT, TORT (INCLUDING NEGLIGENCE), BREACH OF
@@ -77,7 +77,7 @@ NSMutableDictionary* YAPI_YFunctions;
 @class YMeasure;
 @class YDataStream;
 @class YDataSet;
-
+@class YFirmwareUpdate;
 
 /// prototype of log callback
 typedef void    (*yLogCallback)(NSString * log);
@@ -132,15 +132,6 @@ typedef enum {
 } Y_BEACON_enum;
 #endif
 
-#ifndef _Y_USBBANDWIDTH_ENUM
-#define _Y_USBBANDWIDTH_ENUM
-typedef enum {
-    Y_USBBANDWIDTH_SIMPLE = 0,
-    Y_USBBANDWIDTH_DOUBLE = 1,
-    Y_USBBANDWIDTH_INVALID = -1,
-} Y_USBBANDWIDTH_enum;
-#endif
-
 #define Y_PRODUCTNAME_INVALID           YAPI_INVALID_STRING
 #define Y_SERIALNUMBER_INVALID          YAPI_INVALID_STRING
 #define Y_PRODUCTID_INVALID             YAPI_INVALID_UINT
@@ -150,6 +141,7 @@ typedef enum {
 #define Y_UPTIME_INVALID                YAPI_INVALID_LONG
 #define Y_USBCURRENT_INVALID            YAPI_INVALID_UINT
 #define Y_REBOOTCOUNTDOWN_INVALID       YAPI_INVALID_INT
+#define Y_USERVAR_INVALID               YAPI_INVALID_INT
 //--- (end of generated code: YModule globals)
 
 //--- (generated code: YSensor globals)
@@ -169,6 +161,9 @@ typedef void (*YSensorTimedReportCallback)(YSensor *func, YMeasure *measure);
 //--- (generated code: YDataStream globals)
 //--- (end of generated code: YDataStream globals)
 
+//--- (generated code: YFirmwareUpdate globals)
+//--- (end of generated code: YFirmwareUpdate globals)
+
 //--- (generated code: YMeasure globals)
 //--- (end of generated code: YMeasure globals)
 
@@ -177,11 +172,11 @@ typedef void (*YSensorTimedReportCallback)(YSensor *func, YMeasure *measure);
 
 
 
-// 
+//
 // Class used to report exceptions within Yocto-API
 // Do not instantiate directly
 //
-@interface YAPI_Exception : NSException 
+@interface YAPI_Exception : NSException
 {
     YRETCODE _errorType;
 }
@@ -240,7 +235,7 @@ YRETCODE yFormatRetVal(NSError** error,YRETCODE errCode,const char *message);
 int _ystrpos(NSString* haystack, NSString* needle);
 
 
-// 
+//
 // YAPI Context
 //
 // This class provides Objective-C style entry points to lowlevcel functions defined to yapi.h
@@ -252,17 +247,18 @@ int _ystrpos(NSString* haystack, NSString* needle);
 +(double)   _decimalToDouble:(s16) val;
 +(s16)      _doubleToDecimal:(double) val;
 +(NSMutableArray*) _decodeWords:(NSString*)s;
++(NSMutableArray*) _decodeFloats:(NSString*)s;
 
 // declare defaultCacheValidity,exceptionsDisabled, and INVALID_STRING as "static" methode since
 // there is no "static" data member in Objective-C
-        
+
 // Default cache validity (in [ms]) before reloading data from device. This saves a lots of trafic.
 // Note that a value under 2 ms makes little sense since a USB bus itself has a 2ms roundtrip period
 +(int)         DefaultCacheValidity;
 +(void)        SetDefaultCacheValidity:(int)defaultCacheValidity;
 
 // Switch to turn off exceptions and use return codes instead, for source-code compatibility
-// with languages without exception support like C    
+// with languages without exception support like C
 +(BOOL)        ExceptionsDisabled;
 // Return value for invalid strings
 +(NSString*)   INVALID_STRING;
@@ -421,7 +417,7 @@ int _ystrpos(NSString* haystack, NSString* needle);
  * If access control has been activated on the hub, virtual or not, you want to
  * reach, the URL parameter should look like:
  * 
- * http://username:password@adresse:port
+ * http://username:password@address:port
  * 
  * You can call <i>RegisterHub</i> several times to connect to several machines.
  * 
@@ -555,7 +551,7 @@ int _ystrpos(NSString* haystack, NSString* needle);
 @end
 
 // Wrappers to yapi low-level API
-@interface YapiWrapper : NSObject 
+@interface YapiWrapper : NSObject
 // Wrappers to yapi low-level API
 +(u16)         getAPIVersion:(NSString**)version :(NSString**) subversion;
 +(YDEV_DESCR)  getDevice:(NSString * const)device_str :(NSError**) error;
@@ -573,7 +569,7 @@ int _ystrpos(NSString* haystack, NSString* needle);
 
 
 
-// 
+//
 // YDevice Class (used internally)
 //
 // This class is used to cache device-level information
@@ -605,7 +601,7 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
 -(id)           initWithDeviceDescriptor:(YDEV_DESCR)devdesc;
 +(YDevice*)     getDevice:(YDEV_DESCR)devdescr;
 -(YRETCODE)     HTTPRequestAsync:(NSString*)request :(HTTPRequestCallback)callback :(NSMutableDictionary*)context :(NSError**)error;
--(YRETCODE)     HTTPRequest:(NSString*)request :(NSData**)buffer :(NSError**)error;
+-(YRETCODE)     HTTPRequest:(NSString*)request :(NSMutableData**)buffer :(NSError**)error;
 -(YRETCODE)     requestAPI:(NSString**)apires :(NSError**)error;
 -(YRETCODE)     getFunctions:(NSArray**)functions :(NSError**)error;
 @end
@@ -629,8 +625,8 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
  */
 @interface YFunction : NSObject
 //--- (end of generated code: YFunction class start)
-{   
-@protected    
+{
+@protected
     // Protected attributes
     NSString    *_className;
     NSString    *_func;
@@ -659,13 +655,13 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
 
 // Method used to retrieve our unique function descriptor (may trigger a hub scan)
 -(YRETCODE)    _getDescriptor:(YFUN_DESCR*)fundescr :(NSError**)error;
-    
+
 // Method used to retrieve our device object (may trigger a hub scan)
 -(YRETCODE)    _getDevice:(YDevice**) dev :(NSError**)error;
 
 // Method used to find the next instance of our function
 -(YRETCODE)    _nextFunction:(NSString**) hwId;
-    
+
 // Function-specific method for parsing JSON output and caching result
 -(int)         _parse:(yJsonStateMachine*) j;
 -(NSString*)   _parseString:(yJsonStateMachine*)j;
@@ -675,7 +671,7 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
 // Method used to change attributes
 -(YRETCODE)    _setAttr:(NSString*)attrname :(NSString*)newvalue;
 // Method used to send http request to the device (not the function)
--(NSData*)     _download:(NSString*)url;
+-(NSMutableData*)     _download:(NSString*)url;
 // Method used to upload a file to the device
 -(YRETCODE)    _upload:(NSString*)path :(NSData*)content;
 -(NSString*)   _json_get_key:(NSData*)json :(NSString*)data;
@@ -792,7 +788,7 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
  * Returns a descriptive text that identifies the function.
  * The text always includes the class name, and may include as well
  * either the logical name of the function or its hardware identifier.
- * 
+ *
  * @return a string that describes the function
  */
 -(NSString*)    description;
@@ -819,7 +815,7 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
  * Returns a global identifier of the function in the format MODULE_NAME&#46;FUNCTION_NAME.
  * The returned string uses the logical names of the module and of the function if they are defined,
  * otherwise the serial number of the module and the hardware identifier of the function
- * (for exemple: MyCustomName.relay1)
+ * (for example: MyCustomName.relay1)
  * 
  * @return a string that uniquely identifies the function using logical names
  *         (ex: MyCustomName.relay1)
@@ -857,7 +853,7 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
  * Returns the numerical error code of the last error with this module object.
  * This method is mostly useful when using the Yoctopuce library with
  * exceptions disabled.
- * 
+ *
  * @return a number corresponding to the code of the last error that occured while
  *         using this module object
  */
@@ -876,7 +872,7 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
  */
 -(NSString*)   get_errorMessage;
 -(NSString*)   errorMessage;
-    
+
 /**
  * Checks if the function is currently reachable, without raising any error.
  * If there is a cached value for the function in cache, that has not yet
@@ -893,7 +889,7 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
  * By default, whenever accessing a device, all function attributes
  * are kept in cache for the standard duration (5 ms). This method can be
  * used to temporarily mark the cache as valid for a longer period, in order
- * to reduce network trafic for instance.
+ * to reduce network traffic for instance.
  * 
  * @param msValidity : an integer corresponding to the validity attributed to the
  *         loaded function parameters, in milliseconds
@@ -979,7 +975,7 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
     s64             _upTime;
     int             _usbCurrent;
     int             _rebootCountdown;
-    Y_USBBANDWIDTH_enum _usbBandwidth;
+    int             _userVar;
     YModuleValueCallback _valueCallbackModule;
     YModuleLogCallback _logCallback;
 //--- (end of generated code: YModule attributes declaration)
@@ -1215,17 +1211,30 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
 -(int)     setRebootCountdown:(int) newval;
 
 /**
- * Returns the number of USB interfaces used by the module.
+ * Returns the value previously stored in this attribute.
+ * On startup and after a device reboot, the value is always reset to zero.
  * 
- * @return either Y_USBBANDWIDTH_SIMPLE or Y_USBBANDWIDTH_DOUBLE, according to the number of USB
- * interfaces used by the module
+ * @return an integer corresponding to the value previously stored in this attribute
  * 
- * On failure, throws an exception or returns Y_USBBANDWIDTH_INVALID.
+ * On failure, throws an exception or returns Y_USERVAR_INVALID.
  */
--(Y_USBBANDWIDTH_enum)     get_usbBandwidth;
+-(int)     get_userVar;
 
 
--(Y_USBBANDWIDTH_enum) usbBandwidth;
+-(int) userVar;
+/**
+ * Returns the value previously stored in this attribute.
+ * On startup and after a device reboot, the value is always reset to zero.
+ * 
+ * @param newval : an integer
+ * 
+ * @return YAPI_SUCCESS if the call succeeds.
+ * 
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     set_userVar:(int) newval;
+-(int)     setUserVar:(int) newval;
+
 /**
  * Allows you to find a module from its serial number or from its logical name.
  * 
@@ -1304,29 +1313,90 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
 -(int)     triggerFirmwareUpdate:(int)secBeforeReboot;
 
 /**
+ * Test if the byn file is valid for this module. This method is useful to test if the module need to be updated.
+ * It's possible to pass an directory instead of a file. In this case this method return the path of
+ * the most recent
+ * appropriate byn file. If the parameter onlynew is true the function will discard firmware that are
+ * older or equal to
+ * the installed firmware.
+ * 
+ * @param path    : the path of a byn file or a directory that contain byn files
+ * @param onlynew : return only files that are strictly newer
+ * 
+ * @return : the path of the byn file to use or a empty string if no byn files match the requirement
+ * 
+ * On failure, throws an exception or returns a string that start with "error:".
+ */
+-(NSString*)     checkFirmware:(NSString*)path :(bool)onlynew;
+
+/**
+ * Prepare a firmware upgrade of the module. This method return a object YFirmwareUpdate which
+ * will handle the firmware upgrade process.
+ * 
+ * @param path : the path of the byn file to use.
+ * 
+ * @return : A object YFirmwareUpdate.
+ */
+-(YFirmwareUpdate*)     updateFirmware:(NSString*)path;
+
+/**
+ * Returns all the setting of the module. Useful to backup all the logical name and calibrations parameters
+ * of a connected module.
+ * 
+ * @return a binary buffer with all settings.
+ * 
+ * On failure, throws an exception or returns  YAPI_INVALID_STRING.
+ */
+-(NSMutableData*)     get_allSettings;
+
+-(NSMutableData*)     _flattenJsonStruct:(NSData*)jsoncomplex;
+
+-(int)     calibVersion:(NSString*)cparams;
+
+-(int)     calibScale:(NSString*)unit_name :(NSString*)sensorType;
+
+-(int)     calibOffset:(NSString*)unit_name;
+
+-(NSString*)     calibConvert:(NSString*)param :(NSString*)calibrationParam :(NSString*)unit_name :(NSString*)sensorType;
+
+/**
+ * Restore all the setting of the module. Useful to restore all the logical name and calibrations parameters
+ * of a module from a backup.
+ * 
+ * @param settings : a binary buffer with all settings.
+ * 
+ * @return YAPI_SUCCESS when the call succeeds.
+ * 
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     set_allSettings:(NSData*)settings;
+
+/**
  * Downloads the specified built-in file and returns a binary buffer with its content.
  * 
  * @param pathname : name of the new file to load
  * 
  * @return a binary buffer with the file content
  * 
- * On failure, throws an exception or returns an empty content.
+ * On failure, throws an exception or returns  YAPI_INVALID_STRING.
  */
--(NSData*)     download:(NSString*)pathname;
+-(NSMutableData*)     download:(NSString*)pathname;
 
 /**
  * Returns the icon of the module. The icon is a PNG image and does not
  * exceeds 1536 bytes.
  * 
  * @return a binary buffer with module icon, in png format.
+ *         On failure, throws an exception or returns  YAPI_INVALID_STRING.
  */
--(NSData*)     get_icon2d;
+-(NSMutableData*)     get_icon2d;
 
 /**
  * Returns a string with last logs of the module. This method return only
  * logs that are still in the module.
  * 
  * @return a string with last logs of the module.
+ *         On failure, throws an exception or returns  YAPI_INVALID_STRING.
  */
 -(NSString*)     get_lastLogs;
 
@@ -1383,6 +1453,7 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
     double          _scale;
     double          _decexp;
     bool            _isScal;
+    bool            _isScal32;
     int             _caltyp;
     NSMutableArray* _calpar;
     NSMutableArray* _calraw;
@@ -1420,9 +1491,10 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
 
 -(NSString*) unit;
 /**
- * Returns the current value of the measure.
+ * Returns the current value of the measure, in the specified unit, as a floating point number.
  * 
- * @return a floating point number corresponding to the current value of the measure
+ * @return a floating point number corresponding to the current value of the measure, in the specified
+ * unit, as a floating point number
  * 
  * On failure, throws an exception or returns Y_CURRENTVALUE_INVALID.
  */
@@ -1479,9 +1551,11 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
 
 -(double) highestValue;
 /**
- * Returns the uncalibrated, unrounded raw value returned by the sensor.
+ * Returns the uncalibrated, unrounded raw value returned by the sensor, in the specified unit, as a
+ * floating point number.
  * 
- * @return a floating point number corresponding to the uncalibrated, unrounded raw value returned by the sensor
+ * @return a floating point number corresponding to the uncalibrated, unrounded raw value returned by
+ * the sensor, in the specified unit, as a floating point number
  * 
  * On failure, throws an exception or returns Y_CURRENTRAWVALUE_INVALID.
  */
@@ -1736,8 +1810,61 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
 @end
 
 
+//--- (generated code: YFirmwareUpdate class start)
+/**
+ * YFirmwareUpdate Class: Control interface for the firmware update process
+ * 
+ * The YFirmwareUpdate class let you control the firmware update of a Yoctopuce
+ * module. This class should not be instantiate directly, instead the method
+ * updateFirmware should be called to get an instance of YFirmwareUpdate.
+ */
+@interface YFirmwareUpdate : NSObject
+//--- (end of generated code: YFirmwareUpdate class start)
+{
+@protected
+//--- (generated code: YFirmwareUpdate attributes declaration)
+    NSString*       _serial;
+    NSData*         _settings;
+    NSString*       _firmwarepath;
+    NSString*       _progress_msg;
+    int             _progress;
+//--- (end of generated code: YFirmwareUpdate attributes declaration)
+}
 
 
+-(id)   initWith:(NSString*)serial :(NSString*)path :(NSData*)settings;
+
+//--- (generated code: YFirmwareUpdate private methods declaration)
+//--- (end of generated code: YFirmwareUpdate private methods declaration)
+//--- (generated code: YFirmwareUpdate public methods declaration)
+-(int)     _processMore:(int)newupdate;
+
+-(int)     get_progress;
+
+/**
+ * Returns the last progress message of the firmware update process. If an error occur during the
+ * firmware update process the error message is returned
+ * 
+ * @return an string  with the last progress message, or the error message.
+ */
+-(NSString*)     get_progressMessage;
+
+/**
+ * Start the firmware update process. This method start the firmware update process in background. This method
+ * return immediately. The progress of the firmware update can be monitored with methods get_progress()
+ * and get_progressMessage().
+ * 
+ * @return an integer in the range 0 to 100 (percentage of completion),
+ *         or a negative error code in case of failure.
+ * 
+ * On failure returns a negative error code.
+ */
+-(int)     startUpdate;
+
+
+//--- (end of generated code: YFirmwareUpdate public methods declaration)
+
+@end
 
 #define Y_DATA_INVALID                  (-DBL_MAX)
 #define Y_DURATION_INVALID              (-1)
@@ -1773,6 +1900,7 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
     bool            _isClosed;
     bool            _isAvg;
     bool            _isScal;
+    bool            _isScal32;
     int             _decimals;
     double          _offset;
     double          _scale;
@@ -2077,7 +2205,7 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
  * YDataSet objects make it possible to retrieve a set of recorded measures
  * for a given sensor and a specified time interval. They can be used
  * to load data points with a progress report. When the YDataSet object is
- * instanciated by the get_recordedData()  function, no data is
+ * instantiated by the get_recordedData()  function, no data is
  * yet loaded from the module. It is only when the loadMore()
  * method is called over and over than data will be effectively loaded
  * from the dataLogger.
@@ -2183,7 +2311,7 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
 
 /**
  * Returns the progress of the downloads of the measures from the data logger,
- * on a scale from 0 to 100. When the object is instanciated by get_dataSet,
+ * on a scale from 0 to 100. When the object is instantiated by get_dataSet,
  * the progress is zero. Each time loadMore() is invoked, the progress
  * is updated, to reach the value 100 only once all measures have been loaded.
  * 
@@ -2320,7 +2448,7 @@ void yFreeAPI(void);
  * 
  * @return a character string describing the library version.
  */
-NSString* yGetAPIVersion(void); 
+NSString* yGetAPIVersion(void);
 
 
 /**
@@ -2373,7 +2501,7 @@ void yEnableExceptions(void);
  * If access control has been activated on the hub, virtual or not, you want to
  * reach, the URL parameter should look like:
  * 
- * http://username:password@adresse:port
+ * http://username:password@address:port
  * 
  * You can call <i>RegisterHub</i> several times to connect to several machines.
  * 

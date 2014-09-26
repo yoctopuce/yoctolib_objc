@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_accelerometer.h 15256 2014-03-06 10:19:01Z seb $
+ * $Id: yocto_accelerometer.h 17252 2014-08-21 14:44:20Z seb $
  *
  * Declares yFindAccelerometer(), the high-level API for Accelerometer functions
  *
@@ -45,6 +45,15 @@ CF_EXTERN_C_BEGIN
 //--- (YAccelerometer globals)
 typedef void (*YAccelerometerValueCallback)(YAccelerometer *func, NSString *functionValue);
 typedef void (*YAccelerometerTimedReportCallback)(YAccelerometer *func, YMeasure *measure);
+#ifndef _Y_GRAVITYCANCELLATION_ENUM
+#define _Y_GRAVITYCANCELLATION_ENUM
+typedef enum {
+    Y_GRAVITYCANCELLATION_OFF = 0,
+    Y_GRAVITYCANCELLATION_ON = 1,
+    Y_GRAVITYCANCELLATION_INVALID = -1,
+} Y_GRAVITYCANCELLATION_enum;
+#endif
+
 #define Y_XVALUE_INVALID                YAPI_INVALID_DOUBLE
 #define Y_YVALUE_INVALID                YAPI_INVALID_DOUBLE
 #define Y_ZVALUE_INVALID                YAPI_INVALID_DOUBLE
@@ -65,6 +74,7 @@ typedef void (*YAccelerometerTimedReportCallback)(YAccelerometer *func, YMeasure
     double          _xValue;
     double          _yValue;
     double          _zValue;
+    Y_GRAVITYCANCELLATION_enum _gravityCancellation;
     YAccelerometerValueCallback _valueCallbackAccelerometer;
     YAccelerometerTimedReportCallback _timedReportCallbackAccelerometer;
 //--- (end of YAccelerometer attributes declaration)
@@ -111,6 +121,13 @@ typedef void (*YAccelerometerTimedReportCallback)(YAccelerometer *func, YMeasure
 
 
 -(double) zValue;
+-(Y_GRAVITYCANCELLATION_enum)     get_gravityCancellation;
+
+
+-(Y_GRAVITYCANCELLATION_enum) gravityCancellation;
+-(int)     set_gravityCancellation:(Y_GRAVITYCANCELLATION_enum) newval;
+-(int)     setGravityCancellation:(Y_GRAVITYCANCELLATION_enum) newval;
+
 /**
  * Retrieves an accelerometer for a given identifier.
  * The identifier can be specified using several formats:

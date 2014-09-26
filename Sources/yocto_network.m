@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_network.m 15256 2014-03-06 10:19:01Z seb $
+ * $Id: yocto_network.m 17582 2014-09-10 17:12:40Z mvuilleu $
  *
  * Implements the high-level API for Network functions
  *
@@ -380,47 +380,6 @@
 {
     NSString* rest_val;
     rest_val = newval;
-    return [self _setAttr:@"ipConfig" :rest_val];
-}
-
-/**
- * Changes the configuration of the network interface to enable the use of an
- * IP address received from a DHCP server. Until an address is received from a DHCP
- * server, the module uses the IP parameters specified to this function.
- * Remember to call the saveToFlash() method and then to reboot the module to apply this setting.
- * 
- * @param fallbackIpAddr : fallback IP address, to be used when no DHCP reply is received
- * @param fallbackSubnetMaskLen : fallback subnet mask length when no DHCP reply is received, as an
- *         integer (eg. 24 means 255.255.255.0)
- * @param fallbackRouter : fallback router IP address, to be used when no DHCP reply is received
- * 
- * @return YAPI_SUCCESS if the call succeeds.
- * 
- * On failure, throws an exception or returns a negative error code.
- */
--(int) useDHCP:(NSString*)fallbackIpAddr :(int)fallbackSubnetMaskLen :(NSString*)fallbackRouter
-{
-    NSString* rest_val;
-    rest_val = [NSString stringWithFormat:@"DHCP:%@/%d/%@",fallbackIpAddr,fallbackSubnetMaskLen,fallbackRouter];
-    return [self _setAttr:@"ipConfig" :rest_val];
-}
-
-/**
- * Changes the configuration of the network interface to use a static IP address.
- * Remember to call the saveToFlash() method and then to reboot the module to apply this setting.
- * 
- * @param ipAddress : device IP address
- * @param subnetMaskLen : subnet mask length, as an integer (eg. 24 means 255.255.255.0)
- * @param router : router IP address (default gateway)
- * 
- * @return YAPI_SUCCESS if the call succeeds.
- * 
- * On failure, throws an exception or returns a negative error code.
- */
--(int) useStaticIP:(NSString*)ipAddress :(int)subnetMaskLen :(NSString*)router
-{
-    NSString* rest_val;
-    rest_val = [NSString stringWithFormat:@"STATIC:%@/%d/%@",ipAddress,subnetMaskLen,router];
     return [self _setAttr:@"ipConfig" :rest_val];
 }
 /**
@@ -1097,6 +1056,43 @@
 }
 
 /**
+ * Changes the configuration of the network interface to enable the use of an
+ * IP address received from a DHCP server. Until an address is received from a DHCP
+ * server, the module uses the IP parameters specified to this function.
+ * Remember to call the saveToFlash() method and then to reboot the module to apply this setting.
+ * 
+ * @param fallbackIpAddr : fallback IP address, to be used when no DHCP reply is received
+ * @param fallbackSubnetMaskLen : fallback subnet mask length when no DHCP reply is received, as an
+ *         integer (eg. 24 means 255.255.255.0)
+ * @param fallbackRouter : fallback router IP address, to be used when no DHCP reply is received
+ * 
+ * @return YAPI_SUCCESS when the call succeeds.
+ * 
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) useDHCP:(NSString*)fallbackIpAddr :(int)fallbackSubnetMaskLen :(NSString*)fallbackRouter
+{
+    return [self set_ipConfig:[NSString stringWithFormat:@"DHCP:%@/%d/%@", fallbackIpAddr, fallbackSubnetMaskLen,fallbackRouter]];
+}
+
+/**
+ * Changes the configuration of the network interface to use a static IP address.
+ * Remember to call the saveToFlash() method and then to reboot the module to apply this setting.
+ * 
+ * @param ipAddress : device IP address
+ * @param subnetMaskLen : subnet mask length, as an integer (eg. 24 means 255.255.255.0)
+ * @param router : router IP address (default gateway)
+ * 
+ * @return YAPI_SUCCESS when the call succeeds.
+ * 
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) useStaticIP:(NSString*)ipAddress :(int)subnetMaskLen :(NSString*)router
+{
+    return [self set_ipConfig:[NSString stringWithFormat:@"STATIC:%@/%d/%@", ipAddress, subnetMaskLen,router]];
+}
+
+/**
  * Pings str_host to test the network connectivity. Sends four ICMP ECHO_REQUEST requests from the
  * module to the target str_host. This method returns a string with the result of the
  * 4 ICMP ECHO_REQUEST requests.
@@ -1107,7 +1103,7 @@
  */
 -(NSString*) ping:(NSString*)host
 {
-    NSData* content;
+    NSMutableData* content;
     // may throw an exception
     content = [self _download:[NSString stringWithFormat:@"ping.txt?host=%@",host]];
     return ARC_sendAutorelease([[NSString alloc] initWithData:content encoding:NSASCIIStringEncoding]);

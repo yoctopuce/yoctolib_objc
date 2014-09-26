@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_display.m 16340 2014-05-30 10:41:54Z seb $
+ * $Id: yocto_display.m 17498 2014-09-03 19:21:24Z mvuilleu $
  *
  * Implements yFindDisplay(), the high-level API for Display functions
  *
@@ -181,9 +181,9 @@
 
 /**
  * Selects an eraser instead of a pen for all subsequent drawing functions,
- * except for text drawing and bitmap copy functions. Any point drawn
- * using the eraser becomes transparent (as when the layer is empty),
- * showing the other layers beneath it.
+ * except for bitmap copy functions. Any point drawn using the eraser
+ * becomes transparent (as when the layer is empty), showing the other
+ * layers beneath it.
  * 
  * @return YAPI_SUCCESS if the call succeeds.
  * 
@@ -1252,7 +1252,7 @@
 {
     [self flushLayers];
     _recording = NO;
-    [self _upload:sequenceName :[_sequence dataUsingEncoding:NSUTF8StringEncoding]];
+    [self _upload:sequenceName :[NSMutableData dataWithData:[_sequence dataUsingEncoding:NSUTF8StringEncoding]]];
     //We need to use YPRINTF("") for Objective-C
     _sequence = [NSString stringWithFormat:@""];
     return YAPI_SUCCESS;

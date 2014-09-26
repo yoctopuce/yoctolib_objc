@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_temperature.h 15256 2014-03-06 10:19:01Z seb $
+ * $Id: yocto_temperature.h 16543 2014-06-13 12:15:09Z mvuilleu $
  *
  * Declares yFindTemperature(), the high-level API for Temperature functions
  *

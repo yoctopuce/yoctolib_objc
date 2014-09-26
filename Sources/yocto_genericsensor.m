@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_genericsensor.m 15312 2014-03-07 10:49:54Z seb $
+ * $Id: yocto_genericsensor.m 17481 2014-09-03 09:38:35Z mvuilleu $
  *
  * Implements the high-level API for GenericSensor functions
  *
@@ -57,6 +57,7 @@
     _signalUnit = Y_SIGNALUNIT_INVALID;
     _signalRange = Y_SIGNALRANGE_INVALID;
     _valueRange = Y_VALUERANGE_INVALID;
+    _signalBias = Y_SIGNALBIAS_INVALID;
     _valueCallbackGenericSensor = NULL;
     _timedReportCallbackGenericSensor = NULL;
 //--- (end of YGenericSensor attributes initialization)
@@ -81,7 +82,7 @@
 {
     if(!strcmp(j->token, "signalValue")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-        _signalValue =  atof(j->token)/65536;
+        _signalValue =  floor(atof(j->token) * 1000.0 / 65536.0 + 0.5) / 1000.0;
         return 1;
     }
     if(!strcmp(j->token, "signalUnit")) {
@@ -103,6 +104,11 @@
        ARC_release(_valueRange);
         _valueRange =  [self _parseString:j];
         ARC_retain(_valueRange);
+        return 1;
+    }
+    if(!strcmp(j->token, "signalBias")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _signalBias =  floor(atof(j->token) * 1000.0 / 65536.0 + 0.5) / 1000.0;
         return 1;
     }
     return [super _parseAttr:j];
@@ -145,7 +151,7 @@
             return Y_SIGNALVALUE_INVALID;
         }
     }
-    return ((_signalValue * 1000 < 0.0 ? ceil(_signalValue * 1000-0.5) : floor(_signalValue * 1000+0.5))) / 1000;
+    return floor(_signalValue * 1000+0.5) / 1000;
 }
 
 
@@ -241,8 +247,8 @@
 }
 
 /**
- * Changes the physical value range measured by the sensor. The range change may have a side effect
- * on the display resolution, as it may be adapted automatically.
+ * Changes the physical value range measured by the sensor. As a side effect, the range modification may
+ * automatically modify the display resolution.
  * 
  * @param newval : a string corresponding to the physical value range measured by the sensor
  * 
@@ -259,6 +265,52 @@
     NSString* rest_val;
     rest_val = newval;
     return [self _setAttr:@"valueRange" :rest_val];
+}
+
+/**
+ * Changes the electric signal bias for zero shift adjustment.
+ * If your electric signal reads positif when it should be zero, setup
+ * a positive signalBias of the same value to fix the zero shift.
+ * 
+ * @param newval : a floating point number corresponding to the electric signal bias for zero shift adjustment
+ * 
+ * @return YAPI_SUCCESS if the call succeeds.
+ * 
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) set_signalBias:(double) newval
+{
+    return [self setSignalBias:newval];
+}
+-(int) setSignalBias:(double) newval
+{
+    NSString* rest_val;
+    rest_val = [NSString stringWithFormat:@"%d",(int)floor(newval * 65536.0 + 0.5)];
+    return [self _setAttr:@"signalBias" :rest_val];
+}
+/**
+ * Returns the electric signal bias for zero shift adjustment.
+ * A positive bias means that the signal is over-reporting the measure,
+ * while a negative bias means that the signal is underreporting the measure.
+ * 
+ * @return a floating point number corresponding to the electric signal bias for zero shift adjustment
+ * 
+ * On failure, throws an exception or returns Y_SIGNALBIAS_INVALID.
+ */
+-(double) get_signalBias
+{
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_SIGNALBIAS_INVALID;
+        }
+    }
+    return _signalBias;
+}
+
+
+-(double) signalBias
+{
+    return [self get_signalBias];
 }
 /**
  * Retrieves $AFUNCTION$ for a given identifier.
@@ -364,6 +416,23 @@
         [super _invokeTimedReportCallback:value];
     }
     return 0;
+}
+
+/**
+ * Adjusts the signal bias so that the current signal value is need
+ * precisely as zero.
+ * 
+ * @return YAPI_SUCCESS if the call succeeds.
+ * 
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) zeroAdjust
+{
+    double currSignal;
+    double currBias;
+    currSignal = [self get_signalValue];
+    currBias = [self get_signalBias];
+    return [self set_signalBias:currSignal + currBias];
 }
 
 

@@ -1,35 +1,35 @@
 /*********************************************************************
  *
- * $Id: yocto_api.m 16246 2014-05-16 12:09:39Z seb $
+ * $Id: yocto_api.m 17816 2014-09-24 14:47:30Z seb $
  *
  * High-level programming interface, common to all modules
  *
- * - - - - - - - - - License information: - - - - - - - - - 
+ * - - - - - - - - - License information: - - - - - - - - -
  *
  *  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
  *
  *  Yoctopuce Sarl (hereafter Licensor) grants to you a perpetual
  *  non-exclusive license to use, modify, copy and integrate this
- *  file into your software for the sole purpose of interfacing 
- *  with Yoctopuce products. 
+ *  file into your software for the sole purpose of interfacing
+ *  with Yoctopuce products.
  *
- *  You may reproduce and distribute copies of this file in 
+ *  You may reproduce and distribute copies of this file in
  *  source or object form, as long as the sole purpose of this
- *  code is to interface with Yoctopuce products. You must retain 
+ *  code is to interface with Yoctopuce products. You must retain
  *  this notice in the distributed source file.
  *
  *  You should refer to Yoctopuce General Terms and Conditions
- *  for additional information regarding your rights and 
+ *  for additional information regarding your rights and
  *  obligations.
  *
  *  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED "AS IS" WITHOUT
- *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
- *  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS 
+ *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING
+ *  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS
  *  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
  *  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
- *  INDIRECT OR CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA, 
- *  COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY OR 
- *  SERVICES, ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT 
+ *  INDIRECT OR CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA,
+ *  COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY OR
+ *  SERVICES, ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT
  *  LIMITED TO ANY DEFENSE THEREOF), ANY CLAIMS FOR INDEMNITY OR
  *  CONTRIBUTION, OR OTHER SIMILAR COSTS, WHETHER ASSERTED ON THE
  *  BASIS OF CONTRACT, TORT (INCLUDING NEGLIGENCE), BREACH OF
@@ -51,7 +51,7 @@ static YHubDiscoveryCallback YAPI_HubDiscoveryCallback = NULL;
 static id              YAPI_delegate=nil;
 
 
-@implementation  YapiEvent 
+@implementation  YapiEvent
 
 -(id) initFull:(yapiEventType)type :(YModule*)module :(YFunction*)function :(NSString*)value
 {
@@ -140,8 +140,10 @@ static id              YAPI_delegate=nil;
             [_function _invokeValueCallback:_value];
             break;
         case YAPI_FUN_TIMEDREPORT:
-            measure = [_sensor _decodeTimedReport:_timestamp :_report];
-            [_sensor _invokeTimedReportCallback:measure];
+            if([[_report objectAtIndex:0] intValue] <= 2) {
+                measure = [_sensor _decodeTimedReport:_timestamp :_report];
+                [_sensor _invokeTimedReportCallback:measure];
+            }
             break;
         case YAPI_FUN_REFRESH:
             [_function isOnline];
@@ -203,7 +205,7 @@ YRETCODE yFormatRetVal(NSError** error,YRETCODE errCode,const char *message)
             NSDictionary *eDict = [NSDictionary dictionaryWithObjects:objArray
                                                       forKeys:keyArray];
             *error = [NSError errorWithDomain:@"com.yoctopuce"
-                                         code:errCode 
+                                         code:errCode
                                      userInfo:eDict];
         }
     }
@@ -214,7 +216,7 @@ YRETCODE yFormatRetVal(NSError** error,YRETCODE errCode,const char *message)
 NSString *           Y_INVALID_STRING        = @"!INVALID!";
 
 
-// 
+//
 // YAPI Context
 //
 // This class provides Objective-C style entry points to lowlevcel functions defined to yapi.h
@@ -260,7 +262,7 @@ static void yapiDeviceLogCallbackFwd(YDEV_DESCR devdescr, const char* line)
     YModule             *module;
     yDeviceSt           infos;
     YModuleLogCallback  callback;
-    
+
     if(YISERR(yapiGetDeviceInfo(devdescr,&infos,NULL))) {
         return;
     }
@@ -307,7 +309,7 @@ static void yapiDeviceRemovalCallbackFwd(YAPI_DEVICE devdescr)
     YModule      *module;
     @autoreleasepool {
         if(!YAPI_deviceRemovalCallback && YAPI_delegate==nil) return;
-        if(YISERR(yapiGetDeviceInfo(devdescr,&infos,NULL))) return;    
+        if(YISERR(yapiGetDeviceInfo(devdescr,&infos,NULL))) return;
         module = yFindModule([STR_y2oc(infos.serial) stringByAppendingFormat:@".module"]);
         ev =[[YapiEvent alloc] initDeviceEvent:YAPI_DEV_REMOVAL forModule:module];
         [YAPI_plug_events addObject:ev];
@@ -321,8 +323,8 @@ static void yapiDeviceChangeCallbackFwd(YAPI_DEVICE devdescr)
     yDeviceSt    infos;
     YModule      *module;
     @autoreleasepool {
-        
-        if(YISERR(yapiGetDeviceInfo(devdescr,&infos,NULL))) return;    
+
+        if(YISERR(yapiGetDeviceInfo(devdescr,&infos,NULL))) return;
         module = yFindModule(STR_y2oc(infos.serial));
         if(!YAPI_deviceChangeCallback && YAPI_delegate==nil) return;
         ev =[[YapiEvent alloc] initDeviceEvent:YAPI_DEV_CHANGE forModule:module];
@@ -411,19 +413,24 @@ static  NSMutableDictionary *YAPI_calibHandlers;
                              :(NSArray*) refValues
 {
     // calibration types n=1..10 and 11.20 are meant for linear calibration using n points
-    unsigned long npt = calibType % 10;
+    unsigned long npt;
     double x   = [[rawValues objectAtIndex:0] doubleValue];
     double adj = [[refValues objectAtIndex:0] doubleValue]- x;
     int    i   = 0;
-    
-    if(npt > [rawValues count])
-        npt = [rawValues count];
-    if(npt > [refValues count])
+
+    if(calibType < YOCTO_CALIB_TYPE_OFS) {
+        npt = calibType % 10;
+        if(npt > [rawValues count])
+            npt = [rawValues count];
+        if(npt > [refValues count])
+            npt = [refValues count];
+    } else {
         npt = [refValues count];
+    }
     while(rawValue > [[rawValues objectAtIndex:i] doubleValue] && ++i < npt) {
         double x2   = x;
         double adj2 = adj;
-        
+
         x   = [[rawValues objectAtIndex:i] doubleValue];
         adj = [[refValues objectAtIndex:i] doubleValue]- x;
         if(rawValue < x && x > x2) {
@@ -473,14 +480,14 @@ static double decExp[16] = {
 {
     int     negate = 0;
     double  res;
-    
+
     if(val == 0) return 0.0;
     if(val < 0) {
         negate = 1;
         val = -val;
     }
     res = (double)(val & 2047) * decExp[val >> 11];
-    
+
     return (negate ? -res : res);
 }
 
@@ -492,7 +499,7 @@ static double decExp[16] = {
     double  comp, mant;
     u16     decpow;
     s16     res;
-    
+
     if(val == 0.0) {
         return 0;
     }
@@ -515,14 +522,11 @@ static double decExp[16] = {
 }
 
 
-
-
-
 +(NSMutableArray*) _decodeWords:(NSString*)sdat
 {
     NSMutableArray*     udat= [[NSMutableArray alloc] init];
     const char *ptr = STR_oc2y(sdat);
-    
+
     for(unsigned p = 0; p < strlen(ptr);) {
         unsigned val;
         unsigned c = ptr[p++];
@@ -550,7 +554,54 @@ static double decExp[16] = {
         [udat addObject:[NSNumber numberWithInt:val]];
     }
     return udat;
-    
+
+}
+
++(NSMutableArray*) _decodeFloats:(NSString*)sdat
+{
+    NSMutableArray* idat= [[NSMutableArray alloc] init];
+    const char *ptr = STR_oc2y(sdat);
+
+    for(unsigned p = 0; p < strlen(ptr);) {
+        int val = 0;
+        int sign = 1;
+        int dec = 0;
+        int decInc = 0;
+        unsigned c = ptr[p++];
+        if(c != '-' && (c < '0' || c > '9')) {
+            if(p >= strlen(ptr)) {
+                return idat;
+            }
+            c = ptr[p++];
+        }
+        if(c == '-') {
+            if(p >= strlen(ptr)) {
+                return idat;
+            }
+            sign = -sign;
+            c = ptr[p++];
+        }
+        while((c >= '0' && c <= '9') || c == '.') {
+            if(c == '.') {
+                decInc = 1;
+            } else if(dec < 3) {
+                val = val * 10 + (c - '0');
+                dec += decInc;
+            }
+            if(p < strlen(ptr)) {
+                c = ptr[p++];
+            } else {
+                c = 0;
+            }
+        }
+        if(dec < 3) {
+            if(dec == 0) val *= 1000;
+            else if(dec == 1) val *= 100;
+            else val *= 10;
+        }
+        [idat addObject:[NSNumber numberWithInt:sign*val]];
+    }
+    return idat;
 }
 
 
@@ -563,7 +614,7 @@ static double decExp[16] = {
 }
 
 /**
- * 
+ *
  */
 +(void)         SetDefaultCacheValidity:(int)defaultCacheValidity
 {
@@ -571,7 +622,7 @@ static double decExp[16] = {
 }
 
 // Switch to turn off exceptions and use return codes instead, for source-code compatibility
-// with languages without exception support like C    
+// with languages without exception support like C
 +(BOOL)        ExceptionsDisabled
 {
     return YAPI_exceptionsDisabled;
@@ -630,13 +681,14 @@ static double decExp[16] = {
 +(YRETCODE)    InitAPI:(int)mode :(NSError**)errmsg
 {
     char errbuf[YOCTO_ERRMSG_LEN];
-    
+    NSNumber *type;
+
     if(YAPI_apiInitialized) return YAPI_SUCCESS;
     YRETCODE res = yapiInitAPI(mode, errbuf);
     if(YISERR(res)) {
         return yFormatRetVal(errmsg, res,errbuf);
     }
-    
+
     yapiRegisterLogFunction(yapiLogFunctionFwd);
     yapiRegisterDeviceLogCallback(yapiDeviceLogCallbackFwd);
     YAPI_plug_events = [[NSMutableArray alloc ] initWithCapacity:16];
@@ -653,12 +705,14 @@ static double decExp[16] = {
     YAPI_invalidCalibration = [[YAPI_CalibrationObj alloc] init];
     YAPI_calibHandlers = [[NSMutableDictionary alloc] initWithCapacity:20];
     for(int i =1 ;i <=20;i++){
-        NSNumber *type = [NSNumber numberWithInt:i];
+        type = [NSNumber numberWithInt:i];
         [YAPI_calibHandlers setObject:YAPI_linearCalibration forKey:type];
     }
+    type = [NSNumber numberWithInt:YOCTO_CALIB_TYPE_OFS];
+    [YAPI_calibHandlers setObject:YAPI_linearCalibration forKey:type];
     YAPI_YFunctions =[[NSMutableDictionary alloc] initWithCapacity:8];
     YAPI_apiInitialized = YES;
-    
+
     return YAPI_SUCCESS;
 }
 
@@ -815,11 +869,6 @@ static double decExp[16] = {
     YAPI_delegate = object;
 }
 
-
-
-
-
-
 /**
  * (Objective-C only) Register an object that must follow the procol YDeviceHotPlug. The methodes
  * yDeviceArrival and yDeviceRemoval  will be invoked while yUpdateDeviceList
@@ -866,7 +915,7 @@ static double decExp[16] = {
  * If access control has been activated on the hub, virtual or not, you want to
  * reach, the URL parameter should look like:
  * 
- * http://username:password@adresse:port
+ * http://username:password@address:port
  * 
  * You can call <i>RegisterHub</i> several times to connect to several machines.
  * 
@@ -912,7 +961,7 @@ static double decExp[16] = {
 {
     char        errbuf[YOCTO_ERRMSG_LEN];
     YRETCODE    res;
-    
+
     if (!YAPI_apiInitialized) {
         res = [YAPI InitAPI:0:errmsg];
         if(YISERR(res)) return res;
@@ -930,14 +979,12 @@ static double decExp[16] = {
  */
 +(void)         UnregisterHub:(NSString*) url
 {
-    
+
     if (!YAPI_apiInitialized) {
         return;
     }
     yapiUnregisterHub(STR_oc2y(url));
 }
-
-
 
 /**
  * Triggers a (re)detection of connected Yoctopuce modules.
@@ -957,7 +1004,7 @@ static double decExp[16] = {
 +(YRETCODE)    UpdateDeviceList:(NSError**) errmsg
 {
     YRETCODE    res;
-    
+
     if (!YAPI_apiInitialized) {
         res = [YAPI InitAPI:0:errmsg];
         if(YISERR(res)) return res;
@@ -981,7 +1028,7 @@ static double decExp[16] = {
         yapiLockDeviceCallBack(NULL);
         if ([YAPI_plug_events count] ==0){
             yapiUnlockFunctionCallBack(NULL);
-            break;        
+            break;
         }
         ev = [YAPI_plug_events objectAtIndex:0];
         ARC_retain(ev);
@@ -1015,7 +1062,7 @@ static double decExp[16] = {
 +(YRETCODE)     HandleEvents:(NSError**) errmsg
 {
     YRETCODE    res;
-    
+
     // prevent reentrance into this function
     yEnterCriticalSection(&YAPI_handleEvent_CS);
     res = [YapiWrapper handleEvents:errmsg];
@@ -1029,7 +1076,7 @@ static double decExp[16] = {
         yapiLockFunctionCallBack(NULL);
         if ([YAPI_data_events count] ==0){
             yapiUnlockFunctionCallBack(NULL);
-            break;        
+            break;
         }
         ev = [YAPI_data_events objectAtIndex:0];
         ARC_retain(ev);
@@ -1037,7 +1084,7 @@ static double decExp[16] = {
         yapiUnlockFunctionCallBack(NULL);
         [ev invokeFunctionEvent];
         ARC_release(ev);
-        
+
     }
     yLeaveCriticalSection(&YAPI_handleEvent_CS);
     return YAPI_SUCCESS;
@@ -1068,7 +1115,7 @@ static double decExp[16] = {
     char        errbuf[YOCTO_ERRMSG_LEN];
     YRETCODE    res;
     u64         waituntil= [YAPI GetTickCount] + ms_duration;
-    
+
     do{
         res = [YAPI HandleEvents:errmsg];
         if(YISERR(res)) {
@@ -1081,7 +1128,7 @@ static double decExp[16] = {
             }
         }
     }while(waituntil > [YAPI GetTickCount]);
-     
+
     return YAPI_SUCCESS;
 }
 
@@ -1142,13 +1189,13 @@ static double decExp[16] = {
 
 
 // Wrappers to yapi low-level API
-@implementation YapiWrapper 
+@implementation YapiWrapper
 
 +(u16) getAPIVersion:(NSString**)version :(NSString**)subversion
 {
-    const char  *ver, *subver;    
+    const char  *ver, *subver;
     u16         res;
-    
+
     res = yapiGetAPIVersion(&ver, &subver);
     *version    = STR_y2oc(ver);
     *subversion = STR_y2oc(subver);
@@ -1161,7 +1208,7 @@ static double decExp[16] = {
 {
     char        errbuf[YOCTO_ERRMSG_LEN];
     YAPI_DEVICE     res;
-    
+
     res = yapiGetDevice([device_str UTF8String], errbuf);
     return yFormatRetVal(error, res, errbuf);
 }
@@ -1174,7 +1221,7 @@ static double decExp[16] = {
     int     initsize = n_elems * sizeof(YAPI_DEVICE);
     int     neededsize, res;
     YAPI_DEVICE *ptr = malloc(sizeof(YAPI_DEVICE)*n_elems);
-    
+
     res = yapiGetAllDevices(ptr, initsize, &neededsize, errbuf);
     if(YISERR(res)) {
         free(ptr);
@@ -1203,7 +1250,7 @@ static double decExp[16] = {
 {
     char        errbuf[YOCTO_ERRMSG_LEN];
     YRETCODE    res;
-    
+
     res = yapiGetDeviceInfo(devdesc, infos, errbuf);
     return yFormatRetVal(error, res, errbuf);
 }
@@ -1211,7 +1258,7 @@ static double decExp[16] = {
 +(YFUN_DESCR)   getFunction:(NSString * const)class_str :(NSString * const)function_str :(NSError**)error
 {
     char errbuf[YOCTO_ERRMSG_LEN];
-    
+
     YAPI_FUNCTION res = yapiGetFunction([class_str UTF8String], [function_str UTF8String], errbuf);
     return yFormatRetVal(error, res, errbuf);
 }
@@ -1224,7 +1271,7 @@ static double decExp[16] = {
     int     initsize = n_elems * sizeof(YAPI_DEVICE);
     int     neededsize;
     YAPI_FUNCTION *ptr    = malloc(sizeof(YAPI_FUNCTION) *n_elems);
-    
+
     int res = yapiGetFunctionsByClass([class_str UTF8String], prevfundesc, ptr, initsize, &neededsize, errbuf);
     if(YISERR(res)) {
         free(ptr);
@@ -1247,7 +1294,7 @@ static double decExp[16] = {
         [*functions addObject:[NSNumber numberWithInt:ptr[i]]];
     }
     free(ptr);
-    
+
     return res;
 }
 
@@ -1258,7 +1305,7 @@ static double decExp[16] = {
     int     initsize = n_elems * sizeof(YAPI_DEVICE);
     int     neededsize;
     YAPI_FUNCTION *ptr    = malloc(sizeof(YAPI_FUNCTION) *n_elems);
-    
+
     int res = yapiGetFunctionsByDevice(devdesc, prevfundesc, ptr, initsize, &neededsize, errbuf);
     if(YISERR(res)) {
         free(ptr);
@@ -1304,7 +1351,7 @@ static double decExp[16] = {
     char    fnam[YOCTO_LOGICAL_LEN];
     char    fval[YOCTO_PUBVAL_LEN];
     YAPI_DEVICE devdescr_c;
-    
+
     YRETCODE res = yapiGetFunctionInfo(fundesc, &devdescr_c, snum, fnid, fnam, fval, errbuf);
     if(YISERR(res)) {
         return yFormatRetVal(error, res, errbuf);
@@ -1320,7 +1367,7 @@ static double decExp[16] = {
         if(devdescr)
             *devdescr = devdescr_c;
     }
-    
+
     return YAPI_SUCCESS;
 }
 
@@ -1340,11 +1387,11 @@ static double decExp[16] = {
     return yFormatRetVal(error, res, errbuf);
 }
 
-@end 
+@end
 
 
 
-// 
+//
 // YDevice Class (used internally)
 //
 // This class is used to cache device-level information
@@ -1390,12 +1437,12 @@ static double decExp[16] = {
 // Constructor is private, use getDevice factory method
 +(YDevice*)   getDevice:(YDEV_DESCR)devdescr
 {
-    
+
     // Search in cache
     if (_devCache == nil){
         _devCache = [[NSMutableArray alloc] init];
     }
-    
+
     for(unsigned int idx = 0; idx < [_devCache count]; idx++) {
         YDevice* tmp = [_devCache objectAtIndex:idx];
         if(tmp->_devdescr == devdescr) {
@@ -1406,7 +1453,7 @@ static double decExp[16] = {
     YDevice *dev = [[YDevice alloc] initWithDeviceDescriptor:devdescr];
     [_devCache addObject:dev];
     ARC_release(dev);
-    
+
     return dev;
 }
 
@@ -1417,7 +1464,7 @@ static double decExp[16] = {
     char        errbuff[YOCTO_ERRMSG_LEN]="";
 
     if(_subpath==NULL){
-        
+
         int neededsize;
         res = yapiGetDevicePath(_devdescr,_rootdevice, NULL, 0, &neededsize, errbuff);
         if(YISERR(res)) {
@@ -1429,7 +1476,7 @@ static double decExp[16] = {
             return yFormatRetVal(error, res, errbuff);
         }
     }
-    
+
     NSCharacterSet *chset = [NSCharacterSet characterSetWithCharactersInString:@" \r\n"];
     NSArray        *parts = [req_first_line componentsSeparatedByCharactersInSet:chset];
     if([parts count]<2){
@@ -1454,7 +1501,7 @@ static double decExp[16] = {
     YRETCODE        res;
     char            errbuff[YOCTO_ERRMSG_LEN]="";
     NSMutableData*  fullrequest;
-    
+
     _cacheStamp     = [YAPI GetTickCount]; //invalidate cache
     res=[self _HTTPRequestPrepare:request withBody:nil :&fullrequest :error];
     if(YISERR(res)) return res;
@@ -1466,7 +1513,7 @@ static double decExp[16] = {
 
 
 
--(YRETCODE)    HTTPRequest:(NSString*)req_first_line withBody:(NSData*)req_head_and_body :(NSData**)buffer :(NSError**)error
+-(YRETCODE)    HTTPRequest:(NSString*)req_first_line withBody:(NSData*)req_head_and_body :(NSMutableData**)buffer :(NSError**)error
 {
 
     YRETCODE        res;
@@ -1475,23 +1522,23 @@ static double decExp[16] = {
     NSMutableData*  fullrequest;
     char            *reply;
     int             replysize = 0;
-    
+
     res=[self _HTTPRequestPrepare:req_first_line withBody:req_head_and_body :&fullrequest :error];
     if(YISERR(res)) return res;
 
     if(YISERR(res=yapiHTTPRequestSyncStartEx(&iohdl, _rootdevice, [fullrequest bytes],(int)[fullrequest length], &reply, &replysize, errbuff))) {
         return yFormatRetVal(error, res, errbuff);
     }
-    *buffer = [NSData dataWithBytes:reply length:replysize];
+    *buffer = [NSMutableData dataWithBytes:reply length:replysize];
     if(YISERR(res=yapiHTTPRequestSyncDone(&iohdl, errbuff))) {
         return yFormatRetVal(error, res, errbuff);
     }
-    
+
     return YAPI_SUCCESS;
 }
 
 
--(YRETCODE)     HTTPRequest:(NSString*)request :(NSData**)buffer :(NSError**)error;
+-(YRETCODE)     HTTPRequest:(NSString*)request :(NSMutableData**)buffer :(NSError**)error;
 {
     return [self HTTPRequest:request withBody:nil :buffer :error];
 }
@@ -1500,16 +1547,16 @@ static double decExp[16] = {
 -(YRETCODE)   requestAPI:(NSString**)apires :(NSError**)error
 {
     yJsonStateMachine j;
-    NSData       *raw_buffer=nil;
+    NSMutableData       *raw_buffer=nil;
     NSString     *buffer;
     int          res;
-    
+
     // Check if we have a valid cache value
     if(_cacheStamp > [YAPI GetTickCount]) {
         *apires = _cacheJson;
         return YAPI_SUCCESS;
     }
-    
+
     // Entry is outdated, get new data
     res = [self HTTPRequest: @"GET /api.json" :&raw_buffer :error];
     if(YISERR(res)) {
@@ -1548,14 +1595,14 @@ static double decExp[16] = {
     }
     // we know for sure that the last character parsed was a '{'
     do j.src--; while(j.src[0] != '{');
-    *apires = STR_y2oc(j.src);    
-    
+    *apires = STR_y2oc(j.src);
+
     // store result in cache
     ARC_release(_cacheJson);
     _cacheJson = *apires;
     ARC_retain(_cacheJson);
     _cacheStamp = [YAPI GetTickCount] + [YAPI DefaultCacheValidity];
-    
+
     return YAPI_SUCCESS;
 }
 
@@ -1563,7 +1610,7 @@ static double decExp[16] = {
 {
     if(_functions == nil) {
         NSMutableArray *func;
-        int res = [YapiWrapper getFunctionsByDevice:_devdescr:0:&func:error];        
+        int res = [YapiWrapper getFunctionsByDevice:_devdescr:0:&func:error];
         if(YISERR(res)) return (YRETCODE)res;
         _functions = [[NSArray alloc] initWithArray:func];
     }
@@ -1581,7 +1628,7 @@ static double decExp[16] = {
 // Constructor is protected. Use the device-specific factory function to instantiate
 -(id) initWith:(NSString*)func
 {
-    
+
     if(!(self = [super init]))
           return nil;
 //--- (generated code: YFunction attributes initialization)
@@ -1655,7 +1702,7 @@ static double decExp[16] = {
 // Method used to throw exceptions or save error type/message
 -(void)        _throw:(NSError*) error
 {
-    
+
     ARC_retain(error);
     ARC_release(_lastError)
     _lastError  = error;
@@ -1663,7 +1710,7 @@ static double decExp[16] = {
     if(![YAPI ExceptionsDisabled]) {
         NSNumber     *n   = [NSNumber numberWithInteger:[error code]];
         NSDictionary *dic =[NSDictionary dictionaryWithObject:n forKey:@"errType"];
-        NSException  *e   =[NSException exceptionWithName:@"YAPI_Exception" 
+        NSException  *e   =[NSException exceptionWithName:@"YAPI_Exception"
                                                    reason:[error localizedDescription]
                                                  userInfo:dic];
         @throw e;
@@ -1675,7 +1722,7 @@ static double decExp[16] = {
 {
     int res;
     YFUN_DESCR tmp_fundescr;
-    
+
     tmp_fundescr = [YapiWrapper getFunction:_className: _func: error];
     if(YISERR(tmp_fundescr)) {
         res = [YapiWrapper updateDeviceList:1:error];
@@ -1701,11 +1748,11 @@ static double decExp[16] = {
     // Resolve function name
     res = [self _getDescriptor:&fundescr: error];
     if(YISERR(res)) return res;
-    
+
     // Get device descriptor
     devdescr = [YapiWrapper getDeviceByFunction:fundescr: error];
     if(YISERR(devdescr)) return res;
-    
+
     // Get device object
     *dev = [YDevice getDevice:devdescr];
 
@@ -1739,7 +1786,7 @@ static double decExp[16] = {
         *hwId = @"";
         return YAPI_SUCCESS;
     }
-    
+
     ns_fundescr =[v_fundescr objectAtIndex:0];
     res = [YapiWrapper getFunctionInfo:[ns_fundescr intValue]:&devdescr :&serial :&funcId :&funcName :&funcVal :&error];
     if(YISERR(res)) {
@@ -1764,7 +1811,7 @@ static double decExp[16] = {
     if(j->st != YJSON_PARSE_STRUCT) {
         return -1;
     }
-    
+
     [self _parserHelper];
 
     return 0;
@@ -1774,7 +1821,7 @@ static double decExp[16] = {
 -(NSString*)     _parseString:(yJsonStateMachine*) j
 {
     NSString*  res = STR_y2oc(j->token);
-    
+
     while(j->next == YJSON_PARSE_STRINGCONT && yJsonParse(j) == YJSON_PARSE_AVAIL) {
         res =[res stringByAppendingString: STR_y2oc(j->token)];
     }
@@ -1792,8 +1839,8 @@ static double decExp[16] = {
     char            funcid[YOCTO_FUNCTION_LEN];
     char            errbuf[YOCTO_ERRMSG_LEN];
     NSMutableString *buffer;
-    
-    
+
+
     // Resolve the function name
     res = [self _getDescriptor:&fundesc:error];
     if(YISERR(res)) {
@@ -1817,7 +1864,7 @@ static double decExp[16] = {
                 unsigned char       c;
                 unsigned char       esc[2];
                 c = [changeval characterAtIndex:pos];
-                if(c <= ' ' || (c > 'z' && c != '~') || c == '"' || c == '%' || c == '&' || 
+                if(c <= ' ' || (c > 'z' && c != '~') || c == '"' || c == '%' || c == '&' ||
                    c == '+' || c == '<' || c == '=' || c == '>' || c == '\\' || c == '^' || c == '`') {
                     esc[0]=(c >= 0xa0 ? (c>>4)-10+'A' : (c>>4)+'0');
                     c &= 0xf;
@@ -1842,7 +1889,7 @@ static double decExp[16] = {
     NSString    *request;
     YRETCODE    res;
     YDevice     *dev;
-        
+
     // Execute http request
     res = [self _buildSetRequest:attrname:newvalue:&request:&error ];
     if(YISERR(res)) {
@@ -1855,7 +1902,7 @@ static double decExp[16] = {
         [self _throw:error];
         return res;
     }
-        
+
     res = [dev HTTPRequestAsync:request:NULL:NULL:&error];
     if(YISERR(res)) {
         // Check if an update of the device list does not solve the issue
@@ -1864,14 +1911,14 @@ static double decExp[16] = {
             [self _throw:error];
             return res;
         }
- 
+
         res = [dev HTTPRequestAsync:request:NULL:NULL:&error];
         if(YISERR(res)) {
             [self _throw:error];
             return res;
         }
 
-    
+
     }
     if (_cacheExpiration != 0) {
         _cacheExpiration = yapiGetTickCount();
@@ -1881,20 +1928,20 @@ static double decExp[16] = {
 
 
 
--(NSData*) _request:(NSString *)request withBody:(NSData*)body
+-(NSMutableData*) _request:(NSString *)request withBody:(NSData*)body
 {
-    NSError     *error;
-    YRETCODE    res;
-    YDevice     *dev;
-    NSData      *buffer;
-    
+    NSError       *error;
+    YRETCODE      res;
+    YDevice       *dev;
+    NSMutableData *buffer;
+
     // Get device Object
     res = [self _getDevice:&dev:&error];
     if(YISERR(res)) {
         [self _throw:error];
         return nil;
     }
-    
+
     res = [dev HTTPRequest:request withBody:body :&buffer :&error];
     if(YISERR(res)) {
         // Check if an update of the device list does not solve the issue
@@ -1909,7 +1956,7 @@ static double decExp[16] = {
             return nil;
         }
     }
-    
+
     NSRange all = {0,[buffer length]};
     NSString* str= @"OK\r\n";
     NSData* str_data=[str dataUsingEncoding:NSUTF8StringEncoding];
@@ -1927,10 +1974,10 @@ static double decExp[16] = {
 }
 
 
--(NSData*) _download:(NSString *)url
+-(NSMutableData*) _download:(NSString *)url
 {
-    NSData      *buffer;
-    
+    NSMutableData      *buffer;
+
     NSString *request = [NSString stringWithFormat:@"GET /%@ \r\n",url];
     buffer = [self _request:request withBody:nil];
     NSString *endofheader= @"\r\n\r\n";
@@ -1939,11 +1986,13 @@ static double decExp[16] = {
     NSRange  pos = [buffer rangeOfData:endofheader_data options:0 range:all];
     if(NSNotFound == pos.location){
         [self _throw:YAPI_IO_ERROR:@"http request failed"];
-        return nil;
+        return [NSMutableData data];
     }
     pos.location += [endofheader_data length];
     pos.length = all.length -pos.location;
-    return   [buffer subdataWithRange:pos];
+    NSRange range = NSMakeRange(0, pos.location);
+    [buffer replaceBytesInRange:range withBytes:NULL length:0];
+    return buffer;
 }
 
 -(YRETCODE) _upload:(NSString *)path :(NSData *)content
@@ -2019,12 +2068,19 @@ static double decExp[16] = {
     int depth =j.depth;
     do {
         last=j.src;
-        while(yJsonParse(&j) == YJSON_PARSE_AVAIL && j.depth> depth );
+        while (yJsonParse(&j) == YJSON_PARSE_AVAIL) {
+            if (j.next == YJSON_PARSE_STRINGCONT || j.depth > depth){
+                continue;
+            }
+            break;
+        }
         if (j.depth == depth ) {
             NSRange range;
-            while(*last ==',' || *last =='\n')last++;
-            range.location =last -json_cstr;
-            range.length = j.src-last;
+            while (*last == ',' || *last == '\n'){
+                last++;
+            }
+            range.location = last - json_cstr;
+            range.length = j.src - last;
             NSString * item=[json_str substringWithRange:range];
             [res addObject:item];
         }
@@ -2346,7 +2402,7 @@ static double decExp[16] = {
  * Returns a descriptive text that identifies the function.
  * The text always includes the class name, and may include as well
  * either the logical name of the function or its hardware identifier.
- * 
+ *
  * @return a string that describes the function
  */
 -(NSString*)    description
@@ -2381,10 +2437,10 @@ static double decExp[16] = {
  */
 
 -(NSString*)    describe
-{ 
+{
     return [self description];
 }
-     
+
 
 /**
  * Returns a descriptive text that identifies the function.
@@ -2399,7 +2455,7 @@ static double decExp[16] = {
     YDEV_DESCR   moddescr;
     NSString     *serial, *funcId,*funcname;
     NSString     *mod_serial, *mod_funcId,*mod_funcname;
-    
+
     fundescr = [YapiWrapper  getFunction:_className: _func: NULL];
     if(!YISERR(fundescr) && !YISERR([YapiWrapper getFunctionInfo:fundescr: NULL: &serial: &funcId: &funcname: NULL: NULL])) {
         if([funcname length]!=0) {
@@ -2417,7 +2473,7 @@ static double decExp[16] = {
     return Y_FRIENDLYNAME_INVALID;
 }
 
-    
+
 -(NSString*)    get_friendlyName
 { return [self friendlyName];}
 
@@ -2441,7 +2497,7 @@ static double decExp[16] = {
     NSString     *funcId,*snum;
     NSError      *error;
     YRETCODE     res;
-    
+
     // Get our function Id
     fundescr = [YapiWrapper getFunction:_className:_func:&error];
     if(YISERR(fundescr)) {
@@ -2474,7 +2530,7 @@ static double decExp[16] = {
     NSString     *funcId,*snum;
     NSError      *error;
     YRETCODE     res;
-    
+
     // Get our function Id
     fundescr = [YapiWrapper getFunction:_className:_func:&error];
     if(YISERR(fundescr)) {
@@ -2494,7 +2550,7 @@ static double decExp[16] = {
  * Returns the numerical error code of the latest error with this function.
  * This method is mostly useful when using the Yoctopuce library with
  * exceptions disabled.
- * 
+ *
  * @return a number corresponding to the code of the latest error that occured while
  *         using this function object
  */
@@ -2504,7 +2560,7 @@ static double decExp[16] = {
 {
     return (YRETCODE) [_lastError code];
 }
-    
+
 /**
  * Returns the error message of the latest error with the function.
  * This method is mostly useful when using the Yoctopuce library with
@@ -2519,7 +2575,7 @@ static double decExp[16] = {
 {
     return [_lastError localizedDescription];
 }
-    
+
 /**
  * Checks if the function is currently reachable, without raising any error.
  * If there is a cached value for the function in cache, that has not yet
@@ -2536,17 +2592,17 @@ static double decExp[16] = {
 
     // A valid value in cache means that the device is online
     if(_cacheExpiration > [YAPI GetTickCount]) return YES;
-    
+
     // Check that the function is available, without throwing exceptions
     if(YISERR([self _getDevice:&dev:NULL])) return NO;
 
     // Try to execute a function request to be positively sure that the device is ready
     if(YISERR([dev requestAPI:&apires: NULL])) return NO;
- 
+
      // Preload the function data, since we have it in device cache
     [self load:YAPI_defaultCacheValidity];
-      
-    return YES;   
+
+    return YES;
 }
 
 /**
@@ -2554,7 +2610,7 @@ static double decExp[16] = {
  * By default, whenever accessing a device, all function attributes
  * are kept in cache for the standard duration (5 ms). This method can be
  * used to temporarily mark the cache as valid for a longer period, in order
- * to reduce network trafic for instance.
+ * to reduce network traffic for instance.
  * 
  * @param msValidity : an integer corresponding to the validity attributed to the
  *         loaded function parameters, in milliseconds
@@ -2586,7 +2642,7 @@ static double decExp[16] = {
         [self _throw:error];
         return (YRETCODE)res;
     }
-    
+
     // Get our function Id
     fundescr = [YapiWrapper getFunction:_className:_func:&error];
     if(YISERR(fundescr)) {
@@ -2598,7 +2654,7 @@ static double decExp[16] = {
         res = yFormatRetVal(&error,res,errbuf);
         [self _throw:error];
         return res;
-    }            
+    }
     _cacheExpiration = yapiGetTickCount() + msValidity;
     ARC_release(_serial);
     _serial = STR_y2oc(serial);
@@ -2626,7 +2682,7 @@ static double decExp[16] = {
         }
         yJsonSkip(&j, 1);
     }
-    
+
     return YAPI_SUCCESS;
 }
 
@@ -2645,7 +2701,7 @@ static double decExp[16] = {
     YFUN_DESCR   fundescr;
     YDEV_DESCR   devdescr;
     NSString     *serial, *funcId, *funcName, *funcValue;
-    
+
     fundescr = [YapiWrapper getFunction:_className: _func: NULL];
     if(!YISERR(fundescr)) {
         if(!YISERR([YapiWrapper getFunctionInfo:fundescr:&devdescr:&serial:&funcId:&funcName:&funcValue:NULL])) {
@@ -2655,7 +2711,7 @@ static double decExp[16] = {
     // return a true YModule object even if it is not a module valid for communicating
     return [YModule FindModule:[NSString stringWithFormat:@"module_of_%@_%@",_className,_func]];
 
-    
+
 }
 
 
@@ -2681,7 +2737,7 @@ static double decExp[16] = {
 {
     _userData =data;
 }
-                    
+
 @end //YFunction
 
 
@@ -2748,22 +2804,22 @@ static double decExp[16] = {
     }
     if(!strcmp(j->token, "currentValue")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-        _currentValue =  atof(j->token)/65536;
+        _currentValue =  floor(atof(j->token) * 1000.0 / 65536.0 + 0.5) / 1000.0;
         return 1;
     }
     if(!strcmp(j->token, "lowestValue")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-        _lowestValue =  atof(j->token)/65536;
+        _lowestValue =  floor(atof(j->token) * 1000.0 / 65536.0 + 0.5) / 1000.0;
         return 1;
     }
     if(!strcmp(j->token, "highestValue")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-        _highestValue =  atof(j->token)/65536;
+        _highestValue =  floor(atof(j->token) * 1000.0 / 65536.0 + 0.5) / 1000.0;
         return 1;
     }
     if(!strcmp(j->token, "currentRawValue")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-        _currentRawValue =  atof(j->token)/65536;
+        _currentRawValue =  floor(atof(j->token) * 1000.0 / 65536.0 + 0.5) / 1000.0;
         return 1;
     }
     if(!strcmp(j->token, "logFrequency")) {
@@ -2789,7 +2845,7 @@ static double decExp[16] = {
     }
     if(!strcmp(j->token, "resolution")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-        _resolution =  (atoi(j->token) > 100 ? 1.0 / floor(65536.0/atof(j->token)+.5) : 0.001 / floor(67.0/atof(j->token)+.5));
+        _resolution =  floor(atof(j->token) * 1000.0 / 65536.0 + 0.5) / 1000.0;
         return 1;
     }
     return [super _parseAttr:j];
@@ -2805,7 +2861,7 @@ static double decExp[16] = {
     int         rawVal, refVal;
     int         minRaw = 0;
     NSMutableString    *res;
-    
+
     if(npt == 0) {
         return @"0";
     }
@@ -2871,17 +2927,17 @@ static double decExp[16] = {
     NSArray *iCalib = [YAPI _decodeWords:calibParams];
     if([iCalib count] < 2) {
         // bad format
-        return -1; 
+        return -1;
     }
     if([iCalib count] == 2) {
         // no calibration
         return 0;
     }
-    
+
     calibrationOffset = [[iCalib objectAtIndex:pos++] doubleValue];
     divisor = [[iCalib objectAtIndex:pos++] doubleValue];
     calibType = [[iCalib objectAtIndex:pos++] intValue];
-    
+
     // parse calibration parameters
     while(pos+1 < [iCalib count]) {
         int rawval = [[iCalib objectAtIndex:pos++] intValue];
@@ -2901,7 +2957,7 @@ static double decExp[16] = {
     }
     if ([intPt count] < 10) {
         return -1;
-    }       
+    }
     return calibType;
 }
 
@@ -2929,15 +2985,16 @@ static double decExp[16] = {
     return [self get_unit];
 }
 /**
- * Returns the current value of the measure.
+ * Returns the current value of the measure, in the specified unit, as a floating point number.
  * 
- * @return a floating point number corresponding to the current value of the measure
+ * @return a floating point number corresponding to the current value of the measure, in the specified
+ * unit, as a floating point number
  * 
  * On failure, throws an exception or returns Y_CURRENTVALUE_INVALID.
  */
 -(double) get_currentValue
 {
-    double res = 0;
+    double res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_CURRENTVALUE_INVALID;
@@ -2948,7 +3005,7 @@ static double decExp[16] = {
         res = _currentValue;
     }
     res = res * _iresol;
-    return ((res < 0.0 ? ceil(res-0.5) : floor(res+0.5))) / _iresol;
+    return floor(res+0.5) / _iresol;
 }
 
 
@@ -2973,7 +3030,7 @@ static double decExp[16] = {
 -(int) setLowestValue:(double) newval
 {
     NSString* rest_val;
-    rest_val = [NSString stringWithFormat:@"%d",(int)floor(newval*65536.0+0.5)];
+    rest_val = [NSString stringWithFormat:@"%d",(int)floor(newval * 65536.0 + 0.5)];
     return [self _setAttr:@"lowestValue" :rest_val];
 }
 /**
@@ -2986,14 +3043,14 @@ static double decExp[16] = {
  */
 -(double) get_lowestValue
 {
-    double res = 0;
+    double res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_LOWESTVALUE_INVALID;
         }
     }
     res = _lowestValue * _iresol;
-    return ((res < 0.0 ? ceil(res-0.5) : floor(res+0.5))) / _iresol;
+    return floor(res+0.5) / _iresol;
 }
 
 
@@ -3018,7 +3075,7 @@ static double decExp[16] = {
 -(int) setHighestValue:(double) newval
 {
     NSString* rest_val;
-    rest_val = [NSString stringWithFormat:@"%d",(int)floor(newval*65536.0+0.5)];
+    rest_val = [NSString stringWithFormat:@"%d",(int)floor(newval * 65536.0 + 0.5)];
     return [self _setAttr:@"highestValue" :rest_val];
 }
 /**
@@ -3031,14 +3088,14 @@ static double decExp[16] = {
  */
 -(double) get_highestValue
 {
-    double res = 0;
+    double res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_HIGHESTVALUE_INVALID;
         }
     }
     res = _highestValue * _iresol;
-    return ((res < 0.0 ? ceil(res-0.5) : floor(res+0.5))) / _iresol;
+    return floor(res+0.5) / _iresol;
 }
 
 
@@ -3047,9 +3104,11 @@ static double decExp[16] = {
     return [self get_highestValue];
 }
 /**
- * Returns the uncalibrated, unrounded raw value returned by the sensor.
+ * Returns the uncalibrated, unrounded raw value returned by the sensor, in the specified unit, as a
+ * floating point number.
  * 
- * @return a floating point number corresponding to the uncalibrated, unrounded raw value returned by the sensor
+ * @return a floating point number corresponding to the uncalibrated, unrounded raw value returned by
+ * the sensor, in the specified unit, as a floating point number
  * 
  * On failure, throws an exception or returns Y_CURRENTRAWVALUE_INVALID.
  */
@@ -3208,7 +3267,7 @@ static double decExp[16] = {
 -(int) setResolution:(double) newval
 {
     NSString* rest_val;
-    rest_val = [NSString stringWithFormat:@"%d",(int)floor(newval*65536.0+0.5)];
+    rest_val = [NSString stringWithFormat:@"%d",(int)floor(newval * 65536.0 + 0.5)];
     return [self _setAttr:@"resolution" :rest_val];
 }
 /**
@@ -3310,110 +3369,134 @@ static double decExp[16] = {
 
 -(int) _parserHelper
 {
-    int position = 0;
-    int maxpos = 0;
+    int position;
+    int maxpos;
     NSMutableArray* iCalib = [NSMutableArray array];
-    int iRaw = 0;
-    int iRef = 0;
-    double fRaw = 0;
-    double fRef = 0;
-    // Store inverted resolution, to provide better rounding
-    if (_resolution > 0) {
-        _iresol = ((1.0 / _resolution < 0.0 ? ceil(1.0 / _resolution-0.5) : floor(1.0 / _resolution+0.5)));
-    } else {
-        return 0;
-    }
-    
+    int iRaw;
+    int iRef;
+    double fRaw;
+    double fRef;
+    _caltyp = -1;
     _scale = -1;
+    _isScal32 = NO;
     [_calpar removeAllObjects];
     [_calraw removeAllObjects];
     [_calref removeAllObjects];
-    
+    // Store inverted resolution, to provide better rounding
+    if (_resolution > 0) {
+        _iresol = floor(1.0 / _resolution+0.5);
+    } else {
+        _iresol = 10000;
+        _resolution = 0.0001;
+    }
     // Old format: supported when there is no calibration
     if ([_calibrationParam isEqualToString:@""] || [_calibrationParam isEqualToString:@"0"]) {
         _caltyp = 0;
         return 0;
     }
-    // Old format: calibrated value will be provided by the device
     if (_ystrpos(_calibrationParam, @",") >= 0) {
-        _caltyp = -1;
-        return 0;
-    }
-    // New format, decode parameters
-    iCalib = [YAPI _decodeWords:_calibrationParam];
-    // In case of unknown format, calibrated value will be provided by the device
-    if ((int)[iCalib count] < 2) {
-        _caltyp = -1;
-        return 0;
-    }
-    
-    // Save variable format (scale for scalar, or decimal exponent)
-    _isScal = ([[iCalib objectAtIndex:1] intValue] > 0);
-    if (_isScal) {
-        _offset = [[iCalib objectAtIndex:0] doubleValue];
-        if (_offset > 32767) {
-            _offset = _offset - 65536;
+        iCalib = [YAPI _decodeFloats:_calibrationParam];
+        _caltyp = (([[iCalib objectAtIndex:0] intValue]) / (1000));
+        if (_caltyp > 0) {
+            if (_caltyp < YOCTO_CALIB_TYPE_OFS) {
+                _caltyp = -1;
+                return 0;
+            }
+            _calhdl = [YAPI _getCalibrationHandler:_caltyp];
+            if (!(_calhdl != NULL)) {
+                _caltyp = -1;
+                return 0;
+            }
         }
-        _scale = [[iCalib objectAtIndex:1] doubleValue];
-        _decexp = 0;
-    } else {
+        _isScal = YES;
+        _isScal32 = YES;
         _offset = 0;
-        _scale = 1;
-        _decexp = 1.0;
-        position = [[iCalib objectAtIndex:0] intValue];
-        while (position > 0) {
-            _decexp = _decexp * 10;
-            position = position - 1;
-        }
-    }
-    
-    // Shortcut when there is no calibration parameter
-    if ((int)[iCalib count] == 2) {
-        _caltyp = 0;
-        return 0;
-    }
-    
-    _caltyp = [[iCalib objectAtIndex:2] intValue];
-    _calhdl = [YAPI _getCalibrationHandler:_caltyp];
-    // parse calibration points
-    position = 3;
-    if (_caltyp <= 10) {
-        maxpos = _caltyp;
-    } else {
-        if (_caltyp <= 20) {
-            maxpos = _caltyp - 10;
-        } else {
-            maxpos = 5;
-        }
-    }
-    maxpos = 3 + 2 * maxpos;
-    if (maxpos > (int)[iCalib count]) {
+        _scale = 1000;
         maxpos = (int)[iCalib count];
-    }
-    [_calpar removeAllObjects];
-    [_calraw removeAllObjects];
-    [_calref removeAllObjects];
-    while (position + 1 < maxpos) {
-        iRaw = [[iCalib objectAtIndex:position] intValue];
-        iRef = [[iCalib objectAtIndex:position + 1] intValue];
-        [_calpar addObject:[NSNumber numberWithLong:iRaw]];
-        [_calpar addObject:[NSNumber numberWithLong:iRef]];
-        if (_isScal) {
-            fRaw = iRaw;
-            fRaw = (fRaw - _offset) / _scale;
-            fRef = iRef;
-            fRef = (fRef - _offset) / _scale;
+        [_calpar removeAllObjects];
+        position = 1;
+        while (position < maxpos) {
+            [_calpar addObject:[iCalib objectAtIndex:position]];
+            position = position + 1;
+        }
+        [_calraw removeAllObjects];
+        [_calref removeAllObjects];
+        position = 1;
+        while (position + 1 < maxpos) {
+            fRaw = [[iCalib objectAtIndex:position] doubleValue];
+            fRaw = fRaw / 1000.0;
+            fRef = [[iCalib objectAtIndex:position + 1] doubleValue];
+            fRef = fRef / 1000.0;
             [_calraw addObject:[NSNumber numberWithDouble:fRaw]];
             [_calref addObject:[NSNumber numberWithDouble:fRef]];
-        } else {
-            [_calraw addObject:[NSNumber numberWithDouble:[YAPI _decimalToDouble:iRaw]]];
-            [_calref addObject:[NSNumber numberWithDouble:[YAPI _decimalToDouble:iRef]]];
+            position = position + 2;
         }
-        position = position + 2;
+    } else {
+        iCalib = [YAPI _decodeWords:_calibrationParam];
+        if ((int)[iCalib count] < 2) {
+            _caltyp = -1;
+            return 0;
+        }
+        _isScal = ([[iCalib objectAtIndex:1] intValue] > 0);
+        if (_isScal) {
+            _offset = [[iCalib objectAtIndex:0] doubleValue];
+            if (_offset > 32767) {
+                _offset = _offset - 65536;
+            }
+            _scale = [[iCalib objectAtIndex:1] doubleValue];
+            _decexp = 0;
+        } else {
+            _offset = 0;
+            _scale = 1;
+            _decexp = 1.0;
+            position = [[iCalib objectAtIndex:0] intValue];
+            while (position > 0) {
+                _decexp = _decexp * 10;
+                position = position - 1;
+            }
+        }
+        if ((int)[iCalib count] == 2) {
+            _caltyp = 0;
+            return 0;
+        }
+        _caltyp = [[iCalib objectAtIndex:2] intValue];
+        _calhdl = [YAPI _getCalibrationHandler:_caltyp];
+        if (_caltyp <= 10) {
+            maxpos = _caltyp;
+        } else {
+            if (_caltyp <= 20) {
+                maxpos = _caltyp - 10;
+            } else {
+                maxpos = 5;
+            }
+        }
+        maxpos = 3 + 2 * maxpos;
+        if (maxpos > (int)[iCalib count]) {
+            maxpos = (int)[iCalib count];
+        }
+        [_calpar removeAllObjects];
+        [_calraw removeAllObjects];
+        [_calref removeAllObjects];
+        position = 3;
+        while (position + 1 < maxpos) {
+            iRaw = [[iCalib objectAtIndex:position] intValue];
+            iRef = [[iCalib objectAtIndex:position + 1] intValue];
+            [_calpar addObject:[NSNumber numberWithLong:iRaw]];
+            [_calpar addObject:[NSNumber numberWithLong:iRef]];
+            if (_isScal) {
+                fRaw = iRaw;
+                fRaw = (fRaw - _offset) / _scale;
+                fRef = iRef;
+                fRef = (fRef - _offset) / _scale;
+                [_calraw addObject:[NSNumber numberWithDouble:fRaw]];
+                [_calref addObject:[NSNumber numberWithDouble:fRef]];
+            } else {
+                [_calraw addObject:[NSNumber numberWithDouble:[YAPI _decimalToDouble:iRaw]]];
+                [_calref addObject:[NSNumber numberWithDouble:[YAPI _decimalToDouble:iRef]]];
+            }
+            position = position + 2;
+        }
     }
-    
-    
-    
     return 0;
 }
 
@@ -3530,16 +3613,14 @@ static double decExp[16] = {
 {
     [rawValues removeAllObjects];
     [refValues removeAllObjects];
-    
     // Load function parameters if not yet loaded
     if (_scale == 0) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return YAPI_DEVICE_NOT_FOUND;
         }
     }
-    
     if (_caltyp < 0) {
-        [self _throw:YAPI_NOT_SUPPORTED :@"Device does not support new calibration parameters. Please upgrade your firmware"];
+        [self _throw:YAPI_NOT_SUPPORTED :@"Calibration parameters format mismatch. Please upgrade your library or firmware."];
         return YAPI_NOT_SUPPORTED;
     }
     [rawValues removeAllObjects];
@@ -3556,51 +3637,56 @@ static double decExp[16] = {
 -(NSString*) _encodeCalibrationPoints:(NSMutableArray*)rawValues :(NSMutableArray*)refValues
 {
     NSString* res;
-    int npt = 0;
-    int idx = 0;
-    int iRaw = 0;
-    int iRef = 0;
-    
+    int npt;
+    int idx;
+    int iRaw;
+    int iRef;
     npt = (int)[rawValues count];
     if (npt != (int)[refValues count]) {
         [self _throw:YAPI_INVALID_ARGUMENT :@"Invalid calibration parameters (size mismatch)"];
         return YAPI_INVALID_STRING;
     }
-    
     // Shortcut when building empty calibration parameters
     if (npt == 0) {
         return @"0";
     }
-    
     // Load function parameters if not yet loaded
     if (_scale == 0) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return YAPI_INVALID_STRING;
         }
     }
-    
     // Detect old firmware
     if ((_caltyp < 0) || (_scale < 0)) {
-        [self _throw:YAPI_NOT_SUPPORTED :@"Device does not support new calibration parameters. Please upgrade your firmware"];
+        [self _throw:YAPI_NOT_SUPPORTED :@"Calibration parameters format mismatch. Please upgrade your library or firmware."];
         return @"0";
     }
-    if (_isScal) {
-        res = [NSString stringWithFormat:@"%d",npt];
+    if (_isScal32) {
+        res = [NSString stringWithFormat:@"%d",YOCTO_CALIB_TYPE_OFS];
         idx = 0;
         while (idx < npt) {
-            iRaw = (int) (([[rawValues objectAtIndex:idx] doubleValue] * _scale + _offset < 0.0 ? ceil([[rawValues objectAtIndex:idx] doubleValue] * _scale + _offset-0.5) : floor([[rawValues objectAtIndex:idx] doubleValue] * _scale + _offset+0.5)));
-            iRef = (int) (([[refValues objectAtIndex:idx] doubleValue] * _scale + _offset < 0.0 ? ceil([[refValues objectAtIndex:idx] doubleValue] * _scale + _offset-0.5) : floor([[refValues objectAtIndex:idx] doubleValue] * _scale + _offset+0.5)));
-            res = [NSString stringWithFormat:@"%@,%d,%d", res, iRaw,iRef];
+            res = [NSString stringWithFormat:@"%@,%g,%g", res, [[rawValues objectAtIndex:idx] doubleValue],[[refValues objectAtIndex:idx] doubleValue]];
             idx = idx + 1;
         }
     } else {
-        res = [NSString stringWithFormat:@"%d",10 + npt];
-        idx = 0;
-        while (idx < npt) {
-            iRaw = (int) [YAPI _doubleToDecimal:[[rawValues objectAtIndex:idx] doubleValue]];
-            iRef = (int) [YAPI _doubleToDecimal:[[refValues objectAtIndex:idx] doubleValue]];
-            res = [NSString stringWithFormat:@"%@,%d,%d", res, iRaw,iRef];
-            idx = idx + 1;
+        if (_isScal) {
+            res = [NSString stringWithFormat:@"%d",npt];
+            idx = 0;
+            while (idx < npt) {
+                iRaw = (int) floor([[rawValues objectAtIndex:idx] doubleValue] * _scale + _offset+0.5);
+                iRef = (int) floor([[refValues objectAtIndex:idx] doubleValue] * _scale + _offset+0.5);
+                res = [NSString stringWithFormat:@"%@,%d,%d", res, iRaw,iRef];
+                idx = idx + 1;
+            }
+        } else {
+            res = [NSString stringWithFormat:@"%d",10 + npt];
+            idx = 0;
+            while (idx < npt) {
+                iRaw = (int) [YAPI _doubleToDecimal:[[rawValues objectAtIndex:idx] doubleValue]];
+                iRef = (int) [YAPI _doubleToDecimal:[[refValues objectAtIndex:idx] doubleValue]];
+                res = [NSString stringWithFormat:@"%@,%d,%d", res, iRaw,iRef];
+                idx = idx + 1;
+            }
         }
     }
     return res;
@@ -3625,66 +3711,140 @@ static double decExp[16] = {
 
 -(YMeasure*) _decodeTimedReport:(double)timestamp :(NSMutableArray*)report
 {
-    int i = 0;
-    int byteVal = 0;
-    int poww = 0;
-    int minRaw = 0;
-    int avgRaw = 0;
-    int maxRaw = 0;
-    double startTime = 0;
-    double endTime = 0;
-    double minVal = 0;
-    double avgVal = 0;
-    double maxVal = 0;
-    
+    int i;
+    int byteVal;
+    int poww;
+    int minRaw;
+    int avgRaw;
+    int maxRaw;
+    int sublen;
+    int difRaw;
+    double startTime;
+    double endTime;
+    double minVal;
+    double avgVal;
+    double maxVal;
     startTime = _prevTimedReport;
     endTime = timestamp;
     _prevTimedReport = endTime;
     if (startTime == 0) {
         startTime = endTime;
     }
-    if ([[report objectAtIndex:0] intValue] > 0) {
-        minRaw = [[report objectAtIndex:1] intValue] + 0x100 * [[report objectAtIndex:2] intValue];
-        maxRaw = [[report objectAtIndex:3] intValue] + 0x100 * [[report objectAtIndex:4] intValue];
-        avgRaw = [[report objectAtIndex:5] intValue] + 0x100 * [[report objectAtIndex:6] intValue] + 0x10000 * [[report objectAtIndex:7] intValue];
-        byteVal = [[report objectAtIndex:8] intValue];
-        if (((byteVal) & (0x80)) == 0) {
-            avgRaw = avgRaw + 0x1000000 * byteVal;
-        } else {
-            avgRaw = avgRaw - 0x1000000 * (0x100 - byteVal);
-        }
-        minVal = [self _decodeVal:minRaw];
-        avgVal = [self _decodeAvg:avgRaw];
-        maxVal = [self _decodeVal:maxRaw];
-    } else {
-        poww = 1;
-        avgRaw = 0;
-        byteVal = 0;
-        i = 1;
-        while (i < (int)[report count]) {
-            byteVal = [[report objectAtIndex:i] intValue];
-            avgRaw = avgRaw + poww * byteVal;
-            poww = poww * 0x100;
-            i = i + 1;
-        }
-        if (_isScal) {
-            avgVal = [self _decodeVal:avgRaw];
-        } else {
+    if ([[report objectAtIndex:0] intValue] == 2) {
+        if ((int)[report count] <= 5) {
+            poww = 1;
+            avgRaw = 0;
+            byteVal = 0;
+            i = 1;
+            while (i < (int)[report count]) {
+                byteVal = [[report objectAtIndex:i] intValue];
+                avgRaw = avgRaw + poww * byteVal;
+                poww = poww * 0x100;
+                i = i + 1;
+            }
             if (((byteVal) & (0x80)) != 0) {
                 avgRaw = avgRaw - poww;
             }
-            avgVal = [self _decodeAvg:avgRaw];
+            avgVal = avgRaw / 1000.0;
+            if (_caltyp != 0) {
+                if (_calhdl != NULL) {
+                    avgVal = [_calhdl yCalibrationHandler: avgVal: _caltyp: _calpar: _calraw:_calref];
+                }
+            }
+            minVal = avgVal;
+            maxVal = avgVal;
+        } else {
+            sublen = 1 + (([[report objectAtIndex:1] intValue]) & (3));
+            poww = 1;
+            avgRaw = 0;
+            byteVal = 0;
+            i = 2;
+            while ((sublen > 0) && (i < (int)[report count])) {
+                byteVal = [[report objectAtIndex:i] intValue];
+                avgRaw = avgRaw + poww * byteVal;
+                poww = poww * 0x100;
+                i = i + 1;
+                sublen = sublen - 1;
+            }
+            if (((byteVal) & (0x80)) != 0) {
+                avgRaw = avgRaw - poww;
+            }
+            sublen = 1 + (((([[report objectAtIndex:1] intValue]) >> (2))) & (3));
+            poww = 1;
+            difRaw = 0;
+            while ((sublen > 0) && (i < (int)[report count])) {
+                byteVal = [[report objectAtIndex:i] intValue];
+                difRaw = avgRaw + poww * byteVal;
+                poww = poww * 0x100;
+                i = i + 1;
+                sublen = sublen - 1;
+            }
+            minRaw = avgRaw - difRaw;
+            sublen = 1 + (((([[report objectAtIndex:1] intValue]) >> (4))) & (3));
+            poww = 1;
+            difRaw = 0;
+            while ((sublen > 0) && (i < (int)[report count])) {
+                byteVal = [[report objectAtIndex:i] intValue];
+                difRaw = avgRaw + poww * byteVal;
+                poww = poww * 0x100;
+                i = i + 1;
+                sublen = sublen - 1;
+            }
+            maxRaw = avgRaw + difRaw;
+            avgVal = avgRaw / 1000.0;
+            minVal = minRaw / 1000.0;
+            maxVal = maxRaw / 1000.0;
+            if (_caltyp != 0) {
+                if (_calhdl != NULL) {
+                    avgVal = [_calhdl yCalibrationHandler: avgVal: _caltyp: _calpar: _calraw:_calref];
+                    minVal = [_calhdl yCalibrationHandler: minVal: _caltyp: _calpar: _calraw:_calref];
+                    maxVal = [_calhdl yCalibrationHandler: maxVal: _caltyp: _calpar: _calraw:_calref];
+                }
+            }
         }
-        minVal = avgVal;
-        maxVal = avgVal;
+    } else {
+        if ([[report objectAtIndex:0] intValue] == 0) {
+            poww = 1;
+            avgRaw = 0;
+            byteVal = 0;
+            i = 1;
+            while (i < (int)[report count]) {
+                byteVal = [[report objectAtIndex:i] intValue];
+                avgRaw = avgRaw + poww * byteVal;
+                poww = poww * 0x100;
+                i = i + 1;
+            }
+            if (_isScal) {
+                avgVal = [self _decodeVal:avgRaw];
+            } else {
+                if (((byteVal) & (0x80)) != 0) {
+                    avgRaw = avgRaw - poww;
+                }
+                avgVal = [self _decodeAvg:avgRaw];
+            }
+            minVal = avgVal;
+            maxVal = avgVal;
+        } else {
+            minRaw = [[report objectAtIndex:1] intValue] + 0x100 * [[report objectAtIndex:2] intValue];
+            maxRaw = [[report objectAtIndex:3] intValue] + 0x100 * [[report objectAtIndex:4] intValue];
+            avgRaw = [[report objectAtIndex:5] intValue] + 0x100 * [[report objectAtIndex:6] intValue] + 0x10000 * [[report objectAtIndex:7] intValue];
+            byteVal = [[report objectAtIndex:8] intValue];
+            if (((byteVal) & (0x80)) == 0) {
+                avgRaw = avgRaw + 0x1000000 * byteVal;
+            } else {
+                avgRaw = avgRaw - 0x1000000 * (0x100 - byteVal);
+            }
+            minVal = [self _decodeVal:minRaw];
+            avgVal = [self _decodeAvg:avgRaw];
+            maxVal = [self _decodeVal:maxRaw];
+        }
     }
-    
     return ARC_sendAutorelease([[YMeasure alloc] initWith:startTime :endTime :minVal :avgVal :maxVal]);
 }
 
 -(double) _decodeVal:(int)w
 {
-    double val = 0;
+    double val;
     val = w;
     if (_isScal) {
         val = (val - _offset) / _scale;
@@ -3692,14 +3852,16 @@ static double decExp[16] = {
         val = [YAPI _decimalToDouble:w];
     }
     if (_caltyp != 0) {
-        val = [_calhdl yCalibrationHandler: val:_caltyp: _calpar: _calraw:_calref];
+        if (_calhdl != NULL) {
+            val = [_calhdl yCalibrationHandler: val:_caltyp: _calpar: _calraw:_calref];
+        }
     }
     return val;
 }
 
 -(double) _decodeAvg:(int)dw
 {
-    double val = 0;
+    double val;
     val = dw;
     if (_isScal) {
         val = (val / 100 - _offset) / _scale;
@@ -3707,7 +3869,9 @@ static double decExp[16] = {
         val = val / _decexp;
     }
     if (_caltyp != 0) {
-        val = [_calhdl yCalibrationHandler: val: _caltyp: _calpar: _calraw:_calref];
+        if (_calhdl != NULL) {
+            val = [_calhdl yCalibrationHandler: val: _caltyp: _calpar: _calraw:_calref];
+        }
     }
     return val;
 }
@@ -3763,7 +3927,7 @@ static double decExp[16] = {
     _upTime = Y_UPTIME_INVALID;
     _usbCurrent = Y_USBCURRENT_INVALID;
     _rebootCountdown = Y_REBOOTCOUNTDOWN_INVALID;
-    _usbBandwidth = Y_USBBANDWIDTH_INVALID;
+    _userVar = Y_USERVAR_INVALID;
     _valueCallbackModule = NULL;
     _logCallback = NULL;
 //--- (end of generated code: YModule attributes initialization)
@@ -3793,7 +3957,7 @@ static double decExp[16] = {
     YFUN_DESCR      fundescr;
     YDEV_DESCR      devdescr;
     NSError         *tmp;
-    
+
     // retrieve device object
     res = [self _getDevice:&dev:&tmp];
     if(YISERR(res)) {
@@ -3802,20 +3966,20 @@ static double decExp[16] = {
         [self _throw:tmp];
         return (YRETCODE)res;
     }
-    
+
     // get reference to all functions from the device
     res = [dev getFunctions:&functions :error];
     if(YISERR(res)) return (YRETCODE)res;
-    
+
     // get latest function info from yellow pages
-    
+
     ns_fundescr = [functions objectAtIndex:idx];
     fundescr = [ns_fundescr intValue];
     res = [YapiWrapper getFunctionInfo:fundescr:&devdescr:serial:funcId:funcName:funcVal:error];
     if(YISERR(res)) return (YRETCODE)res;
-    
+
     return YAPI_SUCCESS;
-    
+
 }
 
 
@@ -3884,9 +4048,9 @@ static double decExp[16] = {
         _rebootCountdown =  atoi(j->token);
         return 1;
     }
-    if(!strcmp(j->token, "usbBandwidth")) {
+    if(!strcmp(j->token, "userVar")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-        _usbBandwidth =  atoi(j->token);
+        _userVar =  atoi(j->token);
         return 1;
     }
     return [super _parseAttr:j];
@@ -3910,7 +4074,7 @@ static double decExp[16] = {
 
 -(YModuleLogCallback) get_logCallback
 {
-    return _logCallback;    
+    return _logCallback;
 }
 
 //--- (generated code: YModule public methods implementation)
@@ -4225,27 +4389,48 @@ static double decExp[16] = {
     return [self _setAttr:@"rebootCountdown" :rest_val];
 }
 /**
- * Returns the number of USB interfaces used by the module.
+ * Returns the value previously stored in this attribute.
+ * On startup and after a device reboot, the value is always reset to zero.
  * 
- * @return either Y_USBBANDWIDTH_SIMPLE or Y_USBBANDWIDTH_DOUBLE, according to the number of USB
- * interfaces used by the module
+ * @return an integer corresponding to the value previously stored in this attribute
  * 
- * On failure, throws an exception or returns Y_USBBANDWIDTH_INVALID.
+ * On failure, throws an exception or returns Y_USERVAR_INVALID.
  */
--(Y_USBBANDWIDTH_enum) get_usbBandwidth
+-(int) get_userVar
 {
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
-            return Y_USBBANDWIDTH_INVALID;
+            return Y_USERVAR_INVALID;
         }
     }
-    return _usbBandwidth;
+    return _userVar;
 }
 
 
--(Y_USBBANDWIDTH_enum) usbBandwidth
+-(int) userVar
 {
-    return [self get_usbBandwidth];
+    return [self get_userVar];
+}
+
+/**
+ * Returns the value previously stored in this attribute.
+ * On startup and after a device reboot, the value is always reset to zero.
+ * 
+ * @param newval : an integer
+ * 
+ * @return YAPI_SUCCESS if the call succeeds.
+ * 
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) set_userVar:(int) newval
+{
+    return [self setUserVar:newval];
+}
+-(int) setUserVar:(int) newval
+{
+    NSString* rest_val;
+    rest_val = [NSString stringWithFormat:@"%d", newval];
+    return [self _setAttr:@"userVar" :rest_val];
 }
 /**
  * Allows you to find a module from its serial number or from its logical name.
@@ -4371,15 +4556,613 @@ static double decExp[16] = {
 }
 
 /**
+ * Test if the byn file is valid for this module. This method is useful to test if the module need to be updated.
+ * It's possible to pass an directory instead of a file. In this case this method return the path of
+ * the most recent
+ * appropriate byn file. If the parameter onlynew is true the function will discard firmware that are
+ * older or equal to
+ * the installed firmware.
+ * 
+ * @param path    : the path of a byn file or a directory that contain byn files
+ * @param onlynew : return only files that are strictly newer
+ * 
+ * @return : the path of the byn file to use or a empty string if no byn files match the requirement
+ * 
+ * On failure, throws an exception or returns a string that start with "error:".
+ */
+-(NSString*) checkFirmware:(NSString*)path :(bool)onlynew
+{
+    char errmsg[YOCTO_ERRMSG_LEN];
+    char smallbuff[1024];
+    char *bigbuff;
+    int buffsize;
+    int fullsize;
+    int res;
+    NSString* firmware_path;
+    NSString* serial;
+    NSString* release;
+    if (onlynew) {
+        release = [self get_firmwareRelease];
+    } else {
+        release = @"";
+    }
+    //may throw an exception
+    serial = _serial;
+    fullsize = 0;
+    res = yapiCheckFirmware(STR_oc2y(serial), STR_oc2y(release), STR_oc2y(path), smallbuff, 1024, &fullsize, errmsg);
+    if (res < 0) {
+        firmware_path = [NSString stringWithFormat:@"%@%@", @"error:", STR_y2oc(errmsg)];
+        return [NSString stringWithFormat:@"%@%@", @"error:", STR_y2oc(errmsg)];
+    }
+    if (fullsize <= 1024) {
+        firmware_path = ARC_sendAutorelease([[NSString alloc] initWithBytes:smallbuff length:fullsize encoding:NSUTF8StringEncoding]);
+    } else {
+        buffsize = fullsize;
+        bigbuff = (char *)malloc(buffsize);
+        res = yapiCheckFirmware(STR_oc2y(serial), STR_oc2y(release), STR_oc2y(path), bigbuff, buffsize, &fullsize, errmsg);
+        if (res < 0) {
+            [self _throw:YAPI_INVALID_ARGUMENT :STR_y2oc(errmsg)];
+            firmware_path = [NSString stringWithFormat:@"%@%@", @"error:", STR_y2oc(errmsg)];
+        } else {
+            firmware_path = ARC_sendAutorelease([[NSString alloc] initWithBytes:bigbuff length:fullsize encoding:NSUTF8StringEncoding]);
+        }
+        free(bigbuff);
+    }
+    return firmware_path;
+}
+
+/**
+ * Prepare a firmware upgrade of the module. This method return a object YFirmwareUpdate which
+ * will handle the firmware upgrade process.
+ * 
+ * @param path : the path of the byn file to use.
+ * 
+ * @return : A object YFirmwareUpdate.
+ */
+-(YFirmwareUpdate*) updateFirmware:(NSString*)path
+{
+    NSString* serial;
+    NSMutableData* settings;
+    // may throw an exception
+    serial = [self get_serialNumber];
+    settings = [self get_allSettings];
+    return ARC_sendAutorelease([[YFirmwareUpdate alloc] initWith:serial :path :settings]);
+}
+
+/**
+ * Returns all the setting of the module. Useful to backup all the logical name and calibrations parameters
+ * of a connected module.
+ * 
+ * @return a binary buffer with all settings.
+ * 
+ * On failure, throws an exception or returns  YAPI_INVALID_STRING.
+ */
+-(NSMutableData*) get_allSettings
+{
+    return [self _download:@"api.json"];
+}
+
+-(NSMutableData*) _flattenJsonStruct:(NSData*)jsoncomplex
+{
+    char errmsg[YOCTO_ERRMSG_LEN];
+    char smallbuff[1024];
+    char *bigbuff;
+    int buffsize;
+    int fullsize;
+    int res;
+    NSString* jsonflat;
+    NSString* jsoncomplexstr;
+    fullsize = 0;
+    jsoncomplexstr = ARC_sendAutorelease([[NSString alloc] initWithData:jsoncomplex encoding:NSASCIIStringEncoding]);
+    res = yapiGetAllJsonKeys(STR_oc2y(jsoncomplexstr), smallbuff, 1024, &fullsize, errmsg);
+    if (res < 0) {
+        [self _throw:YAPI_INVALID_ARGUMENT :STR_y2oc(errmsg)];
+        jsonflat = [NSString stringWithFormat:@"%@%@", @"error:", STR_y2oc(errmsg)];
+        return [NSMutableData dataWithData:[jsonflat dataUsingEncoding:NSUTF8StringEncoding]];
+    }
+    if (fullsize <= 1024) {
+        jsonflat = ARC_sendAutorelease([[NSString alloc] initWithBytes:smallbuff length:fullsize encoding:NSUTF8StringEncoding]);
+    } else {
+        buffsize = fullsize;
+        bigbuff = (char *)malloc(buffsize);
+        res = yapiGetAllJsonKeys(STR_oc2y(jsoncomplexstr), bigbuff, buffsize, &fullsize, errmsg);
+        if (res < 0) {
+            [self _throw:YAPI_INVALID_ARGUMENT :STR_y2oc(errmsg)];
+            jsonflat = [NSString stringWithFormat:@"%@%@", @"error:", STR_y2oc(errmsg)];
+        } else {
+            jsonflat = ARC_sendAutorelease([[NSString alloc] initWithBytes:bigbuff length:fullsize encoding:NSUTF8StringEncoding]);
+        }
+        free(bigbuff);
+    }
+    return [NSMutableData dataWithData:[jsonflat dataUsingEncoding:NSUTF8StringEncoding]];
+}
+
+-(int) calibVersion:(NSString*)cparams
+{
+    if ([cparams isEqualToString:@"0,"]) {
+        return 3;
+    }
+    if (_ystrpos(cparams, @",") >= 0) {
+        if (_ystrpos(cparams, @" ") > 0) {
+            return 3;
+        } else {
+            return 1;
+        }
+    }
+    if ([cparams isEqualToString:@""] || [cparams isEqualToString:@"0"]) {
+        return 1;
+    }
+    if (((int)[(cparams) length] < 2) || (_ystrpos(cparams, @".") >= 0)) {
+        return 0;
+    } else {
+        return 2;
+    }
+}
+
+-(int) calibScale:(NSString*)unit_name :(NSString*)sensorType
+{
+    if ([unit_name isEqualToString:@"g"] || [unit_name isEqualToString:@"gauss"] || [unit_name isEqualToString:@"W"]) {
+        return 1000;
+    }
+    if ([unit_name isEqualToString:@"C"]) {
+        if ([sensorType isEqualToString:@""]) {
+            return 16;
+        }
+        if ([sensorType intValue] < 8) {
+            return 16;
+        } else {
+            return 100;
+        }
+    }
+    if ([unit_name isEqualToString:@"m"] || [unit_name isEqualToString:@"deg"]) {
+        return 10;
+    }
+    return 1;
+}
+
+-(int) calibOffset:(NSString*)unit_name
+{
+    if ([unit_name isEqualToString:@"% RH"] || [unit_name isEqualToString:@"mbar"] || [unit_name isEqualToString:@"lx"]) {
+        return 0;
+    }
+    return 32767;
+}
+
+-(NSString*) calibConvert:(NSString*)param :(NSString*)calibrationParam :(NSString*)unit_name :(NSString*)sensorType
+{
+    int paramVer;
+    int funVer;
+    int funScale;
+    int funOffset;
+    int paramScale;
+    int paramOffset;
+    NSMutableArray* words = [NSMutableArray array];
+    NSMutableArray* words_str = [NSMutableArray array];
+    NSMutableArray* calibData = [NSMutableArray array];
+    NSMutableArray* iCalib = [NSMutableArray array];
+    int calibType;
+    int i;
+    int maxSize;
+    double ratio;
+    int nPoints;
+    double wordVal;
+    // Initial guess for parameter encoding
+    paramVer = [self calibVersion:param];
+    funVer = [self calibVersion:calibrationParam];
+    funScale = [self calibScale:unit_name :sensorType];
+    funOffset = [self calibOffset:unit_name];
+    paramScale = funScale;
+    paramOffset = funOffset;
+    if (funVer < 3) {
+        if (funVer == 2) {
+            words = [YAPI _decodeWords:calibrationParam];
+            if (([[words objectAtIndex:0] intValue] == 1366) && ([[words objectAtIndex:1] intValue] == 12500)) {
+                funScale = 1;
+                funOffset = 0;
+            } else {
+                funScale = [[words objectAtIndex:1] intValue];
+                funOffset = [[words objectAtIndex:0] intValue];
+            }
+        } else {
+            if (funVer == 1) {
+                if ([calibrationParam isEqualToString:@""] || ([calibrationParam intValue] > 10)) {
+                    funScale = 0;
+                }
+            }
+        }
+    }
+    [calibData removeAllObjects];
+    calibType = 0;
+    if (paramVer < 3) {
+        if (paramVer == 2) {
+            words = [YAPI _decodeWords:param];
+            if (([[words objectAtIndex:0] intValue] == 1366) && ([[words objectAtIndex:1] intValue] == 12500)) {
+                paramScale = 1;
+                paramOffset = 0;
+            } else {
+                paramScale = [[words objectAtIndex:1] intValue];
+                paramOffset = [[words objectAtIndex:0] intValue];
+            }
+            if (((int)[words count] >= 3) && ([[words objectAtIndex:2] intValue] > 0)) {
+                maxSize = 3 + 2 * (([[words objectAtIndex:2] intValue]) % (10));
+                if (maxSize > (int)[words count]) {
+                    maxSize = (int)[words count];
+                }
+                i = 3;
+                while (i < maxSize) {
+                    [calibData addObject:[NSNumber numberWithDouble:(double) [[words objectAtIndex:i] intValue]]];
+                    i = i + 1;
+                }
+            }
+        } else {
+            if (paramVer == 1) {
+                words_str = [NSMutableArray arrayWithArray:[param componentsSeparatedByString:@"@',"]];
+                for (NSString* _each  in words_str) {
+                    [words addObject:[NSNumber numberWithLong:[_each intValue]]];
+                }
+                if ([param isEqualToString:@""] || ([[words objectAtIndex:0] intValue] > 10)) {
+                    paramScale = 0;
+                }
+                if (((int)[words count] > 0) && ([[words objectAtIndex:0] intValue] > 0)) {
+                    maxSize = 1 + 2 * (([[words objectAtIndex:0] intValue]) % (10));
+                    if (maxSize > (int)[words count]) {
+                        maxSize = (int)[words count];
+                    }
+                    i = 1;
+                    while (i < maxSize) {
+                        [calibData addObject:[NSNumber numberWithDouble:(double) [[words objectAtIndex:i] intValue]]];
+                        i = i + 1;
+                    }
+                }
+            } else {
+                if (paramVer == 0) {
+                    ratio = [param doubleValue];
+                    if (ratio > 0) {
+                        [calibData addObject:[NSNumber numberWithDouble:0.0]];
+                        [calibData addObject:[NSNumber numberWithDouble:0.0]];
+                        [calibData addObject:[NSNumber numberWithDouble:floor(65535 / ratio+0.5)]];
+                        [calibData addObject:[NSNumber numberWithDouble:65535.0]];
+                    }
+                }
+            }
+        }
+        i = 0;
+        while (i < (int)[calibData count]) {
+            if (paramScale > 0) {
+                [calibData replaceObjectAtIndex: i withObject:[NSNumber numberWithDouble:([[calibData objectAtIndex:i] doubleValue] - paramOffset) / paramScale]];
+            } else {
+                [calibData replaceObjectAtIndex: i withObject:[NSNumber numberWithDouble:[YAPI _decimalToDouble:(int) floor([[calibData objectAtIndex:i] doubleValue]+0.5)]]];
+            }
+            i = i + 1;
+        }
+    } else {
+        iCalib = [YAPI _decodeFloats:param];
+        calibType = (int) floor([[iCalib objectAtIndex:0] doubleValue] / 1000.0+0.5);
+        if (calibType >= 30) {
+            calibType = calibType - 30;
+        }
+        i = 1;
+        while (i < (int)[iCalib count]) {
+            [calibData addObject:[NSNumber numberWithDouble:[[iCalib objectAtIndex:i] doubleValue] / 1000.0]];
+            i = i + 1;
+        }
+    }
+    if (funVer >= 3) {
+        if ((int)[calibData count] == 0) {
+            param = @"0,";
+        } else {
+            param = [NSString stringWithFormat:@"%d",30 + calibType];
+            i = 0;
+            while (i < (int)[calibData count]) {
+                if (((i) & (1)) > 0) {
+                    param = [NSString stringWithFormat:@"%@%@", param, @":"];
+                } else {
+                    param = [NSString stringWithFormat:@"%@%@", param, @" "];
+                }
+                param = [NSString stringWithFormat:@"%@%@", param, [NSString stringWithFormat:@"%d",(int) floor([[calibData objectAtIndex:i] doubleValue] * 1000.0 / 1000.0+0.5)]];
+                i = i + 1;
+            }
+            param = [NSString stringWithFormat:@"%@%@", param, @","];
+        }
+    } else {
+        if (funVer >= 1) {
+            nPoints = (((int)[calibData count]) / (2));
+            param = [NSString stringWithFormat:@"%d",nPoints];
+            i = 0;
+            while (i < 2 * nPoints) {
+                if (funScale == 0) {
+                    wordVal = [YAPI _doubleToDecimal:(int) floor([[calibData objectAtIndex:i] doubleValue]+0.5)];
+                } else {
+                    wordVal = [[calibData objectAtIndex:i] doubleValue] * funScale + funOffset;
+                }
+                param = [NSString stringWithFormat:@"%@%@%@", param, @",", [NSString stringWithFormat:@"%f",floor(wordVal+0.5)]];
+                i = i + 1;
+            }
+        } else {
+            if ((int)[calibData count] == 4) {
+                param = [NSString stringWithFormat:@"%f",floor(1000 * ([[calibData objectAtIndex:3] doubleValue] - [[calibData objectAtIndex:1] doubleValue]) / [[calibData objectAtIndex:2] doubleValue] - [[calibData objectAtIndex:0] doubleValue]+0.5)];
+            }
+        }
+    }
+    return param;
+}
+
+/**
+ * Restore all the setting of the module. Useful to restore all the logical name and calibrations parameters
+ * of a module from a backup.
+ * 
+ * @param settings : a binary buffer with all settings.
+ * 
+ * @return YAPI_SUCCESS when the call succeeds.
+ * 
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) set_allSettings:(NSData*)settings
+{
+    NSMutableArray* restoreLast = [NSMutableArray array];
+    NSMutableData* old_json_flat;
+    NSMutableArray* old_dslist = [NSMutableArray array];
+    NSMutableArray* old_jpath = [NSMutableArray array];
+    NSMutableArray* old_jpath_len = [NSMutableArray array];
+    NSMutableArray* old_val = [NSMutableArray array];
+    NSMutableData* actualSettings;
+    NSMutableArray* new_dslist = [NSMutableArray array];
+    NSMutableArray* new_jpath = [NSMutableArray array];
+    NSMutableArray* new_jpath_len = [NSMutableArray array];
+    NSMutableArray* new_val = [NSMutableArray array];
+    int cpos;
+    int eqpos;
+    int leng;
+    int i;
+    int j;
+    NSString* njpath;
+    NSString* jpath;
+    NSString* fun;
+    NSString* attr;
+    NSString* value;
+    NSString* url;
+    NSString* tmp;
+    NSString* new_calib;
+    NSString* sensorType;
+    NSString* unit_name;
+    NSString* newval;
+    NSString* old_calib;
+    bool do_update;
+    bool found;
+    old_json_flat = [self _flattenJsonStruct:settings];
+    old_dslist = [self _json_get_array:old_json_flat];
+    for (NSString* _each  in old_dslist) {
+        leng = (int)[(_each) length];
+        _each = [_each substringWithRange:NSMakeRange( 1, leng - 2)];
+        leng = (int)[(_each) length];
+        eqpos = _ystrpos(_each, @"=");
+        if ((eqpos < 0) || (leng == 0)) {
+            [self _throw:YAPI_INVALID_ARGUMENT :@"Invalid settings"];
+            return YAPI_INVALID_ARGUMENT;
+        }
+        jpath = [_each substringWithRange:NSMakeRange( 0, eqpos)];
+        eqpos = eqpos + 1;
+        value = [_each substringWithRange:NSMakeRange( eqpos, leng - eqpos)];
+        [old_jpath addObject:jpath];
+        [old_jpath_len addObject:[NSNumber numberWithLong:(int)[(jpath) length]]];
+        [old_val addObject:value];;
+    }
+    // may throw an exception
+    actualSettings = [self _download:@"api.json"];
+    actualSettings = [self _flattenJsonStruct:actualSettings];
+    new_dslist = [self _json_get_array:actualSettings];
+    for (NSString* _each  in new_dslist) {
+        leng = (int)[(_each) length];
+        _each = [_each substringWithRange:NSMakeRange( 1, leng - 2)];
+        leng = (int)[(_each) length];
+        eqpos = _ystrpos(_each, @"=");
+        if ((eqpos < 0) || (leng == 0)) {
+            [self _throw:YAPI_INVALID_ARGUMENT :@"Invalid settings"];
+            return YAPI_INVALID_ARGUMENT;
+        }
+        jpath = [_each substringWithRange:NSMakeRange( 0, eqpos)];
+        eqpos = eqpos + 1;
+        value = [_each substringWithRange:NSMakeRange( eqpos, leng - eqpos)];
+        [new_jpath addObject:jpath];
+        [new_jpath_len addObject:[NSNumber numberWithLong:(int)[(jpath) length]]];
+        [new_val addObject:value];;
+    }
+    i = 0;
+    while (i < (int)[new_jpath count]) {
+        njpath = [new_jpath objectAtIndex:i];
+        leng = (int)[(njpath) length];
+        cpos = _ystrpos(njpath, @"/");
+        if ((cpos < 0) || (leng == 0)) {
+            continue;
+        }
+        fun = [njpath substringWithRange:NSMakeRange( 0, cpos)];
+        cpos = cpos + 1;
+        attr = [njpath substringWithRange:NSMakeRange( cpos, leng - cpos)];
+        do_update = YES;
+        if ([fun isEqualToString:@"services"]) {
+            do_update = NO;
+        }
+        if ((do_update) && ([attr isEqualToString:@"firmwareRelease"])) {
+            do_update = NO;
+        }
+        if ((do_update) && ([attr isEqualToString:@"usbCurrent"])) {
+            do_update = NO;
+        }
+        if ((do_update) && ([attr isEqualToString:@"upTime"])) {
+            do_update = NO;
+        }
+        if ((do_update) && ([attr isEqualToString:@"persistentSettings"])) {
+            do_update = NO;
+        }
+        if ((do_update) && ([attr isEqualToString:@"adminPassword"])) {
+            do_update = NO;
+        }
+        if ((do_update) && ([attr isEqualToString:@"userPassword"])) {
+            do_update = NO;
+        }
+        if ((do_update) && ([attr isEqualToString:@"rebootCountdown"])) {
+            do_update = NO;
+        }
+        if ((do_update) && ([attr isEqualToString:@"advertisedValue"])) {
+            do_update = NO;
+        }
+        if ((do_update) && ([attr isEqualToString:@"poeCurrent"])) {
+            do_update = NO;
+        }
+        if ((do_update) && ([attr isEqualToString:@"readiness"])) {
+            do_update = NO;
+        }
+        if ((do_update) && ([attr isEqualToString:@"ipAddress"])) {
+            do_update = NO;
+        }
+        if ((do_update) && ([attr isEqualToString:@"subnetMask"])) {
+            do_update = NO;
+        }
+        if ((do_update) && ([attr isEqualToString:@"router"])) {
+            do_update = NO;
+        }
+        if ((do_update) && ([attr isEqualToString:@"linkQuality"])) {
+            do_update = NO;
+        }
+        if ((do_update) && ([attr isEqualToString:@"ssid"])) {
+            do_update = NO;
+        }
+        if ((do_update) && ([attr isEqualToString:@"channel"])) {
+            do_update = NO;
+        }
+        if ((do_update) && ([attr isEqualToString:@"security"])) {
+            do_update = NO;
+        }
+        if ((do_update) && ([attr isEqualToString:@"message"])) {
+            do_update = NO;
+        }
+        if ((do_update) && ([attr isEqualToString:@"currentValue"])) {
+            do_update = NO;
+        }
+        if ((do_update) && ([attr isEqualToString:@"currentRawValue"])) {
+            do_update = NO;
+        }
+        if ((do_update) && ([attr isEqualToString:@"currentRunIndex"])) {
+            do_update = NO;
+        }
+        if ((do_update) && ([attr isEqualToString:@"pulseTimer"])) {
+            do_update = NO;
+        }
+        if ((do_update) && ([attr isEqualToString:@"lastTimePressed"])) {
+            do_update = NO;
+        }
+        if ((do_update) && ([attr isEqualToString:@"lastTimeReleased"])) {
+            do_update = NO;
+        }
+        if ((do_update) && ([attr isEqualToString:@"filesCount"])) {
+            do_update = NO;
+        }
+        if ((do_update) && ([attr isEqualToString:@"freeSpace"])) {
+            do_update = NO;
+        }
+        if ((do_update) && ([attr isEqualToString:@"timeUTC"])) {
+            do_update = NO;
+        }
+        if ((do_update) && ([attr isEqualToString:@"rtcTime"])) {
+            do_update = NO;
+        }
+        if ((do_update) && ([attr isEqualToString:@"unixTime"])) {
+            do_update = NO;
+        }
+        if ((do_update) && ([attr isEqualToString:@"dateTime"])) {
+            do_update = NO;
+        }
+        if ((do_update) && ([attr isEqualToString:@"rawValue"])) {
+            do_update = NO;
+        }
+        if ((do_update) && ([attr isEqualToString:@"lastMsg"])) {
+            do_update = NO;
+        }
+        if ((do_update) && ([attr isEqualToString:@"delayedPulseTimer"])) {
+            do_update = NO;
+        }
+        if ((do_update) && ([attr isEqualToString:@"rxCount"])) {
+            do_update = NO;
+        }
+        if ((do_update) && ([attr isEqualToString:@"txCount"])) {
+            do_update = NO;
+        }
+        if ((do_update) && ([attr isEqualToString:@"msgCount"])) {
+            do_update = NO;
+        }
+        if (do_update) {
+            if ([attr isEqualToString:@"calibrationParam"]) {
+                old_calib = @"";
+                unit_name = @"";
+                sensorType = @"";
+                new_calib = [new_val objectAtIndex:i];
+                j = 0;
+                found = NO;
+                while ((j < (int)[old_jpath count]) && !(found)) {
+                    if (([new_jpath_len objectAtIndex:i] == [old_jpath_len objectAtIndex:j]) && ([[new_jpath objectAtIndex:i] isEqualToString:[old_jpath objectAtIndex:j]])) {
+                        found = YES;
+                        old_calib = [old_val objectAtIndex:j];
+                    }
+                    j = j + 1;
+                }
+                tmp = [NSString stringWithFormat:@"%@%@", fun, @"/unit"];
+                j = 0;
+                found = NO;
+                while ((j < (int)[new_jpath count]) && !(found)) {
+                    if ([tmp isEqualToString:[new_jpath objectAtIndex:j]]) {
+                        found = YES;
+                        unit_name = [new_jpath objectAtIndex:j];
+                    }
+                    j = j + 1;
+                }
+                tmp = [NSString stringWithFormat:@"%@%@", fun, @"/sensorType"];
+                j = 0;
+                found = NO;
+                while ((j < (int)[new_jpath count]) && !(found)) {
+                    if ([tmp isEqualToString:[new_jpath objectAtIndex:j]]) {
+                        found = YES;
+                        sensorType = [new_jpath objectAtIndex:j];
+                    }
+                    j = j + 1;
+                }
+                newval = [self calibConvert:[new_val objectAtIndex:i] : old_calib : unit_name :sensorType];
+                url = [NSString stringWithFormat:@"%@%@%@%@%@%@", @"api/", fun, @".json?", attr, @"=", newval];
+                [self _download:url];
+            } else {
+                j = 0;
+                found = NO;
+                while ((j < (int)[old_jpath_len count]) && !(found)) {
+                    if (([[new_jpath_len objectAtIndex:i] intValue] == [[old_jpath_len objectAtIndex:j] intValue]) && ([[new_jpath objectAtIndex:i] isEqualToString:[old_jpath objectAtIndex:j]])) {
+                        found = YES;
+                        url = [NSString stringWithFormat:@"%@%@%@%@%@%@", @"api/", fun, @".json?", attr, @"=", [old_val objectAtIndex:j]];
+                        if ([attr isEqualToString:@"resolution"]) {
+                            [restoreLast addObject:url];
+                        } else {
+                            [self _download:url];
+                        }
+                    }
+                    j = j + 1;
+                }
+            }
+        }
+        i = i + 1;
+    }
+    for (NSString* _each  in restoreLast) {
+        [self _download:_each];;
+    }
+    return YAPI_SUCCESS;
+}
+
+/**
  * Downloads the specified built-in file and returns a binary buffer with its content.
  * 
  * @param pathname : name of the new file to load
  * 
  * @return a binary buffer with the file content
  * 
- * On failure, throws an exception or returns an empty content.
+ * On failure, throws an exception or returns  YAPI_INVALID_STRING.
  */
--(NSData*) download:(NSString*)pathname
+-(NSMutableData*) download:(NSString*)pathname
 {
     return [self _download:pathname];
 }
@@ -4389,8 +5172,9 @@ static double decExp[16] = {
  * exceeds 1536 bytes.
  * 
  * @return a binary buffer with module icon, in png format.
+ *         On failure, throws an exception or returns  YAPI_INVALID_STRING.
  */
--(NSData*) get_icon2d
+-(NSMutableData*) get_icon2d
 {
     return [self _download:@"icon2d.png"];
 }
@@ -4400,10 +5184,11 @@ static double decExp[16] = {
  * logs that are still in the module.
  * 
  * @return a string with last logs of the module.
+ *         On failure, throws an exception or returns  YAPI_INVALID_STRING.
  */
 -(NSString*) get_lastLogs
 {
-    NSData* content;
+    NSMutableData* content;
     // may throw an exception
     content = [self _download:@"logs.txt"];
     return ARC_sendAutorelease([[NSString alloc] initWithData:content encoding:NSASCIIStringEncoding]);
@@ -4448,7 +5233,7 @@ static double decExp[16] = {
 {
     YFUN_DESCR   fundescr;
     NSString     *serial, *funcId,*funcname;
-    
+
     fundescr = [YapiWrapper  getFunction:_className: _func: NULL];
     if(!YISERR(fundescr) && !YISERR([YapiWrapper getFunctionInfo:fundescr: NULL: &serial: &funcId: &funcname: NULL: NULL])) {
         if([funcname length]!=0) {
@@ -4459,10 +5244,6 @@ static double decExp[16] = {
     return Y_FRIENDLYNAME_INVALID;
 }
 
-
-
-
-
 // Retrieve the number of functions (beside "module") in the device
 -(int)              functionCount
 {
@@ -4470,7 +5251,7 @@ static double decExp[16] = {
     YDevice     *dev;
     NSError     *error;
     int         res;
-    
+
     res =[self _getDevice:&dev:&error];
     if(YISERR(res)) {
         [self _throw:error];
@@ -4482,7 +5263,7 @@ static double decExp[16] = {
         return (YRETCODE)res;
     }
     return (int)[functions count];
-    
+
 }
 
 // Retrieve the Id of the nth function (beside "module") in the device
@@ -4490,13 +5271,13 @@ static double decExp[16] = {
 {
     NSString      *serial, *funcId, *funcName, *funcVal;
     NSError       *error;
-    
+
     int res = [self _getFunction:functionIndex:&serial:&funcId:&funcName:&funcVal:&error];
     if(YISERR(res)) {
         [self _throw:error];
         return [YAPI INVALID_STRING];
     }
-    return funcId; 
+    return funcId;
 }
 
 // Retrieve the logical name of the nth function (beside "module") in the device
@@ -4504,14 +5285,14 @@ static double decExp[16] = {
 {
     NSString    *serial, *funcId, *funcName, *funcVal;
     NSError     *error;
-    
+
     int res = [self _getFunction:functionIndex:&serial:&funcId:&funcName:&funcVal:&error];
     if(YISERR(res)) {
         [self _throw:error];
         return [YAPI INVALID_STRING];
     }
-    
-    return funcName; 
+
+    return funcName;
 }
 
 
@@ -4520,21 +5301,107 @@ static double decExp[16] = {
 {
     NSString    *serial, *funcId, *funcName, *funcVal;
     NSError     *error;
-    
+
     int res = [self _getFunction:functionIndex:&serial:&funcId:&funcName:&funcVal:&error];
     if(YISERR(res)) {
         [self _throw:error];
         return [YAPI INVALID_STRING];
-    }    
-    
+    }
+
     return funcVal;
 }
-
 
 @end //YModule
 
 
+@implementation YFirmwareUpdate
 
+-(id)   initWith:(NSString*)serial :(NSString*)path :(NSData*)settings
+{
+    if(!(self = [super init]))
+        return nil;
+//--- (generated code: YFirmwareUpdate attributes initialization)
+    _progress = 0;
+//--- (end of generated code: YFirmwareUpdate attributes initialization)
+    _serial = serial;
+    _firmwarepath = path,
+    _settings = settings;
+    return self;
+}
+
+// destructor
+-(void)  dealloc
+{
+//--- (generated code: YFirmwareUpdate cleanup)
+    ARC_dealloc(super);
+//--- (end of generated code: YFirmwareUpdate cleanup)
+}
+
+//--- (generated code: YFirmwareUpdate private methods implementation)
+
+//--- (end of generated code: YFirmwareUpdate private methods implementation)
+
+//--- (generated code: YFirmwareUpdate public methods implementation)
+-(int) _processMore:(int)newupdate
+{
+    char errmsg[YOCTO_ERRMSG_LEN];
+    int res;
+    NSString* serial;
+    NSString* firmwarepath;
+    NSString* settings;
+    serial = _serial;
+    firmwarepath = _firmwarepath;
+    settings = ARC_sendAutorelease([[NSString alloc] initWithData:_settings encoding:NSASCIIStringEncoding]);
+    res = yapiUpdateFirmware(STR_oc2y(serial), STR_oc2y(firmwarepath), STR_oc2y(settings), newupdate, errmsg);
+    _progress = res;
+    _progress_msg = STR_y2oc(errmsg);
+    return res;
+}
+
+-(int) get_progress
+{
+    YModule* m;
+    [self _processMore:0];
+    if ((_progress == 100) && ((int)[_settings length] != 0)) {
+        m = [YModule FindModule:_serial];
+        if ([m isOnline]) {
+            [m set_allSettings:_settings];
+            _settings = [NSMutableData dataWithLength:0];
+        }
+    }
+    return _progress;
+}
+
+/**
+ * Returns the last progress message of the firmware update process. If an error occur during the
+ * firmware update process the error message is returned
+ * 
+ * @return an string  with the last progress message, or the error message.
+ */
+-(NSString*) get_progressMessage
+{
+    return _progress_msg;
+}
+
+/**
+ * Start the firmware update process. This method start the firmware update process in background. This method
+ * return immediately. The progress of the firmware update can be monitored with methods get_progress()
+ * and get_progressMessage().
+ * 
+ * @return an integer in the range 0 to 100 (percentage of completion),
+ *         or a negative error code in case of failure.
+ * 
+ * On failure returns a negative error code.
+ */
+-(int) startUpdate
+{
+    [self _processMore:1];
+    return _progress;
+}
+
+//--- (end of generated code: YFirmwareUpdate public methods implementation)
+
+@end
 
 @implementation YDataStream
 
@@ -4597,7 +5464,7 @@ static double decExp[16] = {
     return self;
 }
 
-// destructor 
+// destructor
 -(void)  dealloc
 {
     if (_columnNames!=nil) { ARC_release(_columnNames);}
@@ -4617,15 +5484,15 @@ static double decExp[16] = {
 //--- (generated code: YDataStream public methods implementation)
 -(int) _initFromDataSet:(YDataSet*)dataset :(NSMutableArray*)encoded
 {
-    int val = 0;
-    int i = 0;
-    int iRaw = 0;
-    int iRef = 0;
-    double fRaw = 0;
-    double fRef = 0;
-    double duration_float = 0;
+    int val;
+    int i;
+    int maxpos;
+    int iRaw;
+    int iRef;
+    double fRaw;
+    double fRef;
+    double duration_float;
     NSMutableArray* iCalib = [NSMutableArray array];
-    
     // decode sequence header to extract data
     _runNo = [[encoded objectAtIndex:0] intValue] + ((([[encoded objectAtIndex:1] intValue]) << (16)));
     _utcStamp = [[encoded objectAtIndex:2] intValue] + ((([[encoded objectAtIndex:3] intValue]) << (16)));
@@ -4639,7 +5506,6 @@ static double decExp[16] = {
             _samplesPerHour = _samplesPerHour * 60;
         }
     }
-    
     val = [[encoded objectAtIndex:5] intValue];
     if (val > 32767) {
         val = val - 65536;
@@ -4648,7 +5514,7 @@ static double decExp[16] = {
     _offset = val;
     _scale = [[encoded objectAtIndex:6] intValue];
     _isScal = (_scale != 0);
-    
+    _isScal32 = ((int)[encoded count] >= 14);
     val = [[encoded objectAtIndex:7] intValue];
     _isClosed = (val != 0xffff);
     if (val == 0xffff) {
@@ -4656,7 +5522,7 @@ static double decExp[16] = {
     }
     _nRows = val;
     duration_float = _nRows * 3600 / _samplesPerHour;
-    _duration = (int) ((duration_float < 0.0 ? ceil(duration_float-0.5) : floor(duration_float+0.5)));
+    _duration = (int) floor(duration_float+0.5);
     // precompute decoding parameters
     _decexp = 1.0;
     if (_scale == 0) {
@@ -4670,27 +5536,46 @@ static double decExp[16] = {
     _caltyp = [[iCalib objectAtIndex:0] intValue];
     if (_caltyp != 0) {
         _calhdl = [YAPI _getCalibrationHandler:_caltyp];
+        maxpos = (int)[iCalib count];
         [_calpar removeAllObjects];
         [_calraw removeAllObjects];
         [_calref removeAllObjects];
-        i = 1;
-        while (i + 1 < (int)[iCalib count]) {
-            iRaw = [[iCalib objectAtIndex:i] intValue];
-            iRef = [[iCalib objectAtIndex:i + 1] intValue];
-            [_calpar addObject:[NSNumber numberWithLong:iRaw]];
-            [_calpar addObject:[NSNumber numberWithLong:iRef]];
-            if (_isScal) {
-                fRaw = iRaw;
-                fRaw = (fRaw - _offset) / _scale;
-                fRef = iRef;
-                fRef = (fRef - _offset) / _scale;
+        if (_isScal32) {
+            i = 1;
+            while (i < maxpos) {
+                [_calpar addObject:[iCalib objectAtIndex:i]];
+                i = i + 1;
+            }
+            i = 1;
+            while (i + 1 < maxpos) {
+                fRaw = [[iCalib objectAtIndex:i] doubleValue];
+                fRaw = fRaw / 1000.0;
+                fRef = [[iCalib objectAtIndex:i + 1] doubleValue];
+                fRef = fRef / 1000.0;
                 [_calraw addObject:[NSNumber numberWithDouble:fRaw]];
                 [_calref addObject:[NSNumber numberWithDouble:fRef]];
-            } else {
-                [_calraw addObject:[NSNumber numberWithDouble:[YAPI _decimalToDouble:iRaw]]];
-                [_calref addObject:[NSNumber numberWithDouble:[YAPI _decimalToDouble:iRef]]];
+                i = i + 2;
             }
-            i = i + 2;
+        } else {
+            i = 1;
+            while (i + 1 < maxpos) {
+                iRaw = [[iCalib objectAtIndex:i] intValue];
+                iRef = [[iCalib objectAtIndex:i + 1] intValue];
+                [_calpar addObject:[NSNumber numberWithLong:iRaw]];
+                [_calpar addObject:[NSNumber numberWithLong:iRef]];
+                if (_isScal) {
+                    fRaw = iRaw;
+                    fRaw = (fRaw - _offset) / _scale;
+                    fRef = iRef;
+                    fRef = (fRef - _offset) / _scale;
+                    [_calraw addObject:[NSNumber numberWithDouble:fRaw]];
+                    [_calref addObject:[NSNumber numberWithDouble:fRef]];
+                } else {
+                    [_calraw addObject:[NSNumber numberWithDouble:[YAPI _decimalToDouble:iRaw]]];
+                    [_calref addObject:[NSNumber numberWithDouble:[YAPI _decimalToDouble:iRef]]];
+                }
+                i = i + 2;
+            }
         }
     }
     // preload column names for backward-compatibility
@@ -4708,16 +5593,22 @@ static double decExp[16] = {
     }
     // decode min/avg/max values for the sequence
     if (_nRows > 0) {
-        _minVal = [self _decodeVal:[[encoded objectAtIndex:8] intValue]];
-        _maxVal = [self _decodeVal:[[encoded objectAtIndex:9] intValue]];
-        _avgVal = [self _decodeAvg:[[encoded objectAtIndex:10] intValue] + ((([[encoded objectAtIndex:11] intValue]) << (16))) :_nRows];
+        if (_isScal32) {
+            _avgVal = [self _decodeAvg:[[encoded objectAtIndex:8] intValue] + ((((([[encoded objectAtIndex:9] intValue]) ^ (0x8000))) << (16))) :1];
+            _minVal = [self _decodeVal:[[encoded objectAtIndex:10] intValue] + ((([[encoded objectAtIndex:11] intValue]) << (16)))];
+            _maxVal = [self _decodeVal:[[encoded objectAtIndex:12] intValue] + ((([[encoded objectAtIndex:13] intValue]) << (16)))];
+        } else {
+            _minVal = [self _decodeVal:[[encoded objectAtIndex:8] intValue]];
+            _maxVal = [self _decodeVal:[[encoded objectAtIndex:9] intValue]];
+            _avgVal = [self _decodeAvg:[[encoded objectAtIndex:10] intValue] + ((([[encoded objectAtIndex:11] intValue]) << (16))) :_nRows];
+        }
     }
     return 0;
 }
 
 -(int) parse:(NSData*)sdata
 {
-    int idx = 0;
+    int idx;
     NSMutableArray* udat = [NSMutableArray array];
     NSMutableArray* dat = [NSMutableArray array];
     // may throw an exception
@@ -4727,14 +5618,21 @@ static double decExp[16] = {
     if (_isAvg) {
         while (idx + 3 < (int)[udat count]) {
             [dat removeAllObjects];
-            [dat addObject:[NSNumber numberWithDouble:[self _decodeVal:[[udat objectAtIndex:idx] intValue]]]];
-            [dat addObject:[NSNumber numberWithDouble:[self _decodeAvg:[[udat objectAtIndex:idx + 2] intValue] + ((([[udat objectAtIndex:idx + 3] intValue]) << (16))) :1]]];
-            [dat addObject:[NSNumber numberWithDouble:[self _decodeVal:[[udat objectAtIndex:idx + 1] intValue]]]];
+            if (_isScal32) {
+                [dat addObject:[NSNumber numberWithDouble:[self _decodeVal:[[udat objectAtIndex:idx + 2] intValue] + ((([[udat objectAtIndex:idx + 3] intValue]) << (16)))]]];
+                [dat addObject:[NSNumber numberWithDouble:[self _decodeAvg:[[udat objectAtIndex:idx] intValue] + ((((([[udat objectAtIndex:idx + 1] intValue]) ^ (0x8000))) << (16))) :1]]];
+                [dat addObject:[NSNumber numberWithDouble:[self _decodeVal:[[udat objectAtIndex:idx + 4] intValue] + ((([[udat objectAtIndex:idx + 5] intValue]) << (16)))]]];
+                idx = idx + 6;
+            } else {
+                [dat addObject:[NSNumber numberWithDouble:[self _decodeVal:[[udat objectAtIndex:idx] intValue]]]];
+                [dat addObject:[NSNumber numberWithDouble:[self _decodeAvg:[[udat objectAtIndex:idx + 2] intValue] + ((([[udat objectAtIndex:idx + 3] intValue]) << (16))) :1]]];
+                [dat addObject:[NSNumber numberWithDouble:[self _decodeVal:[[udat objectAtIndex:idx + 1] intValue]]]];
+                idx = idx + 4;
+            }
             [_values addObject:[dat copy]];
-            idx = idx + 4;
         }
     } else {
-        if (_isScal) {
+        if (_isScal && !(_isScal32)) {
             while (idx < (int)[udat count]) {
                 [dat removeAllObjects];
                 [dat addObject:[NSNumber numberWithDouble:[self _decodeVal:[[udat objectAtIndex:idx] intValue]]]];
@@ -4744,7 +5642,7 @@ static double decExp[16] = {
         } else {
             while (idx + 1 < (int)[udat count]) {
                 [dat removeAllObjects];
-                [dat addObject:[NSNumber numberWithDouble:[self _decodeAvg:[[udat objectAtIndex:idx] intValue] + ((([[udat objectAtIndex:idx + 1] intValue]) << (16))) :1]]];
+                [dat addObject:[NSNumber numberWithDouble:[self _decodeAvg:[[udat objectAtIndex:idx] intValue] + ((((([[udat objectAtIndex:idx + 1] intValue]) ^ (0x8000))) << (16))) :1]]];
                 [_values addObject:[dat copy]];
                 idx = idx + 2;
             }
@@ -4770,12 +5668,16 @@ static double decExp[16] = {
 
 -(double) _decodeVal:(int)w
 {
-    double val = 0;
+    double val;
     val = w;
-    if (_isScal) {
-        val = (val - _offset) / _scale;
+    if (_isScal32) {
+        val = val / 1000.0;
     } else {
-        val = [YAPI _decimalToDouble:w];
+        if (_isScal) {
+            val = (val - _offset) / _scale;
+        } else {
+            val = [YAPI _decimalToDouble:w];
+        }
     }
     if (_caltyp != 0) {
         val = [_calhdl yCalibrationHandler: val:_caltyp: _calpar: _calraw:_calref];
@@ -4785,12 +5687,16 @@ static double decExp[16] = {
 
 -(double) _decodeAvg:(int)dw :(int)count
 {
-    double val = 0;
+    double val;
     val = dw;
-    if (_isScal) {
-        val = (val / (100 * count) - _offset) / _scale;
+    if (_isScal32) {
+        val = val / 1000.0;
     } else {
-        val = val / (count * _decexp);
+        if (_isScal) {
+            val = (val / (100 * count) - _offset) / _scale;
+        } else {
+            val = val / (count * _decexp);
+        }
     }
     if (_caltyp != 0) {
         val = [_calhdl yCalibrationHandler: val: _caltyp: _calpar: _calraw:_calref];
@@ -5087,8 +5993,6 @@ static double decExp[16] = {
     return self;
 }
 
-
-
 // destructor
 -(void)  dealloc
 {
@@ -5175,7 +6079,6 @@ static double decExp[16] = {
 @end
 
 
-
 @implementation YDataSet
 
 -(id)   initWith:(YFunction *)parent :(NSString*)functionId :(NSString*)unit :(s64)startTime :(s64)endTime
@@ -5190,7 +6093,7 @@ static double decExp[16] = {
     _streams = [NSMutableArray array];
     _preview = [NSMutableArray array];
     _measures = [NSMutableArray array];
-//--- (end of generated code: YDataSet attributes initialization)    
+//--- (end of generated code: YDataSet attributes initialization)
     _parent = parent;
     _functionId = functionId;
     _unit       = unit;
@@ -5229,7 +6132,7 @@ static double decExp[16] = {
     double summaryTotalTime=0;
     double summaryTotalAvg=0;
 
-    
+
     // Parse JSON data
     const char *json_cstr;
     j.src = json_cstr= STR_oc2y(json);
@@ -5249,11 +6152,19 @@ static double decExp[16] = {
                 return YAPI_NOT_SUPPORTED;
             }
             _unit = [_parent _parseString:&j];
+        } else if (!strcmp(j.token, "calib")) {
+            if (yJsonParse(&j) != YJSON_PARSE_AVAIL) {
+                return YAPI_NOT_SUPPORTED;
+            }
+            _calib = [YAPI _decodeFloats:[_parent _parseString:&j]];
+            _calib[0] = [NSNumber numberWithInt: [[_calib objectAtIndex:0] intValue] / 1000];
         } else if (!strcmp(j.token, "cal")) {
             if (yJsonParse(&j) != YJSON_PARSE_AVAIL) {
                 return YAPI_NOT_SUPPORTED;
             }
-            _calib = [YAPI _decodeWords:[_parent _parseString:&j]];
+            if([_calib count] == 0) {
+                _calib = [YAPI _decodeWords:[_parent _parseString:&j]];
+            }
         } else if (!strcmp(j.token, "streams")) {
             YDataStream *stream;
             _streams = [[NSMutableArray alloc] init];
@@ -5316,7 +6227,7 @@ static double decExp[16] = {
 }
 
 
-// destructor 
+// destructor
 -(void)  dealloc
 {
 //--- (generated code: YDataSet cleanup)
@@ -5338,12 +6249,12 @@ static double decExp[16] = {
     YDataStream* stream;
     NSMutableArray* dataRows = [NSMutableArray array];
     NSString* strdata;
-    double tim = 0;
-    double itv = 0;
-    int nCols = 0;
-    int minCol = 0;
-    int avgCol = 0;
-    int maxCol = 0;
+    double tim;
+    double itv;
+    int nCols;
+    int minCol;
+    int avgCol;
+    int maxCol;
     // may throw an exception
     if (progress != _progress) {
         return _progress;
@@ -5365,6 +6276,9 @@ static double decExp[16] = {
     }
     tim = (double) [stream get_startTimeUTC];
     itv = [stream get_dataSamplesInterval];
+    if (tim < itv) {
+        tim = itv;
+    }
     nCols = (int)[[dataRows objectAtIndex:0] count];
     minCol = 0;
     if (nCols > 2) {
@@ -5381,8 +6295,8 @@ static double decExp[16] = {
     for (NSMutableArray* _each  in dataRows) {
         if ((tim >= _startTime) && ((_endTime == 0) || (tim <= _endTime))) {
             [_measures addObject:ARC_sendAutorelease([[YMeasure alloc] initWith:tim - itv :tim :[[_each objectAtIndex:minCol] doubleValue] :[[_each objectAtIndex:avgCol] doubleValue] :[[_each objectAtIndex:maxCol] doubleValue]])];
-            tim = tim + itv;
-        };
+        }
+        tim = tim + itv;
     }
     
     return [self get_progress];
@@ -5473,7 +6387,7 @@ static double decExp[16] = {
 
 /**
  * Returns the progress of the downloads of the measures from the data logger,
- * on a scale from 0 to 100. When the object is instanciated by get_dataSet,
+ * on a scale from 0 to 100. When the object is instantiated by get_dataSet,
  * the progress is zero. Each time loadMore() is invoked, the progress
  * is updated, to reach the value 100 only once all measures have been loaded.
  * 
@@ -5613,7 +6527,7 @@ static double decExp[16] = {
  * 
  * On failure, throws an exception or returns a negative error code.
  */
-YRETCODE yInitAPI(int mode, NSError** errmsg) 
+YRETCODE yInitAPI(int mode, NSError** errmsg)
 { return [YAPI InitAPI:mode:errmsg]; }
 
 
@@ -5701,7 +6615,7 @@ void yEnableExceptions(void)  { [YAPI EnableExceptions]; }
  * If access control has been activated on the hub, virtual or not, you want to
  * reach, the URL parameter should look like:
  * 
- * http://username:password@adresse:port
+ * http://username:password@address:port
  * 
  * You can call <i>RegisterHub</i> several times to connect to several machines.
  * 

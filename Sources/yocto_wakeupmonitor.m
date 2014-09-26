@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_wakeupmonitor.m 16424 2014-06-04 14:26:41Z seb $
+ * $Id: yocto_wakeupmonitor.m 17481 2014-09-03 09:38:35Z mvuilleu $
  *
  * Implements the high-level API for WakeUpMonitor functions
  *
@@ -240,10 +240,8 @@
  * Returns the latest wake up reason.
  * 
  * @return a value among Y_WAKEUPREASON_USBPOWER, Y_WAKEUPREASON_EXTPOWER, Y_WAKEUPREASON_ENDOFSLEEP,
- * Y_WAKEUPREASON_EXTSIG1, Y_WAKEUPREASON_EXTSIG2, Y_WAKEUPREASON_EXTSIG3, Y_WAKEUPREASON_EXTSIG4,
- * Y_WAKEUPREASON_SCHEDULE1, Y_WAKEUPREASON_SCHEDULE2, Y_WAKEUPREASON_SCHEDULE3,
- * Y_WAKEUPREASON_SCHEDULE4, Y_WAKEUPREASON_SCHEDULE5 and Y_WAKEUPREASON_SCHEDULE6 corresponding to
- * the latest wake up reason
+ * Y_WAKEUPREASON_EXTSIG1, Y_WAKEUPREASON_SCHEDULE1 and Y_WAKEUPREASON_SCHEDULE2 corresponding to the
+ * latest wake up reason
  * 
  * On failure, throws an exception or returns Y_WAKEUPREASON_INVALID.
  */
@@ -404,7 +402,7 @@
  */
 -(int) sleep:(int)secBeforeSleep
 {
-    int currTime = 0;
+    int currTime;
     currTime = (int)([self get_rtcTime]);
     if (!(currTime != 0)) {[self _throw: YAPI_RTC_NOT_READY: @"RTC time not set"]; return YAPI_RTC_NOT_READY;}
     [self set_nextWakeUp:_endOfTime];
@@ -426,7 +424,7 @@
  */
 -(int) sleepFor:(int)secUntilWakeUp :(int)secBeforeSleep
 {
-    int currTime = 0;
+    int currTime;
     currTime = (int)([self get_rtcTime]);
     if (!(currTime != 0)) {[self _throw: YAPI_RTC_NOT_READY: @"RTC time not set"]; return YAPI_RTC_NOT_READY;}
     [self set_nextWakeUp:currTime+secUntilWakeUp];
@@ -448,7 +446,7 @@
  */
 -(int) sleepUntil:(int)wakeUpTime :(int)secBeforeSleep
 {
-    int currTime = 0;
+    int currTime;
     currTime = (int)([self get_rtcTime]);
     if (!(currTime != 0)) {[self _throw: YAPI_RTC_NOT_READY: @"RTC time not set"]; return YAPI_RTC_NOT_READY;}
     [self set_nextWakeUp:wakeUpTime];

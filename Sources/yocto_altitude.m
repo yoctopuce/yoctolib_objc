@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_altitude.m 16185 2014-05-12 16:00:20Z seb $
+ * $Id: yocto_altitude.m 16895 2014-07-18 00:12:08Z mvuilleu $
  *
  * Implements the high-level API for Altitude functions
  *
@@ -72,7 +72,7 @@
 {
     if(!strcmp(j->token, "qnh")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-        _qnh =  atof(j->token)/65536;
+        _qnh =  floor(atof(j->token) * 1000.0 / 65536.0 + 0.5) / 1000.0;
         return 1;
     }
     return [super _parseAttr:j];
@@ -97,7 +97,7 @@
 -(int) setCurrentValue:(double) newval
 {
     NSString* rest_val;
-    rest_val = [NSString stringWithFormat:@"%d",(int)floor(newval*65536.0+0.5)];
+    rest_val = [NSString stringWithFormat:@"%d",(int)floor(newval * 65536.0 + 0.5)];
     return [self _setAttr:@"currentValue" :rest_val];
 }
 
@@ -121,7 +121,7 @@
 -(int) setQnh:(double) newval
 {
     NSString* rest_val;
-    rest_val = [NSString stringWithFormat:@"%d",(int)floor(newval*65536.0+0.5)];
+    rest_val = [NSString stringWithFormat:@"%d",(int)floor(newval * 65536.0 + 0.5)];
     return [self _setAttr:@"qnh" :rest_val];
 }
 /**
