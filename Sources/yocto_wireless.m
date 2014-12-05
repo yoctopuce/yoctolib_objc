@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_wireless.m 17594 2014-09-10 21:15:55Z mvuilleu $
+ * $Id: yocto_wireless.m 18321 2014-11-10 10:48:37Z seb $
  *
  * Implements yFindWireless(), the high-level API for Wireless functions
  *
@@ -530,7 +530,7 @@
 -(YWireless*)   nextWireless
 {
     NSString  *hwid;
-    
+
     if(YISERR([self _nextFunction:&hwid]) || [hwid isEqualToString:@""]) {
         return NULL;
     }
@@ -542,7 +542,7 @@
     NSMutableArray    *ar_fundescr;
     YDEV_DESCR        ydevice;
     NSString          *serial, *funcId, *funcName, *funcVal;
-    
+
     if(!YISERR([YapiWrapper getFunctionsByClass:@"Wireless":0:&ar_fundescr:NULL]) && [ar_fundescr count] > 0){
         NSNumber*  ns_devdescr = [ar_fundescr objectAtIndex:0];
         if (!YISERR([YapiWrapper getFunctionInfo:[ns_devdescr intValue] :&ydevice :&serial :&funcId :&funcName :&funcVal :NULL])) {

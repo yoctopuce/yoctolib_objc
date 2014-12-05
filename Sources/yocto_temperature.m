@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_temperature.m 16543 2014-06-13 12:15:09Z mvuilleu $
+ * $Id: yocto_temperature.m 18321 2014-11-10 10:48:37Z seb $
  *
  * Implements the high-level API for Temperature functions
  *
@@ -54,15 +54,18 @@
     _className = @"Temperature";
 //--- (YTemperature attributes initialization)
     _sensorType = Y_SENSORTYPE_INVALID;
+    _command = Y_COMMAND_INVALID;
     _valueCallbackTemperature = NULL;
     _timedReportCallbackTemperature = NULL;
 //--- (end of YTemperature attributes initialization)
     return self;
 }
-// destructor 
+// destructor
 -(void)  dealloc
 {
 //--- (YTemperature cleanup)
+    ARC_release(_command);
+    _command = nil;
     ARC_dealloc(super);
 //--- (end of YTemperature cleanup)
 }
@@ -75,6 +78,13 @@
         _sensorType =  atoi(j->token);
         return 1;
     }
+    if(!strcmp(j->token, "command")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+       ARC_release(_command);
+        _command =  [self _parseString:j];
+        ARC_retain(_command);
+        return 1;
+    }
     return [super _parseAttr:j];
 }
 //--- (end of YTemperature private methods implementation)
@@ -84,8 +94,9 @@
  * 
  * @return a value among Y_SENSORTYPE_DIGITAL, Y_SENSORTYPE_TYPE_K, Y_SENSORTYPE_TYPE_E,
  * Y_SENSORTYPE_TYPE_J, Y_SENSORTYPE_TYPE_N, Y_SENSORTYPE_TYPE_R, Y_SENSORTYPE_TYPE_S,
- * Y_SENSORTYPE_TYPE_T, Y_SENSORTYPE_PT100_4WIRES, Y_SENSORTYPE_PT100_3WIRES and
- * Y_SENSORTYPE_PT100_2WIRES corresponding to the temperature sensor type
+ * Y_SENSORTYPE_TYPE_T, Y_SENSORTYPE_PT100_4WIRES, Y_SENSORTYPE_PT100_3WIRES,
+ * Y_SENSORTYPE_PT100_2WIRES, Y_SENSORTYPE_RES_OHM, Y_SENSORTYPE_RES_NTC and Y_SENSORTYPE_RES_LINEAR
+ * corresponding to the temperature sensor type
  * 
  * On failure, throws an exception or returns Y_SENSORTYPE_INVALID.
  */
@@ -114,7 +125,8 @@
  * 
  * @param newval : a value among Y_SENSORTYPE_DIGITAL, Y_SENSORTYPE_TYPE_K, Y_SENSORTYPE_TYPE_E,
  * Y_SENSORTYPE_TYPE_J, Y_SENSORTYPE_TYPE_N, Y_SENSORTYPE_TYPE_R, Y_SENSORTYPE_TYPE_S,
- * Y_SENSORTYPE_TYPE_T, Y_SENSORTYPE_PT100_4WIRES, Y_SENSORTYPE_PT100_3WIRES and Y_SENSORTYPE_PT100_2WIRES
+ * Y_SENSORTYPE_TYPE_T, Y_SENSORTYPE_PT100_4WIRES, Y_SENSORTYPE_PT100_3WIRES,
+ * Y_SENSORTYPE_PT100_2WIRES, Y_SENSORTYPE_RES_OHM, Y_SENSORTYPE_RES_NTC and Y_SENSORTYPE_RES_LINEAR
  * 
  * @return YAPI_SUCCESS if the call succeeds.
  * 
@@ -129,6 +141,32 @@
     NSString* rest_val;
     rest_val = [NSString stringWithFormat:@"%d", newval];
     return [self _setAttr:@"sensorType" :rest_val];
+}
+-(NSString*) get_command
+{
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_COMMAND_INVALID;
+        }
+    }
+    return _command;
+}
+
+
+-(NSString*) command
+{
+    return [self get_command];
+}
+
+-(int) set_command:(NSString*) newval
+{
+    return [self setCommand:newval];
+}
+-(int) setCommand:(NSString*) newval
+{
+    NSString* rest_val;
+    rest_val = newval;
+    return [self _setAttr:@"command" :rest_val];
 }
 /**
  * Retrieves $AFUNCTION$ for a given identifier.
@@ -236,11 +274,147 @@
     return 0;
 }
 
+/**
+ * Record a thermistor response table, for interpolating the temperature from
+ * the measured resistance. This function can only be used with temperature
+ * sensor based on thermistors.
+ * 
+ * @param tempValues : array of floating point numbers, corresponding to all
+ *         temperatures (in degrees Celcius) for which the resistance of the
+ *         thermistor is specified.
+ * @param resValues : array of floating point numbers, corresponding to the resistance
+ *         values (in Ohms) for each of the temperature included in the first
+ *         argument, index by index.
+ * 
+ * @return YAPI_SUCCESS if the call succeeds.
+ * 
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) set_thermistorResponseTable:(NSMutableArray*)tempValues :(NSMutableArray*)resValues
+{
+    int siz;
+    int res;
+    int idx;
+    int found;
+    double prev;
+    double curr;
+    double currTemp;
+    double idxres;
+    siz = (int)[tempValues count];
+    if (!(siz >= 2)) {[self _throw: YAPI_INVALID_ARGUMENT: @"thermistor response table must have at least two points"]; return YAPI_INVALID_ARGUMENT;}
+    if (!(siz == (int)[resValues count])) {[self _throw: YAPI_INVALID_ARGUMENT: @"table sizes mismatch"]; return YAPI_INVALID_ARGUMENT;}
+    
+    // may throw an exception
+    res = [self set_command:@"Z"];
+    if (!(res==YAPI_SUCCESS)) {[self _throw: YAPI_IO_ERROR: @"unable to reset thermistor parameters"]; return YAPI_IO_ERROR;}
+    
+    // add records in growing resistance value
+    found = 1;
+    prev = 0.0;
+    while (found > 0) {
+        found = 0;
+        curr = 99999999.0;
+        currTemp = -999999.0;
+        idx = 0;
+        while (idx < siz) {
+            idxres = [[resValues objectAtIndex:idx] doubleValue];
+            if ((idxres > prev) && (idxres < curr)) {
+                curr = idxres;
+                currTemp = [[tempValues objectAtIndex:idx] doubleValue];
+                found = 1;
+            }
+            idx = idx + 1;
+        }
+        if (found > 0) {
+            res = [self set_command:[NSString stringWithFormat:@"m%d:%d", (int) floor(1000*curr+0.5),(int) floor(1000*currTemp+0.5)]];
+            if (!(res==YAPI_SUCCESS)) {[self _throw: YAPI_IO_ERROR: @"unable to reset thermistor parameters"]; return YAPI_IO_ERROR;}
+            prev = curr;
+        }
+    }
+    return YAPI_SUCCESS;
+}
+
+/**
+ * Retrieves the thermistor response table previously configured using function
+ * set_thermistorResponseTable. This function can only be used with
+ * temperature sensor based on thermistors.
+ * 
+ * @param tempValues : array of floating point numbers, that will be filled by the function
+ *         with all temperatures (in degrees Celcius) for which the resistance
+ *         of the thermistor is specified.
+ * @param resValues : array of floating point numbers, that will be filled by the function
+ *         with the value (in Ohms) for each of the temperature included in the
+ *         first argument, index by index.
+ * 
+ * @return YAPI_SUCCESS if the call succeeds.
+ * 
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) loadThermistorResponseTable:(NSMutableArray*)tempValues :(NSMutableArray*)resValues
+{
+    NSString* id;
+    NSMutableData* bin_json;
+    NSMutableArray* paramlist = [NSMutableArray array];
+    NSMutableArray* templist = [NSMutableArray array];
+    int siz;
+    int idx;
+    double temp;
+    int found;
+    double prev;
+    double curr;
+    double currRes;
+    
+    [tempValues removeAllObjects];
+    [resValues removeAllObjects];
+    
+    // may throw an exception
+    id = [self get_functionId];
+    id = [id substringWithRange:NSMakeRange( 11, (int)[(id) length]-1)];
+    bin_json = [self _download:[NSString stringWithFormat:@"extra.json?page=%@",id]];
+    paramlist = [self _json_get_array:bin_json];
+    // first convert all temperatures to float
+    siz = (((int)[paramlist count]) >> (1));
+    [templist removeAllObjects];
+    idx = 0;
+    while (idx < siz) {
+        temp = [[paramlist objectAtIndex:2*idx+1] doubleValue]/1000.0;
+        [templist addObject:[NSNumber numberWithDouble:temp]];
+        idx = idx + 1;
+    }
+    // then add records in growing temperature value
+    [tempValues removeAllObjects];
+    [resValues removeAllObjects];
+    found = 1;
+    prev = -999999.0;
+    while (found > 0) {
+        found = 0;
+        curr = 999999.0;
+        currRes = -999999.0;
+        idx = 0;
+        while (idx < siz) {
+            temp = [[templist objectAtIndex:idx] doubleValue];
+            if ((temp > prev) && (temp < curr)) {
+                curr = temp;
+                currRes = [[paramlist objectAtIndex:2*idx] doubleValue]/1000.0;
+                found = 1;
+            }
+            idx = idx + 1;
+        }
+        if (found > 0) {
+            [tempValues addObject:[NSNumber numberWithDouble:curr]];
+            [resValues addObject:[NSNumber numberWithDouble:currRes]];
+            prev = curr;
+        }
+    }
+    
+    return YAPI_SUCCESS;
+}
+
 
 -(YTemperature*)   nextTemperature
 {
     NSString  *hwid;
-    
+
     if(YISERR([self _nextFunction:&hwid]) || [hwid isEqualToString:@""]) {
         return NULL;
     }
@@ -252,7 +426,7 @@
     NSMutableArray    *ar_fundescr;
     YDEV_DESCR        ydevice;
     NSString          *serial, *funcId, *funcName, *funcVal;
-    
+
     if(!YISERR([YapiWrapper getFunctionsByClass:@"Temperature":0:&ar_fundescr:NULL]) && [ar_fundescr count] > 0){
         NSNumber*  ns_devdescr = [ar_fundescr objectAtIndex:0];
         if (!YISERR([YapiWrapper getFunctionInfo:[ns_devdescr intValue] :&ydevice :&serial :&funcId :&funcName :&funcVal :NULL])) {

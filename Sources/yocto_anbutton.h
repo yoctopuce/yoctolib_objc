@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_anbutton.h 17675 2014-09-16 16:19:20Z seb $
+ * $Id: yocto_anbutton.h 18361 2014-11-13 08:06:41Z mvuilleu $
  *
  * Declares yFindAnButton(), the high-level API for AnButton functions
  *
@@ -52,7 +52,6 @@ typedef enum {
     Y_ANALOGCALIBRATION_INVALID = -1,
 } Y_ANALOGCALIBRATION_enum;
 #endif
-
 #ifndef _Y_ISPRESSED_ENUM
 #define _Y_ISPRESSED_ENUM
 typedef enum {
@@ -61,7 +60,6 @@ typedef enum {
     Y_ISPRESSED_INVALID = -1,
 } Y_ISPRESSED_enum;
 #endif
-
 #define Y_CALIBRATEDVALUE_INVALID       YAPI_INVALID_UINT
 #define Y_RAWVALUE_INVALID              YAPI_INVALID_UINT
 #define Y_CALIBRATIONMAX_INVALID        YAPI_INVALID_UINT
@@ -350,7 +348,7 @@ typedef enum {
 -(int)     _invokeValueCallback:(NSString*)value;
 
 /**
- * Returns the pulse counter value as well as his timer
+ * Returns the pulse counter value as well as its timer.
  * 
  * @return YAPI_SUCCESS if the call succeeds.
  * 

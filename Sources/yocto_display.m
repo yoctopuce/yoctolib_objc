@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_display.m 17498 2014-09-03 19:21:24Z mvuilleu $
+ * $Id: yocto_display.m 18321 2014-11-10 10:48:37Z seb $
  *
  * Implements yFindDisplay(), the high-level API for Display functions
  *
@@ -1370,7 +1370,7 @@
 -(YDisplay*)   nextDisplay
 {
     NSString  *hwid;
-    
+
     if(YISERR([self _nextFunction:&hwid]) || [hwid isEqualToString:@""]) {
         return NULL;
     }
@@ -1382,7 +1382,7 @@
     NSMutableArray    *ar_fundescr;
     YDEV_DESCR        ydevice;
     NSString          *serial, *funcId, *funcName, *funcVal;
-    
+
     if(!YISERR([YapiWrapper getFunctionsByClass:@"Display":0:&ar_fundescr:NULL]) && [ar_fundescr count] > 0){
         NSNumber*  ns_devdescr = [ar_fundescr objectAtIndex:0];
         if (!YISERR([YapiWrapper getFunctionInfo:[ns_devdescr intValue] :&ydevice :&serial :&funcId :&funcName :&funcVal :NULL])) {

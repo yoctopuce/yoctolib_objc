@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_pressure.m 15256 2014-03-06 10:19:01Z seb $
+ * $Id: yocto_pressure.m 18321 2014-11-10 10:48:37Z seb $
  *
  * Implements the high-level API for Pressure functions
  *
@@ -58,7 +58,7 @@
 //--- (end of YPressure attributes initialization)
     return self;
 }
-// destructor 
+// destructor
 -(void)  dealloc
 {
 //--- (YPressure cleanup)
@@ -183,7 +183,7 @@
 -(YPressure*)   nextPressure
 {
     NSString  *hwid;
-    
+
     if(YISERR([self _nextFunction:&hwid]) || [hwid isEqualToString:@""]) {
         return NULL;
     }
@@ -195,7 +195,7 @@
     NSMutableArray    *ar_fundescr;
     YDEV_DESCR        ydevice;
     NSString          *serial, *funcId, *funcName, *funcVal;
-    
+
     if(!YISERR([YapiWrapper getFunctionsByClass:@"Pressure":0:&ar_fundescr:NULL]) && [ar_fundescr count] > 0){
         NSNumber*  ns_devdescr = [ar_fundescr objectAtIndex:0];
         if (!YISERR([YapiWrapper getFunctionInfo:[ns_devdescr intValue] :&ydevice :&serial :&funcId :&funcName :&funcVal :NULL])) {

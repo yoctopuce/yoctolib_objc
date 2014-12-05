@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_relay.h 15256 2014-03-06 10:19:01Z seb $
+ * $Id: yocto_relay.h 18321 2014-11-10 10:48:37Z seb $
  *
  * Declares yFindRelay(), the high-level API for Relay functions
  *
@@ -52,7 +52,6 @@ typedef enum {
     Y_STATE_INVALID = -1,
 } Y_STATE_enum;
 #endif
-
 #ifndef _Y_STATEATPOWERON_ENUM
 #define _Y_STATEATPOWERON_ENUM
 typedef enum {
@@ -62,7 +61,6 @@ typedef enum {
     Y_STATEATPOWERON_INVALID = -1,
 } Y_STATEATPOWERON_enum;
 #endif
-
 #ifndef _Y_OUTPUT_ENUM
 #define _Y_OUTPUT_ENUM
 typedef enum {
@@ -71,7 +69,6 @@ typedef enum {
     Y_OUTPUT_INVALID = -1,
 } Y_OUTPUT_enum;
 #endif
-
 #ifndef _STRUCT_DELAYEDPULSE
 #define _STRUCT_DELAYEDPULSE
 typedef struct _YDelayedPulse {

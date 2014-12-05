@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_pwmpowersource.h 15529 2014-03-20 17:54:15Z seb $
+ * $Id: yocto_pwmpowersource.h 18321 2014-11-10 10:48:37Z seb $
  *
  * Declares yFindPwmPowerSource(), the high-level API for PwmPowerSource functions
  *
@@ -54,7 +54,6 @@ typedef enum {
     Y_POWERMODE_INVALID = -1,
 } Y_POWERMODE_enum;
 #endif
-
 //--- (end of YPwmPowerSource globals)
 
 //--- (YPwmPowerSource class start)

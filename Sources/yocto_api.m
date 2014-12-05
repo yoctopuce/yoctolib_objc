@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.m 17816 2014-09-24 14:47:30Z seb $
+ * $Id: yocto_api.m 18628 2014-12-03 16:18:53Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -1122,7 +1122,7 @@ static double decExp[16] = {
             return yFormatRetVal(errmsg, res, errbuf);
         }
         if(waituntil > [YAPI GetTickCount]){
-            res = yapiSleep(3, errbuf);
+            res = yapiSleep(2, errbuf);
             if(YISERR(res)) {
                 return yFormatRetVal(errmsg, res, errbuf);
             }
@@ -1829,7 +1829,27 @@ static double decExp[16] = {
 }
 
 
+-(NSString*)   _escapeAttr:(NSString*)changeval;
+{
+    NSMutableString * escaped = [NSMutableString stringWithString:@""];
+    int pos;
+    for(pos=0;pos < [changeval length] ;pos++){
+        unsigned char       c;
+        unsigned char       esc[2];
+        c = [changeval characterAtIndex:pos];
+        if(c <= ' ' || (c > 'z' && c != '~') || c == '"' || c == '%' || c == '&' ||
+           c == '+' || c == '<' || c == '=' || c == '>' || c == '\\' || c == '^' || c == '`') {
+            esc[0]=(c >= 0xa0 ? (c>>4)-10+'A' : (c>>4)+'0');
+            c &= 0xf;
+            esc[1]=(c >= 0xa ? c-10+'A' : c+'0');
+            [escaped appendFormat:@"%%%c%c",esc[0],esc[1]];
+        } else {
+            [escaped appendFormat:@"%c",c];
+        }
+    }
+    return escaped;
 
+}
 
 
 -(YRETCODE)  _buildSetRequest:(NSString*)changeattr  :(NSString*)changeval :(NSString**)request :(NSError**)error
@@ -1856,24 +1876,10 @@ static double decExp[16] = {
     if(![changeattr isEqualToString: @""]) {
         [buffer appendString:changeattr];
         if(changeval) {
-            int pos;
             [buffer appendString:@"?"];
             [buffer appendString:changeattr];
             [buffer appendString:@"="];
-            for(pos=0;pos < [changeval length] ;pos++){
-                unsigned char       c;
-                unsigned char       esc[2];
-                c = [changeval characterAtIndex:pos];
-                if(c <= ' ' || (c > 'z' && c != '~') || c == '"' || c == '%' || c == '&' ||
-                   c == '+' || c == '<' || c == '=' || c == '>' || c == '\\' || c == '^' || c == '`') {
-                    esc[0]=(c >= 0xa0 ? (c>>4)-10+'A' : (c>>4)+'0');
-                    c &= 0xf;
-                    esc[1]=(c >= 0xa ? c-10+'A' : c+'0');
-                    [buffer appendFormat:@"%%%c%c",esc[0],esc[1]];
-                } else {
-                    [buffer appendFormat:@"%c",c];
-                }
-            }
+            [buffer appendString:[self _escapeAttr:changeval]];
         }
     }
     [buffer appendString:@"&. \r\n\r\n"];
@@ -2373,7 +2379,7 @@ static double decExp[16] = {
 -(YFunction*)   nextFunction
 {
     NSString  *hwid;
-    
+
     if(YISERR([self _nextFunction:&hwid]) || [hwid isEqualToString:@""]) {
         return NULL;
     }
@@ -2385,7 +2391,7 @@ static double decExp[16] = {
     NSMutableArray    *ar_fundescr;
     YDEV_DESCR        ydevice;
     NSString          *serial, *funcId, *funcName, *funcVal;
-    
+
     if(!YISERR([YapiWrapper getFunctionsByClass:@"Function":0:&ar_fundescr:NULL]) && [ar_fundescr count] > 0){
         NSNumber*  ns_devdescr = [ar_fundescr objectAtIndex:0];
         if (!YISERR([YapiWrapper getFunctionInfo:[ns_devdescr intValue] :&ydevice :&serial :&funcId :&funcName :&funcVal :NULL])) {
@@ -3501,6 +3507,36 @@ static double decExp[16] = {
 }
 
 /**
+ * Starts the data logger on the device. Note that the data logger
+ * will only save the measures on this sensor if the logFrequency
+ * is not set to "OFF".
+ * 
+ * @return YAPI_SUCCESS if the call succeeds.
+ */
+-(int) startDataLogger
+{
+    NSMutableData* res;
+    // may throw an exception
+    res = [self _download:@"api/dataLogger/recording?recording=1"];
+    if (!((int)[res length]>0)) {[self _throw: YAPI_IO_ERROR: @"unable to start datalogger"]; return YAPI_IO_ERROR;}
+    return YAPI_SUCCESS;
+}
+
+/**
+ * Stops the datalogger on the device.
+ * 
+ * @return YAPI_SUCCESS if the call succeeds.
+ */
+-(int) stopDataLogger
+{
+    NSMutableData* res;
+    // may throw an exception
+    res = [self _download:@"api/dataLogger/recording?recording=0"];
+    if (!((int)[res length]>0)) {[self _throw: YAPI_IO_ERROR: @"unable to stop datalogger"]; return YAPI_IO_ERROR;}
+    return YAPI_SUCCESS;
+}
+
+/**
  * Retrieves a DataSet object holding historical data for this
  * sensor, for a specified time interval. The measures will be
  * retrieved from the data logger, which must have been turned
@@ -3774,7 +3810,7 @@ static double decExp[16] = {
             difRaw = 0;
             while ((sublen > 0) && (i < (int)[report count])) {
                 byteVal = [[report objectAtIndex:i] intValue];
-                difRaw = avgRaw + poww * byteVal;
+                difRaw = difRaw + poww * byteVal;
                 poww = poww * 0x100;
                 i = i + 1;
                 sublen = sublen - 1;
@@ -3785,7 +3821,7 @@ static double decExp[16] = {
             difRaw = 0;
             while ((sublen > 0) && (i < (int)[report count])) {
                 byteVal = [[report objectAtIndex:i] intValue];
-                difRaw = avgRaw + poww * byteVal;
+                difRaw = difRaw + poww * byteVal;
                 poww = poww * 0x100;
                 i = i + 1;
                 sublen = sublen - 1;
@@ -3880,7 +3916,7 @@ static double decExp[16] = {
 -(YSensor*)   nextSensor
 {
     NSString  *hwid;
-    
+
     if(YISERR([self _nextFunction:&hwid]) || [hwid isEqualToString:@""]) {
         return NULL;
     }
@@ -3892,7 +3928,7 @@ static double decExp[16] = {
     NSMutableArray    *ar_fundescr;
     YDEV_DESCR        ydevice;
     NSString          *serial, *funcId, *funcName, *funcVal;
-    
+
     if(!YISERR([YapiWrapper getFunctionsByClass:@"Sensor":0:&ar_fundescr:NULL]) && [ar_fundescr count] > 0){
         NSNumber*  ns_devdescr = [ar_fundescr objectAtIndex:0];
         if (!YISERR([YapiWrapper getFunctionInfo:[ns_devdescr intValue] :&ydevice :&serial :&funcId :&funcName :&funcVal :NULL])) {
@@ -4572,43 +4608,16 @@ static double decExp[16] = {
  */
 -(NSString*) checkFirmware:(NSString*)path :(bool)onlynew
 {
-    char errmsg[YOCTO_ERRMSG_LEN];
-    char smallbuff[1024];
-    char *bigbuff;
-    int buffsize;
-    int fullsize;
-    int res;
-    NSString* firmware_path;
     NSString* serial;
-    NSString* release;
+    int release;
     if (onlynew) {
-        release = [self get_firmwareRelease];
+        release = [[self get_firmwareRelease] intValue];
     } else {
-        release = @"";
+        release = 0;
     }
     //may throw an exception
-    serial = _serial;
-    fullsize = 0;
-    res = yapiCheckFirmware(STR_oc2y(serial), STR_oc2y(release), STR_oc2y(path), smallbuff, 1024, &fullsize, errmsg);
-    if (res < 0) {
-        firmware_path = [NSString stringWithFormat:@"%@%@", @"error:", STR_y2oc(errmsg)];
-        return [NSString stringWithFormat:@"%@%@", @"error:", STR_y2oc(errmsg)];
-    }
-    if (fullsize <= 1024) {
-        firmware_path = ARC_sendAutorelease([[NSString alloc] initWithBytes:smallbuff length:fullsize encoding:NSUTF8StringEncoding]);
-    } else {
-        buffsize = fullsize;
-        bigbuff = (char *)malloc(buffsize);
-        res = yapiCheckFirmware(STR_oc2y(serial), STR_oc2y(release), STR_oc2y(path), bigbuff, buffsize, &fullsize, errmsg);
-        if (res < 0) {
-            [self _throw:YAPI_INVALID_ARGUMENT :STR_y2oc(errmsg)];
-            firmware_path = [NSString stringWithFormat:@"%@%@", @"error:", STR_y2oc(errmsg)];
-        } else {
-            firmware_path = ARC_sendAutorelease([[NSString alloc] initWithBytes:bigbuff length:fullsize encoding:NSUTF8StringEncoding]);
-        }
-        free(bigbuff);
-    }
-    return firmware_path;
+    serial = [self get_serialNumber];
+    return [YFirmwareUpdate CheckFirmware:serial :path :release];
 }
 
 /**
@@ -4904,12 +4913,12 @@ static double decExp[16] = {
     NSMutableArray* old_dslist = [NSMutableArray array];
     NSMutableArray* old_jpath = [NSMutableArray array];
     NSMutableArray* old_jpath_len = [NSMutableArray array];
-    NSMutableArray* old_val = [NSMutableArray array];
+    NSMutableArray* old_val_arr = [NSMutableArray array];
     NSMutableData* actualSettings;
     NSMutableArray* new_dslist = [NSMutableArray array];
     NSMutableArray* new_jpath = [NSMutableArray array];
     NSMutableArray* new_jpath_len = [NSMutableArray array];
-    NSMutableArray* new_val = [NSMutableArray array];
+    NSMutableArray* new_val_arr = [NSMutableArray array];
     int cpos;
     int eqpos;
     int leng;
@@ -4926,14 +4935,16 @@ static double decExp[16] = {
     NSString* sensorType;
     NSString* unit_name;
     NSString* newval;
+    NSString* oldval;
     NSString* old_calib;
     bool do_update;
     bool found;
+    oldval = @"";
+    newval = @"";
     old_json_flat = [self _flattenJsonStruct:settings];
     old_dslist = [self _json_get_array:old_json_flat];
     for (NSString* _each  in old_dslist) {
-        leng = (int)[(_each) length];
-        _each = [_each substringWithRange:NSMakeRange( 1, leng - 2)];
+        _each = [self _json_get_string:[NSMutableData dataWithData:[_each dataUsingEncoding:NSUTF8StringEncoding]]];
         leng = (int)[(_each) length];
         eqpos = _ystrpos(_each, @"=");
         if ((eqpos < 0) || (leng == 0)) {
@@ -4945,15 +4956,14 @@ static double decExp[16] = {
         value = [_each substringWithRange:NSMakeRange( eqpos, leng - eqpos)];
         [old_jpath addObject:jpath];
         [old_jpath_len addObject:[NSNumber numberWithLong:(int)[(jpath) length]]];
-        [old_val addObject:value];;
+        [old_val_arr addObject:value];;
     }
     // may throw an exception
     actualSettings = [self _download:@"api.json"];
     actualSettings = [self _flattenJsonStruct:actualSettings];
     new_dslist = [self _json_get_array:actualSettings];
     for (NSString* _each  in new_dslist) {
-        leng = (int)[(_each) length];
-        _each = [_each substringWithRange:NSMakeRange( 1, leng - 2)];
+        _each = [self _json_get_string:[NSMutableData dataWithData:[_each dataUsingEncoding:NSUTF8StringEncoding]]];
         leng = (int)[(_each) length];
         eqpos = _ystrpos(_each, @"=");
         if ((eqpos < 0) || (leng == 0)) {
@@ -4965,7 +4975,7 @@ static double decExp[16] = {
         value = [_each substringWithRange:NSMakeRange( eqpos, leng - eqpos)];
         [new_jpath addObject:jpath];
         [new_jpath_len addObject:[NSNumber numberWithLong:(int)[(jpath) length]]];
-        [new_val addObject:value];;
+        [new_val_arr addObject:value];;
     }
     i = 0;
     while (i < (int)[new_jpath count]) {
@@ -5091,17 +5101,33 @@ static double decExp[16] = {
             do_update = NO;
         }
         if (do_update) {
+            do_update = NO;
+            newval = [new_val_arr objectAtIndex:i];
+            j = 0;
+            found = NO;
+            while ((j < (int)[old_jpath count]) && !(found)) {
+                if (([new_jpath_len objectAtIndex:i] == [old_jpath_len objectAtIndex:j]) && ([[new_jpath objectAtIndex:i] isEqualToString:[old_jpath objectAtIndex:j]])) {
+                    found = YES;
+                    oldval = [old_val_arr objectAtIndex:j];
+                    if (!([newval isEqualToString:oldval])) {
+                        do_update = YES;
+                    }
+                }
+                j = j + 1;
+            }
+        }
+        if (do_update) {
             if ([attr isEqualToString:@"calibrationParam"]) {
                 old_calib = @"";
                 unit_name = @"";
                 sensorType = @"";
-                new_calib = [new_val objectAtIndex:i];
+                new_calib = newval;
                 j = 0;
                 found = NO;
                 while ((j < (int)[old_jpath count]) && !(found)) {
                     if (([new_jpath_len objectAtIndex:i] == [old_jpath_len objectAtIndex:j]) && ([[new_jpath objectAtIndex:i] isEqualToString:[old_jpath objectAtIndex:j]])) {
                         found = YES;
-                        old_calib = [old_val objectAtIndex:j];
+                        old_calib = [old_val_arr objectAtIndex:j];
                     }
                     j = j + 1;
                 }
@@ -5125,23 +5151,15 @@ static double decExp[16] = {
                     }
                     j = j + 1;
                 }
-                newval = [self calibConvert:[new_val objectAtIndex:i] : old_calib : unit_name :sensorType];
-                url = [NSString stringWithFormat:@"%@%@%@%@%@%@", @"api/", fun, @".json?", attr, @"=", newval];
+                newval = [self calibConvert:[new_val_arr objectAtIndex:i] : old_calib : unit_name :sensorType];
+                url = [NSString stringWithFormat:@"%@%@%@%@%@%@", @"api/", fun, @".json?", attr, @"=", [self _escapeAttr:newval]];
                 [self _download:url];
             } else {
-                j = 0;
-                found = NO;
-                while ((j < (int)[old_jpath_len count]) && !(found)) {
-                    if (([[new_jpath_len objectAtIndex:i] intValue] == [[old_jpath_len objectAtIndex:j] intValue]) && ([[new_jpath objectAtIndex:i] isEqualToString:[old_jpath objectAtIndex:j]])) {
-                        found = YES;
-                        url = [NSString stringWithFormat:@"%@%@%@%@%@%@", @"api/", fun, @".json?", attr, @"=", [old_val objectAtIndex:j]];
-                        if ([attr isEqualToString:@"resolution"]) {
-                            [restoreLast addObject:url];
-                        } else {
-                            [self _download:url];
-                        }
-                    }
-                    j = j + 1;
+                url = [NSString stringWithFormat:@"%@%@%@%@%@%@", @"api/", fun, @".json?", attr, @"=", [self _escapeAttr:oldval]];
+                if ([attr isEqualToString:@"resolution"]) {
+                    [restoreLast addObject:url];
+                } else {
+                    [self _download:url];
                 }
             }
         }
@@ -5198,7 +5216,7 @@ static double decExp[16] = {
 -(YModule*)   nextModule
 {
     NSString  *hwid;
-    
+
     if(YISERR([self _nextFunction:&hwid]) || [hwid isEqualToString:@""]) {
         return NULL;
     }
@@ -5210,7 +5228,7 @@ static double decExp[16] = {
     NSMutableArray    *ar_fundescr;
     YDEV_DESCR        ydevice;
     NSString          *serial, *funcId, *funcName, *funcVal;
-    
+
     if(!YISERR([YapiWrapper getFunctionsByClass:@"Module":0:&ar_fundescr:NULL]) && [ar_fundescr count] > 0){
         NSNumber*  ns_devdescr = [ar_fundescr objectAtIndex:0];
         if (!YISERR([YapiWrapper getFunctionInfo:[ns_devdescr intValue] :&ydevice :&serial :&funcId :&funcName :&funcVal :NULL])) {
@@ -5321,7 +5339,9 @@ static double decExp[16] = {
     if(!(self = [super init]))
         return nil;
 //--- (generated code: YFirmwareUpdate attributes initialization)
+    _progress_c = 0;
     _progress = 0;
+    _restore_step = 0;
 //--- (end of generated code: YFirmwareUpdate attributes initialization)
     _serial = serial;
     _firmwarepath = path,
@@ -5345,30 +5365,156 @@ static double decExp[16] = {
 -(int) _processMore:(int)newupdate
 {
     char errmsg[YOCTO_ERRMSG_LEN];
+    YModule* m;
     int res;
     NSString* serial;
     NSString* firmwarepath;
     NSString* settings;
-    serial = _serial;
-    firmwarepath = _firmwarepath;
-    settings = ARC_sendAutorelease([[NSString alloc] initWithData:_settings encoding:NSASCIIStringEncoding]);
-    res = yapiUpdateFirmware(STR_oc2y(serial), STR_oc2y(firmwarepath), STR_oc2y(settings), newupdate, errmsg);
-    _progress = res;
-    _progress_msg = STR_y2oc(errmsg);
-    return res;
-}
-
--(int) get_progress
-{
-    YModule* m;
-    [self _processMore:0];
-    if ((_progress == 100) && ((int)[_settings length] != 0)) {
-        m = [YModule FindModule:_serial];
-        if ([m isOnline]) {
-            [m set_allSettings:_settings];
-            _settings = [NSMutableData dataWithLength:0];
+    NSString* prod_prefix;
+    if (_progress_c < 100) {
+        serial = _serial;
+        firmwarepath = _firmwarepath;
+        settings = ARC_sendAutorelease([[NSString alloc] initWithData:_settings encoding:NSASCIIStringEncoding]);
+        res = yapiUpdateFirmware(STR_oc2y(serial), STR_oc2y(firmwarepath), STR_oc2y(settings), newupdate, errmsg);
+        if (res < 0) {
+            _progress = res;
+            _progress_msg = STR_y2oc(errmsg);
+            return res;
+        }
+        _progress_c = res;
+        _progress = ((_progress_c * 9) / (10));
+        _progress_msg = STR_y2oc(errmsg);
+    } else {
+        if (((int)[_settings length] != 0)) {
+            _progress_msg = @"restoring settings";
+            m = [YModule FindModule:[NSString stringWithFormat:@"%@%@", _serial, @".module"]];
+            if (!([m isOnline])) {
+                return _progress;
+            }
+            if (_progress < 95) {
+                prod_prefix = [[m get_productName] substringWithRange:NSMakeRange( 0, 8)];
+                if ([prod_prefix isEqualToString:@"YoctoHub"]) {
+                    [YAPI Sleep:1000 :NULL];
+                    _progress = _progress + 1;
+                    return _progress;
+                } else {
+                    _progress = 95;
+                }
+            }
+            if (_progress < 100) {
+                [m set_allSettings:_settings];
+                _settings = [NSMutableData dataWithLength:0];
+                _progress = 100;
+                _progress_msg = @"success";
+            }
+        } else {
+            _progress =  100;
+            _progress_msg = @"success";
         }
     }
+    return _progress;
+}
+
+/**
+ * Retrun a list of all modules in "update" mode. Only USB connected
+ * devices are listed. If the module is connected to a YoctoHub, you have to
+ * connect to the YoctoHub web interface.
+ * 
+ * @return an array of strings containing the serial list of module in "update" mode.
+ */
++(NSMutableArray*) GetAllBootLoaders
+{
+    char errmsg[YOCTO_ERRMSG_LEN];
+    char smallbuff[1024];
+    char *bigbuff;
+    int buffsize;
+    int fullsize;
+    int yapi_res;
+    NSString* bootloader_list;
+    NSMutableArray* bootladers = [NSMutableArray array];
+    fullsize = 0;
+    yapi_res = yapiGetBootloaders(smallbuff, 1024, &fullsize, errmsg);
+    if (yapi_res < 0) {
+        bootloader_list = [NSString stringWithFormat:@"%@%@", @"error:", STR_y2oc(errmsg)];
+        return bootladers;
+    }
+    if (fullsize <= 1024) {
+        bootloader_list = ARC_sendAutorelease([[NSString alloc] initWithBytes:smallbuff length:fullsize encoding:NSUTF8StringEncoding]);
+    } else {
+        buffsize = fullsize;
+        bigbuff = (char *)malloc(buffsize);
+        yapi_res = yapiGetBootloaders(bigbuff, buffsize, &fullsize, errmsg);
+        if (yapi_res < 0) {
+            free(bigbuff);
+            return bootladers;
+        } else {
+            bootloader_list = ARC_sendAutorelease([[NSString alloc] initWithBytes:bigbuff length:fullsize encoding:NSUTF8StringEncoding]);
+        }
+        free(bigbuff);
+    }
+    bootladers = [NSMutableArray arrayWithArray:[bootloader_list componentsSeparatedByString:@"@',"]];
+    return bootladers;
+}
+
+/**
+ * Test if the byn file is valid for this module. It's possible to pass an directory instead of a file.
+ * In this case this method return the path of the most recent appropriate byn file. This method will
+ * ignore firmware that are older than mintrelase.
+ * 
+ * @param serial  : the serial number of the module to update
+ * @param path    : the path of a byn file or a directory that contain byn files
+ * @param minrelease : an positif integer
+ * 
+ * @return : the path of the byn file to use or a empty string if no byn files match the requirement
+ * 
+ * On failure, returns a string that start with "error:".
+ */
++(NSString*) CheckFirmware:(NSString*)serial :(NSString*)path :(int)minrelease
+{
+    char errmsg[YOCTO_ERRMSG_LEN];
+    char smallbuff[1024];
+    char *bigbuff;
+    int buffsize;
+    int fullsize;
+    int res;
+    NSString* firmware_path;
+    NSString* release;
+    fullsize = 0;
+    release = [NSString stringWithFormat:@"%d",minrelease];
+    res = yapiCheckFirmware(STR_oc2y(serial), STR_oc2y(release), STR_oc2y(path), smallbuff, 1024, &fullsize, errmsg);
+    if (res < 0) {
+        firmware_path = [NSString stringWithFormat:@"%@%@", @"error:", STR_y2oc(errmsg)];
+        return [NSString stringWithFormat:@"%@%@", @"error:", STR_y2oc(errmsg)];
+    }
+    if (fullsize <= 1024) {
+        firmware_path = ARC_sendAutorelease([[NSString alloc] initWithBytes:smallbuff length:fullsize encoding:NSUTF8StringEncoding]);
+    } else {
+        buffsize = fullsize;
+        bigbuff = (char *)malloc(buffsize);
+        res = yapiCheckFirmware(STR_oc2y(serial), STR_oc2y(release), STR_oc2y(path), bigbuff, buffsize, &fullsize, errmsg);
+        if (res < 0) {
+            firmware_path = [NSString stringWithFormat:@"%@%@", @"error:", STR_y2oc(errmsg)];
+        } else {
+            firmware_path = ARC_sendAutorelease([[NSString alloc] initWithBytes:bigbuff length:fullsize encoding:NSUTF8StringEncoding]);
+        }
+        free(bigbuff);
+    }
+    return firmware_path;
+}
+
+/**
+ * Returns the progress of the firmware update, on a scale from 0 to 100. When the object is
+ * instantiated the progress is zero. The value is updated During the firmware update process, until
+ * the value of 100 is reached. The value of 100 mean that the firmware update is terminated with
+ * success. If an error occur during the firmware update a negative value is returned, and the
+ * error message can be retrieved with get_progressMessage.
+ * 
+ * @return an integer in the range 0 to 100 (percentage of completion) or
+ *         or a negative error code in case of failure.
+ */
+-(int) get_progress
+{
+    [self _processMore:0];
     return _progress;
 }
 
@@ -5395,6 +5541,8 @@ static double decExp[16] = {
  */
 -(int) startUpdate
 {
+    _progress = 0;
+    _progress_c = 0;
     [self _processMore:1];
     return _progress;
 }

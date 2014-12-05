@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_genericsensor.h 16919 2014-07-18 13:17:02Z mvuilleu $
+ * $Id: yocto_genericsensor.h 18321 2014-11-10 10:48:37Z seb $
  *
  * Declares yFindGenericSensor(), the high-level API for GenericSensor functions
  *
@@ -45,6 +45,16 @@ CF_EXTERN_C_BEGIN
 //--- (YGenericSensor globals)
 typedef void (*YGenericSensorValueCallback)(YGenericSensor *func, NSString *functionValue);
 typedef void (*YGenericSensorTimedReportCallback)(YGenericSensor *func, YMeasure *measure);
+#ifndef _Y_SIGNALSAMPLING_ENUM
+#define _Y_SIGNALSAMPLING_ENUM
+typedef enum {
+    Y_SIGNALSAMPLING_HIGH_RATE = 0,
+    Y_SIGNALSAMPLING_HIGH_RATE_FILTERED = 1,
+    Y_SIGNALSAMPLING_LOW_NOISE = 2,
+    Y_SIGNALSAMPLING_LOW_NOISE_FILTERED = 3,
+    Y_SIGNALSAMPLING_INVALID = -1,
+} Y_SIGNALSAMPLING_enum;
+#endif
 #define Y_SIGNALVALUE_INVALID           YAPI_INVALID_DOUBLE
 #define Y_SIGNALUNIT_INVALID            YAPI_INVALID_STRING
 #define Y_SIGNALRANGE_INVALID           YAPI_INVALID_STRING
@@ -69,6 +79,7 @@ typedef void (*YGenericSensorTimedReportCallback)(YGenericSensor *func, YMeasure
     NSString*       _signalRange;
     NSString*       _valueRange;
     double          _signalBias;
+    Y_SIGNALSAMPLING_enum _signalSampling;
     YGenericSensorValueCallback _valueCallbackGenericSensor;
     YGenericSensorTimedReportCallback _timedReportCallbackGenericSensor;
 //--- (end of YGenericSensor attributes declaration)
@@ -192,6 +203,43 @@ typedef void (*YGenericSensorTimedReportCallback)(YGenericSensor *func, YMeasure
 
 
 -(double) signalBias;
+/**
+ * Returns the electric signal sampling method to use.
+ * The HIGH_RATE method uses the highest sampling frequency, without any filtering.
+ * The HIGH_RATE_FILTERED method adds a windowed 7-sample median filter.
+ * The LOW_NOISE method uses a reduced acquisition frequency to reduce noise.
+ * The LOW_NOISE_FILTERED method combines a reduced frequency with the median filter
+ * to get measures as stable as possible when working on a noisy signal.
+ * 
+ * @return a value among Y_SIGNALSAMPLING_HIGH_RATE, Y_SIGNALSAMPLING_HIGH_RATE_FILTERED,
+ * Y_SIGNALSAMPLING_LOW_NOISE and Y_SIGNALSAMPLING_LOW_NOISE_FILTERED corresponding to the electric
+ * signal sampling method to use
+ * 
+ * On failure, throws an exception or returns Y_SIGNALSAMPLING_INVALID.
+ */
+-(Y_SIGNALSAMPLING_enum)     get_signalSampling;
+
+
+-(Y_SIGNALSAMPLING_enum) signalSampling;
+/**
+ * Changes the electric signal sampling method to use.
+ * The HIGH_RATE method uses the highest sampling frequency, without any filtering.
+ * The HIGH_RATE_FILTERED method adds a windowed 7-sample median filter.
+ * The LOW_NOISE method uses a reduced acquisition frequency to reduce noise.
+ * The LOW_NOISE_FILTERED method combines a reduced frequency with the median filter
+ * to get measures as stable as possible when working on a noisy signal.
+ * 
+ * @param newval : a value among Y_SIGNALSAMPLING_HIGH_RATE, Y_SIGNALSAMPLING_HIGH_RATE_FILTERED,
+ * Y_SIGNALSAMPLING_LOW_NOISE and Y_SIGNALSAMPLING_LOW_NOISE_FILTERED corresponding to the electric
+ * signal sampling method to use
+ * 
+ * @return YAPI_SUCCESS if the call succeeds.
+ * 
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     set_signalSampling:(Y_SIGNALSAMPLING_enum) newval;
+-(int)     setSignalSampling:(Y_SIGNALSAMPLING_enum) newval;
+
 /**
  * Retrieves a generic sensor for a given identifier.
  * The identifier can be specified using several formats:

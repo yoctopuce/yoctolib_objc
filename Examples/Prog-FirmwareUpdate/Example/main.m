@@ -13,7 +13,7 @@ static int upgradeSerialList(NSMutableArray *allserials)
         NSString *current = [module get_firmwareRelease];
 
         // check if a new firmare is available on yoctopuce.com
-        NSString *newfirm = [module checkFirmware:@"www.yoctopuce.com" :FALSE];
+        NSString *newfirm = [module checkFirmware:@"www.yoctopuce.com" :TRUE];
         if ([newfirm isEqualToString:@""]) {
             NSLog(@"%@ %@ (rev=%@) is up to date", product, serial, current);
         } else {
@@ -49,7 +49,7 @@ int main(int argc, const char * argv[])
 {
     int i;
     NSError *error;
-        
+
     @autoreleasepool {
         // Setup the API to use local USB devices
         if([YAPI RegisterHub:@"usb" :&error] != YAPI_SUCCESS) {
@@ -74,11 +74,10 @@ int main(int argc, const char * argv[])
             NSString *serial  = [module get_serialNumber];
             NSData * settings = [module get_allSettings];
             [module set_allSettings:settings];
-            if ([product hasPrefix:@"YoctoHub-"])
-            {
-                [hubs addObject:serial];
-            } else if ([product isEqualToString:@"YoctoHub-Shield"] ) {
+            if ([product isEqualToString:@"YoctoHub-Shield"] ) {
                 [shield addObject:serial];
+            } else if ([product hasPrefix:@"YoctoHub-"]) {
+                [hubs addObject:serial];
             } else if (![product isEqualToString:@"VirtualHub"]){
                 [devices addObject:serial];
             }
@@ -90,7 +89,7 @@ int main(int argc, const char * argv[])
         upgradeSerialList(shield);
         // ... and finaly all devices
         upgradeSerialList(devices);
-        NSLog(@"All devices are now up to date");     
+        NSLog(@"All devices are now up to date");
         [YAPI FreeAPI];
     }
     return 0;

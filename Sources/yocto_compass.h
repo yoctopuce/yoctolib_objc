@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_compass.h 15256 2014-03-06 10:19:01Z seb $
+ * $Id: yocto_compass.h 18321 2014-11-10 10:48:37Z seb $
  *
  * Declares yFindCompass(), the high-level API for Compass functions
  *
@@ -54,7 +54,6 @@ typedef enum {
     Y_AXIS_INVALID = -1,
 } Y_AXIS_enum;
 #endif
-
 #define Y_MAGNETICHEADING_INVALID       YAPI_INVALID_DOUBLE
 //--- (end of YCompass globals)
 

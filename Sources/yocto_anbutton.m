@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_anbutton.m 17675 2014-09-16 16:19:20Z seb $
+ * $Id: yocto_anbutton.m 18361 2014-11-13 08:06:41Z mvuilleu $
  *
  * Implements the high-level API for AnButton functions
  *
@@ -68,7 +68,7 @@
 //--- (end of YAnButton attributes initialization)
     return self;
 }
-// destructor 
+// destructor
 -(void)  dealloc
 {
 //--- (YAnButton cleanup)
@@ -571,7 +571,7 @@
 }
 
 /**
- * Returns the pulse counter value as well as his timer
+ * Returns the pulse counter value as well as its timer.
  * 
  * @return YAPI_SUCCESS if the call succeeds.
  * 
@@ -586,7 +586,7 @@
 -(YAnButton*)   nextAnButton
 {
     NSString  *hwid;
-    
+
     if(YISERR([self _nextFunction:&hwid]) || [hwid isEqualToString:@""]) {
         return NULL;
     }
@@ -598,7 +598,7 @@
     NSMutableArray    *ar_fundescr;
     YDEV_DESCR        ydevice;
     NSString          *serial, *funcId, *funcName, *funcVal;
-    
+
     if(!YISERR([YapiWrapper getFunctionsByClass:@"AnButton":0:&ar_fundescr:NULL]) && [ar_fundescr count] > 0){
         NSNumber*  ns_devdescr = [ar_fundescr objectAtIndex:0];
         if (!YISERR([YapiWrapper getFunctionInfo:[ns_devdescr intValue] :&ydevice :&serial :&funcId :&funcName :&funcVal :NULL])) {

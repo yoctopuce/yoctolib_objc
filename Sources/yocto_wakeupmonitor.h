@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_wakeupmonitor.h 16962 2014-07-23 13:16:33Z mvuilleu $
+ * $Id: yocto_wakeupmonitor.h 18321 2014-11-10 10:48:37Z seb $
  *
  * Declares yFindWakeUpMonitor(), the high-level API for WakeUpMonitor functions
  *
@@ -56,7 +56,6 @@ typedef enum {
     Y_WAKEUPREASON_INVALID = -1,
 } Y_WAKEUPREASON_enum;
 #endif
-
 #ifndef _Y_WAKEUPSTATE_ENUM
 #define _Y_WAKEUPSTATE_ENUM
 typedef enum {
@@ -65,7 +64,6 @@ typedef enum {
     Y_WAKEUPSTATE_INVALID = -1,
 } Y_WAKEUPSTATE_enum;
 #endif
-
 #define Y_POWERDURATION_INVALID         YAPI_INVALID_INT
 #define Y_SLEEPCOUNTDOWN_INVALID        YAPI_INVALID_INT
 #define Y_NEXTWAKEUP_INVALID            YAPI_INVALID_LONG

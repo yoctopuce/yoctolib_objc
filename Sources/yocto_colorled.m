@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_colorled.m 15256 2014-03-06 10:19:01Z seb $
+ * $Id: yocto_colorled.m 18321 2014-11-10 10:48:37Z seb $
  *
  * Implements the high-level API for ColorLed functions
  *
@@ -58,14 +58,20 @@
     _rgbMove = Y_RGBMOVE_INVALID;
     _hslMove = Y_HSLMOVE_INVALID;
     _rgbColorAtPowerOn = Y_RGBCOLORATPOWERON_INVALID;
+    _blinkSeqSize = Y_BLINKSEQSIZE_INVALID;
+    _blinkSeqMaxSize = Y_BLINKSEQMAXSIZE_INVALID;
+    _blinkSeqSignature = Y_BLINKSEQSIGNATURE_INVALID;
+    _command = Y_COMMAND_INVALID;
     _valueCallbackColorLed = NULL;
 //--- (end of YColorLed attributes initialization)
     return self;
 }
-// destructor 
+// destructor
 -(void)  dealloc
 {
 //--- (YColorLed cleanup)
+    ARC_release(_command);
+    _command = nil;
     ARC_dealloc(super);
 //--- (end of YColorLed cleanup)
 }
@@ -122,6 +128,28 @@
     if(!strcmp(j->token, "rgbColorAtPowerOn")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
         _rgbColorAtPowerOn =  atoi(j->token);
+        return 1;
+    }
+    if(!strcmp(j->token, "blinkSeqSize")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _blinkSeqSize =  atoi(j->token);
+        return 1;
+    }
+    if(!strcmp(j->token, "blinkSeqMaxSize")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _blinkSeqMaxSize =  atoi(j->token);
+        return 1;
+    }
+    if(!strcmp(j->token, "blinkSeqSignature")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _blinkSeqSignature =  atoi(j->token);
+        return 1;
+    }
+    if(!strcmp(j->token, "command")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+       ARC_release(_command);
+        _command =  [self _parseString:j];
+        ARC_retain(_command);
         return 1;
     }
     return [super _parseAttr:j];
@@ -323,9 +351,6 @@
 
 /**
  * Changes the color that the led will display by default when the module is turned on.
- * This color will be displayed as soon as the module is powered on.
- * Remember to call the saveToFlash() method of the module if the
- * change should be kept.
  * 
  * @param newval : an integer corresponding to the color that the led will display by default when the
  * module is turned on
@@ -343,6 +368,101 @@
     NSString* rest_val;
     rest_val = [NSString stringWithFormat:@"0x%06x",newval];
     return [self _setAttr:@"rgbColorAtPowerOn" :rest_val];
+}
+/**
+ * Returns the current length of the blinking sequence
+ * 
+ * @return an integer corresponding to the current length of the blinking sequence
+ * 
+ * On failure, throws an exception or returns Y_BLINKSEQSIZE_INVALID.
+ */
+-(int) get_blinkSeqSize
+{
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_BLINKSEQSIZE_INVALID;
+        }
+    }
+    return _blinkSeqSize;
+}
+
+
+-(int) blinkSeqSize
+{
+    return [self get_blinkSeqSize];
+}
+/**
+ * Returns the maximum length of the blinking sequence
+ * 
+ * @return an integer corresponding to the maximum length of the blinking sequence
+ * 
+ * On failure, throws an exception or returns Y_BLINKSEQMAXSIZE_INVALID.
+ */
+-(int) get_blinkSeqMaxSize
+{
+    if (_cacheExpiration == 0) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_BLINKSEQMAXSIZE_INVALID;
+        }
+    }
+    return _blinkSeqMaxSize;
+}
+
+
+-(int) blinkSeqMaxSize
+{
+    return [self get_blinkSeqMaxSize];
+}
+/**
+ * Return the blinking sequence signature. Since blinking
+ * sequences cannot be read from the device, this can be used
+ * to detect if a specific blinking sequence is already
+ * programmed.
+ * 
+ * @return an integer
+ * 
+ * On failure, throws an exception or returns Y_BLINKSEQSIGNATURE_INVALID.
+ */
+-(int) get_blinkSeqSignature
+{
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_BLINKSEQSIGNATURE_INVALID;
+        }
+    }
+    return _blinkSeqSignature;
+}
+
+
+-(int) blinkSeqSignature
+{
+    return [self get_blinkSeqSignature];
+}
+-(NSString*) get_command
+{
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_COMMAND_INVALID;
+        }
+    }
+    return _command;
+}
+
+
+-(NSString*) command
+{
+    return [self get_command];
+}
+
+-(int) set_command:(NSString*) newval
+{
+    return [self setCommand:newval];
+}
+-(int) setCommand:(NSString*) newval
+{
+    NSString* rest_val;
+    rest_val = newval;
+    return [self _setAttr:@"command" :rest_val];
 }
 /**
  * Retrieves $AFUNCTION$ for a given identifier.
@@ -418,11 +538,81 @@
     return 0;
 }
 
+-(int) sendCommand:(NSString*)command
+{
+    return [self set_command:command];
+}
+
+/**
+ * Add a new transition to the blinking sequence, the move will
+ * be performed in the HSL space.
+ * 
+ * @param HSLcolor : desired HSL color when the traisntion is completed
+ * @param msDelay : duration of the color transition, in milliseconds.
+ * 
+ * @return YAPI_SUCCESS if the call succeeds.
+ *         On failure, throws an exception or returns a negative error code.
+ */
+-(int) addHslMoveToBlinkSeq:(int)HSLcolor :(int)msDelay
+{
+    return [self sendCommand:[NSString stringWithFormat:@"H%d,%d",HSLcolor,msDelay]];
+}
+
+/**
+ * Add a new transition to the blinking sequence, the move will
+ * be performed in the RGB space.
+ * 
+ * @param RGBcolor : desired RGB color when the transition is completed
+ * @param msDelay : duration of the color transition, in milliseconds.
+ * 
+ * @return YAPI_SUCCESS if the call succeeds.
+ *         On failure, throws an exception or returns a negative error code.
+ */
+-(int) addRgbMoveToBlinkSeq:(int)RGBcolor :(int)msDelay
+{
+    return [self sendCommand:[NSString stringWithFormat:@"R%d,%d",RGBcolor,msDelay]];
+}
+
+/**
+ * Starts the preprogrammed blinking sequence. The sequence will
+ * run in loop until it is stopped by stopBlinkSeq or an explicit
+ * change.
+ * 
+ * @return YAPI_SUCCESS if the call succeeds.
+ *         On failure, throws an exception or returns a negative error code.
+ */
+-(int) startBlinkSeq
+{
+    return [self sendCommand:@"S"];
+}
+
+/**
+ * Stops the preprogrammed blinking sequence.
+ * 
+ * @return YAPI_SUCCESS if the call succeeds.
+ *         On failure, throws an exception or returns a negative error code.
+ */
+-(int) stopBlinkSeq
+{
+    return [self sendCommand:@"X"];
+}
+
+/**
+ * Resets the preprogrammed blinking sequence.
+ * 
+ * @return YAPI_SUCCESS if the call succeeds.
+ *         On failure, throws an exception or returns a negative error code.
+ */
+-(int) resetBlinkSeq
+{
+    return [self sendCommand:@"Z"];
+}
+
 
 -(YColorLed*)   nextColorLed
 {
     NSString  *hwid;
-    
+
     if(YISERR([self _nextFunction:&hwid]) || [hwid isEqualToString:@""]) {
         return NULL;
     }
@@ -434,7 +624,7 @@
     NSMutableArray    *ar_fundescr;
     YDEV_DESCR        ydevice;
     NSString          *serial, *funcId, *funcName, *funcVal;
-    
+
     if(!YISERR([YapiWrapper getFunctionsByClass:@"ColorLed":0:&ar_fundescr:NULL]) && [ar_fundescr count] > 0){
         NSNumber*  ns_devdescr = [ar_fundescr objectAtIndex:0];
         if (!YISERR([YapiWrapper getFunctionInfo:[ns_devdescr intValue] :&ydevice :&serial :&funcId :&funcName :&funcVal :NULL])) {

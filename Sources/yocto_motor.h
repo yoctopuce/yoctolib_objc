@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_motor.h 17381 2014-09-01 09:18:28Z seb $
+ * $Id: yocto_motor.h 18321 2014-11-10 10:48:37Z seb $
  *
  * Declares yFindMotor(), the high-level API for Motor functions
  *
@@ -58,7 +58,6 @@ typedef enum {
     Y_MOTORSTATUS_INVALID = -1,
 } Y_MOTORSTATUS_enum;
 #endif
-
 #define Y_DRIVINGFORCE_INVALID          YAPI_INVALID_DOUBLE
 #define Y_BRAKINGFORCE_INVALID          YAPI_INVALID_DOUBLE
 #define Y_CUTOFFVOLTAGE_INVALID         YAPI_INVALID_DOUBLE

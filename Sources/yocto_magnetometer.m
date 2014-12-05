@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_magnetometer.m 16895 2014-07-18 00:12:08Z mvuilleu $
+ * $Id: yocto_magnetometer.m 18321 2014-11-10 10:48:37Z seb $
  *
  * Implements the high-level API for Magnetometer functions
  *
@@ -61,7 +61,7 @@
 //--- (end of YMagnetometer attributes initialization)
     return self;
 }
-// destructor 
+// destructor
 -(void)  dealloc
 {
 //--- (YMagnetometer cleanup)
@@ -270,7 +270,7 @@
 -(YMagnetometer*)   nextMagnetometer
 {
     NSString  *hwid;
-    
+
     if(YISERR([self _nextFunction:&hwid]) || [hwid isEqualToString:@""]) {
         return NULL;
     }
@@ -282,7 +282,7 @@
     NSMutableArray    *ar_fundescr;
     YDEV_DESCR        ydevice;
     NSString          *serial, *funcId, *funcName, *funcVal;
-    
+
     if(!YISERR([YapiWrapper getFunctionsByClass:@"Magnetometer":0:&ar_fundescr:NULL]) && [ar_fundescr count] > 0){
         NSNumber*  ns_devdescr = [ar_fundescr objectAtIndex:0];
         if (!YISERR([YapiWrapper getFunctionInfo:[ns_devdescr intValue] :&ydevice :&serial :&funcId :&funcName :&funcVal :NULL])) {

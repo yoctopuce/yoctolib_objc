@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_display.h 17498 2014-09-03 19:21:24Z mvuilleu $
+ * $Id: yocto_display.h 18321 2014-11-10 10:48:37Z seb $
  *
  * Declares yFindDisplay(), the high-level API for Display functions
  *
@@ -60,7 +60,7 @@ typedef enum {
     Y_ALIGN_TOP_RIGHT = 12 ,
     Y_ALIGN_CENTER_RIGHT = 13 ,
     Y_ALIGN_BASELINE_RIGHT = 14 ,
-    Y_ALIGN_BOTTOM_RIGHT = 15 
+    Y_ALIGN_BOTTOM_RIGHT = 15
 } Y_ALIGN;
 
 #endif
@@ -76,7 +76,6 @@ typedef enum {
     Y_ENABLED_INVALID = -1,
 } Y_ENABLED_enum;
 #endif
-
 #ifndef _Y_ORIENTATION_ENUM
 #define _Y_ORIENTATION_ENUM
 typedef enum {
@@ -87,7 +86,6 @@ typedef enum {
     Y_ORIENTATION_INVALID = -1,
 } Y_ORIENTATION_enum;
 #endif
-
 #ifndef _Y_DISPLAYTYPE_ENUM
 #define _Y_DISPLAYTYPE_ENUM
 typedef enum {
@@ -97,7 +95,6 @@ typedef enum {
     Y_DISPLAYTYPE_INVALID = -1,
 } Y_DISPLAYTYPE_enum;
 #endif
-
 #define Y_STARTUPSEQ_INVALID            YAPI_INVALID_STRING
 #define Y_BRIGHTNESS_INVALID            YAPI_INVALID_UINT
 #define Y_DISPLAYWIDTH_INVALID          YAPI_INVALID_UINT

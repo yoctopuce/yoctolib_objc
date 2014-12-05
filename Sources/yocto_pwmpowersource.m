@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_pwmpowersource.m 15529 2014-03-20 17:54:15Z seb $
+ * $Id: yocto_pwmpowersource.m 18321 2014-11-10 10:48:37Z seb $
  *
  * Implements the high-level API for PwmPowerSource functions
  *
@@ -58,7 +58,7 @@
 //--- (end of YPwmPowerSource attributes initialization)
     return self;
 }
-// destructor 
+// destructor
 -(void)  dealloc
 {
 //--- (YPwmPowerSource cleanup)
@@ -206,7 +206,7 @@
 -(YPwmPowerSource*)   nextPwmPowerSource
 {
     NSString  *hwid;
-    
+
     if(YISERR([self _nextFunction:&hwid]) || [hwid isEqualToString:@""]) {
         return NULL;
     }
@@ -218,7 +218,7 @@
     NSMutableArray    *ar_fundescr;
     YDEV_DESCR        ydevice;
     NSString          *serial, *funcId, *funcName, *funcVal;
-    
+
     if(!YISERR([YapiWrapper getFunctionsByClass:@"PwmPowerSource":0:&ar_fundescr:NULL]) && [ar_fundescr count] > 0){
         NSNumber*  ns_devdescr = [ar_fundescr objectAtIndex:0];
         if (!YISERR([YapiWrapper getFunctionInfo:[ns_devdescr intValue] :&ydevice :&serial :&funcId :&funcName :&funcVal :NULL])) {

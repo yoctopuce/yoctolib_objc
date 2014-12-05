@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_lightsensor.m 17655 2014-09-16 12:24:27Z mvuilleu $
+ * $Id: yocto_lightsensor.m 18321 2014-11-10 10:48:37Z seb $
  *
  * Implements the high-level API for LightSensor functions
  *
@@ -59,7 +59,7 @@
 //--- (end of YLightSensor attributes initialization)
     return self;
 }
-// destructor 
+// destructor
 -(void)  dealloc
 {
 //--- (YLightSensor cleanup)
@@ -268,7 +268,7 @@
 -(YLightSensor*)   nextLightSensor
 {
     NSString  *hwid;
-    
+
     if(YISERR([self _nextFunction:&hwid]) || [hwid isEqualToString:@""]) {
         return NULL;
     }
@@ -280,7 +280,7 @@
     NSMutableArray    *ar_fundescr;
     YDEV_DESCR        ydevice;
     NSString          *serial, *funcId, *funcName, *funcVal;
-    
+
     if(!YISERR([YapiWrapper getFunctionsByClass:@"LightSensor":0:&ar_fundescr:NULL]) && [ar_fundescr count] > 0){
         NSNumber*  ns_devdescr = [ar_fundescr objectAtIndex:0];
         if (!YISERR([YapiWrapper getFunctionInfo:[ns_devdescr intValue] :&ydevice :&serial :&funcId :&funcName :&funcVal :NULL])) {

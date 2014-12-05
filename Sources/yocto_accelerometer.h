@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_accelerometer.h 17252 2014-08-21 14:44:20Z seb $
+ * $Id: yocto_accelerometer.h 18321 2014-11-10 10:48:37Z seb $
  *
  * Declares yFindAccelerometer(), the high-level API for Accelerometer functions
  *
@@ -53,7 +53,6 @@ typedef enum {
     Y_GRAVITYCANCELLATION_INVALID = -1,
 } Y_GRAVITYCANCELLATION_enum;
 #endif
-
 #define Y_XVALUE_INVALID                YAPI_INVALID_DOUBLE
 #define Y_YVALUE_INVALID                YAPI_INVALID_DOUBLE
 #define Y_ZVALUE_INVALID                YAPI_INVALID_DOUBLE

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_refframe.h 15998 2014-05-01 08:25:18Z seb $
+ * $Id: yocto_refframe.h 18321 2014-11-10 10:48:37Z seb $
  *
  * Declares yFindRefFrame(), the high-level API for RefFrame functions
  *
@@ -52,7 +52,7 @@ typedef enum {
     Y_MOUNTPOSITION_FRONT = 2 ,
     Y_MOUNTPOSITION_RIGHT = 3 ,
     Y_MOUNTPOSITION_REAR = 4 ,
-    Y_MOUNTPOSITION_LEFT = 5 
+    Y_MOUNTPOSITION_LEFT = 5
 } Y_MOUNTPOSITION;
 
 #endif
@@ -62,7 +62,7 @@ typedef enum {
     Y_MOUNTORIENTATION_TWELVE = 0 ,
     Y_MOUNTORIENTATION_THREE = 1 ,
     Y_MOUNTORIENTATION_SIX = 2 ,
-    Y_MOUNTORIENTATION_NINE = 3 
+    Y_MOUNTORIENTATION_NINE = 3
 } Y_MOUNTORIENTATION;
 
 #endif

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_lightsensor.h 17655 2014-09-16 12:24:27Z mvuilleu $
+ * $Id: yocto_lightsensor.h 18321 2014-11-10 10:48:37Z seb $
  *
  * Declares yFindLightSensor(), the high-level API for LightSensor functions
  *
@@ -56,7 +56,6 @@ typedef enum {
     Y_MEASURETYPE_INVALID = -1,
 } Y_MEASURETYPE_enum;
 #endif
-
 //--- (end of YLightSensor globals)
 
 //--- (YLightSensor class start)

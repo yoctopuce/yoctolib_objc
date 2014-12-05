@@ -1,8 +1,8 @@
 /*********************************************************************
  *
- * $Id: yocto_current.m 18321 2014-11-10 10:48:37Z seb $
+ * $Id: pic24config.php 18250 2014-11-03 16:54:15Z mvuilleu $
  *
- * Implements the high-level API for Current functions
+ * Implements the high-level API for SegmentedDisplay functions
  *
  * - - - - - - - - - License information: - - - - - - - - - 
  *
@@ -38,41 +38,124 @@
  *********************************************************************/
 
 
-#import "yocto_current.h"
+#import "yocto_segmenteddisplay.h"
 #include "yapi/yjson.h"
 #include "yapi/yapi.h"
 
 
 
-@implementation YCurrent
+@implementation YSegmentedDisplay
 
-// Constructor is protected, use yFindCurrent factory function to instantiate
+// Constructor is protected, use yFindSegmentedDisplay factory function to instantiate
 -(id)              initWith:(NSString*) func
 {
    if(!(self = [super initWith:func]))
           return nil;
-    _className = @"Current";
-//--- (YCurrent attributes initialization)
-    _valueCallbackCurrent = NULL;
-    _timedReportCallbackCurrent = NULL;
-//--- (end of YCurrent attributes initialization)
+    _className = @"SegmentedDisplay";
+//--- (YSegmentedDisplay attributes initialization)
+    _displayedText = Y_DISPLAYEDTEXT_INVALID;
+    _displayMode = Y_DISPLAYMODE_INVALID;
+    _valueCallbackSegmentedDisplay = NULL;
+//--- (end of YSegmentedDisplay attributes initialization)
     return self;
 }
 // destructor
 -(void)  dealloc
 {
-//--- (YCurrent cleanup)
+//--- (YSegmentedDisplay cleanup)
+    ARC_release(_displayedText);
+    _displayedText = nil;
     ARC_dealloc(super);
-//--- (end of YCurrent cleanup)
+//--- (end of YSegmentedDisplay cleanup)
 }
-//--- (YCurrent private methods implementation)
+//--- (YSegmentedDisplay private methods implementation)
 
 -(int) _parseAttr:(yJsonStateMachine*) j
 {
+    if(!strcmp(j->token, "displayedText")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+       ARC_release(_displayedText);
+        _displayedText =  [self _parseString:j];
+        ARC_retain(_displayedText);
+        return 1;
+    }
+    if(!strcmp(j->token, "displayMode")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _displayMode =  atoi(j->token);
+        return 1;
+    }
     return [super _parseAttr:j];
 }
-//--- (end of YCurrent private methods implementation)
-//--- (YCurrent public methods implementation)
+//--- (end of YSegmentedDisplay private methods implementation)
+//--- (YSegmentedDisplay public methods implementation)
+/**
+ * Returns the text currently displayed on the screen.
+ * 
+ * @return a string corresponding to the text currently displayed on the screen
+ * 
+ * On failure, throws an exception or returns Y_DISPLAYEDTEXT_INVALID.
+ */
+-(NSString*) get_displayedText
+{
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_DISPLAYEDTEXT_INVALID;
+        }
+    }
+    return _displayedText;
+}
+
+
+-(NSString*) displayedText
+{
+    return [self get_displayedText];
+}
+
+/**
+ * Changes the text currently displayed on the screen.
+ * 
+ * @param newval : a string corresponding to the text currently displayed on the screen
+ * 
+ * @return YAPI_SUCCESS if the call succeeds.
+ * 
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) set_displayedText:(NSString*) newval
+{
+    return [self setDisplayedText:newval];
+}
+-(int) setDisplayedText:(NSString*) newval
+{
+    NSString* rest_val;
+    rest_val = newval;
+    return [self _setAttr:@"displayedText" :rest_val];
+}
+-(Y_DISPLAYMODE_enum) get_displayMode
+{
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_DISPLAYMODE_INVALID;
+        }
+    }
+    return _displayMode;
+}
+
+
+-(Y_DISPLAYMODE_enum) displayMode
+{
+    return [self get_displayMode];
+}
+
+-(int) set_displayMode:(Y_DISPLAYMODE_enum) newval
+{
+    return [self setDisplayMode:newval];
+}
+-(int) setDisplayMode:(Y_DISPLAYMODE_enum) newval
+{
+    NSString* rest_val;
+    rest_val = [NSString stringWithFormat:@"%d", newval];
+    return [self _setAttr:@"displayMode" :rest_val];
+}
 /**
  * Retrieves $AFUNCTION$ for a given identifier.
  * The identifier can be specified using several formats:
@@ -86,7 +169,7 @@
  * 
  * This function does not require that $THEFUNCTION$ is online at the time
  * it is invoked. The returned object is nevertheless valid.
- * Use the method YCurrent.isOnline() to test if $THEFUNCTION$ is
+ * Use the method YSegmentedDisplay.isOnline() to test if $THEFUNCTION$ is
  * indeed online at a given time. In case of ambiguity when looking for
  * $AFUNCTION$ by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
@@ -94,15 +177,15 @@
  * 
  * @param func : a string that uniquely characterizes $THEFUNCTION$
  * 
- * @return a YCurrent object allowing you to drive $THEFUNCTION$.
+ * @return a YSegmentedDisplay object allowing you to drive $THEFUNCTION$.
  */
-+(YCurrent*) FindCurrent:(NSString*)func
++(YSegmentedDisplay*) FindSegmentedDisplay:(NSString*)func
 {
-    YCurrent* obj;
-    obj = (YCurrent*) [YFunction _FindFromCache:@"Current" :func];
+    YSegmentedDisplay* obj;
+    obj = (YSegmentedDisplay*) [YFunction _FindFromCache:@"SegmentedDisplay" :func];
     if (obj == nil) {
-        obj = ARC_sendAutorelease([[YCurrent alloc] initWith:func]);
-        [YFunction _AddToCache:@"Current" : func :obj];
+        obj = ARC_sendAutorelease([[YSegmentedDisplay alloc] initWith:func]);
+        [YFunction _AddToCache:@"SegmentedDisplay" : func :obj];
     }
     return obj;
 }
@@ -118,7 +201,7 @@
  *         the new advertised value.
  * @noreturn
  */
--(int) registerValueCallback:(YCurrentValueCallback)callback
+-(int) registerValueCallback:(YSegmentedDisplayValueCallback)callback
 {
     NSString* val;
     if (callback != NULL) {
@@ -126,7 +209,7 @@
     } else {
         [YFunction _UpdateValueCallbackList:self :NO];
     }
-    _valueCallbackCurrent = callback;
+    _valueCallbackSegmentedDisplay = callback;
     // Immediately invoke value callback with current value
     if (callback != NULL && [self isOnline]) {
         val = _advertisedValue;
@@ -139,85 +222,53 @@
 
 -(int) _invokeValueCallback:(NSString*)value
 {
-    if (_valueCallbackCurrent != NULL) {
-        _valueCallbackCurrent(self, value);
+    if (_valueCallbackSegmentedDisplay != NULL) {
+        _valueCallbackSegmentedDisplay(self, value);
     } else {
         [super _invokeValueCallback:value];
     }
     return 0;
 }
 
-/**
- * Registers the callback function that is invoked on every periodic timed notification.
- * The callback is invoked only during the execution of ySleep or yHandleEvents.
- * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
- * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
- * 
- * @param callback : the callback function to call, or a null pointer. The callback function should take two
- *         arguments: the function object of which the value has changed, and an YMeasure object describing
- *         the new advertised value.
- * @noreturn
- */
--(int) registerTimedReportCallback:(YCurrentTimedReportCallback)callback
-{
-    if (callback != NULL) {
-        [YFunction _UpdateTimedReportCallbackList:self :YES];
-    } else {
-        [YFunction _UpdateTimedReportCallbackList:self :NO];
-    }
-    _timedReportCallbackCurrent = callback;
-    return 0;
-}
 
--(int) _invokeTimedReportCallback:(YMeasure*)value
-{
-    if (_timedReportCallbackCurrent != NULL) {
-        _timedReportCallbackCurrent(self, value);
-    } else {
-        [super _invokeTimedReportCallback:value];
-    }
-    return 0;
-}
-
-
--(YCurrent*)   nextCurrent
+-(YSegmentedDisplay*)   nextSegmentedDisplay
 {
     NSString  *hwid;
 
     if(YISERR([self _nextFunction:&hwid]) || [hwid isEqualToString:@""]) {
         return NULL;
     }
-    return [YCurrent FindCurrent:hwid];
+    return [YSegmentedDisplay FindSegmentedDisplay:hwid];
 }
 
-+(YCurrent *) FirstCurrent
++(YSegmentedDisplay *) FirstSegmentedDisplay
 {
     NSMutableArray    *ar_fundescr;
     YDEV_DESCR        ydevice;
     NSString          *serial, *funcId, *funcName, *funcVal;
 
-    if(!YISERR([YapiWrapper getFunctionsByClass:@"Current":0:&ar_fundescr:NULL]) && [ar_fundescr count] > 0){
+    if(!YISERR([YapiWrapper getFunctionsByClass:@"SegmentedDisplay":0:&ar_fundescr:NULL]) && [ar_fundescr count] > 0){
         NSNumber*  ns_devdescr = [ar_fundescr objectAtIndex:0];
         if (!YISERR([YapiWrapper getFunctionInfo:[ns_devdescr intValue] :&ydevice :&serial :&funcId :&funcName :&funcVal :NULL])) {
-            return  [YCurrent FindCurrent:[NSString stringWithFormat:@"%@.%@",serial,funcId]];
+            return  [YSegmentedDisplay FindSegmentedDisplay:[NSString stringWithFormat:@"%@.%@",serial,funcId]];
         }
     }
     return nil;
 }
 
-//--- (end of YCurrent public methods implementation)
+//--- (end of YSegmentedDisplay public methods implementation)
 
 @end
-//--- (Current functions)
+//--- (SegmentedDisplay functions)
 
-YCurrent *yFindCurrent(NSString* func)
+YSegmentedDisplay *yFindSegmentedDisplay(NSString* func)
 {
-    return [YCurrent FindCurrent:func];
+    return [YSegmentedDisplay FindSegmentedDisplay:func];
 }
 
-YCurrent *yFirstCurrent(void)
+YSegmentedDisplay *yFirstSegmentedDisplay(void)
 {
-    return [YCurrent FirstCurrent];
+    return [YSegmentedDisplay FirstSegmentedDisplay];
 }
 
-//--- (end of Current functions)
+//--- (end of SegmentedDisplay functions)

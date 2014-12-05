@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_temperature.h 16543 2014-06-13 12:15:09Z mvuilleu $
+ * $Id: yocto_temperature.h 18321 2014-11-10 10:48:37Z seb $
  *
  * Declares yFindTemperature(), the high-level API for Temperature functions
  *
@@ -59,10 +59,13 @@ typedef enum {
     Y_SENSORTYPE_PT100_4WIRES = 8,
     Y_SENSORTYPE_PT100_3WIRES = 9,
     Y_SENSORTYPE_PT100_2WIRES = 10,
+    Y_SENSORTYPE_RES_OHM = 11,
+    Y_SENSORTYPE_RES_NTC = 12,
+    Y_SENSORTYPE_RES_LINEAR = 13,
     Y_SENSORTYPE_INVALID = -1,
 } Y_SENSORTYPE_enum;
 #endif
-
+#define Y_COMMAND_INVALID               YAPI_INVALID_STRING
 //--- (end of YTemperature globals)
 
 //--- (YTemperature class start)
@@ -78,6 +81,7 @@ typedef enum {
 @protected
 //--- (YTemperature attributes declaration)
     Y_SENSORTYPE_enum _sensorType;
+    NSString*       _command;
     YTemperatureValueCallback _valueCallbackTemperature;
     YTemperatureTimedReportCallback _timedReportCallbackTemperature;
 //--- (end of YTemperature attributes declaration)
@@ -96,8 +100,9 @@ typedef enum {
  * 
  * @return a value among Y_SENSORTYPE_DIGITAL, Y_SENSORTYPE_TYPE_K, Y_SENSORTYPE_TYPE_E,
  * Y_SENSORTYPE_TYPE_J, Y_SENSORTYPE_TYPE_N, Y_SENSORTYPE_TYPE_R, Y_SENSORTYPE_TYPE_S,
- * Y_SENSORTYPE_TYPE_T, Y_SENSORTYPE_PT100_4WIRES, Y_SENSORTYPE_PT100_3WIRES and
- * Y_SENSORTYPE_PT100_2WIRES corresponding to the temperature sensor type
+ * Y_SENSORTYPE_TYPE_T, Y_SENSORTYPE_PT100_4WIRES, Y_SENSORTYPE_PT100_3WIRES,
+ * Y_SENSORTYPE_PT100_2WIRES, Y_SENSORTYPE_RES_OHM, Y_SENSORTYPE_RES_NTC and Y_SENSORTYPE_RES_LINEAR
+ * corresponding to the temperature sensor type
  * 
  * On failure, throws an exception or returns Y_SENSORTYPE_INVALID.
  */
@@ -114,7 +119,8 @@ typedef enum {
  * 
  * @param newval : a value among Y_SENSORTYPE_DIGITAL, Y_SENSORTYPE_TYPE_K, Y_SENSORTYPE_TYPE_E,
  * Y_SENSORTYPE_TYPE_J, Y_SENSORTYPE_TYPE_N, Y_SENSORTYPE_TYPE_R, Y_SENSORTYPE_TYPE_S,
- * Y_SENSORTYPE_TYPE_T, Y_SENSORTYPE_PT100_4WIRES, Y_SENSORTYPE_PT100_3WIRES and Y_SENSORTYPE_PT100_2WIRES
+ * Y_SENSORTYPE_TYPE_T, Y_SENSORTYPE_PT100_4WIRES, Y_SENSORTYPE_PT100_3WIRES,
+ * Y_SENSORTYPE_PT100_2WIRES, Y_SENSORTYPE_RES_OHM, Y_SENSORTYPE_RES_NTC and Y_SENSORTYPE_RES_LINEAR
  * 
  * @return YAPI_SUCCESS if the call succeeds.
  * 
@@ -122,6 +128,13 @@ typedef enum {
  */
 -(int)     set_sensorType:(Y_SENSORTYPE_enum) newval;
 -(int)     setSensorType:(Y_SENSORTYPE_enum) newval;
+
+-(NSString*)     get_command;
+
+
+-(NSString*) command;
+-(int)     set_command:(NSString*) newval;
+-(int)     setCommand:(NSString*) newval;
 
 /**
  * Retrieves a temperature sensor for a given identifier.
@@ -177,6 +190,42 @@ typedef enum {
 -(int)     registerTimedReportCallback:(YTemperatureTimedReportCallback)callback;
 
 -(int)     _invokeTimedReportCallback:(YMeasure*)value;
+
+/**
+ * Record a thermistor response table, for interpolating the temperature from
+ * the measured resistance. This function can only be used with temperature
+ * sensor based on thermistors.
+ * 
+ * @param tempValues : array of floating point numbers, corresponding to all
+ *         temperatures (in degrees Celcius) for which the resistance of the
+ *         thermistor is specified.
+ * @param resValues : array of floating point numbers, corresponding to the resistance
+ *         values (in Ohms) for each of the temperature included in the first
+ *         argument, index by index.
+ * 
+ * @return YAPI_SUCCESS if the call succeeds.
+ * 
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     set_thermistorResponseTable:(NSMutableArray*)tempValues :(NSMutableArray*)resValues;
+
+/**
+ * Retrieves the thermistor response table previously configured using function
+ * set_thermistorResponseTable. This function can only be used with
+ * temperature sensor based on thermistors.
+ * 
+ * @param tempValues : array of floating point numbers, that will be filled by the function
+ *         with all temperatures (in degrees Celcius) for which the resistance
+ *         of the thermistor is specified.
+ * @param resValues : array of floating point numbers, that will be filled by the function
+ *         with the value (in Ohms) for each of the temperature included in the
+ *         first argument, index by index.
+ * 
+ * @return YAPI_SUCCESS if the call succeeds.
+ * 
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     loadThermistorResponseTable:(NSMutableArray*)tempValues :(NSMutableArray*)resValues;
 
 
 /**

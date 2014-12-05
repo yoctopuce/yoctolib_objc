@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_watchdog.h 15434 2014-03-14 06:37:47Z mvuilleu $
+ * $Id: yocto_watchdog.h 18321 2014-11-10 10:48:37Z seb $
  *
  * Declares yFindWatchdog(), the high-level API for Watchdog functions
  *
@@ -52,7 +52,6 @@ typedef enum {
     Y_STATE_INVALID = -1,
 } Y_STATE_enum;
 #endif
-
 #ifndef _Y_STATEATPOWERON_ENUM
 #define _Y_STATEATPOWERON_ENUM
 typedef enum {
@@ -62,7 +61,6 @@ typedef enum {
     Y_STATEATPOWERON_INVALID = -1,
 } Y_STATEATPOWERON_enum;
 #endif
-
 #ifndef _Y_OUTPUT_ENUM
 #define _Y_OUTPUT_ENUM
 typedef enum {
@@ -71,7 +69,6 @@ typedef enum {
     Y_OUTPUT_INVALID = -1,
 } Y_OUTPUT_enum;
 #endif
-
 #ifndef _STRUCT_DELAYEDPULSE
 #define _STRUCT_DELAYEDPULSE
 typedef struct _YDelayedPulse {
@@ -89,7 +86,6 @@ typedef enum {
     Y_AUTOSTART_INVALID = -1,
 } Y_AUTOSTART_enum;
 #endif
-
 #ifndef _Y_RUNNING_ENUM
 #define _Y_RUNNING_ENUM
 typedef enum {
@@ -98,7 +94,6 @@ typedef enum {
     Y_RUNNING_INVALID = -1,
 } Y_RUNNING_enum;
 #endif
-
 #define Y_MAXTIMEONSTATEA_INVALID       YAPI_INVALID_LONG
 #define Y_MAXTIMEONSTATEB_INVALID       YAPI_INVALID_LONG
 #define Y_PULSETIMER_INVALID            YAPI_INVALID_LONG

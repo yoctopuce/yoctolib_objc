@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_led.h 15256 2014-03-06 10:19:01Z seb $
+ * $Id: yocto_led.h 18321 2014-11-10 10:48:37Z seb $
  *
  * Declares yFindLed(), the high-level API for Led functions
  *
@@ -52,7 +52,6 @@ typedef enum {
     Y_POWER_INVALID = -1,
 } Y_POWER_enum;
 #endif
-
 #ifndef _Y_BLINKING_ENUM
 #define _Y_BLINKING_ENUM
 typedef enum {
@@ -65,7 +64,6 @@ typedef enum {
     Y_BLINKING_INVALID = -1,
 } Y_BLINKING_enum;
 #endif
-
 #define Y_LUMINOSITY_INVALID            YAPI_INVALID_UINT
 //--- (end of YLed globals)
 

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_colorled.h 15256 2014-03-06 10:19:01Z seb $
+ * $Id: yocto_colorled.h 18524 2014-11-25 17:09:56Z seb $
  *
  * Declares yFindColorLed(), the high-level API for ColorLed functions
  *
@@ -57,13 +57,17 @@ typedef struct _YMove {
 #define Y_RGBCOLOR_INVALID              YAPI_INVALID_UINT
 #define Y_HSLCOLOR_INVALID              YAPI_INVALID_UINT
 #define Y_RGBCOLORATPOWERON_INVALID     YAPI_INVALID_UINT
+#define Y_BLINKSEQSIZE_INVALID          YAPI_INVALID_UINT
+#define Y_BLINKSEQMAXSIZE_INVALID       YAPI_INVALID_UINT
+#define Y_BLINKSEQSIGNATURE_INVALID     YAPI_INVALID_UINT
+#define Y_COMMAND_INVALID               YAPI_INVALID_STRING
 //--- (end of YColorLed globals)
 
 //--- (YColorLed class start)
 /**
  * YColorLed Class: ColorLed function interface
  * 
- * Yoctopuce application programming interface
+ * The Yoctopuce application programming interface
  * allows you to drive a color led using RGB coordinates as well as HSL coordinates.
  * The module performs all conversions form RGB to HSL automatically. It is then
  * self-evident to turn on a led with a given hue and to progressively vary its
@@ -80,6 +84,10 @@ typedef struct _YMove {
     YMove           _rgbMove;
     YMove           _hslMove;
     int             _rgbColorAtPowerOn;
+    int             _blinkSeqSize;
+    int             _blinkSeqMaxSize;
+    int             _blinkSeqSignature;
+    NSString*       _command;
     YColorLedValueCallback _valueCallbackColorLed;
 //--- (end of YColorLed attributes declaration)
 }
@@ -189,9 +197,6 @@ typedef struct _YMove {
 -(int) rgbColorAtPowerOn;
 /**
  * Changes the color that the led will display by default when the module is turned on.
- * This color will be displayed as soon as the module is powered on.
- * Remember to call the saveToFlash() method of the module if the
- * change should be kept.
  * 
  * @param newval : an integer corresponding to the color that the led will display by default when the
  * module is turned on
@@ -202,6 +207,49 @@ typedef struct _YMove {
  */
 -(int)     set_rgbColorAtPowerOn:(int) newval;
 -(int)     setRgbColorAtPowerOn:(int) newval;
+
+/**
+ * Returns the current length of the blinking sequence
+ * 
+ * @return an integer corresponding to the current length of the blinking sequence
+ * 
+ * On failure, throws an exception or returns Y_BLINKSEQSIZE_INVALID.
+ */
+-(int)     get_blinkSeqSize;
+
+
+-(int) blinkSeqSize;
+/**
+ * Returns the maximum length of the blinking sequence
+ * 
+ * @return an integer corresponding to the maximum length of the blinking sequence
+ * 
+ * On failure, throws an exception or returns Y_BLINKSEQMAXSIZE_INVALID.
+ */
+-(int)     get_blinkSeqMaxSize;
+
+
+-(int) blinkSeqMaxSize;
+/**
+ * Return the blinking sequence signature. Since blinking
+ * sequences cannot be read from the device, this can be used
+ * to detect if a specific blinking sequence is already
+ * programmed.
+ * 
+ * @return an integer
+ * 
+ * On failure, throws an exception or returns Y_BLINKSEQSIGNATURE_INVALID.
+ */
+-(int)     get_blinkSeqSignature;
+
+
+-(int) blinkSeqSignature;
+-(NSString*)     get_command;
+
+
+-(NSString*) command;
+-(int)     set_command:(NSString*) newval;
+-(int)     setCommand:(NSString*) newval;
 
 /**
  * Retrieves an RGB led for a given identifier.
@@ -242,6 +290,58 @@ typedef struct _YMove {
 -(int)     registerValueCallback:(YColorLedValueCallback)callback;
 
 -(int)     _invokeValueCallback:(NSString*)value;
+
+-(int)     sendCommand:(NSString*)command;
+
+/**
+ * Add a new transition to the blinking sequence, the move will
+ * be performed in the HSL space.
+ * 
+ * @param HSLcolor : desired HSL color when the traisntion is completed
+ * @param msDelay : duration of the color transition, in milliseconds.
+ * 
+ * @return YAPI_SUCCESS if the call succeeds.
+ *         On failure, throws an exception or returns a negative error code.
+ */
+-(int)     addHslMoveToBlinkSeq:(int)HSLcolor :(int)msDelay;
+
+/**
+ * Add a new transition to the blinking sequence, the move will
+ * be performed in the RGB space.
+ * 
+ * @param RGBcolor : desired RGB color when the transition is completed
+ * @param msDelay : duration of the color transition, in milliseconds.
+ * 
+ * @return YAPI_SUCCESS if the call succeeds.
+ *         On failure, throws an exception or returns a negative error code.
+ */
+-(int)     addRgbMoveToBlinkSeq:(int)RGBcolor :(int)msDelay;
+
+/**
+ * Starts the preprogrammed blinking sequence. The sequence will
+ * run in loop until it is stopped by stopBlinkSeq or an explicit
+ * change.
+ * 
+ * @return YAPI_SUCCESS if the call succeeds.
+ *         On failure, throws an exception or returns a negative error code.
+ */
+-(int)     startBlinkSeq;
+
+/**
+ * Stops the preprogrammed blinking sequence.
+ * 
+ * @return YAPI_SUCCESS if the call succeeds.
+ *         On failure, throws an exception or returns a negative error code.
+ */
+-(int)     stopBlinkSeq;
+
+/**
+ * Resets the preprogrammed blinking sequence.
+ * 
+ * @return YAPI_SUCCESS if the call succeeds.
+ *         On failure, throws an exception or returns a negative error code.
+ */
+-(int)     resetBlinkSeq;
 
 
 /**

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_serialport.m 17610 2014-09-13 11:30:24Z mvuilleu $
+ * $Id: yocto_serialport.m 18321 2014-11-10 10:48:37Z seb $
  *
  * Implements the high-level API for SerialPort functions
  *
@@ -58,15 +58,17 @@
     _rxCount = Y_RXCOUNT_INVALID;
     _txCount = Y_TXCOUNT_INVALID;
     _errCount = Y_ERRCOUNT_INVALID;
-    _msgCount = Y_MSGCOUNT_INVALID;
+    _rxMsgCount = Y_RXMSGCOUNT_INVALID;
+    _txMsgCount = Y_TXMSGCOUNT_INVALID;
     _lastMsg = Y_LASTMSG_INVALID;
+    _startupJob = Y_STARTUPJOB_INVALID;
     _command = Y_COMMAND_INVALID;
     _valueCallbackSerialPort = NULL;
     _rxptr = 0;
 //--- (end of YSerialPort attributes initialization)
     return self;
 }
-// destructor 
+// destructor
 -(void)  dealloc
 {
 //--- (YSerialPort cleanup)
@@ -76,6 +78,8 @@
     _protocol = nil;
     ARC_release(_lastMsg);
     _lastMsg = nil;
+    ARC_release(_startupJob);
+    _startupJob = nil;
     ARC_release(_command);
     _command = nil;
     ARC_dealloc(super);
@@ -114,9 +118,14 @@
         _errCount =  atoi(j->token);
         return 1;
     }
-    if(!strcmp(j->token, "msgCount")) {
+    if(!strcmp(j->token, "rxMsgCount")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-        _msgCount =  atoi(j->token);
+        _rxMsgCount =  atoi(j->token);
+        return 1;
+    }
+    if(!strcmp(j->token, "txMsgCount")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _txMsgCount =  atoi(j->token);
         return 1;
     }
     if(!strcmp(j->token, "lastMsg")) {
@@ -124,6 +133,13 @@
        ARC_release(_lastMsg);
         _lastMsg =  [self _parseString:j];
         ARC_retain(_lastMsg);
+        return 1;
+    }
+    if(!strcmp(j->token, "startupJob")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+       ARC_release(_startupJob);
+        _startupJob =  [self _parseString:j];
+        ARC_retain(_startupJob);
         return 1;
     }
     if(!strcmp(j->token, "command")) {
@@ -316,22 +332,44 @@
  * 
  * @return an integer corresponding to the total number of messages received since last reset
  * 
- * On failure, throws an exception or returns Y_MSGCOUNT_INVALID.
+ * On failure, throws an exception or returns Y_RXMSGCOUNT_INVALID.
  */
--(int) get_msgCount
+-(int) get_rxMsgCount
 {
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
-            return Y_MSGCOUNT_INVALID;
+            return Y_RXMSGCOUNT_INVALID;
         }
     }
-    return _msgCount;
+    return _rxMsgCount;
 }
 
 
--(int) msgCount
+-(int) rxMsgCount
 {
-    return [self get_msgCount];
+    return [self get_rxMsgCount];
+}
+/**
+ * Returns the total number of messages send since last reset.
+ * 
+ * @return an integer corresponding to the total number of messages send since last reset
+ * 
+ * On failure, throws an exception or returns Y_TXMSGCOUNT_INVALID.
+ */
+-(int) get_txMsgCount
+{
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_TXMSGCOUNT_INVALID;
+        }
+    }
+    return _txMsgCount;
+}
+
+
+-(int) txMsgCount
+{
+    return [self get_txMsgCount];
 }
 /**
  * Returns the latest message fully received (for Line, Frame and Modbus protocols).
@@ -354,6 +392,50 @@
 -(NSString*) lastMsg
 {
     return [self get_lastMsg];
+}
+/**
+ * Returns the job file to use when the device is powered on.
+ * 
+ * @return a string corresponding to the job file to use when the device is powered on
+ * 
+ * On failure, throws an exception or returns Y_STARTUPJOB_INVALID.
+ */
+-(NSString*) get_startupJob
+{
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_STARTUPJOB_INVALID;
+        }
+    }
+    return _startupJob;
+}
+
+
+-(NSString*) startupJob
+{
+    return [self get_startupJob];
+}
+
+/**
+ * Changes the job to use when the device is powered on.
+ * Remember to call the saveToFlash() method of the module if the
+ * modification must be kept.
+ * 
+ * @param newval : a string corresponding to the job to use when the device is powered on
+ * 
+ * @return YAPI_SUCCESS if the call succeeds.
+ * 
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) set_startupJob:(NSString*) newval
+{
+    return [self setStartupJob:newval];
+}
+-(int) setStartupJob:(NSString*) newval
+{
+    NSString* rest_val;
+    rest_val = newval;
+    return [self _setAttr:@"startupJob" :rest_val];
 }
 -(NSString*) get_command
 {
@@ -501,7 +583,6 @@
 {
     NSMutableData* buff;
     int res;
-    
     // may throw an exception
     buff = [self _download:@"cts.txt"];
     if (!((int)[buff length] == 1)) {[self _throw: YAPI_IO_ERROR: @"invalid CTS reply"]; return YAPI_IO_ERROR;}
@@ -524,7 +605,6 @@
     int bufflen;
     int idx;
     int ch;
-    
     buff = [NSMutableData dataWithData:[text dataUsingEncoding:NSUTF8StringEncoding]];
     bufflen = (int)[buff length];
     if (bufflen < 100) {
@@ -637,7 +717,6 @@
     int bufflen;
     int idx;
     int ch;
-    
     buff = [NSMutableData dataWithData:[[NSString stringWithFormat:@"%@\r\n",text] dataUsingEncoding:NSUTF8StringEncoding]];
     bufflen = (int)[buff length]-2;
     if (bufflen < 100) {
@@ -721,7 +800,7 @@
     if (nChars > bufflen) {
         nChars = bufflen;
     }
-    _rxptr = _rxptr + nChars;
+    _rxptr = endpos - (bufflen - nChars);
     res = [ARC_sendAutorelease([[NSString alloc] initWithData:buff encoding:NSASCIIStringEncoding]) substringWithRange:NSMakeRange( 0, nChars)];
     return res;
 }
@@ -773,7 +852,7 @@
     if (nBytes > bufflen) {
         nBytes = bufflen;
     }
-    _rxptr = _rxptr + nBytes;
+    _rxptr = endpos - (bufflen - nBytes);
     res = @"";
     ofs = 0;
     while (ofs+3 < nBytes) {
@@ -789,8 +868,8 @@
 
 /**
  * Reads a single line (or message) from the receive buffer, starting at current stream position.
- * This function can only be used when the serial port is configured for a message protocol,
- * such as 'Line' mode or MODBUS protocols. It does not  work in plain stream modes, eg. 'Char' or 'Byte').
+ * This function is intended to be used when the serial port is configured for a message protocol,
+ * such as 'Line' mode or MODBUS protocols.
  * 
  * If data at current stream position is not available anymore in the receive buffer,
  * the function returns the oldest available line and moves the stream position just after.
@@ -827,9 +906,8 @@
 
 /**
  * Searches for incoming messages in the serial port receive buffer matching a given pattern,
- * starting at current position. This function can only be used when the serial port is
- * configured for a message protocol, such as 'Line' mode or MODBUS protocols.
- * It does not work in plain stream modes, eg. 'Char' or 'Byte', for which there is no "start" of message.
+ * starting at current position. This function will only compare and return printable characters
+ * in the message strings. Binary protocols are handled as hexadecimal strings.
  * 
  * The search returns all messages matching the expression provided as argument in the buffer.
  * If no matching message is found, the search waits for one up to the specified maximum timeout
@@ -879,19 +957,29 @@
  * does not affect the device, it only changes the value stored in the YSerialPort object
  * for the next read operations.
  * 
- * @param rxCountVal : the absolute position index (value of rxCount) for next read operations.
+ * @param absPos : the absolute position index for next read operations.
  * 
  * @return nothing.
  */
--(int) read_seek:(int)rxCountVal
+-(int) read_seek:(int)absPos
 {
-    _rxptr = rxCountVal;
+    _rxptr = absPos;
     return YAPI_SUCCESS;
 }
 
 /**
+ * Returns the current absolute stream position pointer of the YSerialPort object.
+ * 
+ * @return the absolute position index for next read operations.
+ */
+-(int) read_tell
+{
+    return _rxptr;
+}
+
+/**
  * Sends a text line query to the serial port, and reads the reply, if any.
- * This function can only be used when the serial port is configured for 'Line' protocol.
+ * This function is intended to be used when the serial port is configured for 'Line' protocol.
  * 
  * @param query : the line query to send (without CR/LF)
  * @param maxWait : the maximum number of milliseconds to wait for a reply.
@@ -1444,11 +1532,44 @@
     return res;
 }
 
+/**
+ * Saves the job definition string (JSON data) into a job file.
+ * The job file can be later enabled using selectJob().
+ * 
+ * @param jobfile : name of the job file to save on the device filesystem
+ * @param jsonDef : a string containing a JSON definition of the job
+ * 
+ * @return YAPI_SUCCESS if the call succeeds.
+ * 
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) uploadJob:(NSString*)jobfile :(NSString*)jsonDef
+{
+    [self _upload:jobfile :[NSMutableData dataWithData:[jsonDef dataUsingEncoding:NSUTF8StringEncoding]]];
+    return YAPI_SUCCESS;
+}
+
+/**
+ * Load and start processing the specified job file. The file must have
+ * been previously created using the user interface or uploaded on the
+ * device filesystem using the uploadJob() function.
+ * 
+ * @param jobfile : name of the job file (on the device filesystem)
+ * 
+ * @return YAPI_SUCCESS if the call succeeds.
+ * 
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) selectJob:(NSString*)jobfile
+{
+    return [self sendCommand:[NSString stringWithFormat:@"J%@",jobfile]];
+}
+
 
 -(YSerialPort*)   nextSerialPort
 {
     NSString  *hwid;
-    
+
     if(YISERR([self _nextFunction:&hwid]) || [hwid isEqualToString:@""]) {
         return NULL;
     }
@@ -1460,7 +1581,7 @@
     NSMutableArray    *ar_fundescr;
     YDEV_DESCR        ydevice;
     NSString          *serial, *funcId, *funcName, *funcVal;
-    
+
     if(!YISERR([YapiWrapper getFunctionsByClass:@"SerialPort":0:&ar_fundescr:NULL]) && [ar_fundescr count] > 0){
         NSNumber*  ns_devdescr = [ar_fundescr objectAtIndex:0];
         if (!YISERR([YapiWrapper getFunctionInfo:[ns_devdescr intValue] :&ydevice :&serial :&funcId :&funcName :&funcVal :NULL])) {

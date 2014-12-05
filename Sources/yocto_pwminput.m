@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: pic24config.php 17551 2014-09-09 09:06:04Z mvuilleu $
+ * $Id: yocto_pwminput.m 18361 2014-11-13 08:06:41Z mvuilleu $
  *
  * Implements the high-level API for PwmInput functions
  *
@@ -65,7 +65,7 @@
 //--- (end of YPwmInput attributes initialization)
     return self;
 }
-// destructor 
+// destructor
 -(void)  dealloc
 {
 //--- (YPwmInput cleanup)
@@ -207,7 +207,7 @@
 /**
  * Returns the pulse counter value. Actually that
  * counter is incremented twice per period. That counter is
- * limited  to 1 billions
+ * limited  to 1 billion
  * 
  * @return an integer corresponding to the pulse counter value
  * 
@@ -288,10 +288,10 @@
 }
 
 /**
- * Modify the  parameter  type(frequency/duty cycle, pulse width ou edge count) returned by the
+ * Modifies the  parameter  type (frequency/duty cycle, pulse width, or edge count) returned by the
  * get_currentValue function and callbacks.
- * The edge count value will be limited to the 6 lowest digit, for values greater than one million,
- * use get_pulseCounter().
+ * The edge count value is limited to the 6 lowest digits. For values greater than one million, use
+ * get_pulseCounter().
  * 
  * @param newval : a value among Y_PWMREPORTMODE_PWM_DUTYCYCLE, Y_PWMREPORTMODE_PWM_FREQUENCY,
  * Y_PWMREPORTMODE_PWM_PULSEDURATION and Y_PWMREPORTMODE_PWM_EDGECOUNT
@@ -417,7 +417,7 @@
 }
 
 /**
- * Returns the pulse counter value as well as his timer
+ * Returns the pulse counter value as well as its timer.
  * 
  * @return YAPI_SUCCESS if the call succeeds.
  * 
@@ -432,7 +432,7 @@
 -(YPwmInput*)   nextPwmInput
 {
     NSString  *hwid;
-    
+
     if(YISERR([self _nextFunction:&hwid]) || [hwid isEqualToString:@""]) {
         return NULL;
     }
@@ -444,7 +444,7 @@
     NSMutableArray    *ar_fundescr;
     YDEV_DESCR        ydevice;
     NSString          *serial, *funcId, *funcName, *funcVal;
-    
+
     if(!YISERR([YapiWrapper getFunctionsByClass:@"PwmInput":0:&ar_fundescr:NULL]) && [ar_fundescr count] > 0){
         NSNumber*  ns_devdescr = [ar_fundescr objectAtIndex:0];
         if (!YISERR([YapiWrapper getFunctionInfo:[ns_devdescr intValue] :&ydevice :&serial :&funcId :&funcName :&funcVal :NULL])) {

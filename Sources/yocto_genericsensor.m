@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_genericsensor.m 17481 2014-09-03 09:38:35Z mvuilleu $
+ * $Id: yocto_genericsensor.m 18321 2014-11-10 10:48:37Z seb $
  *
  * Implements the high-level API for GenericSensor functions
  *
@@ -58,12 +58,13 @@
     _signalRange = Y_SIGNALRANGE_INVALID;
     _valueRange = Y_VALUERANGE_INVALID;
     _signalBias = Y_SIGNALBIAS_INVALID;
+    _signalSampling = Y_SIGNALSAMPLING_INVALID;
     _valueCallbackGenericSensor = NULL;
     _timedReportCallbackGenericSensor = NULL;
 //--- (end of YGenericSensor attributes initialization)
     return self;
 }
-// destructor 
+// destructor
 -(void)  dealloc
 {
 //--- (YGenericSensor cleanup)
@@ -109,6 +110,11 @@
     if(!strcmp(j->token, "signalBias")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
         _signalBias =  floor(atof(j->token) * 1000.0 / 65536.0 + 0.5) / 1000.0;
+        return 1;
+    }
+    if(!strcmp(j->token, "signalSampling")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _signalSampling =  atoi(j->token);
         return 1;
     }
     return [super _parseAttr:j];
@@ -313,6 +319,62 @@
     return [self get_signalBias];
 }
 /**
+ * Returns the electric signal sampling method to use.
+ * The HIGH_RATE method uses the highest sampling frequency, without any filtering.
+ * The HIGH_RATE_FILTERED method adds a windowed 7-sample median filter.
+ * The LOW_NOISE method uses a reduced acquisition frequency to reduce noise.
+ * The LOW_NOISE_FILTERED method combines a reduced frequency with the median filter
+ * to get measures as stable as possible when working on a noisy signal.
+ * 
+ * @return a value among Y_SIGNALSAMPLING_HIGH_RATE, Y_SIGNALSAMPLING_HIGH_RATE_FILTERED,
+ * Y_SIGNALSAMPLING_LOW_NOISE and Y_SIGNALSAMPLING_LOW_NOISE_FILTERED corresponding to the electric
+ * signal sampling method to use
+ * 
+ * On failure, throws an exception or returns Y_SIGNALSAMPLING_INVALID.
+ */
+-(Y_SIGNALSAMPLING_enum) get_signalSampling
+{
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_SIGNALSAMPLING_INVALID;
+        }
+    }
+    return _signalSampling;
+}
+
+
+-(Y_SIGNALSAMPLING_enum) signalSampling
+{
+    return [self get_signalSampling];
+}
+
+/**
+ * Changes the electric signal sampling method to use.
+ * The HIGH_RATE method uses the highest sampling frequency, without any filtering.
+ * The HIGH_RATE_FILTERED method adds a windowed 7-sample median filter.
+ * The LOW_NOISE method uses a reduced acquisition frequency to reduce noise.
+ * The LOW_NOISE_FILTERED method combines a reduced frequency with the median filter
+ * to get measures as stable as possible when working on a noisy signal.
+ * 
+ * @param newval : a value among Y_SIGNALSAMPLING_HIGH_RATE, Y_SIGNALSAMPLING_HIGH_RATE_FILTERED,
+ * Y_SIGNALSAMPLING_LOW_NOISE and Y_SIGNALSAMPLING_LOW_NOISE_FILTERED corresponding to the electric
+ * signal sampling method to use
+ * 
+ * @return YAPI_SUCCESS if the call succeeds.
+ * 
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) set_signalSampling:(Y_SIGNALSAMPLING_enum) newval
+{
+    return [self setSignalSampling:newval];
+}
+-(int) setSignalSampling:(Y_SIGNALSAMPLING_enum) newval
+{
+    NSString* rest_val;
+    rest_val = [NSString stringWithFormat:@"%d", newval];
+    return [self _setAttr:@"signalSampling" :rest_val];
+}
+/**
  * Retrieves $AFUNCTION$ for a given identifier.
  * The identifier can be specified using several formats:
  * <ul>
@@ -439,7 +501,7 @@
 -(YGenericSensor*)   nextGenericSensor
 {
     NSString  *hwid;
-    
+
     if(YISERR([self _nextFunction:&hwid]) || [hwid isEqualToString:@""]) {
         return NULL;
     }
@@ -451,7 +513,7 @@
     NSMutableArray    *ar_fundescr;
     YDEV_DESCR        ydevice;
     NSString          *serial, *funcId, *funcName, *funcVal;
-    
+
     if(!YISERR([YapiWrapper getFunctionsByClass:@"GenericSensor":0:&ar_fundescr:NULL]) && [ar_fundescr count] > 0){
         NSNumber*  ns_devdescr = [ar_fundescr objectAtIndex:0];
         if (!YISERR([YapiWrapper getFunctionInfo:[ns_devdescr intValue] :&ydevice :&serial :&funcId :&funcName :&funcVal :NULL])) {

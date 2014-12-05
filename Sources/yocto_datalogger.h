@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_datalogger.h 17675 2014-09-16 16:19:20Z seb $
+ * $Id: yocto_datalogger.h 18321 2014-11-10 10:48:37Z seb $
  *
  * Declares yFindDataLogger(), the high-level API for DataLogger functions
  *
@@ -52,7 +52,6 @@ typedef enum {
     Y_RECORDING_INVALID = -1,
 } Y_RECORDING_enum;
 #endif
-
 #ifndef _Y_AUTOSTART_ENUM
 #define _Y_AUTOSTART_ENUM
 typedef enum {
@@ -61,7 +60,6 @@ typedef enum {
     Y_AUTOSTART_INVALID = -1,
 } Y_AUTOSTART_enum;
 #endif
-
 #ifndef _Y_BEACONDRIVEN_ENUM
 #define _Y_BEACONDRIVEN_ENUM
 typedef enum {
@@ -70,7 +68,6 @@ typedef enum {
     Y_BEACONDRIVEN_INVALID = -1,
 } Y_BEACONDRIVEN_enum;
 #endif
-
 #ifndef _Y_CLEARHISTORY_ENUM
 #define _Y_CLEARHISTORY_ENUM
 typedef enum {
@@ -79,7 +76,6 @@ typedef enum {
     Y_CLEARHISTORY_INVALID = -1,
 } Y_CLEARHISTORY_enum;
 #endif
-
 #define Y_CURRENTRUNINDEX_INVALID       YAPI_INVALID_UINT
 #define Y_TIMEUTC_INVALID               YAPI_INVALID_LONG
 //--- (end of generated code: YDataLogger globals)
