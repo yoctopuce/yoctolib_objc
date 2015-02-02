@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_serialport.h 18262 2014-11-05 14:22:14Z seb $
+ * $Id: yocto_serialport.h 19192 2015-01-30 16:30:16Z mvuilleu $
  *
  * Declares yFindSerialPort(), the high-level API for SerialPort functions
  *
@@ -44,6 +44,19 @@ CF_EXTERN_C_BEGIN
 
 //--- (YSerialPort globals)
 typedef void (*YSerialPortValueCallback)(YSerialPort *func, NSString *functionValue);
+#ifndef _Y_VOLTAGELEVEL_ENUM
+#define _Y_VOLTAGELEVEL_ENUM
+typedef enum {
+    Y_VOLTAGELEVEL_OFF = 0,
+    Y_VOLTAGELEVEL_TTL3V = 1,
+    Y_VOLTAGELEVEL_TTL3VR = 2,
+    Y_VOLTAGELEVEL_TTL5V = 3,
+    Y_VOLTAGELEVEL_TTL5VR = 4,
+    Y_VOLTAGELEVEL_RS232 = 5,
+    Y_VOLTAGELEVEL_RS485 = 6,
+    Y_VOLTAGELEVEL_INVALID = -1,
+} Y_VOLTAGELEVEL_enum;
+#endif
 #define Y_SERIALMODE_INVALID            YAPI_INVALID_STRING
 #define Y_PROTOCOL_INVALID              YAPI_INVALID_STRING
 #define Y_RXCOUNT_INVALID               YAPI_INVALID_UINT
@@ -52,6 +65,7 @@ typedef void (*YSerialPortValueCallback)(YSerialPort *func, NSString *functionVa
 #define Y_RXMSGCOUNT_INVALID            YAPI_INVALID_UINT
 #define Y_TXMSGCOUNT_INVALID            YAPI_INVALID_UINT
 #define Y_LASTMSG_INVALID               YAPI_INVALID_STRING
+#define Y_CURRENTJOB_INVALID            YAPI_INVALID_STRING
 #define Y_STARTUPJOB_INVALID            YAPI_INVALID_STRING
 #define Y_COMMAND_INVALID               YAPI_INVALID_STRING
 //--- (end of YSerialPort globals)
@@ -73,12 +87,14 @@ typedef void (*YSerialPortValueCallback)(YSerialPort *func, NSString *functionVa
 //--- (YSerialPort attributes declaration)
     NSString*       _serialMode;
     NSString*       _protocol;
+    Y_VOLTAGELEVEL_enum _voltageLevel;
     int             _rxCount;
     int             _txCount;
     int             _errCount;
     int             _rxMsgCount;
     int             _txMsgCount;
     NSString*       _lastMsg;
+    NSString*       _currentJob;
     NSString*       _startupJob;
     NSString*       _command;
     YSerialPortValueCallback _valueCallbackSerialPort;
@@ -165,6 +181,37 @@ typedef void (*YSerialPortValueCallback)(YSerialPort *func, NSString *functionVa
 -(int)     setProtocol:(NSString*) newval;
 
 /**
+ * Returns the voltage level used on the serial line.
+ * 
+ * @return a value among Y_VOLTAGELEVEL_OFF, Y_VOLTAGELEVEL_TTL3V, Y_VOLTAGELEVEL_TTL3VR,
+ * Y_VOLTAGELEVEL_TTL5V, Y_VOLTAGELEVEL_TTL5VR, Y_VOLTAGELEVEL_RS232 and Y_VOLTAGELEVEL_RS485
+ * corresponding to the voltage level used on the serial line
+ * 
+ * On failure, throws an exception or returns Y_VOLTAGELEVEL_INVALID.
+ */
+-(Y_VOLTAGELEVEL_enum)     get_voltageLevel;
+
+
+-(Y_VOLTAGELEVEL_enum) voltageLevel;
+/**
+ * Changes the voltage type used on the serial line. Valid
+ * values  will depend on the Yoctopuce device model featuring
+ * the serial port feature.  Check your device documentation
+ * to find out which values are valid for that specific model.
+ * Trying to set an invalid value will have no effect.
+ * 
+ * @param newval : a value among Y_VOLTAGELEVEL_OFF, Y_VOLTAGELEVEL_TTL3V, Y_VOLTAGELEVEL_TTL3VR,
+ * Y_VOLTAGELEVEL_TTL5V, Y_VOLTAGELEVEL_TTL5VR, Y_VOLTAGELEVEL_RS232 and Y_VOLTAGELEVEL_RS485
+ * corresponding to the voltage type used on the serial line
+ * 
+ * @return YAPI_SUCCESS if the call succeeds.
+ * 
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     set_voltageLevel:(Y_VOLTAGELEVEL_enum) newval;
+-(int)     setVoltageLevel:(Y_VOLTAGELEVEL_enum) newval;
+
+/**
  * Returns the total number of bytes received since last reset.
  * 
  * @return an integer corresponding to the total number of bytes received since last reset
@@ -230,6 +277,31 @@ typedef void (*YSerialPortValueCallback)(YSerialPort *func, NSString *functionVa
 
 
 -(NSString*) lastMsg;
+/**
+ * Returns the name of the job file currently in use.
+ * 
+ * @return a string corresponding to the name of the job file currently in use
+ * 
+ * On failure, throws an exception or returns Y_CURRENTJOB_INVALID.
+ */
+-(NSString*)     get_currentJob;
+
+
+-(NSString*) currentJob;
+/**
+ * Changes the job to use when the device is powered on.
+ * Remember to call the saveToFlash() method of the module if the
+ * modification must be kept.
+ * 
+ * @param newval : a string corresponding to the job to use when the device is powered on
+ * 
+ * @return YAPI_SUCCESS if the call succeeds.
+ * 
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     set_currentJob:(NSString*) newval;
+-(int)     setCurrentJob:(NSString*) newval;
+
 /**
  * Returns the job file to use when the device is powered on.
  * 
@@ -326,7 +398,7 @@ typedef void (*YSerialPortValueCallback)(YSerialPort *func, NSString *functionVa
 -(int)     set_RTS:(int)val;
 
 /**
- * Read the level of the CTS line. The CTS line is usually driven by
+ * Reads the level of the CTS line. The CTS line is usually driven by
  * the RTS signal of the connected serial device.
  * 
  * @return 1 if the CTS line is high, 0 if the CTS line is low.

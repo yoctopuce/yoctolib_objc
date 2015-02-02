@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.m 18628 2014-12-03 16:18:53Z seb $
+ * $Id: yocto_api.m 19019 2015-01-19 14:56:48Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -281,6 +281,7 @@ static void yapiDeviceArrivalCallbackFwd(YAPI_DEVICE devdescr)
     yDeviceSt    infos;
     YModule      *module;
     @autoreleasepool {
+        [YDevice PlugDevice:devdescr];
         if(_ValueCallbackList != nil) {
             //look if we have some allocated function with a callback to refresh
             for (id it in _ValueCallbackList) {
@@ -480,13 +481,13 @@ static double decExp[16] = {
 {
     int     negate = 0;
     double  res;
-
-    if(val == 0) return 0.0;
+    int mantis = val & 2047;
+    if(mantis == 0) return 0.0;
     if(val < 0) {
         negate = 1;
         val = -val;
     }
-    res = (double)(val & 2047) * decExp[val >> 11];
+    res = (double)(mantis) * decExp[val >> 11];
 
     return (negate ? -res : res);
 }
@@ -1457,6 +1458,27 @@ static double decExp[16] = {
     return dev;
 }
 
++(void)  PlugDevice:(YDEV_DESCR)devdescr
+{
+    // Search in cache
+    if (_devCache == nil){
+        return;
+    }
+
+    for(unsigned int idx = 0; idx < [_devCache count]; idx++) {
+        YDevice* tmp = [_devCache objectAtIndex:idx];
+        if(tmp->_devdescr == devdescr) {
+            tmp->_cacheStamp = 0;
+            if (tmp->_subpath){
+                free(tmp->_subpath);
+                tmp->_subpath =NULL;
+            }
+            return;
+        }
+    }
+}
+
+
 
 -(YRETCODE)   _HTTPRequestPrepare:(NSString*)req_first_line  withBody:(NSData*)body :(NSMutableData**) fullrequest :(NSError**) error
 {
@@ -1529,7 +1551,11 @@ static double decExp[16] = {
     if(YISERR(res=yapiHTTPRequestSyncStartEx(&iohdl, _rootdevice, [fullrequest bytes],(int)[fullrequest length], &reply, &replysize, errbuff))) {
         return yFormatRetVal(error, res, errbuff);
     }
-    *buffer = [NSMutableData dataWithBytes:reply length:replysize];
+    if (replysize >0  && reply != NULL)  {
+        *buffer = [NSMutableData dataWithBytes:reply length:replysize];
+    } else {
+        *buffer = [NSMutableData data];
+    }
     if(YISERR(res=yapiHTTPRequestSyncDone(&iohdl, errbuff))) {
         return yFormatRetVal(error, res, errbuff);
     }
@@ -4592,17 +4618,18 @@ static double decExp[16] = {
 }
 
 /**
- * Test if the byn file is valid for this module. This method is useful to test if the module need to be updated.
- * It's possible to pass an directory instead of a file. In this case this method return the path of
- * the most recent
- * appropriate byn file. If the parameter onlynew is true the function will discard firmware that are
+ * Tests whether the byn file is valid for this module. This method is useful to test if the module
+ * needs to be updated.
+ * It is possible to pass a directory as argument instead of a file. In this case, this method returns
+ * the path of the most recent
+ * appropriate byn file. If the parameter onlynew is true, the function discards firmware that are
  * older or equal to
  * the installed firmware.
  * 
- * @param path    : the path of a byn file or a directory that contain byn files
- * @param onlynew : return only files that are strictly newer
+ * @param path    : the path of a byn file or a directory that contains byn files
+ * @param onlynew : returns only files that are strictly newer
  * 
- * @return : the path of the byn file to use or a empty string if no byn files match the requirement
+ * @return : the path of the byn file to use or a empty string if no byn files matches the requirement
  * 
  * On failure, throws an exception or returns a string that start with "error:".
  */
@@ -4610,6 +4637,7 @@ static double decExp[16] = {
 {
     NSString* serial;
     int release;
+    NSString* tmp_res;
     if (onlynew) {
         release = [[self get_firmwareRelease] intValue];
     } else {
@@ -4617,16 +4645,20 @@ static double decExp[16] = {
     }
     //may throw an exception
     serial = [self get_serialNumber];
-    return [YFirmwareUpdate CheckFirmware:serial :path :release];
+    tmp_res = [YFirmwareUpdate CheckFirmware:serial :path :release];
+    if (_ystrpos(tmp_res, @"error:") == 0) {
+        [self _throw:YAPI_INVALID_ARGUMENT :tmp_res];
+    }
+    return tmp_res;
 }
 
 /**
- * Prepare a firmware upgrade of the module. This method return a object YFirmwareUpdate which
- * will handle the firmware upgrade process.
+ * Prepares a firmware update of the module. This method returns a YFirmwareUpdate object which
+ * handles the firmware update process.
  * 
  * @param path : the path of the byn file to use.
  * 
- * @return : A object YFirmwareUpdate.
+ * @return : A YFirmwareUpdate object.
  */
 -(YFirmwareUpdate*) updateFirmware:(NSString*)path
 {
@@ -4639,10 +4671,10 @@ static double decExp[16] = {
 }
 
 /**
- * Returns all the setting of the module. Useful to backup all the logical name and calibrations parameters
+ * Returns all the settings of the module. Useful to backup all the logical names and calibrations parameters
  * of a connected module.
  * 
- * @return a binary buffer with all settings.
+ * @return a binary buffer with all the settings.
  * 
  * On failure, throws an exception or returns  YAPI_INVALID_STRING.
  */
@@ -4897,10 +4929,10 @@ static double decExp[16] = {
 }
 
 /**
- * Restore all the setting of the module. Useful to restore all the logical name and calibrations parameters
+ * Restores all the settings of the module. Useful to restore all the logical names and calibrations parameters
  * of a module from a backup.
  * 
- * @param settings : a binary buffer with all settings.
+ * @param settings : a binary buffer with all the settings.
  * 
  * @return YAPI_SUCCESS when the call succeeds.
  * 
@@ -5416,9 +5448,9 @@ static double decExp[16] = {
 }
 
 /**
- * Retrun a list of all modules in "update" mode. Only USB connected
- * devices are listed. If the module is connected to a YoctoHub, you have to
- * connect to the YoctoHub web interface.
+ * Retruns a list of all the modules in "update" mode. Only USB connected
+ * devices are listed. For modules connected to a YoctoHub, you must
+ * connect yourself to the YoctoHub web interface.
  * 
  * @return an array of strings containing the serial list of module in "update" mode.
  */
@@ -5504,12 +5536,12 @@ static double decExp[16] = {
 
 /**
  * Returns the progress of the firmware update, on a scale from 0 to 100. When the object is
- * instantiated the progress is zero. The value is updated During the firmware update process, until
- * the value of 100 is reached. The value of 100 mean that the firmware update is terminated with
- * success. If an error occur during the firmware update a negative value is returned, and the
+ * instantiated, the progress is zero. The value is updated during the firmware update process until
+ * the value of 100 is reached. The 100 value means that the firmware update was completed
+ * successfully. If an error occurs during the firmware update, a negative value is returned, and the
  * error message can be retrieved with get_progressMessage.
  * 
- * @return an integer in the range 0 to 100 (percentage of completion) or
+ * @return an integer in the range 0 to 100 (percentage of completion)
  *         or a negative error code in case of failure.
  */
 -(int) get_progress
@@ -5519,10 +5551,10 @@ static double decExp[16] = {
 }
 
 /**
- * Returns the last progress message of the firmware update process. If an error occur during the
- * firmware update process the error message is returned
+ * Returns the last progress message of the firmware update process. If an error occurs during the
+ * firmware update process, the error message is returned
  * 
- * @return an string  with the last progress message, or the error message.
+ * @return a string  with the latest progress message, or the error message.
  */
 -(NSString*) get_progressMessage
 {
@@ -5530,9 +5562,9 @@ static double decExp[16] = {
 }
 
 /**
- * Start the firmware update process. This method start the firmware update process in background. This method
- * return immediately. The progress of the firmware update can be monitored with methods get_progress()
- * and get_progressMessage().
+ * Starts the firmware update process. This method starts the firmware update process in background. This method
+ * returns immediately. You can monitor the progress of the firmware update with the get_progress()
+ * and get_progressMessage() methods.
  * 
  * @return an integer in the range 0 to 100 (percentage of completion),
  *         or a negative error code in case of failure.

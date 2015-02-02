@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_serialport.m 18321 2014-11-10 10:48:37Z seb $
+ * $Id: yocto_serialport.m 19192 2015-01-30 16:30:16Z mvuilleu $
  *
  * Implements the high-level API for SerialPort functions
  *
@@ -55,12 +55,14 @@
 //--- (YSerialPort attributes initialization)
     _serialMode = Y_SERIALMODE_INVALID;
     _protocol = Y_PROTOCOL_INVALID;
+    _voltageLevel = Y_VOLTAGELEVEL_INVALID;
     _rxCount = Y_RXCOUNT_INVALID;
     _txCount = Y_TXCOUNT_INVALID;
     _errCount = Y_ERRCOUNT_INVALID;
     _rxMsgCount = Y_RXMSGCOUNT_INVALID;
     _txMsgCount = Y_TXMSGCOUNT_INVALID;
     _lastMsg = Y_LASTMSG_INVALID;
+    _currentJob = Y_CURRENTJOB_INVALID;
     _startupJob = Y_STARTUPJOB_INVALID;
     _command = Y_COMMAND_INVALID;
     _valueCallbackSerialPort = NULL;
@@ -78,6 +80,8 @@
     _protocol = nil;
     ARC_release(_lastMsg);
     _lastMsg = nil;
+    ARC_release(_currentJob);
+    _currentJob = nil;
     ARC_release(_startupJob);
     _startupJob = nil;
     ARC_release(_command);
@@ -101,6 +105,11 @@
        ARC_release(_protocol);
         _protocol =  [self _parseString:j];
         ARC_retain(_protocol);
+        return 1;
+    }
+    if(!strcmp(j->token, "voltageLevel")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _voltageLevel =  atoi(j->token);
         return 1;
     }
     if(!strcmp(j->token, "rxCount")) {
@@ -133,6 +142,13 @@
        ARC_release(_lastMsg);
         _lastMsg =  [self _parseString:j];
         ARC_retain(_lastMsg);
+        return 1;
+    }
+    if(!strcmp(j->token, "currentJob")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+       ARC_release(_currentJob);
+        _currentJob =  [self _parseString:j];
+        ARC_retain(_currentJob);
         return 1;
     }
     if(!strcmp(j->token, "startupJob")) {
@@ -260,6 +276,56 @@
     NSString* rest_val;
     rest_val = newval;
     return [self _setAttr:@"protocol" :rest_val];
+}
+/**
+ * Returns the voltage level used on the serial line.
+ * 
+ * @return a value among Y_VOLTAGELEVEL_OFF, Y_VOLTAGELEVEL_TTL3V, Y_VOLTAGELEVEL_TTL3VR,
+ * Y_VOLTAGELEVEL_TTL5V, Y_VOLTAGELEVEL_TTL5VR, Y_VOLTAGELEVEL_RS232 and Y_VOLTAGELEVEL_RS485
+ * corresponding to the voltage level used on the serial line
+ * 
+ * On failure, throws an exception or returns Y_VOLTAGELEVEL_INVALID.
+ */
+-(Y_VOLTAGELEVEL_enum) get_voltageLevel
+{
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_VOLTAGELEVEL_INVALID;
+        }
+    }
+    return _voltageLevel;
+}
+
+
+-(Y_VOLTAGELEVEL_enum) voltageLevel
+{
+    return [self get_voltageLevel];
+}
+
+/**
+ * Changes the voltage type used on the serial line. Valid
+ * values  will depend on the Yoctopuce device model featuring
+ * the serial port feature.  Check your device documentation
+ * to find out which values are valid for that specific model.
+ * Trying to set an invalid value will have no effect.
+ * 
+ * @param newval : a value among Y_VOLTAGELEVEL_OFF, Y_VOLTAGELEVEL_TTL3V, Y_VOLTAGELEVEL_TTL3VR,
+ * Y_VOLTAGELEVEL_TTL5V, Y_VOLTAGELEVEL_TTL5VR, Y_VOLTAGELEVEL_RS232 and Y_VOLTAGELEVEL_RS485
+ * corresponding to the voltage type used on the serial line
+ * 
+ * @return YAPI_SUCCESS if the call succeeds.
+ * 
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) set_voltageLevel:(Y_VOLTAGELEVEL_enum) newval
+{
+    return [self setVoltageLevel:newval];
+}
+-(int) setVoltageLevel:(Y_VOLTAGELEVEL_enum) newval
+{
+    NSString* rest_val;
+    rest_val = [NSString stringWithFormat:@"%d", newval];
+    return [self _setAttr:@"voltageLevel" :rest_val];
 }
 /**
  * Returns the total number of bytes received since last reset.
@@ -392,6 +458,50 @@
 -(NSString*) lastMsg
 {
     return [self get_lastMsg];
+}
+/**
+ * Returns the name of the job file currently in use.
+ * 
+ * @return a string corresponding to the name of the job file currently in use
+ * 
+ * On failure, throws an exception or returns Y_CURRENTJOB_INVALID.
+ */
+-(NSString*) get_currentJob
+{
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_CURRENTJOB_INVALID;
+        }
+    }
+    return _currentJob;
+}
+
+
+-(NSString*) currentJob
+{
+    return [self get_currentJob];
+}
+
+/**
+ * Changes the job to use when the device is powered on.
+ * Remember to call the saveToFlash() method of the module if the
+ * modification must be kept.
+ * 
+ * @param newval : a string corresponding to the job to use when the device is powered on
+ * 
+ * @return YAPI_SUCCESS if the call succeeds.
+ * 
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) set_currentJob:(NSString*) newval
+{
+    return [self setCurrentJob:newval];
+}
+-(int) setCurrentJob:(NSString*) newval
+{
+    NSString* rest_val;
+    rest_val = newval;
+    return [self _setAttr:@"currentJob" :rest_val];
 }
 /**
  * Returns the job file to use when the device is powered on.
@@ -572,7 +682,7 @@
 }
 
 /**
- * Read the level of the CTS line. The CTS line is usually driven by
+ * Reads the level of the CTS line. The CTS line is usually driven by
  * the RTS signal of the connected serial device.
  * 
  * @return 1 if the CTS line is high, 0 if the CTS line is low.
@@ -1562,7 +1672,7 @@
  */
 -(int) selectJob:(NSString*)jobfile
 {
-    return [self sendCommand:[NSString stringWithFormat:@"J%@",jobfile]];
+    return [self set_currentJob:jobfile];
 }
 
 
