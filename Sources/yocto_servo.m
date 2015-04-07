@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_servo.m 18321 2014-11-10 10:48:37Z seb $
+ * $Id: yocto_servo.m 19608 2015-03-05 10:37:24Z seb $
  *
  * Implements the high-level API for Servo functions
  *
@@ -129,9 +129,9 @@
 //--- (YServo public methods implementation)
 /**
  * Returns the current servo position.
- * 
+ *
  * @return an integer corresponding to the current servo position
- * 
+ *
  * On failure, throws an exception or returns Y_POSITION_INVALID.
  */
 -(int) get_position
@@ -152,11 +152,11 @@
 
 /**
  * Changes immediately the servo driving position.
- * 
+ *
  * @param newval : an integer corresponding to immediately the servo driving position
- * 
+ *
  * @return YAPI_SUCCESS if the call succeeds.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 -(int) set_position:(int) newval
@@ -171,9 +171,9 @@
 }
 /**
  * Returns the state of the servos.
- * 
+ *
  * @return either Y_ENABLED_FALSE or Y_ENABLED_TRUE, according to the state of the servos
- * 
+ *
  * On failure, throws an exception or returns Y_ENABLED_INVALID.
  */
 -(Y_ENABLED_enum) get_enabled
@@ -194,11 +194,11 @@
 
 /**
  * Stops or starts the servo.
- * 
+ *
  * @param newval : either Y_ENABLED_FALSE or Y_ENABLED_TRUE
- * 
+ *
  * @return YAPI_SUCCESS if the call succeeds.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 -(int) set_enabled:(Y_ENABLED_enum) newval
@@ -213,9 +213,9 @@
 }
 /**
  * Returns the current range of use of the servo.
- * 
+ *
  * @return an integer corresponding to the current range of use of the servo
- * 
+ *
  * On failure, throws an exception or returns Y_RANGE_INVALID.
  */
 -(int) get_range
@@ -241,11 +241,11 @@
  * from 0.5 [ms] to 2.5 [ms], you can select a range of 200%.
  * Be aware that using a range higher than what is supported by the servo
  * is likely to damage the servo.
- * 
+ *
  * @param newval : an integer corresponding to the range of use of the servo, specified in per cents
- * 
+ *
  * @return YAPI_SUCCESS if the call succeeds.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 -(int) set_range:(int) newval
@@ -260,9 +260,9 @@
 }
 /**
  * Returns the duration in microseconds of a neutral pulse for the servo.
- * 
+ *
  * @return an integer corresponding to the duration in microseconds of a neutral pulse for the servo
- * 
+ *
  * On failure, throws an exception or returns Y_NEUTRAL_INVALID.
  */
 -(int) get_neutral
@@ -287,12 +287,12 @@
  * This setting makes it possible to shift the range of use of the servo.
  * Be aware that using a range higher than what is supported by the servo is
  * likely to damage the servo.
- * 
+ *
  * @param newval : an integer corresponding to the duration of the pulse corresponding to the neutral
  * position of the servo
- * 
+ *
  * @return YAPI_SUCCESS if the call succeeds.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 -(int) set_neutral:(int) newval
@@ -334,12 +334,12 @@
 
 /**
  * Performs a smooth move at constant speed toward a given position.
- * 
+ *
  * @param target      : new position at the end of the move
  * @param ms_duration : total duration of the move, in milliseconds
- * 
+ *
  * @return YAPI_SUCCESS if the call succeeds.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 -(int) move:(int)target :(int)ms_duration
@@ -350,9 +350,9 @@
 }
 /**
  * Returns the servo position at device power up.
- * 
+ *
  * @return an integer corresponding to the servo position at device power up
- * 
+ *
  * On failure, throws an exception or returns Y_POSITIONATPOWERON_INVALID.
  */
 -(int) get_positionAtPowerOn
@@ -374,11 +374,11 @@
 /**
  * Configure the servo position at device power up. Remember to call the matching
  * module saveToFlash() method, otherwise this call will have no effect.
- * 
+ *
  * @param newval : an integer
- * 
+ *
  * @return YAPI_SUCCESS if the call succeeds.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 -(int) set_positionAtPowerOn:(int) newval
@@ -393,10 +393,10 @@
 }
 /**
  * Returns the servo signal generator state at power up.
- * 
+ *
  * @return either Y_ENABLEDATPOWERON_FALSE or Y_ENABLEDATPOWERON_TRUE, according to the servo signal
  * generator state at power up
- * 
+ *
  * On failure, throws an exception or returns Y_ENABLEDATPOWERON_INVALID.
  */
 -(Y_ENABLEDATPOWERON_enum) get_enabledAtPowerOn
@@ -418,11 +418,11 @@
 /**
  * Configure the servo signal generator state at power up. Remember to call the matching module saveToFlash()
  * method, otherwise this call will have no effect.
- * 
+ *
  * @param newval : either Y_ENABLEDATPOWERON_FALSE or Y_ENABLEDATPOWERON_TRUE
- * 
+ *
  * @return YAPI_SUCCESS if the call succeeds.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 -(int) set_enabledAtPowerOn:(Y_ENABLEDATPOWERON_enum) newval
@@ -445,7 +445,7 @@
  * <li>ModuleLogicalName.FunctionIdentifier</li>
  * <li>ModuleLogicalName.FunctionLogicalName</li>
  * </ul>
- * 
+ *
  * This function does not require that $THEFUNCTION$ is online at the time
  * it is invoked. The returned object is nevertheless valid.
  * Use the method YServo.isOnline() to test if $THEFUNCTION$ is
@@ -453,9 +453,9 @@
  * $AFUNCTION$ by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
- * 
+ *
  * @param func : a string that uniquely characterizes $THEFUNCTION$
- * 
+ *
  * @return a YServo object allowing you to drive $THEFUNCTION$.
  */
 +(YServo*) FindServo:(NSString*)func
@@ -474,7 +474,7 @@
  * The callback is invoked only during the execution of ySleep or yHandleEvents.
  * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
  * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
- * 
+ *
  * @param callback : the callback function to call, or a null pointer. The callback function should take two
  *         arguments: the function object of which the value has changed, and the character string describing
  *         the new advertised value.

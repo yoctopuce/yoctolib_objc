@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_current.h 15256 2014-03-06 10:19:01Z seb $
+ * $Id: yocto_current.h 19608 2015-03-05 10:37:24Z seb $
  *
  * Declares yFindCurrent(), the high-level API for Current functions
  *
@@ -50,9 +50,10 @@ typedef void (*YCurrentTimedReportCallback)(YCurrent *func, YMeasure *measure);
 //--- (YCurrent class start)
 /**
  * YCurrent Class: Current function interface
- * 
- * The Yoctopuce application programming interface allows you to read an instant
- * measure of the sensor, as well as the minimal and maximal values observed.
+ *
+ * The Yoctopuce class YCurrent allows you to read and configure Yoctopuce current
+ * sensors. It inherits from YSensor class the core functions to read measurements,
+ * register callback functions, access to the autonomous datalogger.
  */
 @interface YCurrent : YSensor
 //--- (end of YCurrent class start)
@@ -82,7 +83,7 @@ typedef void (*YCurrentTimedReportCallback)(YCurrent *func, YMeasure *measure);
  * <li>ModuleLogicalName.FunctionIdentifier</li>
  * <li>ModuleLogicalName.FunctionLogicalName</li>
  * </ul>
- * 
+ *
  * This function does not require that the current sensor is online at the time
  * it is invoked. The returned object is nevertheless valid.
  * Use the method YCurrent.isOnline() to test if the current sensor is
@@ -90,9 +91,9 @@ typedef void (*YCurrentTimedReportCallback)(YCurrent *func, YMeasure *measure);
  * a current sensor by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
- * 
+ *
  * @param func : a string that uniquely characterizes the current sensor
- * 
+ *
  * @return a YCurrent object allowing you to drive the current sensor.
  */
 +(YCurrent*)     FindCurrent:(NSString*)func;
@@ -102,7 +103,7 @@ typedef void (*YCurrentTimedReportCallback)(YCurrent *func, YMeasure *measure);
  * The callback is invoked only during the execution of ySleep or yHandleEvents.
  * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
  * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
- * 
+ *
  * @param callback : the callback function to call, or a null pointer. The callback function should take two
  *         arguments: the function object of which the value has changed, and the character string describing
  *         the new advertised value.
@@ -117,7 +118,7 @@ typedef void (*YCurrentTimedReportCallback)(YCurrent *func, YMeasure *measure);
  * The callback is invoked only during the execution of ySleep or yHandleEvents.
  * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
  * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
- * 
+ *
  * @param callback : the callback function to call, or a null pointer. The callback function should take two
  *         arguments: the function object of which the value has changed, and an YMeasure object describing
  *         the new advertised value.
@@ -130,7 +131,7 @@ typedef void (*YCurrentTimedReportCallback)(YCurrent *func, YMeasure *measure);
 
 /**
  * Continues the enumeration of current sensors started using yFirstCurrent().
- * 
+ *
  * @return a pointer to a YCurrent object, corresponding to
  *         a current sensor currently online, or a null pointer
  *         if there are no more current sensors to enumerate.
@@ -140,7 +141,7 @@ typedef void (*YCurrentTimedReportCallback)(YCurrent *func, YMeasure *measure);
  * Starts the enumeration of current sensors currently accessible.
  * Use the method YCurrent.nextCurrent() to iterate on
  * next current sensors.
- * 
+ *
  * @return a pointer to a YCurrent object, corresponding to
  *         the first current sensor currently online, or a null pointer
  *         if there are none.
@@ -161,7 +162,7 @@ typedef void (*YCurrentTimedReportCallback)(YCurrent *func, YMeasure *measure);
  * <li>ModuleLogicalName.FunctionIdentifier</li>
  * <li>ModuleLogicalName.FunctionLogicalName</li>
  * </ul>
- * 
+ *
  * This function does not require that the current sensor is online at the time
  * it is invoked. The returned object is nevertheless valid.
  * Use the method YCurrent.isOnline() to test if the current sensor is
@@ -169,9 +170,9 @@ typedef void (*YCurrentTimedReportCallback)(YCurrent *func, YMeasure *measure);
  * a current sensor by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
- * 
+ *
  * @param func : a string that uniquely characterizes the current sensor
- * 
+ *
  * @return a YCurrent object allowing you to drive the current sensor.
  */
 YCurrent* yFindCurrent(NSString* func);
@@ -179,7 +180,7 @@ YCurrent* yFindCurrent(NSString* func);
  * Starts the enumeration of current sensors currently accessible.
  * Use the method YCurrent.nextCurrent() to iterate on
  * next current sensors.
- * 
+ *
  * @return a pointer to a YCurrent object, corresponding to
  *         the first current sensor currently online, or a null pointer
  *         if there are none.

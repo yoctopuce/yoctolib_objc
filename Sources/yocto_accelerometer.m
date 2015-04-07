@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_accelerometer.m 18321 2014-11-10 10:48:37Z seb $
+ * $Id: yocto_accelerometer.m 19608 2015-03-05 10:37:24Z seb $
  *
  * Implements the high-level API for Accelerometer functions
  *
@@ -99,9 +99,9 @@
 //--- (YAccelerometer public methods implementation)
 /**
  * Returns the X component of the acceleration, as a floating point number.
- * 
+ *
  * @return a floating point number corresponding to the X component of the acceleration, as a floating point number
- * 
+ *
  * On failure, throws an exception or returns Y_XVALUE_INVALID.
  */
 -(double) get_xValue
@@ -121,9 +121,9 @@
 }
 /**
  * Returns the Y component of the acceleration, as a floating point number.
- * 
+ *
  * @return a floating point number corresponding to the Y component of the acceleration, as a floating point number
- * 
+ *
  * On failure, throws an exception or returns Y_YVALUE_INVALID.
  */
 -(double) get_yValue
@@ -143,9 +143,9 @@
 }
 /**
  * Returns the Z component of the acceleration, as a floating point number.
- * 
+ *
  * @return a floating point number corresponding to the Z component of the acceleration, as a floating point number
- * 
+ *
  * On failure, throws an exception or returns Y_ZVALUE_INVALID.
  */
 -(double) get_zValue
@@ -199,7 +199,7 @@
  * <li>ModuleLogicalName.FunctionIdentifier</li>
  * <li>ModuleLogicalName.FunctionLogicalName</li>
  * </ul>
- * 
+ *
  * This function does not require that $THEFUNCTION$ is online at the time
  * it is invoked. The returned object is nevertheless valid.
  * Use the method YAccelerometer.isOnline() to test if $THEFUNCTION$ is
@@ -207,9 +207,9 @@
  * $AFUNCTION$ by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
- * 
+ *
  * @param func : a string that uniquely characterizes $THEFUNCTION$
- * 
+ *
  * @return a YAccelerometer object allowing you to drive $THEFUNCTION$.
  */
 +(YAccelerometer*) FindAccelerometer:(NSString*)func
@@ -228,7 +228,7 @@
  * The callback is invoked only during the execution of ySleep or yHandleEvents.
  * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
  * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
- * 
+ *
  * @param callback : the callback function to call, or a null pointer. The callback function should take two
  *         arguments: the function object of which the value has changed, and the character string describing
  *         the new advertised value.
@@ -268,7 +268,7 @@
  * The callback is invoked only during the execution of ySleep or yHandleEvents.
  * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
  * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
- * 
+ *
  * @param callback : the callback function to call, or a null pointer. The callback function should take two
  *         arguments: the function object of which the value has changed, and an YMeasure object describing
  *         the new advertised value.

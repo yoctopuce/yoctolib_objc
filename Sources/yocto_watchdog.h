@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_watchdog.h 18321 2014-11-10 10:48:37Z seb $
+ * $Id: yocto_watchdog.h 19608 2015-03-05 10:37:24Z seb $
  *
  * Declares yFindWatchdog(), the high-level API for Watchdog functions
  *
@@ -105,7 +105,7 @@ typedef enum {
 //--- (YWatchdog class start)
 /**
  * YWatchdog Class: Watchdog function interface
- * 
+ *
  * The watchog function works like a relay and can cause a brief power cut
  * to an appliance after a preset delay to force this appliance to
  * reset. The Watchdog must be called from time to time to reset the
@@ -144,10 +144,10 @@ typedef enum {
 //--- (YWatchdog public methods declaration)
 /**
  * Returns the state of the watchdog (A for the idle position, B for the active position).
- * 
+ *
  * @return either Y_STATE_A or Y_STATE_B, according to the state of the watchdog (A for the idle
  * position, B for the active position)
- * 
+ *
  * On failure, throws an exception or returns Y_STATE_INVALID.
  */
 -(Y_STATE_enum)     get_state;
@@ -156,12 +156,12 @@ typedef enum {
 -(Y_STATE_enum) state;
 /**
  * Changes the state of the watchdog (A for the idle position, B for the active position).
- * 
+ *
  * @param newval : either Y_STATE_A or Y_STATE_B, according to the state of the watchdog (A for the
  * idle position, B for the active position)
- * 
+ *
  * @return YAPI_SUCCESS if the call succeeds.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 -(int)     set_state:(Y_STATE_enum) newval;
@@ -170,11 +170,11 @@ typedef enum {
 /**
  * Returns the state of the watchdog at device startup (A for the idle position, B for the active
  * position, UNCHANGED for no change).
- * 
+ *
  * @return a value among Y_STATEATPOWERON_UNCHANGED, Y_STATEATPOWERON_A and Y_STATEATPOWERON_B
  * corresponding to the state of the watchdog at device startup (A for the idle position, B for the
  * active position, UNCHANGED for no change)
- * 
+ *
  * On failure, throws an exception or returns Y_STATEATPOWERON_INVALID.
  */
 -(Y_STATEATPOWERON_enum)     get_stateAtPowerOn;
@@ -185,11 +185,11 @@ typedef enum {
  * Preset the state of the watchdog at device startup (A for the idle position,
  * B for the active position, UNCHANGED for no modification). Remember to call the matching module saveToFlash()
  * method, otherwise this call will have no effect.
- * 
+ *
  * @param newval : a value among Y_STATEATPOWERON_UNCHANGED, Y_STATEATPOWERON_A and Y_STATEATPOWERON_B
- * 
+ *
  * @return YAPI_SUCCESS if the call succeeds.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 -(int)     set_stateAtPowerOn:(Y_STATEATPOWERON_enum) newval;
@@ -198,9 +198,9 @@ typedef enum {
 /**
  * Retourne the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state A before automatically
  * switching back in to B state. Zero means no maximum time.
- * 
+ *
  * @return an integer
- * 
+ *
  * On failure, throws an exception or returns Y_MAXTIMEONSTATEA_INVALID.
  */
 -(s64)     get_maxTimeOnStateA;
@@ -210,11 +210,11 @@ typedef enum {
 /**
  * Sets the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state A before automatically
  * switching back in to B state. Use zero for no maximum time.
- * 
+ *
  * @param newval : an integer
- * 
+ *
  * @return YAPI_SUCCESS if the call succeeds.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 -(int)     set_maxTimeOnStateA:(s64) newval;
@@ -223,9 +223,9 @@ typedef enum {
 /**
  * Retourne the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state B before automatically
  * switching back in to A state. Zero means no maximum time.
- * 
+ *
  * @return an integer
- * 
+ *
  * On failure, throws an exception or returns Y_MAXTIMEONSTATEB_INVALID.
  */
 -(s64)     get_maxTimeOnStateB;
@@ -235,11 +235,11 @@ typedef enum {
 /**
  * Sets the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state B before automatically
  * switching back in to A state. Use zero for no maximum time.
- * 
+ *
  * @param newval : an integer
- * 
+ *
  * @return YAPI_SUCCESS if the call succeeds.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 -(int)     set_maxTimeOnStateB:(s64) newval;
@@ -247,10 +247,10 @@ typedef enum {
 
 /**
  * Returns the output state of the watchdog, when used as a simple switch (single throw).
- * 
+ *
  * @return either Y_OUTPUT_OFF or Y_OUTPUT_ON, according to the output state of the watchdog, when
  * used as a simple switch (single throw)
- * 
+ *
  * On failure, throws an exception or returns Y_OUTPUT_INVALID.
  */
 -(Y_OUTPUT_enum)     get_output;
@@ -259,12 +259,12 @@ typedef enum {
 -(Y_OUTPUT_enum) output;
 /**
  * Changes the output state of the watchdog, when used as a simple switch (single throw).
- * 
+ *
  * @param newval : either Y_OUTPUT_OFF or Y_OUTPUT_ON, according to the output state of the watchdog,
  * when used as a simple switch (single throw)
- * 
+ *
  * @return YAPI_SUCCESS if the call succeeds.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 -(int)     set_output:(Y_OUTPUT_enum) newval;
@@ -273,11 +273,11 @@ typedef enum {
 /**
  * Returns the number of milliseconds remaining before the watchdog is returned to idle position
  * (state A), during a measured pulse generation. When there is no ongoing pulse, returns zero.
- * 
+ *
  * @return an integer corresponding to the number of milliseconds remaining before the watchdog is
  * returned to idle position
  *         (state A), during a measured pulse generation
- * 
+ *
  * On failure, throws an exception or returns Y_PULSETIMER_INVALID.
  */
 -(s64)     get_pulseTimer;
@@ -290,11 +290,11 @@ typedef enum {
 /**
  * Sets the relay to output B (active) for a specified duration, then brings it
  * automatically back to output A (idle state).
- * 
+ *
  * @param ms_duration : pulse duration, in millisecondes
- * 
+ *
  * @return YAPI_SUCCESS if the call succeeds.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 -(int)     pulse:(int)ms_duration;
@@ -308,12 +308,12 @@ typedef enum {
 
 /**
  * Schedules a pulse.
- * 
+ *
  * @param ms_delay : waiting time before the pulse, in millisecondes
  * @param ms_duration : pulse duration, in millisecondes
- * 
+ *
  * @return YAPI_SUCCESS if the call succeeds.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 -(int)     delayedPulse:(int)ms_delay :(int)ms_duration;
@@ -321,10 +321,10 @@ typedef enum {
 /**
  * Returns the number of milliseconds remaining before a pulse (delayedPulse() call)
  * When there is no scheduled pulse, returns zero.
- * 
+ *
  * @return an integer corresponding to the number of milliseconds remaining before a pulse (delayedPulse() call)
  *         When there is no scheduled pulse, returns zero
- * 
+ *
  * On failure, throws an exception or returns Y_COUNTDOWN_INVALID.
  */
 -(s64)     get_countdown;
@@ -333,9 +333,9 @@ typedef enum {
 -(s64) countdown;
 /**
  * Returns the watchdog runing state at module power on.
- * 
+ *
  * @return either Y_AUTOSTART_OFF or Y_AUTOSTART_ON, according to the watchdog runing state at module power on
- * 
+ *
  * On failure, throws an exception or returns Y_AUTOSTART_INVALID.
  */
 -(Y_AUTOSTART_enum)     get_autoStart;
@@ -345,12 +345,12 @@ typedef enum {
 /**
  * Changes the watchdog runningsttae at module power on. Remember to call the
  * saveToFlash() method and then to reboot the module to apply this setting.
- * 
+ *
  * @param newval : either Y_AUTOSTART_OFF or Y_AUTOSTART_ON, according to the watchdog runningsttae at
  * module power on
- * 
+ *
  * @return YAPI_SUCCESS if the call succeeds.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 -(int)     set_autoStart:(Y_AUTOSTART_enum) newval;
@@ -358,9 +358,9 @@ typedef enum {
 
 /**
  * Returns the watchdog running state.
- * 
+ *
  * @return either Y_RUNNING_OFF or Y_RUNNING_ON, according to the watchdog running state
- * 
+ *
  * On failure, throws an exception or returns Y_RUNNING_INVALID.
  */
 -(Y_RUNNING_enum)     get_running;
@@ -369,11 +369,11 @@ typedef enum {
 -(Y_RUNNING_enum) running;
 /**
  * Changes the running state of the watchdog.
- * 
+ *
  * @param newval : either Y_RUNNING_OFF or Y_RUNNING_ON, according to the running state of the watchdog
- * 
+ *
  * @return YAPI_SUCCESS if the call succeeds.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 -(int)     set_running:(Y_RUNNING_enum) newval;
@@ -383,19 +383,19 @@ typedef enum {
  * Resets the watchdog. When the watchdog is running, this function
  * must be called on a regular basis to prevent the watchog to
  * trigger
- * 
+ *
  * @return YAPI_SUCCESS if the call succeeds.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 -(int)     resetWatchdog;
 
 /**
  * Returns  the waiting duration before a reset is automatically triggered by the watchdog, in milliseconds.
- * 
+ *
  * @return an integer corresponding to  the waiting duration before a reset is automatically triggered
  * by the watchdog, in milliseconds
- * 
+ *
  * On failure, throws an exception or returns Y_TRIGGERDELAY_INVALID.
  */
 -(s64)     get_triggerDelay;
@@ -404,12 +404,12 @@ typedef enum {
 -(s64) triggerDelay;
 /**
  * Changes the waiting delay before a reset is triggered by the watchdog, in milliseconds.
- * 
+ *
  * @param newval : an integer corresponding to the waiting delay before a reset is triggered by the
  * watchdog, in milliseconds
- * 
+ *
  * @return YAPI_SUCCESS if the call succeeds.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 -(int)     set_triggerDelay:(s64) newval;
@@ -417,9 +417,9 @@ typedef enum {
 
 /**
  * Returns the duration of resets caused by the watchdog, in milliseconds.
- * 
+ *
  * @return an integer corresponding to the duration of resets caused by the watchdog, in milliseconds
- * 
+ *
  * On failure, throws an exception or returns Y_TRIGGERDURATION_INVALID.
  */
 -(s64)     get_triggerDuration;
@@ -428,11 +428,11 @@ typedef enum {
 -(s64) triggerDuration;
 /**
  * Changes the duration of resets caused by the watchdog, in milliseconds.
- * 
+ *
  * @param newval : an integer corresponding to the duration of resets caused by the watchdog, in milliseconds
- * 
+ *
  * @return YAPI_SUCCESS if the call succeeds.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 -(int)     set_triggerDuration:(s64) newval;
@@ -448,7 +448,7 @@ typedef enum {
  * <li>ModuleLogicalName.FunctionIdentifier</li>
  * <li>ModuleLogicalName.FunctionLogicalName</li>
  * </ul>
- * 
+ *
  * This function does not require that the watchdog is online at the time
  * it is invoked. The returned object is nevertheless valid.
  * Use the method YWatchdog.isOnline() to test if the watchdog is
@@ -456,9 +456,9 @@ typedef enum {
  * a watchdog by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
- * 
+ *
  * @param func : a string that uniquely characterizes the watchdog
- * 
+ *
  * @return a YWatchdog object allowing you to drive the watchdog.
  */
 +(YWatchdog*)     FindWatchdog:(NSString*)func;
@@ -468,7 +468,7 @@ typedef enum {
  * The callback is invoked only during the execution of ySleep or yHandleEvents.
  * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
  * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
- * 
+ *
  * @param callback : the callback function to call, or a null pointer. The callback function should take two
  *         arguments: the function object of which the value has changed, and the character string describing
  *         the new advertised value.
@@ -481,7 +481,7 @@ typedef enum {
 
 /**
  * Continues the enumeration of watchdog started using yFirstWatchdog().
- * 
+ *
  * @return a pointer to a YWatchdog object, corresponding to
  *         a watchdog currently online, or a null pointer
  *         if there are no more watchdog to enumerate.
@@ -491,7 +491,7 @@ typedef enum {
  * Starts the enumeration of watchdog currently accessible.
  * Use the method YWatchdog.nextWatchdog() to iterate on
  * next watchdog.
- * 
+ *
  * @return a pointer to a YWatchdog object, corresponding to
  *         the first watchdog currently online, or a null pointer
  *         if there are none.
@@ -512,7 +512,7 @@ typedef enum {
  * <li>ModuleLogicalName.FunctionIdentifier</li>
  * <li>ModuleLogicalName.FunctionLogicalName</li>
  * </ul>
- * 
+ *
  * This function does not require that the watchdog is online at the time
  * it is invoked. The returned object is nevertheless valid.
  * Use the method YWatchdog.isOnline() to test if the watchdog is
@@ -520,9 +520,9 @@ typedef enum {
  * a watchdog by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
- * 
+ *
  * @param func : a string that uniquely characterizes the watchdog
- * 
+ *
  * @return a YWatchdog object allowing you to drive the watchdog.
  */
 YWatchdog* yFindWatchdog(NSString* func);
@@ -530,7 +530,7 @@ YWatchdog* yFindWatchdog(NSString* func);
  * Starts the enumeration of watchdog currently accessible.
  * Use the method YWatchdog.nextWatchdog() to iterate on
  * next watchdog.
- * 
+ *
  * @return a pointer to a YWatchdog object, corresponding to
  *         the first watchdog currently online, or a null pointer
  *         if there are none.

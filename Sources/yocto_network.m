@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_network.m 18321 2014-11-10 10:48:37Z seb $
+ * $Id: yocto_network.m 19608 2015-03-05 10:37:24Z seb $
  *
  * Implements the high-level API for Network functions
  *
@@ -245,10 +245,10 @@
  * Level 4 (DNS_4) is reached when the DNS server is reachable on the network.
  * Level 5 (WWW_5) is reached when global connectivity is demonstrated by properly loading the
  * current time from an NTP server.
- * 
+ *
  * @return a value among Y_READINESS_DOWN, Y_READINESS_EXISTS, Y_READINESS_LINKED, Y_READINESS_LAN_OK
  * and Y_READINESS_WWW_OK corresponding to the current established working mode of the network interface
- * 
+ *
  * On failure, throws an exception or returns Y_READINESS_INVALID.
  */
 -(Y_READINESS_enum) get_readiness
@@ -269,9 +269,9 @@
 /**
  * Returns the MAC address of the network interface. The MAC address is also available on a sticker
  * on the module, in both numeric and barcode forms.
- * 
+ *
  * @return a string corresponding to the MAC address of the network interface
- * 
+ *
  * On failure, throws an exception or returns Y_MACADDRESS_INVALID.
  */
 -(NSString*) get_macAddress
@@ -292,9 +292,9 @@
 /**
  * Returns the IP address currently in use by the device. The address may have been configured
  * statically, or provided by a DHCP server.
- * 
+ *
  * @return a string corresponding to the IP address currently in use by the device
- * 
+ *
  * On failure, throws an exception or returns Y_IPADDRESS_INVALID.
  */
 -(NSString*) get_ipAddress
@@ -314,9 +314,9 @@
 }
 /**
  * Returns the subnet mask currently used by the device.
- * 
+ *
  * @return a string corresponding to the subnet mask currently used by the device
- * 
+ *
  * On failure, throws an exception or returns Y_SUBNETMASK_INVALID.
  */
 -(NSString*) get_subnetMask
@@ -336,9 +336,9 @@
 }
 /**
  * Returns the IP address of the router on the device subnet (default gateway).
- * 
+ *
  * @return a string corresponding to the IP address of the router on the device subnet (default gateway)
- * 
+ *
  * On failure, throws an exception or returns Y_ROUTER_INVALID.
  */
 -(NSString*) get_router
@@ -384,9 +384,9 @@
 }
 /**
  * Returns the IP address of the primary name server to be used by the module.
- * 
+ *
  * @return a string corresponding to the IP address of the primary name server to be used by the module
- * 
+ *
  * On failure, throws an exception or returns Y_PRIMARYDNS_INVALID.
  */
 -(NSString*) get_primaryDNS
@@ -409,11 +409,11 @@
  * Changes the IP address of the primary name server to be used by the module.
  * When using DHCP, if a value is specified, it overrides the value received from the DHCP server.
  * Remember to call the saveToFlash() method and then to reboot the module to apply this setting.
- * 
+ *
  * @param newval : a string corresponding to the IP address of the primary name server to be used by the module
- * 
+ *
  * @return YAPI_SUCCESS if the call succeeds.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 -(int) set_primaryDNS:(NSString*) newval
@@ -428,9 +428,9 @@
 }
 /**
  * Returns the IP address of the secondary name server to be used by the module.
- * 
+ *
  * @return a string corresponding to the IP address of the secondary name server to be used by the module
- * 
+ *
  * On failure, throws an exception or returns Y_SECONDARYDNS_INVALID.
  */
 -(NSString*) get_secondaryDNS
@@ -453,11 +453,11 @@
  * Changes the IP address of the secondary name server to be used by the module.
  * When using DHCP, if a value is specified, it overrides the value received from the DHCP server.
  * Remember to call the saveToFlash() method and then to reboot the module to apply this setting.
- * 
+ *
  * @param newval : a string corresponding to the IP address of the secondary name server to be used by the module
- * 
+ *
  * @return YAPI_SUCCESS if the call succeeds.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 -(int) set_secondaryDNS:(NSString*) newval
@@ -473,10 +473,10 @@
 /**
  * Returns a hash string if a password has been set for "user" user,
  * or an empty string otherwise.
- * 
+ *
  * @return a string corresponding to a hash string if a password has been set for "user" user,
  *         or an empty string otherwise
- * 
+ *
  * On failure, throws an exception or returns Y_USERPASSWORD_INVALID.
  */
 -(NSString*) get_userPassword
@@ -501,11 +501,11 @@
  * empty string, a password is not required anymore.
  * Remember to call the saveToFlash() method of the module if the
  * modification must be kept.
- * 
+ *
  * @param newval : a string corresponding to the password for the "user" user
- * 
+ *
  * @return YAPI_SUCCESS if the call succeeds.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 -(int) set_userPassword:(NSString*) newval
@@ -521,10 +521,10 @@
 /**
  * Returns a hash string if a password has been set for user "admin",
  * or an empty string otherwise.
- * 
+ *
  * @return a string corresponding to a hash string if a password has been set for user "admin",
  *         or an empty string otherwise
- * 
+ *
  * On failure, throws an exception or returns Y_ADMINPASSWORD_INVALID.
  */
 -(NSString*) get_adminPassword
@@ -549,11 +549,11 @@
  * empty string, a password is not required anymore.
  * Remember to call the saveToFlash() method of the module if the
  * modification must be kept.
- * 
+ *
  * @param newval : a string corresponding to the password for the "admin" user
- * 
+ *
  * @return YAPI_SUCCESS if the call succeeds.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 -(int) set_adminPassword:(NSString*) newval
@@ -569,11 +569,11 @@
 /**
  * Returns the activation state of the multicast announce protocols to allow easy
  * discovery of the module in the network neighborhood (uPnP/Bonjour protocol).
- * 
+ *
  * @return either Y_DISCOVERABLE_FALSE or Y_DISCOVERABLE_TRUE, according to the activation state of
  * the multicast announce protocols to allow easy
  *         discovery of the module in the network neighborhood (uPnP/Bonjour protocol)
- * 
+ *
  * On failure, throws an exception or returns Y_DISCOVERABLE_INVALID.
  */
 -(Y_DISCOVERABLE_enum) get_discoverable
@@ -595,13 +595,13 @@
 /**
  * Changes the activation state of the multicast announce protocols to allow easy
  * discovery of the module in the network neighborhood (uPnP/Bonjour protocol).
- * 
+ *
  * @param newval : either Y_DISCOVERABLE_FALSE or Y_DISCOVERABLE_TRUE, according to the activation
  * state of the multicast announce protocols to allow easy
  *         discovery of the module in the network neighborhood (uPnP/Bonjour protocol)
- * 
+ *
  * @return YAPI_SUCCESS if the call succeeds.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 -(int) set_discoverable:(Y_DISCOVERABLE_enum) newval
@@ -618,11 +618,11 @@
  * Returns the allowed downtime of the WWW link (in seconds) before triggering an automated
  * reboot to try to recover Internet connectivity. A zero value disables automated reboot
  * in case of Internet connectivity loss.
- * 
+ *
  * @return an integer corresponding to the allowed downtime of the WWW link (in seconds) before
  * triggering an automated
  *         reboot to try to recover Internet connectivity
- * 
+ *
  * On failure, throws an exception or returns Y_WWWWATCHDOGDELAY_INVALID.
  */
 -(int) get_wwwWatchdogDelay
@@ -646,13 +646,13 @@
  * reboot to try to recover Internet connectivity. A zero value disables automated reboot
  * in case of Internet connectivity loss. The smallest valid non-zero timeout is
  * 90 seconds.
- * 
+ *
  * @param newval : an integer corresponding to the allowed downtime of the WWW link (in seconds)
  * before triggering an automated
  *         reboot to try to recover Internet connectivity
- * 
+ *
  * @return YAPI_SUCCESS if the call succeeds.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 -(int) set_wwwWatchdogDelay:(int) newval
@@ -667,9 +667,9 @@
 }
 /**
  * Returns the callback URL to notify of significant state changes.
- * 
+ *
  * @return a string corresponding to the callback URL to notify of significant state changes
- * 
+ *
  * On failure, throws an exception or returns Y_CALLBACKURL_INVALID.
  */
 -(NSString*) get_callbackUrl
@@ -691,11 +691,11 @@
 /**
  * Changes the callback URL to notify significant state changes. Remember to call the
  * saveToFlash() method of the module if the modification must be kept.
- * 
+ *
  * @param newval : a string corresponding to the callback URL to notify significant state changes
- * 
+ *
  * @return YAPI_SUCCESS if the call succeeds.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 -(int) set_callbackUrl:(NSString*) newval
@@ -710,10 +710,10 @@
 }
 /**
  * Returns the HTTP method used to notify callbacks for significant state changes.
- * 
+ *
  * @return a value among Y_CALLBACKMETHOD_POST, Y_CALLBACKMETHOD_GET and Y_CALLBACKMETHOD_PUT
  * corresponding to the HTTP method used to notify callbacks for significant state changes
- * 
+ *
  * On failure, throws an exception or returns Y_CALLBACKMETHOD_INVALID.
  */
 -(Y_CALLBACKMETHOD_enum) get_callbackMethod
@@ -734,12 +734,12 @@
 
 /**
  * Changes the HTTP method used to notify callbacks for significant state changes.
- * 
+ *
  * @param newval : a value among Y_CALLBACKMETHOD_POST, Y_CALLBACKMETHOD_GET and Y_CALLBACKMETHOD_PUT
  * corresponding to the HTTP method used to notify callbacks for significant state changes
- * 
+ *
  * @return YAPI_SUCCESS if the call succeeds.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 -(int) set_callbackMethod:(Y_CALLBACKMETHOD_enum) newval
@@ -754,11 +754,11 @@
 }
 /**
  * Returns the encoding standard to use for representing notification values.
- * 
+ *
  * @return a value among Y_CALLBACKENCODING_FORM, Y_CALLBACKENCODING_JSON,
  * Y_CALLBACKENCODING_JSON_ARRAY, Y_CALLBACKENCODING_CSV and Y_CALLBACKENCODING_YOCTO_API
  * corresponding to the encoding standard to use for representing notification values
- * 
+ *
  * On failure, throws an exception or returns Y_CALLBACKENCODING_INVALID.
  */
 -(Y_CALLBACKENCODING_enum) get_callbackEncoding
@@ -779,13 +779,13 @@
 
 /**
  * Changes the encoding standard to use for representing notification values.
- * 
+ *
  * @param newval : a value among Y_CALLBACKENCODING_FORM, Y_CALLBACKENCODING_JSON,
  * Y_CALLBACKENCODING_JSON_ARRAY, Y_CALLBACKENCODING_CSV and Y_CALLBACKENCODING_YOCTO_API
  * corresponding to the encoding standard to use for representing notification values
- * 
+ *
  * @return YAPI_SUCCESS if the call succeeds.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 -(int) set_callbackEncoding:(Y_CALLBACKENCODING_enum) newval
@@ -801,10 +801,10 @@
 /**
  * Returns a hashed version of the notification callback credentials if set,
  * or an empty string otherwise.
- * 
+ *
  * @return a string corresponding to a hashed version of the notification callback credentials if set,
  *         or an empty string otherwise
- * 
+ *
  * On failure, throws an exception or returns Y_CALLBACKCREDENTIALS_INVALID.
  */
 -(NSString*) get_callbackCredentials
@@ -833,11 +833,11 @@
  * way to configure callback credentials, use function callbackLogin instead.
  * Remember to call the saveToFlash() method of the module if the
  * modification must be kept.
- * 
+ *
  * @param newval : a string corresponding to the credentials required to connect to the callback address
- * 
+ *
  * @return YAPI_SUCCESS if the call succeeds.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 -(int) set_callbackCredentials:(NSString*) newval
@@ -856,12 +856,12 @@
  * log into it. The password is not stored into the module, only a hashed
  * copy of the credentials are saved. Remember to call the
  * saveToFlash() method of the module if the modification must be kept.
- * 
+ *
  * @param username : username required to log to the callback
  * @param password : password required to log to the callback
- * 
+ *
  * @return YAPI_SUCCESS if the call succeeds.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 -(int) callbackLogin:(NSString*)username :(NSString*)password
@@ -872,9 +872,9 @@
 }
 /**
  * Returns the minimum waiting time between two callback notifications, in seconds.
- * 
+ *
  * @return an integer corresponding to the minimum waiting time between two callback notifications, in seconds
- * 
+ *
  * On failure, throws an exception or returns Y_CALLBACKMINDELAY_INVALID.
  */
 -(int) get_callbackMinDelay
@@ -895,12 +895,12 @@
 
 /**
  * Changes the minimum waiting time between two callback notifications, in seconds.
- * 
+ *
  * @param newval : an integer corresponding to the minimum waiting time between two callback
  * notifications, in seconds
- * 
+ *
  * @return YAPI_SUCCESS if the call succeeds.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 -(int) set_callbackMinDelay:(int) newval
@@ -915,9 +915,9 @@
 }
 /**
  * Returns the maximum waiting time between two callback notifications, in seconds.
- * 
+ *
  * @return an integer corresponding to the maximum waiting time between two callback notifications, in seconds
- * 
+ *
  * On failure, throws an exception or returns Y_CALLBACKMAXDELAY_INVALID.
  */
 -(int) get_callbackMaxDelay
@@ -938,12 +938,12 @@
 
 /**
  * Changes the maximum waiting time between two callback notifications, in seconds.
- * 
+ *
  * @param newval : an integer corresponding to the maximum waiting time between two callback
  * notifications, in seconds
- * 
+ *
  * @return YAPI_SUCCESS if the call succeeds.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 -(int) set_callbackMaxDelay:(int) newval
@@ -960,10 +960,10 @@
  * Returns the current consumed by the module from Power-over-Ethernet (PoE), in milli-amps.
  * The current consumption is measured after converting PoE source to 5 Volt, and should
  * never exceed 1800 mA.
- * 
+ *
  * @return an integer corresponding to the current consumed by the module from Power-over-Ethernet
  * (PoE), in milli-amps
- * 
+ *
  * On failure, throws an exception or returns Y_POECURRENT_INVALID.
  */
 -(int) get_poeCurrent
@@ -991,7 +991,7 @@
  * <li>ModuleLogicalName.FunctionIdentifier</li>
  * <li>ModuleLogicalName.FunctionLogicalName</li>
  * </ul>
- * 
+ *
  * This function does not require that $THEFUNCTION$ is online at the time
  * it is invoked. The returned object is nevertheless valid.
  * Use the method YNetwork.isOnline() to test if $THEFUNCTION$ is
@@ -999,9 +999,9 @@
  * $AFUNCTION$ by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
- * 
+ *
  * @param func : a string that uniquely characterizes $THEFUNCTION$
- * 
+ *
  * @return a YNetwork object allowing you to drive $THEFUNCTION$.
  */
 +(YNetwork*) FindNetwork:(NSString*)func
@@ -1020,7 +1020,7 @@
  * The callback is invoked only during the execution of ySleep or yHandleEvents.
  * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
  * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
- * 
+ *
  * @param callback : the callback function to call, or a null pointer. The callback function should take two
  *         arguments: the function object of which the value has changed, and the character string describing
  *         the new advertised value.
@@ -1060,14 +1060,14 @@
  * IP address received from a DHCP server. Until an address is received from a DHCP
  * server, the module uses the IP parameters specified to this function.
  * Remember to call the saveToFlash() method and then to reboot the module to apply this setting.
- * 
+ *
  * @param fallbackIpAddr : fallback IP address, to be used when no DHCP reply is received
  * @param fallbackSubnetMaskLen : fallback subnet mask length when no DHCP reply is received, as an
  *         integer (eg. 24 means 255.255.255.0)
  * @param fallbackRouter : fallback router IP address, to be used when no DHCP reply is received
- * 
+ *
  * @return YAPI_SUCCESS when the call succeeds.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 -(int) useDHCP:(NSString*)fallbackIpAddr :(int)fallbackSubnetMaskLen :(NSString*)fallbackRouter
@@ -1078,13 +1078,13 @@
 /**
  * Changes the configuration of the network interface to use a static IP address.
  * Remember to call the saveToFlash() method and then to reboot the module to apply this setting.
- * 
+ *
  * @param ipAddress : device IP address
  * @param subnetMaskLen : subnet mask length, as an integer (eg. 24 means 255.255.255.0)
  * @param router : router IP address (default gateway)
- * 
+ *
  * @return YAPI_SUCCESS when the call succeeds.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 -(int) useStaticIP:(NSString*)ipAddress :(int)subnetMaskLen :(NSString*)router
@@ -1096,9 +1096,9 @@
  * Pings str_host to test the network connectivity. Sends four ICMP ECHO_REQUEST requests from the
  * module to the target str_host. This method returns a string with the result of the
  * 4 ICMP ECHO_REQUEST requests.
- * 
+ *
  * @param host : the hostname or the IP address of the target
- * 
+ *
  * @return a string with the result of the ping.
  */
 -(NSString*) ping:(NSString*)host
@@ -1106,7 +1106,7 @@
     NSMutableData* content;
     // may throw an exception
     content = [self _download:[NSString stringWithFormat:@"ping.txt?host=%@",host]];
-    return ARC_sendAutorelease([[NSString alloc] initWithData:content encoding:NSASCIIStringEncoding]);
+    return ARC_sendAutorelease([[NSString alloc] initWithData:content encoding:NSISOLatin1StringEncoding]);
 }
 
 

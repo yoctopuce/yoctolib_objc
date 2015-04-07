@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_genericsensor.m 18321 2014-11-10 10:48:37Z seb $
+ * $Id: yocto_genericsensor.m 19608 2015-03-05 10:37:24Z seb $
  *
  * Implements the high-level API for GenericSensor functions
  *
@@ -126,11 +126,11 @@
  * Changes the measuring unit for the measured value.
  * Remember to call the saveToFlash() method of the module if the
  * modification must be kept.
- * 
+ *
  * @param newval : a string corresponding to the measuring unit for the measured value
- * 
+ *
  * @return YAPI_SUCCESS if the call succeeds.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 -(int) set_unit:(NSString*) newval
@@ -145,9 +145,9 @@
 }
 /**
  * Returns the measured value of the electrical signal used by the sensor.
- * 
+ *
  * @return a floating point number corresponding to the measured value of the electrical signal used by the sensor
- * 
+ *
  * On failure, throws an exception or returns Y_SIGNALVALUE_INVALID.
  */
 -(double) get_signalValue
@@ -167,9 +167,9 @@
 }
 /**
  * Returns the measuring unit of the electrical signal used by the sensor.
- * 
+ *
  * @return a string corresponding to the measuring unit of the electrical signal used by the sensor
- * 
+ *
  * On failure, throws an exception or returns Y_SIGNALUNIT_INVALID.
  */
 -(NSString*) get_signalUnit
@@ -189,9 +189,9 @@
 }
 /**
  * Returns the electric signal range used by the sensor.
- * 
+ *
  * @return a string corresponding to the electric signal range used by the sensor
- * 
+ *
  * On failure, throws an exception or returns Y_SIGNALRANGE_INVALID.
  */
 -(NSString*) get_signalRange
@@ -212,11 +212,11 @@
 
 /**
  * Changes the electric signal range used by the sensor.
- * 
+ *
  * @param newval : a string corresponding to the electric signal range used by the sensor
- * 
+ *
  * @return YAPI_SUCCESS if the call succeeds.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 -(int) set_signalRange:(NSString*) newval
@@ -231,9 +231,9 @@
 }
 /**
  * Returns the physical value range measured by the sensor.
- * 
+ *
  * @return a string corresponding to the physical value range measured by the sensor
- * 
+ *
  * On failure, throws an exception or returns Y_VALUERANGE_INVALID.
  */
 -(NSString*) get_valueRange
@@ -255,11 +255,11 @@
 /**
  * Changes the physical value range measured by the sensor. As a side effect, the range modification may
  * automatically modify the display resolution.
- * 
+ *
  * @param newval : a string corresponding to the physical value range measured by the sensor
- * 
+ *
  * @return YAPI_SUCCESS if the call succeeds.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 -(int) set_valueRange:(NSString*) newval
@@ -277,11 +277,11 @@
  * Changes the electric signal bias for zero shift adjustment.
  * If your electric signal reads positif when it should be zero, setup
  * a positive signalBias of the same value to fix the zero shift.
- * 
+ *
  * @param newval : a floating point number corresponding to the electric signal bias for zero shift adjustment
- * 
+ *
  * @return YAPI_SUCCESS if the call succeeds.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 -(int) set_signalBias:(double) newval
@@ -298,9 +298,9 @@
  * Returns the electric signal bias for zero shift adjustment.
  * A positive bias means that the signal is over-reporting the measure,
  * while a negative bias means that the signal is underreporting the measure.
- * 
+ *
  * @return a floating point number corresponding to the electric signal bias for zero shift adjustment
- * 
+ *
  * On failure, throws an exception or returns Y_SIGNALBIAS_INVALID.
  */
 -(double) get_signalBias
@@ -325,11 +325,11 @@
  * The LOW_NOISE method uses a reduced acquisition frequency to reduce noise.
  * The LOW_NOISE_FILTERED method combines a reduced frequency with the median filter
  * to get measures as stable as possible when working on a noisy signal.
- * 
+ *
  * @return a value among Y_SIGNALSAMPLING_HIGH_RATE, Y_SIGNALSAMPLING_HIGH_RATE_FILTERED,
  * Y_SIGNALSAMPLING_LOW_NOISE and Y_SIGNALSAMPLING_LOW_NOISE_FILTERED corresponding to the electric
  * signal sampling method to use
- * 
+ *
  * On failure, throws an exception or returns Y_SIGNALSAMPLING_INVALID.
  */
 -(Y_SIGNALSAMPLING_enum) get_signalSampling
@@ -355,13 +355,13 @@
  * The LOW_NOISE method uses a reduced acquisition frequency to reduce noise.
  * The LOW_NOISE_FILTERED method combines a reduced frequency with the median filter
  * to get measures as stable as possible when working on a noisy signal.
- * 
+ *
  * @param newval : a value among Y_SIGNALSAMPLING_HIGH_RATE, Y_SIGNALSAMPLING_HIGH_RATE_FILTERED,
  * Y_SIGNALSAMPLING_LOW_NOISE and Y_SIGNALSAMPLING_LOW_NOISE_FILTERED corresponding to the electric
  * signal sampling method to use
- * 
+ *
  * @return YAPI_SUCCESS if the call succeeds.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 -(int) set_signalSampling:(Y_SIGNALSAMPLING_enum) newval
@@ -384,7 +384,7 @@
  * <li>ModuleLogicalName.FunctionIdentifier</li>
  * <li>ModuleLogicalName.FunctionLogicalName</li>
  * </ul>
- * 
+ *
  * This function does not require that $THEFUNCTION$ is online at the time
  * it is invoked. The returned object is nevertheless valid.
  * Use the method YGenericSensor.isOnline() to test if $THEFUNCTION$ is
@@ -392,9 +392,9 @@
  * $AFUNCTION$ by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
- * 
+ *
  * @param func : a string that uniquely characterizes $THEFUNCTION$
- * 
+ *
  * @return a YGenericSensor object allowing you to drive $THEFUNCTION$.
  */
 +(YGenericSensor*) FindGenericSensor:(NSString*)func
@@ -413,7 +413,7 @@
  * The callback is invoked only during the execution of ySleep or yHandleEvents.
  * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
  * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
- * 
+ *
  * @param callback : the callback function to call, or a null pointer. The callback function should take two
  *         arguments: the function object of which the value has changed, and the character string describing
  *         the new advertised value.
@@ -453,7 +453,7 @@
  * The callback is invoked only during the execution of ySleep or yHandleEvents.
  * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
  * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
- * 
+ *
  * @param callback : the callback function to call, or a null pointer. The callback function should take two
  *         arguments: the function object of which the value has changed, and an YMeasure object describing
  *         the new advertised value.
@@ -483,9 +483,9 @@
 /**
  * Adjusts the signal bias so that the current signal value is need
  * precisely as zero.
- * 
+ *
  * @return YAPI_SUCCESS if the call succeeds.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 -(int) zeroAdjust

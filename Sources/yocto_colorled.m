@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_colorled.m 18321 2014-11-10 10:48:37Z seb $
+ * $Id: yocto_colorled.m 19608 2015-03-05 10:37:24Z seb $
  *
  * Implements the high-level API for ColorLed functions
  *
@@ -158,9 +158,9 @@
 //--- (YColorLed public methods implementation)
 /**
  * Returns the current RGB color of the led.
- * 
+ *
  * @return an integer corresponding to the current RGB color of the led
- * 
+ *
  * On failure, throws an exception or returns Y_RGBCOLOR_INVALID.
  */
 -(int) get_rgbColor
@@ -181,11 +181,11 @@
 
 /**
  * Changes the current color of the led, using a RGB color. Encoding is done as follows: 0xRRGGBB.
- * 
+ *
  * @param newval : an integer corresponding to the current color of the led, using a RGB color
- * 
+ *
  * @return YAPI_SUCCESS if the call succeeds.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 -(int) set_rgbColor:(int) newval
@@ -200,9 +200,9 @@
 }
 /**
  * Returns the current HSL color of the led.
- * 
+ *
  * @return an integer corresponding to the current HSL color of the led
- * 
+ *
  * On failure, throws an exception or returns Y_HSLCOLOR_INVALID.
  */
 -(int) get_hslColor
@@ -223,11 +223,11 @@
 
 /**
  * Changes the current color of the led, using a color HSL. Encoding is done as follows: 0xHHSSLL.
- * 
+ *
  * @param newval : an integer corresponding to the current color of the led, using a color HSL
- * 
+ *
  * @return YAPI_SUCCESS if the call succeeds.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 -(int) set_hslColor:(int) newval
@@ -269,12 +269,12 @@
 
 /**
  * Performs a smooth transition in the RGB color space between the current color and a target color.
- * 
+ *
  * @param rgb_target  : desired RGB color at the end of the transition
  * @param ms_duration : duration of the transition, in millisecond
- * 
+ *
  * @return YAPI_SUCCESS if the call succeeds.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 -(int) rgbMove:(int)rgb_target :(int)ms_duration
@@ -312,12 +312,12 @@
 
 /**
  * Performs a smooth transition in the HSL color space between the current color and a target color.
- * 
+ *
  * @param hsl_target  : desired HSL color at the end of the transition
  * @param ms_duration : duration of the transition, in millisecond
- * 
+ *
  * @return YAPI_SUCCESS if the call succeeds.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 -(int) hslMove:(int)hsl_target :(int)ms_duration
@@ -328,9 +328,9 @@
 }
 /**
  * Returns the configured color to be displayed when the module is turned on.
- * 
+ *
  * @return an integer corresponding to the configured color to be displayed when the module is turned on
- * 
+ *
  * On failure, throws an exception or returns Y_RGBCOLORATPOWERON_INVALID.
  */
 -(int) get_rgbColorAtPowerOn
@@ -351,12 +351,12 @@
 
 /**
  * Changes the color that the led will display by default when the module is turned on.
- * 
+ *
  * @param newval : an integer corresponding to the color that the led will display by default when the
  * module is turned on
- * 
+ *
  * @return YAPI_SUCCESS if the call succeeds.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 -(int) set_rgbColorAtPowerOn:(int) newval
@@ -371,9 +371,9 @@
 }
 /**
  * Returns the current length of the blinking sequence
- * 
+ *
  * @return an integer corresponding to the current length of the blinking sequence
- * 
+ *
  * On failure, throws an exception or returns Y_BLINKSEQSIZE_INVALID.
  */
 -(int) get_blinkSeqSize
@@ -393,9 +393,9 @@
 }
 /**
  * Returns the maximum length of the blinking sequence
- * 
+ *
  * @return an integer corresponding to the maximum length of the blinking sequence
- * 
+ *
  * On failure, throws an exception or returns Y_BLINKSEQMAXSIZE_INVALID.
  */
 -(int) get_blinkSeqMaxSize
@@ -418,9 +418,9 @@
  * sequences cannot be read from the device, this can be used
  * to detect if a specific blinking sequence is already
  * programmed.
- * 
+ *
  * @return an integer
- * 
+ *
  * On failure, throws an exception or returns Y_BLINKSEQSIGNATURE_INVALID.
  */
 -(int) get_blinkSeqSignature
@@ -474,7 +474,7 @@
  * <li>ModuleLogicalName.FunctionIdentifier</li>
  * <li>ModuleLogicalName.FunctionLogicalName</li>
  * </ul>
- * 
+ *
  * This function does not require that $THEFUNCTION$ is online at the time
  * it is invoked. The returned object is nevertheless valid.
  * Use the method YColorLed.isOnline() to test if $THEFUNCTION$ is
@@ -482,9 +482,9 @@
  * $AFUNCTION$ by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
- * 
+ *
  * @param func : a string that uniquely characterizes $THEFUNCTION$
- * 
+ *
  * @return a YColorLed object allowing you to drive $THEFUNCTION$.
  */
 +(YColorLed*) FindColorLed:(NSString*)func
@@ -503,7 +503,7 @@
  * The callback is invoked only during the execution of ySleep or yHandleEvents.
  * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
  * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
- * 
+ *
  * @param callback : the callback function to call, or a null pointer. The callback function should take two
  *         arguments: the function object of which the value has changed, and the character string describing
  *         the new advertised value.
@@ -546,10 +546,10 @@
 /**
  * Add a new transition to the blinking sequence, the move will
  * be performed in the HSL space.
- * 
+ *
  * @param HSLcolor : desired HSL color when the traisntion is completed
  * @param msDelay : duration of the color transition, in milliseconds.
- * 
+ *
  * @return YAPI_SUCCESS if the call succeeds.
  *         On failure, throws an exception or returns a negative error code.
  */
@@ -561,10 +561,10 @@
 /**
  * Add a new transition to the blinking sequence, the move will
  * be performed in the RGB space.
- * 
+ *
  * @param RGBcolor : desired RGB color when the transition is completed
  * @param msDelay : duration of the color transition, in milliseconds.
- * 
+ *
  * @return YAPI_SUCCESS if the call succeeds.
  *         On failure, throws an exception or returns a negative error code.
  */
@@ -577,7 +577,7 @@
  * Starts the preprogrammed blinking sequence. The sequence will
  * run in loop until it is stopped by stopBlinkSeq or an explicit
  * change.
- * 
+ *
  * @return YAPI_SUCCESS if the call succeeds.
  *         On failure, throws an exception or returns a negative error code.
  */
@@ -588,7 +588,7 @@
 
 /**
  * Stops the preprogrammed blinking sequence.
- * 
+ *
  * @return YAPI_SUCCESS if the call succeeds.
  *         On failure, throws an exception or returns a negative error code.
  */
@@ -599,7 +599,7 @@
 
 /**
  * Resets the preprogrammed blinking sequence.
- * 
+ *
  * @return YAPI_SUCCESS if the call succeeds.
  *         On failure, throws an exception or returns a negative error code.
  */

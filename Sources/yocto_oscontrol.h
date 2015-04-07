@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_oscontrol.h 15256 2014-03-06 10:19:01Z seb $
+ * $Id: yocto_oscontrol.h 19608 2015-03-05 10:37:24Z seb $
  *
  * Declares yFindOsControl(), the high-level API for OsControl functions
  *
@@ -50,7 +50,7 @@ typedef void (*YOsControlValueCallback)(YOsControl *func, NSString *functionValu
 //--- (YOsControl class start)
 /**
  * YOsControl Class: OS control
- * 
+ *
  * The OScontrol object allows some control over the operating system running a VirtualHub.
  * OsControl is available on the VirtualHub software only. This feature must be activated at the VirtualHub
  * start up with -o option.
@@ -76,10 +76,10 @@ typedef void (*YOsControlValueCallback)(YOsControl *func, NSString *functionValu
 /**
  * Returns the remaining number of seconds before the OS shutdown, or zero when no
  * shutdown has been scheduled.
- * 
+ *
  * @return an integer corresponding to the remaining number of seconds before the OS shutdown, or zero when no
  *         shutdown has been scheduled
- * 
+ *
  * On failure, throws an exception or returns Y_SHUTDOWNCOUNTDOWN_INVALID.
  */
 -(int)     get_shutdownCountdown;
@@ -99,7 +99,7 @@ typedef void (*YOsControlValueCallback)(YOsControl *func, NSString *functionValu
  * <li>ModuleLogicalName.FunctionIdentifier</li>
  * <li>ModuleLogicalName.FunctionLogicalName</li>
  * </ul>
- * 
+ *
  * This function does not require that the OS control is online at the time
  * it is invoked. The returned object is nevertheless valid.
  * Use the method YOsControl.isOnline() to test if the OS control is
@@ -107,9 +107,9 @@ typedef void (*YOsControlValueCallback)(YOsControl *func, NSString *functionValu
  * OS control by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
- * 
+ *
  * @param func : a string that uniquely characterizes the OS control
- * 
+ *
  * @return a YOsControl object allowing you to drive the OS control.
  */
 +(YOsControl*)     FindOsControl:(NSString*)func;
@@ -119,7 +119,7 @@ typedef void (*YOsControlValueCallback)(YOsControl *func, NSString *functionValu
  * The callback is invoked only during the execution of ySleep or yHandleEvents.
  * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
  * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
- * 
+ *
  * @param callback : the callback function to call, or a null pointer. The callback function should take two
  *         arguments: the function object of which the value has changed, and the character string describing
  *         the new advertised value.
@@ -131,11 +131,11 @@ typedef void (*YOsControlValueCallback)(YOsControl *func, NSString *functionValu
 
 /**
  * Schedules an OS shutdown after a given number of seconds.
- * 
+ *
  * @param secBeforeShutDown : number of seconds before shutdown
- * 
+ *
  * @return YAPI_SUCCESS when the call succeeds.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 -(int)     shutdown:(int)secBeforeShutDown;
@@ -143,7 +143,7 @@ typedef void (*YOsControlValueCallback)(YOsControl *func, NSString *functionValu
 
 /**
  * Continues the enumeration of OS control started using yFirstOsControl().
- * 
+ *
  * @return a pointer to a YOsControl object, corresponding to
  *         OS control currently online, or a null pointer
  *         if there are no more OS control to enumerate.
@@ -153,7 +153,7 @@ typedef void (*YOsControlValueCallback)(YOsControl *func, NSString *functionValu
  * Starts the enumeration of OS control currently accessible.
  * Use the method YOsControl.nextOsControl() to iterate on
  * next OS control.
- * 
+ *
  * @return a pointer to a YOsControl object, corresponding to
  *         the first OS control currently online, or a null pointer
  *         if there are none.
@@ -174,7 +174,7 @@ typedef void (*YOsControlValueCallback)(YOsControl *func, NSString *functionValu
  * <li>ModuleLogicalName.FunctionIdentifier</li>
  * <li>ModuleLogicalName.FunctionLogicalName</li>
  * </ul>
- * 
+ *
  * This function does not require that the OS control is online at the time
  * it is invoked. The returned object is nevertheless valid.
  * Use the method YOsControl.isOnline() to test if the OS control is
@@ -182,9 +182,9 @@ typedef void (*YOsControlValueCallback)(YOsControl *func, NSString *functionValu
  * OS control by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
- * 
+ *
  * @param func : a string that uniquely characterizes the OS control
- * 
+ *
  * @return a YOsControl object allowing you to drive the OS control.
  */
 YOsControl* yFindOsControl(NSString* func);
@@ -192,7 +192,7 @@ YOsControl* yFindOsControl(NSString* func);
  * Starts the enumeration of OS control currently accessible.
  * Use the method YOsControl.nextOsControl() to iterate on
  * next OS control.
- * 
+ *
  * @return a pointer to a YOsControl object, corresponding to
  *         the first OS control currently online, or a null pointer
  *         if there are none.

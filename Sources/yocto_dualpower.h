@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_dualpower.h 18321 2014-11-10 10:48:37Z seb $
+ * $Id: yocto_dualpower.h 19608 2015-03-05 10:37:24Z seb $
  *
  * Declares yFindDualPower(), the high-level API for DualPower functions
  *
@@ -69,7 +69,7 @@ typedef enum {
 //--- (YDualPower class start)
 /**
  * YDualPower Class: External power supply control interface
- * 
+ *
  * Yoctopuce application programming interface allows you to control
  * the power source to use for module functions that require high current.
  * The module can also automatically disconnect the external power
@@ -98,10 +98,10 @@ typedef enum {
 //--- (YDualPower public methods declaration)
 /**
  * Returns the current power source for module functions that require lots of current.
- * 
+ *
  * @return a value among Y_POWERSTATE_OFF, Y_POWERSTATE_FROM_USB and Y_POWERSTATE_FROM_EXT
  * corresponding to the current power source for module functions that require lots of current
- * 
+ *
  * On failure, throws an exception or returns Y_POWERSTATE_INVALID.
  */
 -(Y_POWERSTATE_enum)     get_powerState;
@@ -110,10 +110,10 @@ typedef enum {
 -(Y_POWERSTATE_enum) powerState;
 /**
  * Returns the selected power source for module functions that require lots of current.
- * 
+ *
  * @return a value among Y_POWERCONTROL_AUTO, Y_POWERCONTROL_FROM_USB, Y_POWERCONTROL_FROM_EXT and
  * Y_POWERCONTROL_OFF corresponding to the selected power source for module functions that require lots of current
- * 
+ *
  * On failure, throws an exception or returns Y_POWERCONTROL_INVALID.
  */
 -(Y_POWERCONTROL_enum)     get_powerControl;
@@ -122,13 +122,13 @@ typedef enum {
 -(Y_POWERCONTROL_enum) powerControl;
 /**
  * Changes the selected power source for module functions that require lots of current.
- * 
+ *
  * @param newval : a value among Y_POWERCONTROL_AUTO, Y_POWERCONTROL_FROM_USB, Y_POWERCONTROL_FROM_EXT
  * and Y_POWERCONTROL_OFF corresponding to the selected power source for module functions that require
  * lots of current
- * 
+ *
  * @return YAPI_SUCCESS if the call succeeds.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 -(int)     set_powerControl:(Y_POWERCONTROL_enum) newval;
@@ -136,9 +136,9 @@ typedef enum {
 
 /**
  * Returns the measured voltage on the external power source, in millivolts.
- * 
+ *
  * @return an integer corresponding to the measured voltage on the external power source, in millivolts
- * 
+ *
  * On failure, throws an exception or returns Y_EXTVOLTAGE_INVALID.
  */
 -(int)     get_extVoltage;
@@ -155,7 +155,7 @@ typedef enum {
  * <li>ModuleLogicalName.FunctionIdentifier</li>
  * <li>ModuleLogicalName.FunctionLogicalName</li>
  * </ul>
- * 
+ *
  * This function does not require that the power control is online at the time
  * it is invoked. The returned object is nevertheless valid.
  * Use the method YDualPower.isOnline() to test if the power control is
@@ -163,9 +163,9 @@ typedef enum {
  * a dual power control by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
- * 
+ *
  * @param func : a string that uniquely characterizes the power control
- * 
+ *
  * @return a YDualPower object allowing you to drive the power control.
  */
 +(YDualPower*)     FindDualPower:(NSString*)func;
@@ -175,7 +175,7 @@ typedef enum {
  * The callback is invoked only during the execution of ySleep or yHandleEvents.
  * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
  * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
- * 
+ *
  * @param callback : the callback function to call, or a null pointer. The callback function should take two
  *         arguments: the function object of which the value has changed, and the character string describing
  *         the new advertised value.
@@ -188,7 +188,7 @@ typedef enum {
 
 /**
  * Continues the enumeration of dual power controls started using yFirstDualPower().
- * 
+ *
  * @return a pointer to a YDualPower object, corresponding to
  *         a dual power control currently online, or a null pointer
  *         if there are no more dual power controls to enumerate.
@@ -198,7 +198,7 @@ typedef enum {
  * Starts the enumeration of dual power controls currently accessible.
  * Use the method YDualPower.nextDualPower() to iterate on
  * next dual power controls.
- * 
+ *
  * @return a pointer to a YDualPower object, corresponding to
  *         the first dual power control currently online, or a null pointer
  *         if there are none.
@@ -219,7 +219,7 @@ typedef enum {
  * <li>ModuleLogicalName.FunctionIdentifier</li>
  * <li>ModuleLogicalName.FunctionLogicalName</li>
  * </ul>
- * 
+ *
  * This function does not require that the power control is online at the time
  * it is invoked. The returned object is nevertheless valid.
  * Use the method YDualPower.isOnline() to test if the power control is
@@ -227,9 +227,9 @@ typedef enum {
  * a dual power control by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
- * 
+ *
  * @param func : a string that uniquely characterizes the power control
- * 
+ *
  * @return a YDualPower object allowing you to drive the power control.
  */
 YDualPower* yFindDualPower(NSString* func);
@@ -237,7 +237,7 @@ YDualPower* yFindDualPower(NSString* func);
  * Starts the enumeration of dual power controls currently accessible.
  * Use the method YDualPower.nextDualPower() to iterate on
  * next dual power controls.
- * 
+ *
  * @return a pointer to a YDualPower object, corresponding to
  *         the first dual power control currently online, or a null pointer
  *         if there are none.

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_carbondioxide.h 15256 2014-03-06 10:19:01Z seb $
+ * $Id: yocto_carbondioxide.h 19619 2015-03-05 18:11:23Z mvuilleu $
  *
  * Declares yFindCarbonDioxide(), the high-level API for CarbonDioxide functions
  *
@@ -45,20 +45,26 @@ CF_EXTERN_C_BEGIN
 //--- (YCarbonDioxide globals)
 typedef void (*YCarbonDioxideValueCallback)(YCarbonDioxide *func, NSString *functionValue);
 typedef void (*YCarbonDioxideTimedReportCallback)(YCarbonDioxide *func, YMeasure *measure);
+#define Y_ABCPERIOD_INVALID             YAPI_INVALID_INT
+#define Y_COMMAND_INVALID               YAPI_INVALID_STRING
 //--- (end of YCarbonDioxide globals)
 
 //--- (YCarbonDioxide class start)
 /**
  * YCarbonDioxide Class: CarbonDioxide function interface
- * 
- * The Yoctopuce application programming interface allows you to read an instant
- * measure of the sensor, as well as the minimal and maximal values observed.
+ *
+ * The Yoctopuce class YCarbonDioxide allows you to read and configure Yoctopuce CO2
+ * sensors. It inherits from YSensor class the core functions to read measurements,
+ * register callback functions, access to the autonomous datalogger.
+ * This class adds the ability to perform manual calibration if reuired.
  */
 @interface YCarbonDioxide : YSensor
 //--- (end of YCarbonDioxide class start)
 {
 @protected
 //--- (YCarbonDioxide attributes declaration)
+    int             _abcPeriod;
+    NSString*       _command;
     YCarbonDioxideValueCallback _valueCallbackCarbonDioxide;
     YCarbonDioxideTimedReportCallback _timedReportCallbackCarbonDioxide;
 //--- (end of YCarbonDioxide attributes declaration)
@@ -73,6 +79,41 @@ typedef void (*YCarbonDioxideTimedReportCallback)(YCarbonDioxide *func, YMeasure
 //--- (end of YCarbonDioxide private methods declaration)
 //--- (YCarbonDioxide public methods declaration)
 /**
+ * Returns the Automatic Baseline Calibration period, in hours. A negative value
+ * means that automatic baseline calibration is disabled.
+ *
+ * @return an integer corresponding to the Automatic Baseline Calibration period, in hours
+ *
+ * On failure, throws an exception or returns Y_ABCPERIOD_INVALID.
+ */
+-(int)     get_abcPeriod;
+
+
+-(int) abcPeriod;
+/**
+ * Modifies Automatic Baseline Calibration period, in hours. If you need
+ * to disable automatic baseline calibration (for instance when using the
+ * sensor in an environment that is constantly above 400ppm CO2), set the
+ * period to -1. Remember to call the saveToFlash() method of the
+ * module if the modification must be kept.
+ *
+ * @param newval : an integer
+ *
+ * @return YAPI_SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     set_abcPeriod:(int) newval;
+-(int)     setAbcPeriod:(int) newval;
+
+-(NSString*)     get_command;
+
+
+-(NSString*) command;
+-(int)     set_command:(NSString*) newval;
+-(int)     setCommand:(NSString*) newval;
+
+/**
  * Retrieves a CO2 sensor for a given identifier.
  * The identifier can be specified using several formats:
  * <ul>
@@ -82,7 +123,7 @@ typedef void (*YCarbonDioxideTimedReportCallback)(YCarbonDioxide *func, YMeasure
  * <li>ModuleLogicalName.FunctionIdentifier</li>
  * <li>ModuleLogicalName.FunctionLogicalName</li>
  * </ul>
- * 
+ *
  * This function does not require that the CO2 sensor is online at the time
  * it is invoked. The returned object is nevertheless valid.
  * Use the method YCarbonDioxide.isOnline() to test if the CO2 sensor is
@@ -90,9 +131,9 @@ typedef void (*YCarbonDioxideTimedReportCallback)(YCarbonDioxide *func, YMeasure
  * a CO2 sensor by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
- * 
+ *
  * @param func : a string that uniquely characterizes the CO2 sensor
- * 
+ *
  * @return a YCarbonDioxide object allowing you to drive the CO2 sensor.
  */
 +(YCarbonDioxide*)     FindCarbonDioxide:(NSString*)func;
@@ -102,7 +143,7 @@ typedef void (*YCarbonDioxideTimedReportCallback)(YCarbonDioxide *func, YMeasure
  * The callback is invoked only during the execution of ySleep or yHandleEvents.
  * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
  * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
- * 
+ *
  * @param callback : the callback function to call, or a null pointer. The callback function should take two
  *         arguments: the function object of which the value has changed, and the character string describing
  *         the new advertised value.
@@ -117,7 +158,7 @@ typedef void (*YCarbonDioxideTimedReportCallback)(YCarbonDioxide *func, YMeasure
  * The callback is invoked only during the execution of ySleep or yHandleEvents.
  * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
  * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
- * 
+ *
  * @param callback : the callback function to call, or a null pointer. The callback function should take two
  *         arguments: the function object of which the value has changed, and an YMeasure object describing
  *         the new advertised value.
@@ -127,10 +168,44 @@ typedef void (*YCarbonDioxideTimedReportCallback)(YCarbonDioxide *func, YMeasure
 
 -(int)     _invokeTimedReportCallback:(YMeasure*)value;
 
+/**
+ * Triggers a baseline calibration at standard CO2 ambiant level (400ppm).
+ * It is normally not necessary to manually calibrate the sensor, because
+ * the built-in automatic baseline calibration procedure will automatically
+ * fix any long-term drift based on the lowest level of CO2 observed over the
+ * automatic calibration period. However, if you disable automatic baseline
+ * calibration, you may want to manually trigger a calibration from time to
+ * time. Before starting a baseline calibration, make sure to put the sensor
+ * in a standard environment (e.g. outside in fresh air) at around 400ppm.
+ *
+ * @return YAPI_SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     triggetBaselineCalibration;
+
+/**
+ * Triggers a zero calibration of the sensor on carbon dioxide-free air.
+ * It is normally not necessary to manually calibrate the sensor, because
+ * the built-in automatic baseline calibration procedure will automatically
+ * fix any long-term drift based on the lowest level of CO2 observed over the
+ * automatic calibration period. However, if you disable automatic baseline
+ * calibration, you may want to manually trigger a calibration from time to
+ * time. Before starting a zero calibration, you should circulate carbon
+ * dioxide-free air within the sensor for a minute or two, using a small pipe
+ * connected to the sensor. Please contact support@yoctopuce.com for more details
+ * on the zero calibration procedure.
+ *
+ * @return YAPI_SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     triggetZeroCalibration;
+
 
 /**
  * Continues the enumeration of CO2 sensors started using yFirstCarbonDioxide().
- * 
+ *
  * @return a pointer to a YCarbonDioxide object, corresponding to
  *         a CO2 sensor currently online, or a null pointer
  *         if there are no more CO2 sensors to enumerate.
@@ -140,7 +215,7 @@ typedef void (*YCarbonDioxideTimedReportCallback)(YCarbonDioxide *func, YMeasure
  * Starts the enumeration of CO2 sensors currently accessible.
  * Use the method YCarbonDioxide.nextCarbonDioxide() to iterate on
  * next CO2 sensors.
- * 
+ *
  * @return a pointer to a YCarbonDioxide object, corresponding to
  *         the first CO2 sensor currently online, or a null pointer
  *         if there are none.
@@ -161,7 +236,7 @@ typedef void (*YCarbonDioxideTimedReportCallback)(YCarbonDioxide *func, YMeasure
  * <li>ModuleLogicalName.FunctionIdentifier</li>
  * <li>ModuleLogicalName.FunctionLogicalName</li>
  * </ul>
- * 
+ *
  * This function does not require that the CO2 sensor is online at the time
  * it is invoked. The returned object is nevertheless valid.
  * Use the method YCarbonDioxide.isOnline() to test if the CO2 sensor is
@@ -169,9 +244,9 @@ typedef void (*YCarbonDioxideTimedReportCallback)(YCarbonDioxide *func, YMeasure
  * a CO2 sensor by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
- * 
+ *
  * @param func : a string that uniquely characterizes the CO2 sensor
- * 
+ *
  * @return a YCarbonDioxide object allowing you to drive the CO2 sensor.
  */
 YCarbonDioxide* yFindCarbonDioxide(NSString* func);
@@ -179,7 +254,7 @@ YCarbonDioxide* yFindCarbonDioxide(NSString* func);
  * Starts the enumeration of CO2 sensors currently accessible.
  * Use the method YCarbonDioxide.nextCarbonDioxide() to iterate on
  * next CO2 sensors.
- * 
+ *
  * @return a pointer to a YCarbonDioxide object, corresponding to
  *         the first CO2 sensor currently online, or a null pointer
  *         if there are none.

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_power.h 15256 2014-03-06 10:19:01Z seb $
+ * $Id: yocto_power.h 19608 2015-03-05 10:37:24Z seb $
  *
  * Declares yFindPower(), the high-level API for Power functions
  *
@@ -53,9 +53,11 @@ typedef void (*YPowerTimedReportCallback)(YPower *func, YMeasure *measure);
 //--- (YPower class start)
 /**
  * YPower Class: Power function interface
- * 
- * The Yoctopuce application programming interface allows you to read an instant
- * measure of the sensor, as well as the minimal and maximal values observed.
+ *
+ * The Yoctopuce class YPower allows you to read and configure Yoctopuce power
+ * sensors. It inherits from YSensor class the core functions to read measurements,
+ * register callback functions, access to the autonomous datalogger.
+ * This class adds the ability to access the energy counter and the power factor.
  */
 @interface YPower : YSensor
 //--- (end of YPower class start)
@@ -81,10 +83,10 @@ typedef void (*YPowerTimedReportCallback)(YPower *func, YMeasure *measure);
 /**
  * Returns the power factor (the ratio between the real power consumed,
  * measured in W, and the apparent power provided, measured in VA).
- * 
+ *
  * @return a floating point number corresponding to the power factor (the ratio between the real power consumed,
  *         measured in W, and the apparent power provided, measured in VA)
- * 
+ *
  * On failure, throws an exception or returns Y_COSPHI_INVALID.
  */
 -(double)     get_cosPhi;
@@ -97,10 +99,10 @@ typedef void (*YPowerTimedReportCallback)(YPower *func, YMeasure *measure);
 /**
  * Returns the energy counter, maintained by the wattmeter by integrating the power consumption over time.
  * Note that this counter is reset at each start of the device.
- * 
+ *
  * @return a floating point number corresponding to the energy counter, maintained by the wattmeter by
  * integrating the power consumption over time
- * 
+ *
  * On failure, throws an exception or returns Y_METER_INVALID.
  */
 -(double)     get_meter;
@@ -109,9 +111,9 @@ typedef void (*YPowerTimedReportCallback)(YPower *func, YMeasure *measure);
 -(double) meter;
 /**
  * Returns the elapsed time since last energy counter reset, in seconds.
- * 
+ *
  * @return an integer corresponding to the elapsed time since last energy counter reset, in seconds
- * 
+ *
  * On failure, throws an exception or returns Y_METERTIMER_INVALID.
  */
 -(int)     get_meterTimer;
@@ -128,7 +130,7 @@ typedef void (*YPowerTimedReportCallback)(YPower *func, YMeasure *measure);
  * <li>ModuleLogicalName.FunctionIdentifier</li>
  * <li>ModuleLogicalName.FunctionLogicalName</li>
  * </ul>
- * 
+ *
  * This function does not require that the electrical power sensor is online at the time
  * it is invoked. The returned object is nevertheless valid.
  * Use the method YPower.isOnline() to test if the electrical power sensor is
@@ -136,9 +138,9 @@ typedef void (*YPowerTimedReportCallback)(YPower *func, YMeasure *measure);
  * a electrical power sensor by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
- * 
+ *
  * @param func : a string that uniquely characterizes the electrical power sensor
- * 
+ *
  * @return a YPower object allowing you to drive the electrical power sensor.
  */
 +(YPower*)     FindPower:(NSString*)func;
@@ -148,7 +150,7 @@ typedef void (*YPowerTimedReportCallback)(YPower *func, YMeasure *measure);
  * The callback is invoked only during the execution of ySleep or yHandleEvents.
  * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
  * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
- * 
+ *
  * @param callback : the callback function to call, or a null pointer. The callback function should take two
  *         arguments: the function object of which the value has changed, and the character string describing
  *         the new advertised value.
@@ -163,7 +165,7 @@ typedef void (*YPowerTimedReportCallback)(YPower *func, YMeasure *measure);
  * The callback is invoked only during the execution of ySleep or yHandleEvents.
  * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
  * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
- * 
+ *
  * @param callback : the callback function to call, or a null pointer. The callback function should take two
  *         arguments: the function object of which the value has changed, and an YMeasure object describing
  *         the new advertised value.
@@ -175,9 +177,9 @@ typedef void (*YPowerTimedReportCallback)(YPower *func, YMeasure *measure);
 
 /**
  * Resets the energy counter.
- * 
+ *
  * @return YAPI_SUCCESS if the call succeeds.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 -(int)     reset;
@@ -185,7 +187,7 @@ typedef void (*YPowerTimedReportCallback)(YPower *func, YMeasure *measure);
 
 /**
  * Continues the enumeration of electrical power sensors started using yFirstPower().
- * 
+ *
  * @return a pointer to a YPower object, corresponding to
  *         a electrical power sensor currently online, or a null pointer
  *         if there are no more electrical power sensors to enumerate.
@@ -195,7 +197,7 @@ typedef void (*YPowerTimedReportCallback)(YPower *func, YMeasure *measure);
  * Starts the enumeration of electrical power sensors currently accessible.
  * Use the method YPower.nextPower() to iterate on
  * next electrical power sensors.
- * 
+ *
  * @return a pointer to a YPower object, corresponding to
  *         the first electrical power sensor currently online, or a null pointer
  *         if there are none.
@@ -216,7 +218,7 @@ typedef void (*YPowerTimedReportCallback)(YPower *func, YMeasure *measure);
  * <li>ModuleLogicalName.FunctionIdentifier</li>
  * <li>ModuleLogicalName.FunctionLogicalName</li>
  * </ul>
- * 
+ *
  * This function does not require that the electrical power sensor is online at the time
  * it is invoked. The returned object is nevertheless valid.
  * Use the method YPower.isOnline() to test if the electrical power sensor is
@@ -224,9 +226,9 @@ typedef void (*YPowerTimedReportCallback)(YPower *func, YMeasure *measure);
  * a electrical power sensor by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
- * 
+ *
  * @param func : a string that uniquely characterizes the electrical power sensor
- * 
+ *
  * @return a YPower object allowing you to drive the electrical power sensor.
  */
 YPower* yFindPower(NSString* func);
@@ -234,7 +236,7 @@ YPower* yFindPower(NSString* func);
  * Starts the enumeration of electrical power sensors currently accessible.
  * Use the method YPower.nextPower() to iterate on
  * next electrical power sensors.
- * 
+ *
  * @return a pointer to a YPower object, corresponding to
  *         the first electrical power sensor currently online, or a null pointer
  *         if there are none.

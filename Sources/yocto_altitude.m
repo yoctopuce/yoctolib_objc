@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_altitude.m 18321 2014-11-10 10:48:37Z seb $
+ * $Id: yocto_altitude.m 19608 2015-03-05 10:37:24Z seb $
  *
  * Implements the high-level API for Altitude functions
  *
@@ -54,6 +54,7 @@
     _className = @"Altitude";
 //--- (YAltitude attributes initialization)
     _qnh = Y_QNH_INVALID;
+    _technology = Y_TECHNOLOGY_INVALID;
     _valueCallbackAltitude = NULL;
     _timedReportCallbackAltitude = NULL;
 //--- (end of YAltitude attributes initialization)
@@ -63,6 +64,8 @@
 -(void)  dealloc
 {
 //--- (YAltitude cleanup)
+    ARC_release(_technology);
+    _technology = nil;
     ARC_dealloc(super);
 //--- (end of YAltitude cleanup)
 }
@@ -75,6 +78,13 @@
         _qnh =  floor(atof(j->token) * 1000.0 / 65536.0 + 0.5) / 1000.0;
         return 1;
     }
+    if(!strcmp(j->token, "technology")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+       ARC_release(_technology);
+        _technology =  [self _parseString:j];
+        ARC_retain(_technology);
+        return 1;
+    }
     return [super _parseAttr:j];
 }
 //--- (end of YAltitude private methods implementation)
@@ -83,11 +93,11 @@
 /**
  * Changes the current estimated altitude. This allows to compensate for
  * ambient pressure variations and to work in relative mode.
- * 
+ *
  * @param newval : a floating point number corresponding to the current estimated altitude
- * 
+ *
  * @return YAPI_SUCCESS if the call succeeds.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 -(int) set_currentValue:(double) newval
@@ -105,13 +115,13 @@
  * Changes the barometric pressure adjusted to sea level used to compute
  * the altitude (QNH). This enables you to compensate for atmospheric pressure
  * changes due to weather conditions.
- * 
+ *
  * @param newval : a floating point number corresponding to the barometric pressure adjusted to sea
  * level used to compute
  *         the altitude (QNH)
- * 
+ *
  * @return YAPI_SUCCESS if the call succeeds.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 -(int) set_qnh:(double) newval
@@ -127,10 +137,10 @@
 /**
  * Returns the barometric pressure adjusted to sea level used to compute
  * the altitude (QNH).
- * 
+ *
  * @return a floating point number corresponding to the barometric pressure adjusted to sea level used to compute
  *         the altitude (QNH)
- * 
+ *
  * On failure, throws an exception or returns Y_QNH_INVALID.
  */
 -(double) get_qnh
@@ -149,6 +159,30 @@
     return [self get_qnh];
 }
 /**
+ * Returns the technology used by the sesnor to compute
+ * altitude. Possibles values are  "barometric" and "gps"
+ *
+ * @return a string corresponding to the technology used by the sesnor to compute
+ *         altitude
+ *
+ * On failure, throws an exception or returns Y_TECHNOLOGY_INVALID.
+ */
+-(NSString*) get_technology
+{
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_TECHNOLOGY_INVALID;
+        }
+    }
+    return _technology;
+}
+
+
+-(NSString*) technology
+{
+    return [self get_technology];
+}
+/**
  * Retrieves $AFUNCTION$ for a given identifier.
  * The identifier can be specified using several formats:
  * <ul>
@@ -158,7 +192,7 @@
  * <li>ModuleLogicalName.FunctionIdentifier</li>
  * <li>ModuleLogicalName.FunctionLogicalName</li>
  * </ul>
- * 
+ *
  * This function does not require that $THEFUNCTION$ is online at the time
  * it is invoked. The returned object is nevertheless valid.
  * Use the method YAltitude.isOnline() to test if $THEFUNCTION$ is
@@ -166,9 +200,9 @@
  * $AFUNCTION$ by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
- * 
+ *
  * @param func : a string that uniquely characterizes $THEFUNCTION$
- * 
+ *
  * @return a YAltitude object allowing you to drive $THEFUNCTION$.
  */
 +(YAltitude*) FindAltitude:(NSString*)func
@@ -187,7 +221,7 @@
  * The callback is invoked only during the execution of ySleep or yHandleEvents.
  * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
  * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
- * 
+ *
  * @param callback : the callback function to call, or a null pointer. The callback function should take two
  *         arguments: the function object of which the value has changed, and the character string describing
  *         the new advertised value.
@@ -227,7 +261,7 @@
  * The callback is invoked only during the execution of ySleep or yHandleEvents.
  * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
  * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
- * 
+ *
  * @param callback : the callback function to call, or a null pointer. The callback function should take two
  *         arguments: the function object of which the value has changed, and an YMeasure object describing
  *         the new advertised value.

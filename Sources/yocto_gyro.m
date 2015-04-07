@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_gyro.m 18321 2014-11-10 10:48:37Z seb $
+ * $Id: yocto_gyro.m 19704 2015-03-13 06:10:37Z mvuilleu $
  *
  * Implements the high-level API for Gyro functions
  *
@@ -83,7 +83,7 @@
  * <li>ModuleLogicalName.FunctionIdentifier</li>
  * <li>ModuleLogicalName.FunctionLogicalName</li>
  * </ul>
- * 
+ *
  * This function does not require that the quaternion component is online at the time
  * it is invoked. The returned object is nevertheless valid.
  * Use the method YQt.isOnline() to test if the quaternion component is
@@ -91,9 +91,9 @@
  * a quaternion component by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
- * 
+ *
  * @param func : a string that uniquely characterizes the quaternion component
- * 
+ *
  * @return a YQt object allowing you to drive the quaternion component.
  */
 +(YQt*) FindQt:(NSString*)func
@@ -112,7 +112,7 @@
  * The callback is invoked only during the execution of ySleep or yHandleEvents.
  * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
  * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
- * 
+ *
  * @param callback : the callback function to call, or a null pointer. The callback function should take two
  *         arguments: the function object of which the value has changed, and the character string describing
  *         the new advertised value.
@@ -152,7 +152,7 @@
  * The callback is invoked only during the execution of ySleep or yHandleEvents.
  * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
  * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
- * 
+ *
  * @param callback : the callback function to call, or a null pointer. The callback function should take two
  *         arguments: the function object of which the value has changed, and an YMeasure object describing
  *         the new advertised value.
@@ -296,10 +296,10 @@ static void yInternalGyroCallback(YQt *obj, NSString *value)
 //--- (generated code: YGyro public methods implementation)
 /**
  * Returns the angular velocity around the X axis of the device, as a floating point number.
- * 
+ *
  * @return a floating point number corresponding to the angular velocity around the X axis of the
  * device, as a floating point number
- * 
+ *
  * On failure, throws an exception or returns Y_XVALUE_INVALID.
  */
 -(double) get_xValue
@@ -319,10 +319,10 @@ static void yInternalGyroCallback(YQt *obj, NSString *value)
 }
 /**
  * Returns the angular velocity around the Y axis of the device, as a floating point number.
- * 
+ *
  * @return a floating point number corresponding to the angular velocity around the Y axis of the
  * device, as a floating point number
- * 
+ *
  * On failure, throws an exception or returns Y_YVALUE_INVALID.
  */
 -(double) get_yValue
@@ -342,10 +342,10 @@ static void yInternalGyroCallback(YQt *obj, NSString *value)
 }
 /**
  * Returns the angular velocity around the Z axis of the device, as a floating point number.
- * 
+ *
  * @return a floating point number corresponding to the angular velocity around the Z axis of the
  * device, as a floating point number
- * 
+ *
  * On failure, throws an exception or returns Y_ZVALUE_INVALID.
  */
 -(double) get_zValue
@@ -373,7 +373,7 @@ static void yInternalGyroCallback(YQt *obj, NSString *value)
  * <li>ModuleLogicalName.FunctionIdentifier</li>
  * <li>ModuleLogicalName.FunctionLogicalName</li>
  * </ul>
- * 
+ *
  * This function does not require that the gyroscope is online at the time
  * it is invoked. The returned object is nevertheless valid.
  * Use the method YGyro.isOnline() to test if the gyroscope is
@@ -381,9 +381,9 @@ static void yInternalGyroCallback(YQt *obj, NSString *value)
  * a gyroscope by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
- * 
+ *
  * @param func : a string that uniquely characterizes the gyroscope
- * 
+ *
  * @return a YGyro object allowing you to drive the gyroscope.
  */
 +(YGyro*) FindGyro:(NSString*)func
@@ -402,7 +402,7 @@ static void yInternalGyroCallback(YQt *obj, NSString *value)
  * The callback is invoked only during the execution of ySleep or yHandleEvents.
  * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
  * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
- * 
+ *
  * @param callback : the callback function to call, or a null pointer. The callback function should take two
  *         arguments: the function object of which the value has changed, and the character string describing
  *         the new advertised value.
@@ -442,7 +442,7 @@ static void yInternalGyroCallback(YQt *obj, NSString *value)
  * The callback is invoked only during the execution of ySleep or yHandleEvents.
  * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
  * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
- * 
+ *
  * @param callback : the callback function to call, or a null pointer. The callback function should take two
  *         arguments: the function object of which the value has changed, and an YMeasure object describing
  *         the new advertised value.
@@ -551,7 +551,7 @@ static void yInternalGyroCallback(YQt *obj, NSString *value)
  * The axis corresponding to the roll angle can be mapped to any
  * of the device X, Y or Z physical directions using methods of
  * the class YRefFrame.
- * 
+ *
  * @return a floating-point number corresponding to roll angle
  *         in degrees, between -180 and +180.
  */
@@ -568,7 +568,7 @@ static void yInternalGyroCallback(YQt *obj, NSString *value)
  * The axis corresponding to the pitch angle can be mapped to any
  * of the device X, Y or Z physical directions using methods of
  * the class YRefFrame.
- * 
+ *
  * @return a floating-point number corresponding to pitch angle
  *         in degrees, between -90 and +90.
  */
@@ -585,7 +585,7 @@ static void yInternalGyroCallback(YQt *obj, NSString *value)
  * The axis corresponding to the heading can be mapped to any
  * of the device X, Y or Z physical directions using methods of
  * the class YRefFrame.
- * 
+ *
  * @return a floating-point number corresponding to heading
  *         in degrees, between 0 and 360.
  */
@@ -600,7 +600,7 @@ static void yInternalGyroCallback(YQt *obj, NSString *value)
  * describing the device estimated orientation, based on the
  * integration of gyroscopic measures combined with acceleration and
  * magnetic field measurements.
- * 
+ *
  * @return a floating-point number corresponding to the w
  *         component of the quaternion.
  */
@@ -616,12 +616,13 @@ static void yInternalGyroCallback(YQt *obj, NSString *value)
  * integration of gyroscopic measures combined with acceleration and
  * magnetic field measurements. The x component is
  * mostly correlated with rotations on the roll axis.
- * 
+ *
  * @return a floating-point number corresponding to the x
  *         component of the quaternion.
  */
 -(double) get_quaternionX
 {
+    [self _loadQuaternion];
     return _x;
 }
 
@@ -631,12 +632,13 @@ static void yInternalGyroCallback(YQt *obj, NSString *value)
  * integration of gyroscopic measures combined with acceleration and
  * magnetic field measurements. The y component is
  * mostly correlated with rotations on the pitch axis.
- * 
+ *
  * @return a floating-point number corresponding to the y
  *         component of the quaternion.
  */
 -(double) get_quaternionY
 {
+    [self _loadQuaternion];
     return _y;
 }
 
@@ -646,12 +648,13 @@ static void yInternalGyroCallback(YQt *obj, NSString *value)
  * integration of gyroscopic measures combined with acceleration and
  * magnetic field measurements. The x component is
  * mostly correlated with changes of heading.
- * 
+ *
  * @return a floating-point number corresponding to the z
  *         component of the quaternion.
  */
 -(double) get_quaternionZ
 {
+    [self _loadQuaternion];
     return _z;
 }
 
@@ -662,7 +665,7 @@ static void yInternalGyroCallback(YQt *obj, NSString *value)
  * This provides control over the time when the callback is triggered.
  * For good responsiveness, remember to call one of these two functions periodically.
  * To unregister a callback, pass a null pointer as argument.
- * 
+ *
  * @param callback : the callback function to invoke, or a null pointer.
  *         The callback function should take five arguments:
  *         the YGyro object of the turning device, and the floating
@@ -703,7 +706,7 @@ static void yInternalGyroCallback(YQt *obj, NSString *value)
  * This provides control over the time when the callback is triggered.
  * For good responsiveness, remember to call one of these two functions periodically.
  * To unregister a callback, pass a null pointer as argument.
- * 
+ *
  * @param callback : the callback function to invoke, or a null pointer.
  *         The callback function should take four arguments:
  *         the YGyro object of the turning device, and the floating

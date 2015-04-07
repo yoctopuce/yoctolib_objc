@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_pwmoutput.m 18321 2014-11-10 10:48:37Z seb $
+ * $Id: yocto_pwmoutput.m 19608 2015-03-05 10:37:24Z seb $
  *
  * Implements the high-level API for PwmOutput functions
  *
@@ -126,9 +126,9 @@
 //--- (YPwmOutput public methods implementation)
 /**
  * Returns the state of the PWMs.
- * 
+ *
  * @return either Y_ENABLED_FALSE or Y_ENABLED_TRUE, according to the state of the PWMs
- * 
+ *
  * On failure, throws an exception or returns Y_ENABLED_INVALID.
  */
 -(Y_ENABLED_enum) get_enabled
@@ -149,11 +149,11 @@
 
 /**
  * Stops or starts the PWM.
- * 
+ *
  * @param newval : either Y_ENABLED_FALSE or Y_ENABLED_TRUE
- * 
+ *
  * @return YAPI_SUCCESS if the call succeeds.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 -(int) set_enabled:(Y_ENABLED_enum) newval
@@ -170,11 +170,11 @@
 /**
  * Changes the PWM frequency. The duty cycle is kept unchanged thanks to an
  * automatic pulse width change.
- * 
+ *
  * @param newval : a floating point number corresponding to the PWM frequency
- * 
+ *
  * @return YAPI_SUCCESS if the call succeeds.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 -(int) set_frequency:(double) newval
@@ -189,9 +189,9 @@
 }
 /**
  * Returns the PWM frequency in Hz.
- * 
+ *
  * @return a floating point number corresponding to the PWM frequency in Hz
- * 
+ *
  * On failure, throws an exception or returns Y_FREQUENCY_INVALID.
  */
 -(double) get_frequency
@@ -212,11 +212,11 @@
 
 /**
  * Changes the PWM period in milliseconds.
- * 
+ *
  * @param newval : a floating point number corresponding to the PWM period in milliseconds
- * 
+ *
  * @return YAPI_SUCCESS if the call succeeds.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 -(int) set_period:(double) newval
@@ -231,9 +231,9 @@
 }
 /**
  * Returns the PWM period in milliseconds.
- * 
+ *
  * @return a floating point number corresponding to the PWM period in milliseconds
- * 
+ *
  * On failure, throws an exception or returns Y_PERIOD_INVALID.
  */
 -(double) get_period
@@ -254,11 +254,11 @@
 
 /**
  * Changes the PWM duty cycle, in per cents.
- * 
+ *
  * @param newval : a floating point number corresponding to the PWM duty cycle, in per cents
- * 
+ *
  * @return YAPI_SUCCESS if the call succeeds.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 -(int) set_dutyCycle:(double) newval
@@ -273,9 +273,9 @@
 }
 /**
  * Returns the PWM duty cycle, in per cents.
- * 
+ *
  * @return a floating point number corresponding to the PWM duty cycle, in per cents
- * 
+ *
  * On failure, throws an exception or returns Y_DUTYCYCLE_INVALID.
  */
 -(double) get_dutyCycle
@@ -297,11 +297,11 @@
 /**
  * Changes the PWM pulse length, in milliseconds. A pulse length cannot be longer than period,
  * otherwise it is truncated.
- * 
+ *
  * @param newval : a floating point number corresponding to the PWM pulse length, in milliseconds
- * 
+ *
  * @return YAPI_SUCCESS if the call succeeds.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 -(int) set_pulseDuration:(double) newval
@@ -316,10 +316,10 @@
 }
 /**
  * Returns the PWM pulse length in milliseconds, as a floating point number.
- * 
+ *
  * @return a floating point number corresponding to the PWM pulse length in milliseconds, as a
  * floating point number
- * 
+ *
  * On failure, throws an exception or returns Y_PULSEDURATION_INVALID.
  */
 -(double) get_pulseDuration
@@ -365,10 +365,10 @@
 }
 /**
  * Returns the state of the PWM at device power on.
- * 
+ *
  * @return either Y_ENABLEDATPOWERON_FALSE or Y_ENABLEDATPOWERON_TRUE, according to the state of the
  * PWM at device power on
- * 
+ *
  * On failure, throws an exception or returns Y_ENABLEDATPOWERON_INVALID.
  */
 -(Y_ENABLEDATPOWERON_enum) get_enabledAtPowerOn
@@ -390,12 +390,12 @@
 /**
  * Changes the state of the PWM at device power on. Remember to call the matching module saveToFlash()
  * method, otherwise this call will have no effect.
- * 
+ *
  * @param newval : either Y_ENABLEDATPOWERON_FALSE or Y_ENABLEDATPOWERON_TRUE, according to the state
  * of the PWM at device power on
- * 
+ *
  * @return YAPI_SUCCESS if the call succeeds.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 -(int) set_enabledAtPowerOn:(Y_ENABLEDATPOWERON_enum) newval
@@ -412,11 +412,11 @@
 /**
  * Changes the PWM duty cycle at device power on. Remember to call the matching
  * module saveToFlash() method, otherwise this call will have no effect.
- * 
+ *
  * @param newval : a floating point number corresponding to the PWM duty cycle at device power on
- * 
+ *
  * @return YAPI_SUCCESS if the call succeeds.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 -(int) set_dutyCycleAtPowerOn:(double) newval
@@ -431,10 +431,10 @@
 }
 /**
  * Returns the PWMs duty cycle at device power on as a floating point number between 0 and 100
- * 
+ *
  * @return a floating point number corresponding to the PWMs duty cycle at device power on as a
  * floating point number between 0 and 100
- * 
+ *
  * On failure, throws an exception or returns Y_DUTYCYCLEATPOWERON_INVALID.
  */
 -(double) get_dutyCycleAtPowerOn
@@ -462,7 +462,7 @@
  * <li>ModuleLogicalName.FunctionIdentifier</li>
  * <li>ModuleLogicalName.FunctionLogicalName</li>
  * </ul>
- * 
+ *
  * This function does not require that $THEFUNCTION$ is online at the time
  * it is invoked. The returned object is nevertheless valid.
  * Use the method YPwmOutput.isOnline() to test if $THEFUNCTION$ is
@@ -470,9 +470,9 @@
  * $AFUNCTION$ by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
- * 
+ *
  * @param func : a string that uniquely characterizes $THEFUNCTION$
- * 
+ *
  * @return a YPwmOutput object allowing you to drive $THEFUNCTION$.
  */
 +(YPwmOutput*) FindPwmOutput:(NSString*)func
@@ -491,7 +491,7 @@
  * The callback is invoked only during the execution of ySleep or yHandleEvents.
  * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
  * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
- * 
+ *
  * @param callback : the callback function to call, or a null pointer. The callback function should take two
  *         arguments: the function object of which the value has changed, and the character string describing
  *         the new advertised value.
@@ -529,13 +529,13 @@
 /**
  * Performs a smooth transistion of the pulse duration toward a given value. Any period,
  * frequency, duty cycle or pulse width change will cancel any ongoing transition process.
- * 
+ *
  * @param ms_target   : new pulse duration at the end of the transition
  *         (floating-point number, representing the pulse duration in milliseconds)
  * @param ms_duration : total duration of the transition, in milliseconds
- * 
+ *
  * @return YAPI_SUCCESS when the call succeeds.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 -(int) pulseDurationMove:(double)ms_target :(int)ms_duration
@@ -550,13 +550,13 @@
 
 /**
  * Performs a smooth change of the pulse duration toward a given value.
- * 
+ *
  * @param target      : new duty cycle at the end of the transition
  *         (floating-point number, between 0 and 1)
  * @param ms_duration : total duration of the transition, in milliseconds
- * 
+ *
  * @return YAPI_SUCCESS when the call succeeds.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 -(int) dutyCycleMove:(double)target :(int)ms_duration

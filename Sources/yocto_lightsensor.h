@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_lightsensor.h 18321 2014-11-10 10:48:37Z seb $
+ * $Id: yocto_lightsensor.h 19608 2015-03-05 10:37:24Z seb $
  *
  * Declares yFindLightSensor(), the high-level API for LightSensor functions
  *
@@ -61,9 +61,14 @@ typedef enum {
 //--- (YLightSensor class start)
 /**
  * YLightSensor Class: LightSensor function interface
- * 
- * The Yoctopuce application programming interface allows you to read an instant
- * measure of the sensor, as well as the minimal and maximal values observed.
+ *
+ * The Yoctopuce class YLightSensor allows you to read and configure Yoctopuce light
+ * sensors. It inherits from YSensor class the core functions to read measurements,
+ * register callback functions, access to the autonomous datalogger.
+ * This class adds the ability to easily perform a one-point linear calibration
+ * to compensate the effect of a glass or filter placed in front of the sensor.
+ * For some light sensors with several working modes, this class can select the
+ * desired working mode.
  */
 @interface YLightSensor : YSensor
 //--- (end of YLightSensor class start)
@@ -90,24 +95,24 @@ typedef enum {
 /**
  * Changes the sensor-specific calibration parameter so that the current value
  * matches a desired target (linear scaling).
- * 
+ *
  * @param calibratedVal : the desired target value.
- * 
+ *
  * Remember to call the saveToFlash() method of the module if the
  * modification must be kept.
- * 
+ *
  * @return YAPI_SUCCESS if the call succeeds.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 -(int)     calibrate:(double)calibratedVal;
 
 /**
  * Returns the type of light measure.
- * 
+ *
  * @return a value among Y_MEASURETYPE_HUMAN_EYE, Y_MEASURETYPE_WIDE_SPECTRUM, Y_MEASURETYPE_INFRARED,
  * Y_MEASURETYPE_HIGH_RATE and Y_MEASURETYPE_HIGH_ENERGY corresponding to the type of light measure
- * 
+ *
  * On failure, throws an exception or returns Y_MEASURETYPE_INVALID.
  */
 -(Y_MEASURETYPE_enum)     get_measureType;
@@ -120,12 +125,12 @@ typedef enum {
  * spectrum, depending on the capabilities of the light-sensitive cell.
  * Remember to call the saveToFlash() method of the module if the
  * modification must be kept.
- * 
+ *
  * @param newval : a value among Y_MEASURETYPE_HUMAN_EYE, Y_MEASURETYPE_WIDE_SPECTRUM,
  * Y_MEASURETYPE_INFRARED, Y_MEASURETYPE_HIGH_RATE and Y_MEASURETYPE_HIGH_ENERGY
- * 
+ *
  * @return YAPI_SUCCESS if the call succeeds.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 -(int)     set_measureType:(Y_MEASURETYPE_enum) newval;
@@ -141,7 +146,7 @@ typedef enum {
  * <li>ModuleLogicalName.FunctionIdentifier</li>
  * <li>ModuleLogicalName.FunctionLogicalName</li>
  * </ul>
- * 
+ *
  * This function does not require that the light sensor is online at the time
  * it is invoked. The returned object is nevertheless valid.
  * Use the method YLightSensor.isOnline() to test if the light sensor is
@@ -149,9 +154,9 @@ typedef enum {
  * a light sensor by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
- * 
+ *
  * @param func : a string that uniquely characterizes the light sensor
- * 
+ *
  * @return a YLightSensor object allowing you to drive the light sensor.
  */
 +(YLightSensor*)     FindLightSensor:(NSString*)func;
@@ -161,7 +166,7 @@ typedef enum {
  * The callback is invoked only during the execution of ySleep or yHandleEvents.
  * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
  * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
- * 
+ *
  * @param callback : the callback function to call, or a null pointer. The callback function should take two
  *         arguments: the function object of which the value has changed, and the character string describing
  *         the new advertised value.
@@ -176,7 +181,7 @@ typedef enum {
  * The callback is invoked only during the execution of ySleep or yHandleEvents.
  * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
  * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
- * 
+ *
  * @param callback : the callback function to call, or a null pointer. The callback function should take two
  *         arguments: the function object of which the value has changed, and an YMeasure object describing
  *         the new advertised value.
@@ -189,7 +194,7 @@ typedef enum {
 
 /**
  * Continues the enumeration of light sensors started using yFirstLightSensor().
- * 
+ *
  * @return a pointer to a YLightSensor object, corresponding to
  *         a light sensor currently online, or a null pointer
  *         if there are no more light sensors to enumerate.
@@ -199,7 +204,7 @@ typedef enum {
  * Starts the enumeration of light sensors currently accessible.
  * Use the method YLightSensor.nextLightSensor() to iterate on
  * next light sensors.
- * 
+ *
  * @return a pointer to a YLightSensor object, corresponding to
  *         the first light sensor currently online, or a null pointer
  *         if there are none.
@@ -220,7 +225,7 @@ typedef enum {
  * <li>ModuleLogicalName.FunctionIdentifier</li>
  * <li>ModuleLogicalName.FunctionLogicalName</li>
  * </ul>
- * 
+ *
  * This function does not require that the light sensor is online at the time
  * it is invoked. The returned object is nevertheless valid.
  * Use the method YLightSensor.isOnline() to test if the light sensor is
@@ -228,9 +233,9 @@ typedef enum {
  * a light sensor by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
- * 
+ *
  * @param func : a string that uniquely characterizes the light sensor
- * 
+ *
  * @return a YLightSensor object allowing you to drive the light sensor.
  */
 YLightSensor* yFindLightSensor(NSString* func);
@@ -238,7 +243,7 @@ YLightSensor* yFindLightSensor(NSString* func);
  * Starts the enumeration of light sensors currently accessible.
  * Use the method YLightSensor.nextLightSensor() to iterate on
  * next light sensors.
- * 
+ *
  * @return a pointer to a YLightSensor object, corresponding to
  *         the first light sensor currently online, or a null pointer
  *         if there are none.

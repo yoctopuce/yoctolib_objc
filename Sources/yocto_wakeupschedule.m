@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_wakeupschedule.m 18321 2014-11-10 10:48:37Z seb $
+ * $Id: yocto_wakeupschedule.m 19608 2015-03-05 10:37:24Z seb $
  *
  * Implements the high-level API for WakeUpSchedule functions
  *
@@ -116,9 +116,9 @@
 //--- (YWakeUpSchedule public methods implementation)
 /**
  * Returns the minutes in the 00-29 interval of each hour scheduled for wake up.
- * 
+ *
  * @return an integer corresponding to the minutes in the 00-29 interval of each hour scheduled for wake up
- * 
+ *
  * On failure, throws an exception or returns Y_MINUTESA_INVALID.
  */
 -(int) get_minutesA
@@ -139,11 +139,11 @@
 
 /**
  * Changes the minutes in the 00-29 interval when a wake up must take place.
- * 
+ *
  * @param newval : an integer corresponding to the minutes in the 00-29 interval when a wake up must take place
- * 
+ *
  * @return YAPI_SUCCESS if the call succeeds.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 -(int) set_minutesA:(int) newval
@@ -158,9 +158,9 @@
 }
 /**
  * Returns the minutes in the 30-59 intervalof each hour scheduled for wake up.
- * 
+ *
  * @return an integer corresponding to the minutes in the 30-59 intervalof each hour scheduled for wake up
- * 
+ *
  * On failure, throws an exception or returns Y_MINUTESB_INVALID.
  */
 -(int) get_minutesB
@@ -181,11 +181,11 @@
 
 /**
  * Changes the minutes in the 30-59 interval when a wake up must take place.
- * 
+ *
  * @param newval : an integer corresponding to the minutes in the 30-59 interval when a wake up must take place
- * 
+ *
  * @return YAPI_SUCCESS if the call succeeds.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 -(int) set_minutesB:(int) newval
@@ -200,9 +200,9 @@
 }
 /**
  * Returns the hours scheduled for wake up.
- * 
+ *
  * @return an integer corresponding to the hours scheduled for wake up
- * 
+ *
  * On failure, throws an exception or returns Y_HOURS_INVALID.
  */
 -(int) get_hours
@@ -223,11 +223,11 @@
 
 /**
  * Changes the hours when a wake up must take place.
- * 
+ *
  * @param newval : an integer corresponding to the hours when a wake up must take place
- * 
+ *
  * @return YAPI_SUCCESS if the call succeeds.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 -(int) set_hours:(int) newval
@@ -242,9 +242,9 @@
 }
 /**
  * Returns the days of the week scheduled for wake up.
- * 
+ *
  * @return an integer corresponding to the days of the week scheduled for wake up
- * 
+ *
  * On failure, throws an exception or returns Y_WEEKDAYS_INVALID.
  */
 -(int) get_weekDays
@@ -265,11 +265,11 @@
 
 /**
  * Changes the days of the week when a wake up must take place.
- * 
+ *
  * @param newval : an integer corresponding to the days of the week when a wake up must take place
- * 
+ *
  * @return YAPI_SUCCESS if the call succeeds.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 -(int) set_weekDays:(int) newval
@@ -284,9 +284,9 @@
 }
 /**
  * Returns the days of the month scheduled for wake up.
- * 
+ *
  * @return an integer corresponding to the days of the month scheduled for wake up
- * 
+ *
  * On failure, throws an exception or returns Y_MONTHDAYS_INVALID.
  */
 -(int) get_monthDays
@@ -307,11 +307,11 @@
 
 /**
  * Changes the days of the month when a wake up must take place.
- * 
+ *
  * @param newval : an integer corresponding to the days of the month when a wake up must take place
- * 
+ *
  * @return YAPI_SUCCESS if the call succeeds.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 -(int) set_monthDays:(int) newval
@@ -326,9 +326,9 @@
 }
 /**
  * Returns the months scheduled for wake up.
- * 
+ *
  * @return an integer corresponding to the months scheduled for wake up
- * 
+ *
  * On failure, throws an exception or returns Y_MONTHS_INVALID.
  */
 -(int) get_months
@@ -349,11 +349,11 @@
 
 /**
  * Changes the months when a wake up must take place.
- * 
+ *
  * @param newval : an integer corresponding to the months when a wake up must take place
- * 
+ *
  * @return YAPI_SUCCESS if the call succeeds.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 -(int) set_months:(int) newval
@@ -368,9 +368,9 @@
 }
 /**
  * Returns the date/time (seconds) of the next wake up occurence
- * 
+ *
  * @return an integer corresponding to the date/time (seconds) of the next wake up occurence
- * 
+ *
  * On failure, throws an exception or returns Y_NEXTOCCURENCE_INVALID.
  */
 -(s64) get_nextOccurence
@@ -398,7 +398,7 @@
  * <li>ModuleLogicalName.FunctionIdentifier</li>
  * <li>ModuleLogicalName.FunctionLogicalName</li>
  * </ul>
- * 
+ *
  * This function does not require that $THEFUNCTION$ is online at the time
  * it is invoked. The returned object is nevertheless valid.
  * Use the method YWakeUpSchedule.isOnline() to test if $THEFUNCTION$ is
@@ -406,9 +406,9 @@
  * $AFUNCTION$ by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
- * 
+ *
  * @param func : a string that uniquely characterizes $THEFUNCTION$
- * 
+ *
  * @return a YWakeUpSchedule object allowing you to drive $THEFUNCTION$.
  */
 +(YWakeUpSchedule*) FindWakeUpSchedule:(NSString*)func
@@ -427,7 +427,7 @@
  * The callback is invoked only during the execution of ySleep or yHandleEvents.
  * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
  * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
- * 
+ *
  * @param callback : the callback function to call, or a null pointer. The callback function should take two
  *         arguments: the function object of which the value has changed, and the character string describing
  *         the new advertised value.
@@ -477,11 +477,11 @@
 
 /**
  * Changes all the minutes where a wake up must take place.
- * 
+ *
  * @param bitmap : Minutes 00-59 of each hour scheduled for wake up.
- * 
+ *
  * @return YAPI_SUCCESS if the call succeeds.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 -(int) set_minutes:(s64)bitmap

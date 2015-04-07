@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_segmenteddisplay.m 18762 2014-12-16 16:00:39Z seb $
+ * $Id: yocto_segmenteddisplay.m 19608 2015-03-05 10:37:24Z seb $
  *
  * Implements the high-level API for SegmentedDisplay functions
  *
@@ -90,9 +90,9 @@
 //--- (YSegmentedDisplay public methods implementation)
 /**
  * Returns the text currently displayed on the screen.
- * 
+ *
  * @return a string corresponding to the text currently displayed on the screen
- * 
+ *
  * On failure, throws an exception or returns Y_DISPLAYEDTEXT_INVALID.
  */
 -(NSString*) get_displayedText
@@ -113,11 +113,11 @@
 
 /**
  * Changes the text currently displayed on the screen.
- * 
+ *
  * @param newval : a string corresponding to the text currently displayed on the screen
- * 
+ *
  * @return YAPI_SUCCESS if the call succeeds.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 -(int) set_displayedText:(NSString*) newval
@@ -166,7 +166,7 @@
  * <li>ModuleLogicalName.FunctionIdentifier</li>
  * <li>ModuleLogicalName.FunctionLogicalName</li>
  * </ul>
- * 
+ *
  * This function does not require that $THEFUNCTION$ is online at the time
  * it is invoked. The returned object is nevertheless valid.
  * Use the method YSegmentedDisplay.isOnline() to test if $THEFUNCTION$ is
@@ -174,9 +174,9 @@
  * $AFUNCTION$ by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
- * 
+ *
  * @param func : a string that uniquely characterizes $THEFUNCTION$
- * 
+ *
  * @return a YSegmentedDisplay object allowing you to drive $THEFUNCTION$.
  */
 +(YSegmentedDisplay*) FindSegmentedDisplay:(NSString*)func
@@ -195,7 +195,7 @@
  * The callback is invoked only during the execution of ySleep or yHandleEvents.
  * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
  * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
- * 
+ *
  * @param callback : the callback function to call, or a null pointer. The callback function should take two
  *         arguments: the function object of which the value has changed, and the character string describing
  *         the new advertised value.

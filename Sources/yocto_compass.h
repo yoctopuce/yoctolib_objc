@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_compass.h 18321 2014-11-10 10:48:37Z seb $
+ * $Id: yocto_compass.h 19608 2015-03-05 10:37:24Z seb $
  *
  * Declares yFindCompass(), the high-level API for Compass functions
  *
@@ -60,9 +60,16 @@ typedef enum {
 //--- (YCompass class start)
 /**
  * YCompass Class: Compass function interface
- * 
- * The Yoctopuce application programming interface allows you to read an instant
- * measure of the sensor, as well as the minimal and maximal values observed.
+ *
+ * The YSensor class is the parent class for all Yoctopuce sensors. It can be
+ * used to read the current value and unit of any sensor, read the min/max
+ * value, configure autonomous recording frequency and access recorded data.
+ * It also provide a function to register a callback invoked each time the
+ * observed value changes, or at a predefined interval. Using this class rather
+ * than a specific subclass makes it possible to create generic applications
+ * that work with any Yoctopuce sensor, even those that do not yet exist.
+ * Note: The YAnButton class is the only analog input which does not inherit
+ * from YSensor.
  */
 @interface YCompass : YSensor
 //--- (end of YCompass class start)
@@ -90,9 +97,9 @@ typedef enum {
 -(Y_AXIS_enum) axis;
 /**
  * Returns the magnetic heading, regardless of the configured bearing.
- * 
+ *
  * @return a floating point number corresponding to the magnetic heading, regardless of the configured bearing
- * 
+ *
  * On failure, throws an exception or returns Y_MAGNETICHEADING_INVALID.
  */
 -(double)     get_magneticHeading;
@@ -109,7 +116,7 @@ typedef enum {
  * <li>ModuleLogicalName.FunctionIdentifier</li>
  * <li>ModuleLogicalName.FunctionLogicalName</li>
  * </ul>
- * 
+ *
  * This function does not require that the compass is online at the time
  * it is invoked. The returned object is nevertheless valid.
  * Use the method YCompass.isOnline() to test if the compass is
@@ -117,9 +124,9 @@ typedef enum {
  * a compass by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
- * 
+ *
  * @param func : a string that uniquely characterizes the compass
- * 
+ *
  * @return a YCompass object allowing you to drive the compass.
  */
 +(YCompass*)     FindCompass:(NSString*)func;
@@ -129,7 +136,7 @@ typedef enum {
  * The callback is invoked only during the execution of ySleep or yHandleEvents.
  * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
  * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
- * 
+ *
  * @param callback : the callback function to call, or a null pointer. The callback function should take two
  *         arguments: the function object of which the value has changed, and the character string describing
  *         the new advertised value.
@@ -144,7 +151,7 @@ typedef enum {
  * The callback is invoked only during the execution of ySleep or yHandleEvents.
  * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
  * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
- * 
+ *
  * @param callback : the callback function to call, or a null pointer. The callback function should take two
  *         arguments: the function object of which the value has changed, and an YMeasure object describing
  *         the new advertised value.
@@ -157,7 +164,7 @@ typedef enum {
 
 /**
  * Continues the enumeration of compasses started using yFirstCompass().
- * 
+ *
  * @return a pointer to a YCompass object, corresponding to
  *         a compass currently online, or a null pointer
  *         if there are no more compasses to enumerate.
@@ -167,7 +174,7 @@ typedef enum {
  * Starts the enumeration of compasses currently accessible.
  * Use the method YCompass.nextCompass() to iterate on
  * next compasses.
- * 
+ *
  * @return a pointer to a YCompass object, corresponding to
  *         the first compass currently online, or a null pointer
  *         if there are none.
@@ -188,7 +195,7 @@ typedef enum {
  * <li>ModuleLogicalName.FunctionIdentifier</li>
  * <li>ModuleLogicalName.FunctionLogicalName</li>
  * </ul>
- * 
+ *
  * This function does not require that the compass is online at the time
  * it is invoked. The returned object is nevertheless valid.
  * Use the method YCompass.isOnline() to test if the compass is
@@ -196,9 +203,9 @@ typedef enum {
  * a compass by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
- * 
+ *
  * @param func : a string that uniquely characterizes the compass
- * 
+ *
  * @return a YCompass object allowing you to drive the compass.
  */
 YCompass* yFindCompass(NSString* func);
@@ -206,7 +213,7 @@ YCompass* yFindCompass(NSString* func);
  * Starts the enumeration of compasses currently accessible.
  * Use the method YCompass.nextCompass() to iterate on
  * next compasses.
- * 
+ *
  * @return a pointer to a YCompass object, corresponding to
  *         the first compass currently online, or a null pointer
  *         if there are none.

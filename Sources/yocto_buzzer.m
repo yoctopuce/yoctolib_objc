@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_buzzer.m 18762 2014-12-16 16:00:39Z seb $
+ * $Id: yocto_buzzer.m 19608 2015-03-05 10:37:24Z seb $
  *
  * Implements the high-level API for Buzzer functions
  *
@@ -115,11 +115,11 @@
 
 /**
  * Changes the frequency of the signal sent to the buzzer. A zero value stops the buzzer.
- * 
+ *
  * @param newval : a floating point number corresponding to the frequency of the signal sent to the buzzer
- * 
+ *
  * @return YAPI_SUCCESS if the call succeeds.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 -(int) set_frequency:(double) newval
@@ -134,9 +134,9 @@
 }
 /**
  * Returns the  frequency of the signal sent to the buzzer/speaker.
- * 
+ *
  * @return a floating point number corresponding to the  frequency of the signal sent to the buzzer/speaker
- * 
+ *
  * On failure, throws an exception or returns Y_FREQUENCY_INVALID.
  */
 -(double) get_frequency
@@ -156,9 +156,9 @@
 }
 /**
  * Returns the volume of the signal sent to the buzzer/speaker.
- * 
+ *
  * @return an integer corresponding to the volume of the signal sent to the buzzer/speaker
- * 
+ *
  * On failure, throws an exception or returns Y_VOLUME_INVALID.
  */
 -(int) get_volume
@@ -179,11 +179,11 @@
 
 /**
  * Changes the volume of the signal sent to the buzzer/speaker.
- * 
+ *
  * @param newval : an integer corresponding to the volume of the signal sent to the buzzer/speaker
- * 
+ *
  * @return YAPI_SUCCESS if the call succeeds.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 -(int) set_volume:(int) newval
@@ -198,9 +198,9 @@
 }
 /**
  * Returns the current length of the playing sequence
- * 
+ *
  * @return an integer corresponding to the current length of the playing sequence
- * 
+ *
  * On failure, throws an exception or returns Y_PLAYSEQSIZE_INVALID.
  */
 -(int) get_playSeqSize
@@ -220,9 +220,9 @@
 }
 /**
  * Returns the maximum length of the playing sequence
- * 
+ *
  * @return an integer corresponding to the maximum length of the playing sequence
- * 
+ *
  * On failure, throws an exception or returns Y_PLAYSEQMAXSIZE_INVALID.
  */
 -(int) get_playSeqMaxSize
@@ -245,9 +245,9 @@
  * sequences cannot be read from the device, this can be used
  * to detect if a specific playing sequence is already
  * programmed.
- * 
+ *
  * @return an integer corresponding to the playing sequence signature
- * 
+ *
  * On failure, throws an exception or returns Y_PLAYSEQSIGNATURE_INVALID.
  */
 -(int) get_playSeqSignature
@@ -301,7 +301,7 @@
  * <li>ModuleLogicalName.FunctionIdentifier</li>
  * <li>ModuleLogicalName.FunctionLogicalName</li>
  * </ul>
- * 
+ *
  * This function does not require that $THEFUNCTION$ is online at the time
  * it is invoked. The returned object is nevertheless valid.
  * Use the method YBuzzer.isOnline() to test if $THEFUNCTION$ is
@@ -309,9 +309,9 @@
  * $AFUNCTION$ by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
- * 
+ *
  * @param func : a string that uniquely characterizes $THEFUNCTION$
- * 
+ *
  * @return a YBuzzer object allowing you to drive $THEFUNCTION$.
  */
 +(YBuzzer*) FindBuzzer:(NSString*)func
@@ -330,7 +330,7 @@
  * The callback is invoked only during the execution of ySleep or yHandleEvents.
  * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
  * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
- * 
+ *
  * @param callback : the callback function to call, or a null pointer. The callback function should take two
  *         arguments: the function object of which the value has changed, and the character string describing
  *         the new advertised value.
@@ -372,10 +372,10 @@
 
 /**
  * Adds a new frequency transition to the playing sequence.
- * 
+ *
  * @param freq    : desired frequency when the transition is completed, in Hz
  * @param msDelay : duration of the frequency transition, in milliseconds.
- * 
+ *
  * @return YAPI_SUCCESS if the call succeeds.
  *         On failure, throws an exception or returns a negative error code.
  */
@@ -386,10 +386,10 @@
 
 /**
  * Adds a pulse to the playing sequence.
- * 
+ *
  * @param freq : pulse frequency, in Hz
  * @param msDuration : pulse duration, in milliseconds.
- * 
+ *
  * @return YAPI_SUCCESS if the call succeeds.
  *         On failure, throws an exception or returns a negative error code.
  */
@@ -401,10 +401,10 @@
 /**
  * Adds a new volume transition to the playing sequence. Frequency stays untouched:
  * if frequency is at zero, the transition has no effect.
- * 
+ *
  * @param volume    : desired volume when the transition is completed, as a percentage.
  * @param msDuration : duration of the volume transition, in milliseconds.
- * 
+ *
  * @return YAPI_SUCCESS if the call succeeds.
  *         On failure, throws an exception or returns a negative error code.
  */
@@ -417,7 +417,7 @@
  * Starts the preprogrammed playing sequence. The sequence
  * runs in loop until it is stopped by stopPlaySeq or an explicit
  * change.
- * 
+ *
  * @return YAPI_SUCCESS if the call succeeds.
  *         On failure, throws an exception or returns a negative error code.
  */
@@ -428,7 +428,7 @@
 
 /**
  * Stops the preprogrammed playing sequence and sets the frequency to zero.
- * 
+ *
  * @return YAPI_SUCCESS if the call succeeds.
  *         On failure, throws an exception or returns a negative error code.
  */
@@ -439,7 +439,7 @@
 
 /**
  * Resets the preprogrammed playing sequence and sets the frequency to zero.
- * 
+ *
  * @return YAPI_SUCCESS if the call succeeds.
  *         On failure, throws an exception or returns a negative error code.
  */
@@ -450,12 +450,12 @@
 
 /**
  * Activates the buzzer for a short duration.
- * 
+ *
  * @param frequency : pulse frequency, in hertz
  * @param duration : pulse duration in millseconds
- * 
+ *
  * @return YAPI_SUCCESS if the call succeeds.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 -(int) pulse:(int)frequency :(int)duration
@@ -465,12 +465,12 @@
 
 /**
  * Makes the buzzer frequency change over a period of time.
- * 
+ *
  * @param frequency : frequency to reach, in hertz. A frequency under 25Hz stops the buzzer.
  * @param duration :  pulse duration in millseconds
- * 
+ *
  * @return YAPI_SUCCESS if the call succeeds.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 -(int) freqMove:(int)frequency :(int)duration
@@ -480,12 +480,12 @@
 
 /**
  * Makes the buzzer volume change over a period of time, frequency  stays untouched.
- * 
+ *
  * @param volume : volume to reach in %
  * @param duration : change duration in millseconds
- * 
+ *
  * @return YAPI_SUCCESS if the call succeeds.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 -(int) volumeMove:(int)volume :(int)duration

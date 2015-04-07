@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_power.m 18321 2014-11-10 10:48:37Z seb $
+ * $Id: yocto_power.m 19608 2015-03-05 10:37:24Z seb $
  *
  * Implements the high-level API for Power functions
  *
@@ -94,10 +94,10 @@
 /**
  * Returns the power factor (the ratio between the real power consumed,
  * measured in W, and the apparent power provided, measured in VA).
- * 
+ *
  * @return a floating point number corresponding to the power factor (the ratio between the real power consumed,
  *         measured in W, and the apparent power provided, measured in VA)
- * 
+ *
  * On failure, throws an exception or returns Y_COSPHI_INVALID.
  */
 -(double) get_cosPhi
@@ -129,10 +129,10 @@
 /**
  * Returns the energy counter, maintained by the wattmeter by integrating the power consumption over time.
  * Note that this counter is reset at each start of the device.
- * 
+ *
  * @return a floating point number corresponding to the energy counter, maintained by the wattmeter by
  * integrating the power consumption over time
- * 
+ *
  * On failure, throws an exception or returns Y_METER_INVALID.
  */
 -(double) get_meter
@@ -152,9 +152,9 @@
 }
 /**
  * Returns the elapsed time since last energy counter reset, in seconds.
- * 
+ *
  * @return an integer corresponding to the elapsed time since last energy counter reset, in seconds
- * 
+ *
  * On failure, throws an exception or returns Y_METERTIMER_INVALID.
  */
 -(int) get_meterTimer
@@ -182,7 +182,7 @@
  * <li>ModuleLogicalName.FunctionIdentifier</li>
  * <li>ModuleLogicalName.FunctionLogicalName</li>
  * </ul>
- * 
+ *
  * This function does not require that $THEFUNCTION$ is online at the time
  * it is invoked. The returned object is nevertheless valid.
  * Use the method YPower.isOnline() to test if $THEFUNCTION$ is
@@ -190,9 +190,9 @@
  * $AFUNCTION$ by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
- * 
+ *
  * @param func : a string that uniquely characterizes $THEFUNCTION$
- * 
+ *
  * @return a YPower object allowing you to drive $THEFUNCTION$.
  */
 +(YPower*) FindPower:(NSString*)func
@@ -211,7 +211,7 @@
  * The callback is invoked only during the execution of ySleep or yHandleEvents.
  * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
  * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
- * 
+ *
  * @param callback : the callback function to call, or a null pointer. The callback function should take two
  *         arguments: the function object of which the value has changed, and the character string describing
  *         the new advertised value.
@@ -251,7 +251,7 @@
  * The callback is invoked only during the execution of ySleep or yHandleEvents.
  * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
  * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
- * 
+ *
  * @param callback : the callback function to call, or a null pointer. The callback function should take two
  *         arguments: the function object of which the value has changed, and an YMeasure object describing
  *         the new advertised value.
@@ -280,9 +280,9 @@
 
 /**
  * Resets the energy counter.
- * 
+ *
  * @return YAPI_SUCCESS if the call succeeds.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 -(int) reset

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_pwmpowersource.h 18321 2014-11-10 10:48:37Z seb $
+ * $Id: yocto_pwmpowersource.h 19608 2015-03-05 10:37:24Z seb $
  *
  * Declares yFindPwmPowerSource(), the high-level API for PwmPowerSource functions
  *
@@ -59,7 +59,7 @@ typedef enum {
 //--- (YPwmPowerSource class start)
 /**
  * YPwmPowerSource Class: PwmPowerSource function interface
- * 
+ *
  * The Yoctopuce application programming interface allows you to configure
  * the voltage source used by all PWM on the same device.
  */
@@ -83,10 +83,10 @@ typedef enum {
 //--- (YPwmPowerSource public methods declaration)
 /**
  * Returns the selected power source for the PWM on the same device
- * 
+ *
  * @return a value among Y_POWERMODE_USB_5V, Y_POWERMODE_USB_3V, Y_POWERMODE_EXT_V and
  * Y_POWERMODE_OPNDRN corresponding to the selected power source for the PWM on the same device
- * 
+ *
  * On failure, throws an exception or returns Y_POWERMODE_INVALID.
  */
 -(Y_POWERMODE_enum)     get_powerMode;
@@ -101,12 +101,12 @@ typedef enum {
  * all PWM located on the same device are  affected.
  * If you want the change to be kept after a device reboot, make sure  to call the matching
  * module saveToFlash().
- * 
+ *
  * @param newval : a value among Y_POWERMODE_USB_5V, Y_POWERMODE_USB_3V, Y_POWERMODE_EXT_V and
  * Y_POWERMODE_OPNDRN corresponding to  the PWM power source
- * 
+ *
  * @return YAPI_SUCCESS if the call succeeds.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 -(int)     set_powerMode:(Y_POWERMODE_enum) newval;
@@ -122,7 +122,7 @@ typedef enum {
  * <li>ModuleLogicalName.FunctionIdentifier</li>
  * <li>ModuleLogicalName.FunctionLogicalName</li>
  * </ul>
- * 
+ *
  * This function does not require that the voltage source is online at the time
  * it is invoked. The returned object is nevertheless valid.
  * Use the method YPwmPowerSource.isOnline() to test if the voltage source is
@@ -130,9 +130,9 @@ typedef enum {
  * a voltage source by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
- * 
+ *
  * @param func : a string that uniquely characterizes the voltage source
- * 
+ *
  * @return a YPwmPowerSource object allowing you to drive the voltage source.
  */
 +(YPwmPowerSource*)     FindPwmPowerSource:(NSString*)func;
@@ -142,7 +142,7 @@ typedef enum {
  * The callback is invoked only during the execution of ySleep or yHandleEvents.
  * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
  * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
- * 
+ *
  * @param callback : the callback function to call, or a null pointer. The callback function should take two
  *         arguments: the function object of which the value has changed, and the character string describing
  *         the new advertised value.
@@ -155,7 +155,7 @@ typedef enum {
 
 /**
  * Continues the enumeration of Voltage sources started using yFirstPwmPowerSource().
- * 
+ *
  * @return a pointer to a YPwmPowerSource object, corresponding to
  *         a voltage source currently online, or a null pointer
  *         if there are no more Voltage sources to enumerate.
@@ -165,7 +165,7 @@ typedef enum {
  * Starts the enumeration of Voltage sources currently accessible.
  * Use the method YPwmPowerSource.nextPwmPowerSource() to iterate on
  * next Voltage sources.
- * 
+ *
  * @return a pointer to a YPwmPowerSource object, corresponding to
  *         the first source currently online, or a null pointer
  *         if there are none.
@@ -186,7 +186,7 @@ typedef enum {
  * <li>ModuleLogicalName.FunctionIdentifier</li>
  * <li>ModuleLogicalName.FunctionLogicalName</li>
  * </ul>
- * 
+ *
  * This function does not require that the voltage source is online at the time
  * it is invoked. The returned object is nevertheless valid.
  * Use the method YPwmPowerSource.isOnline() to test if the voltage source is
@@ -194,9 +194,9 @@ typedef enum {
  * a voltage source by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
- * 
+ *
  * @param func : a string that uniquely characterizes the voltage source
- * 
+ *
  * @return a YPwmPowerSource object allowing you to drive the voltage source.
  */
 YPwmPowerSource* yFindPwmPowerSource(NSString* func);
@@ -204,7 +204,7 @@ YPwmPowerSource* yFindPwmPowerSource(NSString* func);
  * Starts the enumeration of Voltage sources currently accessible.
  * Use the method YPwmPowerSource.nextPwmPowerSource() to iterate on
  * next Voltage sources.
- * 
+ *
  * @return a pointer to a YPwmPowerSource object, corresponding to
  *         the first source currently online, or a null pointer
  *         if there are none.

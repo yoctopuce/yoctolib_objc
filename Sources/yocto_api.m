@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.m 19019 2015-01-19 14:56:48Z seb $
+ * $Id: yocto_api.m 19854 2015-03-26 10:17:46Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -643,13 +643,13 @@ static double decExp[16] = {
  * DLL (for instance C#, VisualBasic or Delphi), the character string
  * includes as well the DLL version, for instance
  * "1.01.5535 (1.01.5439)".
- * 
+ *
  * If you want to verify in your code that the library version is
  * compatible with the version that you have used during development,
  * verify that the major number is strictly equal and that the minor
  * number is greater or equal. The build number is not relevant
  * with respect to the library compatibility.
- * 
+ *
  * @return a character string describing the library version.
  */
 +(NSString*)    GetAPIVersion
@@ -664,19 +664,19 @@ static double decExp[16] = {
  * It is not strictly needed to call yInitAPI(), as the library is
  * automatically  initialized when calling yRegisterHub() for the
  * first time.
- * 
+ *
  * When Y_DETECT_NONE is used as detection mode,
  * you must explicitly use yRegisterHub() to point the API to the
  * VirtualHub on which your devices are connected before trying to access them.
- * 
+ *
  * @param mode : an integer corresponding to the type of automatic
  *         device detection to use. Possible values are
  *         Y_DETECT_NONE, Y_DETECT_USB, Y_DETECT_NET,
  *         and Y_DETECT_ALL.
  * @param errmsg : a string passed by reference to receive any error message.
- * 
+ *
  * @return YAPI_SUCCESS when the call succeeds.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 +(YRETCODE)    InitAPI:(int)mode :(NSError**)errmsg
@@ -783,7 +783,7 @@ static double decExp[16] = {
 /**
  * Registers a log callback function. This callback will be called each time
  * the API have something to say. Quite useful to debug the API.
- * 
+ *
  * @param logfun : a procedure taking a string parameter, or null
  *         to unregister a previously registered  callback.
  */
@@ -797,7 +797,7 @@ static double decExp[16] = {
  * Register a callback function, to be called each time
  * a device is plugged. This callback will be invoked while yUpdateDeviceList
  * is running. You will have to call this function on a regular basis.
- * 
+ *
  * @param arrivalCallback : a procedure taking a YModule parameter, or null
  *         to unregister a previously registered  callback.
  */
@@ -822,7 +822,7 @@ static double decExp[16] = {
  * Register a callback function, to be called each time
  * a device is unplugged. This callback will be invoked while yUpdateDeviceList
  * is running. You will have to call this function on a regular basis.
- * 
+ *
  * @param removalCallback : a procedure taking a YModule parameter, or null
  *         to unregister a previously registered  callback.
  */
@@ -844,7 +844,7 @@ static double decExp[16] = {
  * contain the serial number of the hub and the second contain the URL of the
  * network hub (this URL can be passed to RegisterHub). This callback will be invoked
  * while yUpdateDeviceList is running. You will have to call this function on a regular basis.
- * 
+ *
  * @param hubDiscoveryCallback : a procedure taking two string parameter, or null
  *         to unregister a previously registered  callback.
  */
@@ -861,7 +861,7 @@ static double decExp[16] = {
  * (Objective-C only) Register an object that must follow the protocol YDeviceHotPlug. The methods
  * yDeviceArrival and yDeviceRemoval  will be invoked while yUpdateDeviceList
  * is running. You will have to call this function on a regular basis.
- * 
+ *
  * @param object : an object that must follow the protocol YAPIDelegate, or nil
  *         to unregister a previously registered  object.
  */
@@ -887,24 +887,24 @@ static double decExp[16] = {
 /**
  * Setup the Yoctopuce library to use modules connected on a given machine. The
  * parameter will determine how the API will work. Use the following values:
- * 
+ *
  * <b>usb</b>: When the usb keyword is used, the API will work with
  * devices connected directly to the USB bus. Some programming languages such a Javascript,
  * PHP, and Java don't provide direct access to USB hardware, so usb will
  * not work with these. In this case, use a VirtualHub or a networked YoctoHub (see below).
- * 
+ *
  * <b><i>x.x.x.x</i></b> or <b><i>hostname</i></b>: The API will use the devices connected to the
  * host with the given IP address or hostname. That host can be a regular computer
  * running a VirtualHub, or a networked YoctoHub such as YoctoHub-Ethernet or
  * YoctoHub-Wireless. If you want to use the VirtualHub running on you local
  * computer, use the IP address 127.0.0.1.
- * 
+ *
  * <b>callback</b>: that keyword make the API run in "<i>HTTP Callback</i>" mode.
  * This a special mode allowing to take control of Yoctopuce devices
  * through a NAT filter when using a VirtualHub or a networked YoctoHub. You only
  * need to configure your hub to call your server script on a regular basis.
  * This mode is currently available for PHP and Node.JS only.
- * 
+ *
  * Be aware that only one application can use direct USB access at a
  * given time on a machine. Multiple access would cause conflicts
  * while trying to access the USB modules. In particular, this means
@@ -912,20 +912,20 @@ static double decExp[16] = {
  * an application that uses direct USB access. The workaround
  * for this limitation is to setup the library to use the VirtualHub
  * rather than direct USB access.
- * 
+ *
  * If access control has been activated on the hub, virtual or not, you want to
  * reach, the URL parameter should look like:
- * 
+ *
  * http://username:password@address:port
- * 
+ *
  * You can call <i>RegisterHub</i> several times to connect to several machines.
- * 
+ *
  * @param url : a string containing either "usb","callback" or the
  *         root URL of the hub to monitor
  * @param errmsg : a string passed by reference to receive any error message.
- * 
+ *
  * @return YAPI_SUCCESS when the call succeeds.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 +(YRETCODE)    RegisterHub:(NSString*)url :(NSError**)errmsg
@@ -949,13 +949,13 @@ static double decExp[16] = {
  * an error when the selected hub is not available at the time of the function call.
  * This makes it possible to register a network hub independently of the current
  * connectivity, and to try to contact it only when a device is actively needed.
- * 
+ *
  * @param url : a string containing either "usb","callback" or the
  *         root URL of the hub to monitor
  * @param errmsg : a string passed by reference to receive any error message.
- * 
+ *
  * @return YAPI_SUCCESS when the call succeeds.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 +(YRETCODE)   PreregisterHub:(NSString*)url :(NSError**)errmsg
@@ -974,7 +974,7 @@ static double decExp[16] = {
 /**
  * Setup the Yoctopuce library to no more use modules connected on a previously
  * registered machine with RegisterHub.
- * 
+ *
  * @param url : a string containing either "usb" or the
  *         root URL of the hub to monitor
  */
@@ -992,14 +992,14 @@ static double decExp[16] = {
  * The library searches the machines or USB ports previously registered using
  * yRegisterHub(), and invokes any user-defined callback function
  * in case a change in the list of connected devices is detected.
- * 
+ *
  * This function can be called as frequently as desired to refresh the device list
  * and to make the application aware of hot-plug events.
- * 
+ *
  * @param errmsg : a string passed by reference to receive any error message.
- * 
+ *
  * @return YAPI_SUCCESS when the call succeeds.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 +(YRETCODE)    UpdateDeviceList:(NSError**) errmsg
@@ -1050,14 +1050,14 @@ static double decExp[16] = {
  * the information pushed by the modules on the communication channels.
  * This is not strictly necessary, but it may improve the reactivity
  * of the library for the following commands.
- * 
+ *
  * This function may signal an error in case there is a communication problem
  * while contacting a module.
- * 
+ *
  * @param errmsg : a string passed by reference to receive any error message.
- * 
+ *
  * @return YAPI_SUCCESS when the call succeeds.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 +(YRETCODE)     HandleEvents:(NSError**) errmsg
@@ -1099,16 +1099,16 @@ static double decExp[16] = {
  * other threads and processes. During the pause, the library nevertheless
  * reads from time to time information from the Yoctopuce modules by
  * calling yHandleEvents(), in order to stay up-to-date.
- * 
+ *
  * This function may signal an error in case there is a communication problem
  * while contacting a module.
- * 
+ *
  * @param ms_duration : an integer corresponding to the duration of the pause,
  *         in milliseconds.
  * @param errmsg : a string passed by reference to receive any error message.
- * 
+ *
  * @return YAPI_SUCCESS when the call succeeds.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 +(YRETCODE)        Sleep:(unsigned) ms_duration :(NSError**) errmsg
@@ -1136,9 +1136,9 @@ static double decExp[16] = {
 /**
  * Force a hub discovery, if a callback as been registered with yRegisterDeviceRemovalCallback it
  * will be called for each net work hub that will respond to the discovery.
- * 
+ *
  * @param errmsg : a string passed by reference to receive any error message.
- * 
+ *
  * @return YAPI_SUCCESS when the call succeeds.
  *         On failure, throws an exception or returns a negative error code.
  */
@@ -1162,7 +1162,7 @@ static double decExp[16] = {
  * Returns the current value of a monotone millisecond-based time counter.
  * This counter can be used to compute delays in relation with
  * Yoctopuce devices, which also uses the millisecond as timebase.
- * 
+ *
  * @return a long integer corresponding to the millisecond counter.
  */
 +(u64) GetTickCount
@@ -1177,9 +1177,9 @@ static double decExp[16] = {
  * A..Z, a..z, 0..9, _, and -.
  * If you try to configure a logical name with an incorrect string,
  * the invalid characters are ignored.
- * 
+ *
  * @param name : a string containing the name to check.
- * 
+ *
  * @return true if the name is valid, false otherwise.
  */
 +(BOOL)        CheckLogicalName:(NSString * const) name
@@ -1596,7 +1596,7 @@ static double decExp[16] = {
             return (YRETCODE)res;
         }
     }
-    buffer = [[NSString alloc] initWithData:raw_buffer encoding:NSASCIIStringEncoding];
+    buffer = [[NSString alloc] initWithData:raw_buffer encoding:NSISOLatin1StringEncoding];
     ARC_autorelease(buffer);
     // Parse HTTP header
     j.src = STR_oc2y(buffer);
@@ -1862,7 +1862,7 @@ static double decExp[16] = {
     for(pos=0;pos < [changeval length] ;pos++){
         unsigned char       c;
         unsigned char       esc[2];
-        c = [changeval characterAtIndex:pos];
+        c = [changeval characterAtIndex:pos] & 0xff;
         if(c <= ' ' || (c > 'z' && c != '~') || c == '"' || c == '%' || c == '&' ||
            c == '+' || c == '<' || c == '=' || c == '>' || c == '\\' || c == '^' || c == '`') {
             esc[0]=(c >= 0xa0 ? (c>>4)-10+'A' : (c>>4)+'0');
@@ -1991,11 +1991,11 @@ static double decExp[16] = {
 
     NSRange all = {0,[buffer length]};
     NSString* str= @"OK\r\n";
-    NSData* str_data=[str dataUsingEncoding:NSUTF8StringEncoding];
+    NSData* str_data=[str dataUsingEncoding:NSISOLatin1StringEncoding];
     NSRange pos = [buffer rangeOfData:str_data options:0 range:all];
     if(0 != pos.location){
         str= @"HTTP/1.1 200 OK\r\n";
-        str_data=[str dataUsingEncoding:NSUTF8StringEncoding];
+        str_data=[str dataUsingEncoding:NSISOLatin1StringEncoding];
         pos = [buffer rangeOfData:str_data options:0 range:all];
         if(0 != pos.location){
             [self _throw:YAPI_IO_ERROR:@"http request failed"];
@@ -2060,7 +2060,7 @@ static double decExp[16] = {
 {
     yJsonStateMachine j;
     const char *key_cstr= STR_oc2y(key);
-    NSString *json_str = [[NSString alloc] initWithData:json encoding:NSASCIIStringEncoding];
+    NSString *json_str = [[NSString alloc] initWithData:json encoding:NSISOLatin1StringEncoding];
     ARC_autorelease(json_str);
     // Parse JSON data for the device and locate our function in it
     j.src = STR_oc2y(json_str);
@@ -2088,7 +2088,7 @@ static double decExp[16] = {
     NSMutableArray *res = [NSMutableArray array];
     yJsonStateMachine j;
     const char *json_cstr,*last;
-    NSString *json_str = [[NSString alloc] initWithData:json encoding:NSASCIIStringEncoding];
+    NSString *json_str = [[NSString alloc] initWithData:json encoding:NSISOLatin1StringEncoding];
     ARC_autorelease(json_str);
     j.src = json_cstr= STR_oc2y(json_str);
     j.end = j.src + strlen(j.src);
@@ -2125,7 +2125,7 @@ static double decExp[16] = {
 {
     yJsonStateMachine j;
     const char *json_cstr;
-    NSString *json_str = [[NSString alloc] initWithData:json encoding:NSASCIIStringEncoding];
+    NSString *json_str = [[NSString alloc] initWithData:json encoding:NSISOLatin1StringEncoding];
     ARC_autorelease(json_str);
     j.src = json_cstr= STR_oc2y(json_str);
     j.end = j.src + strlen(j.src);
@@ -2254,9 +2254,9 @@ static double decExp[16] = {
 //--- (generated code: YFunction public methods implementation)
 /**
  * Returns the logical name of the function.
- * 
+ *
  * @return a string corresponding to the logical name of the function
- * 
+ *
  * On failure, throws an exception or returns Y_LOGICALNAME_INVALID.
  */
 -(NSString*) get_logicalName
@@ -2280,11 +2280,11 @@ static double decExp[16] = {
  * prior to this call to make sure that your parameter is valid.
  * Remember to call the saveToFlash() method of the module if the
  * modification must be kept.
- * 
+ *
  * @param newval : a string corresponding to the logical name of the function
- * 
+ *
  * @return YAPI_SUCCESS if the call succeeds.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 -(int) set_logicalName:(NSString*) newval
@@ -2302,10 +2302,10 @@ static double decExp[16] = {
     return [self _setAttr:@"logicalName" :rest_val];
 }
 /**
- * Returns the current value of the function (no more than 6 characters).
- * 
- * @return a string corresponding to the current value of the function (no more than 6 characters)
- * 
+ * Returns a short string representing the current state of the function.
+ *
+ * @return a string corresponding to a short string representing the current state of the function
+ *
  * On failure, throws an exception or returns Y_ADVERTISEDVALUE_INVALID.
  */
 -(NSString*) get_advertisedValue
@@ -2333,7 +2333,7 @@ static double decExp[16] = {
  * <li>ModuleLogicalName.FunctionIdentifier</li>
  * <li>ModuleLogicalName.FunctionLogicalName</li>
  * </ul>
- * 
+ *
  * This function does not require that the function is online at the time
  * it is invoked. The returned object is nevertheless valid.
  * Use the method YFunction.isOnline() to test if the function is
@@ -2341,9 +2341,9 @@ static double decExp[16] = {
  * a function by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
- * 
+ *
  * @param func : a string that uniquely characterizes the function
- * 
+ *
  * @return a YFunction object allowing you to drive the function.
  */
 +(YFunction*) FindFunction:(NSString*)func
@@ -2362,7 +2362,7 @@ static double decExp[16] = {
  * The callback is invoked only during the execution of ySleep or yHandleEvents.
  * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
  * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
- * 
+ *
  * @param callback : the callback function to call, or a null pointer. The callback function should take two
  *         arguments: the function object of which the value has changed, and the character string describing
  *         the new advertised value.
@@ -2463,7 +2463,7 @@ static double decExp[16] = {
  * module is already connected or Relay(BadCustomeName.relay1)=unresolved if the module has
  * not yet been connected. This method does not trigger any USB or TCP transaction and can therefore be used in
  * a debugger.
- * 
+ *
  * @return a string that describes the function
  *         (ex: Relay(MyCustomName.relay1)=RELAYLO1-123456.relay1)
  */
@@ -2515,9 +2515,9 @@ static double decExp[16] = {
  * Returns the unique hardware identifier of the function in the form SERIAL.FUNCTIONID.
  * The unique hardware identifier is composed of the device serial
  * number and of the hardware identifier of the function (for example RELAYLO1-123456.relay1).
- * 
+ *
  * @return a string that uniquely identifies the function (ex: RELAYLO1-123456.relay1)
- * 
+ *
  * On failure, throws an exception or returns  Y_HARDWAREID_INVALID.
  */
 -(NSString*)    get_hardwareId
@@ -2548,9 +2548,9 @@ static double decExp[16] = {
 /**
  * Returns the hardware identifier of the function, without reference to the module. For example
  * relay1
- * 
+ *
  * @return a string that identifies the function (ex: relay1)
- * 
+ *
  * On failure, throws an exception or returns  Y_FUNCTIONID_INVALID.
  */
 -(NSString*)    get_functionId
@@ -2597,7 +2597,7 @@ static double decExp[16] = {
  * Returns the error message of the latest error with the function.
  * This method is mostly useful when using the Yoctopuce library with
  * exceptions disabled.
- * 
+ *
  * @return a string corresponding to the latest error message that occured while
  *         using the function object
  */
@@ -2614,7 +2614,7 @@ static double decExp[16] = {
  * expired, the device is considered reachable.
  * No exception is raised if there is an error while trying to contact the
  * device hosting the function.
- * 
+ *
  * @return true if the function can be reached, and false otherwise
  */
 -(BOOL)        isOnline
@@ -2643,12 +2643,12 @@ static double decExp[16] = {
  * are kept in cache for the standard duration (5 ms). This method can be
  * used to temporarily mark the cache as valid for a longer period, in order
  * to reduce network traffic for instance.
- * 
+ *
  * @param msValidity : an integer corresponding to the validity attributed to the
  *         loaded function parameters, in milliseconds
- * 
+ *
  * @return YAPI_SUCCESS when the call succeeds.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 -(YRETCODE)    load:(int) msValidity
@@ -2722,7 +2722,7 @@ static double decExp[16] = {
  * Gets the YModule object for the device on which the function is located.
  * If the function cannot be located on any module, the returned instance of
  * YModule is not shown as on-line.
- * 
+ *
  * @return an instance of YModule
  */
 -(YModule*)    get_module
@@ -2755,19 +2755,36 @@ static double decExp[16] = {
     return _fundescr;
 }
 
--(void*)    get_userData
+/**
+ * Returns the value of the userData attribute, as previously stored using method
+ * set_userData.
+ * This attribute is never touched directly by the API, and is at disposal of the caller to
+ * store a context.
+ *
+ * @return the object stored previously by the caller.
+ */
+-(id)    get_userData
 {   return [self userData];}
--(void*)    userData
+-(id)    userData
 {
     return _userData;
 }
 
 
--(void)     set_userData:(void*) data
-{ [self setUserData:data];}
--(void)     setUserData:(void*) data
+/**
+ * Stores a user context provided as argument in the userData attribute of the function.
+ * This attribute is never touched by the API, and is at disposal of the caller to store a context.
+ *
+ * @param data : any kind of object to be stored
+ * @noreturn
+ */
+-(void)     set_userData:(id)data
 {
-    _userData =data;
+    [self setUserData:data];}
+
+-(void)     setUserData:(id)data
+{
+    _userData = data;
 }
 
 @end //YFunction
@@ -2996,9 +3013,9 @@ static double decExp[16] = {
 //--- (generated code: YSensor public methods implementation)
 /**
  * Returns the measuring unit for the measure.
- * 
+ *
  * @return a string corresponding to the measuring unit for the measure
- * 
+ *
  * On failure, throws an exception or returns Y_UNIT_INVALID.
  */
 -(NSString*) get_unit
@@ -3018,10 +3035,10 @@ static double decExp[16] = {
 }
 /**
  * Returns the current value of the measure, in the specified unit, as a floating point number.
- * 
+ *
  * @return a floating point number corresponding to the current value of the measure, in the specified
  * unit, as a floating point number
- * 
+ *
  * On failure, throws an exception or returns Y_CURRENTVALUE_INVALID.
  */
 -(double) get_currentValue
@@ -3048,11 +3065,11 @@ static double decExp[16] = {
 
 /**
  * Changes the recorded minimal value observed.
- * 
+ *
  * @param newval : a floating point number corresponding to the recorded minimal value observed
- * 
+ *
  * @return YAPI_SUCCESS if the call succeeds.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 -(int) set_lowestValue:(double) newval
@@ -3067,10 +3084,10 @@ static double decExp[16] = {
 }
 /**
  * Returns the minimal value observed for the measure since the device was started.
- * 
+ *
  * @return a floating point number corresponding to the minimal value observed for the measure since
  * the device was started
- * 
+ *
  * On failure, throws an exception or returns Y_LOWESTVALUE_INVALID.
  */
 -(double) get_lowestValue
@@ -3093,11 +3110,11 @@ static double decExp[16] = {
 
 /**
  * Changes the recorded maximal value observed.
- * 
+ *
  * @param newval : a floating point number corresponding to the recorded maximal value observed
- * 
+ *
  * @return YAPI_SUCCESS if the call succeeds.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 -(int) set_highestValue:(double) newval
@@ -3112,10 +3129,10 @@ static double decExp[16] = {
 }
 /**
  * Returns the maximal value observed for the measure since the device was started.
- * 
+ *
  * @return a floating point number corresponding to the maximal value observed for the measure since
  * the device was started
- * 
+ *
  * On failure, throws an exception or returns Y_HIGHESTVALUE_INVALID.
  */
 -(double) get_highestValue
@@ -3138,10 +3155,10 @@ static double decExp[16] = {
 /**
  * Returns the uncalibrated, unrounded raw value returned by the sensor, in the specified unit, as a
  * floating point number.
- * 
+ *
  * @return a floating point number corresponding to the uncalibrated, unrounded raw value returned by
  * the sensor, in the specified unit, as a floating point number
- * 
+ *
  * On failure, throws an exception or returns Y_CURRENTRAWVALUE_INVALID.
  */
 -(double) get_currentRawValue
@@ -3162,10 +3179,10 @@ static double decExp[16] = {
 /**
  * Returns the datalogger recording frequency for this function, or "OFF"
  * when measures are not stored in the data logger flash memory.
- * 
+ *
  * @return a string corresponding to the datalogger recording frequency for this function, or "OFF"
  *         when measures are not stored in the data logger flash memory
- * 
+ *
  * On failure, throws an exception or returns Y_LOGFREQUENCY_INVALID.
  */
 -(NSString*) get_logFrequency
@@ -3190,11 +3207,11 @@ static double decExp[16] = {
  * as sample per minute (for instance "15/m") or in samples per
  * hour (eg. "4/h"). To disable recording for this function, use
  * the value "OFF".
- * 
+ *
  * @param newval : a string corresponding to the datalogger recording frequency for this function
- * 
+ *
  * @return YAPI_SUCCESS if the call succeeds.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 -(int) set_logFrequency:(NSString*) newval
@@ -3210,10 +3227,10 @@ static double decExp[16] = {
 /**
  * Returns the timed value notification frequency, or "OFF" if timed
  * value notifications are disabled for this function.
- * 
+ *
  * @return a string corresponding to the timed value notification frequency, or "OFF" if timed
  *         value notifications are disabled for this function
- * 
+ *
  * On failure, throws an exception or returns Y_REPORTFREQUENCY_INVALID.
  */
 -(NSString*) get_reportFrequency
@@ -3238,11 +3255,11 @@ static double decExp[16] = {
  * as sample per minute (for instance "15/m") or in samples per
  * hour (eg. "4/h"). To disable timed value notifications for this
  * function, use the value "OFF".
- * 
+ *
  * @param newval : a string corresponding to the timed value notification frequency for this function
- * 
+ *
  * @return YAPI_SUCCESS if the call succeeds.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 -(int) set_reportFrequency:(NSString*) newval
@@ -3285,11 +3302,11 @@ static double decExp[16] = {
 /**
  * Changes the resolution of the measured physical values. The resolution corresponds to the numerical precision
  * when displaying value. It does not change the precision of the measure itself.
- * 
+ *
  * @param newval : a floating point number corresponding to the resolution of the measured physical values
- * 
+ *
  * @return YAPI_SUCCESS if the call succeeds.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 -(int) set_resolution:(double) newval
@@ -3305,9 +3322,9 @@ static double decExp[16] = {
 /**
  * Returns the resolution of the measured values. The resolution corresponds to the numerical precision
  * of the measures, which is not always the same as the actual precision of the sensor.
- * 
+ *
  * @return a floating point number corresponding to the resolution of the measured values
- * 
+ *
  * On failure, throws an exception or returns Y_RESOLUTION_INVALID.
  */
 -(double) get_resolution
@@ -3335,7 +3352,7 @@ static double decExp[16] = {
  * <li>ModuleLogicalName.FunctionIdentifier</li>
  * <li>ModuleLogicalName.FunctionLogicalName</li>
  * </ul>
- * 
+ *
  * This function does not require that the sensor is online at the time
  * it is invoked. The returned object is nevertheless valid.
  * Use the method YSensor.isOnline() to test if the sensor is
@@ -3343,9 +3360,9 @@ static double decExp[16] = {
  * a sensor by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
- * 
+ *
  * @param func : a string that uniquely characterizes the sensor
- * 
+ *
  * @return a YSensor object allowing you to drive the sensor.
  */
 +(YSensor*) FindSensor:(NSString*)func
@@ -3364,7 +3381,7 @@ static double decExp[16] = {
  * The callback is invoked only during the execution of ySleep or yHandleEvents.
  * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
  * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
- * 
+ *
  * @param callback : the callback function to call, or a null pointer. The callback function should take two
  *         arguments: the function object of which the value has changed, and the character string describing
  *         the new advertised value.
@@ -3536,7 +3553,7 @@ static double decExp[16] = {
  * Starts the data logger on the device. Note that the data logger
  * will only save the measures on this sensor if the logFrequency
  * is not set to "OFF".
- * 
+ *
  * @return YAPI_SUCCESS if the call succeeds.
  */
 -(int) startDataLogger
@@ -3550,7 +3567,7 @@ static double decExp[16] = {
 
 /**
  * Stops the datalogger on the device.
- * 
+ *
  * @return YAPI_SUCCESS if the call succeeds.
  */
 -(int) stopDataLogger
@@ -3570,11 +3587,11 @@ static double decExp[16] = {
  * class for information on how to get an overview of the
  * recorded data, and how to load progressively a large set
  * of measures from the data logger.
- * 
+ *
  * This function only works if the device uses a recent firmware,
  * as DataSet objects are not supported by firmwares older than
  * version 13000.
- * 
+ *
  * @param startTime : the start of the desired measure time interval,
  *         as a Unix timestamp, i.e. the number of seconds since
  *         January 1, 1970 UTC. The special value 0 can be used
@@ -3583,7 +3600,7 @@ static double decExp[16] = {
  *         as a Unix timestamp, i.e. the number of seconds since
  *         January 1, 1970 UTC. The special value 0 can be used
  *         to include any meaasure, without ending limit.
- * 
+ *
  * @return an instance of YDataSet, providing access to historical
  *         data. Past measures can be loaded progressively
  *         using methods from the YDataSet object.
@@ -3603,7 +3620,7 @@ static double decExp[16] = {
  * The callback is invoked only during the execution of ySleep or yHandleEvents.
  * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
  * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
- * 
+ *
  * @param callback : the callback function to call, or a null pointer. The callback function should take two
  *         arguments: the function object of which the value has changed, and an YMeasure object describing
  *         the new advertised value.
@@ -3637,17 +3654,17 @@ static double decExp[16] = {
  * perform a linear interpolation of the error correction between specified
  * points. Remember to call the saveToFlash() method of the module if the
  * modification must be kept.
- * 
+ *
  * For more information on advanced capabilities to refine the calibration of
  * sensors, please contact support@yoctopuce.com.
- * 
+ *
  * @param rawValues : array of floating point numbers, corresponding to the raw
  *         values returned by the sensor for the correction points.
  * @param refValues : array of floating point numbers, corresponding to the corrected
  *         values for the correction points.
- * 
+ *
  * @return YAPI_SUCCESS if the call succeeds.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 -(int) calibrateFromPoints:(NSMutableArray*)rawValues :(NSMutableArray*)refValues
@@ -3661,14 +3678,14 @@ static double decExp[16] = {
 /**
  * Retrieves error correction data points previously entered using the method
  * calibrateFromPoints.
- * 
+ *
  * @param rawValues : array of floating point numbers, that will be filled by the
  *         function with the raw sensor values for the correction points.
  * @param refValues : array of floating point numbers, that will be filled by the
  *         function with the desired values for the correction points.
- * 
+ *
  * @return YAPI_SUCCESS if the call succeeds.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 -(int) loadCalibrationPoints:(NSMutableArray*)rawValues :(NSMutableArray*)refValues
@@ -4122,7 +4139,7 @@ static double decExp[16] = {
 /**
  * Registers a device log callback function. This callback will be called each time
  * that a module sends a new log message. Mostly useful to debug a Yoctopuce module.
- * 
+ *
  * @param callback : the callback function to call, or a null pointer. The callback function should take two
  *         arguments: the module object that emitted the log message, and the character string containing the log.
  * @noreturn
@@ -4142,9 +4159,9 @@ static double decExp[16] = {
 //--- (generated code: YModule public methods implementation)
 /**
  * Returns the commercial name of the module, as set by the factory.
- * 
+ *
  * @return a string corresponding to the commercial name of the module, as set by the factory
- * 
+ *
  * On failure, throws an exception or returns Y_PRODUCTNAME_INVALID.
  */
 -(NSString*) get_productName
@@ -4164,9 +4181,9 @@ static double decExp[16] = {
 }
 /**
  * Returns the serial number of the module, as set by the factory.
- * 
+ *
  * @return a string corresponding to the serial number of the module, as set by the factory
- * 
+ *
  * On failure, throws an exception or returns Y_SERIALNUMBER_INVALID.
  */
 -(NSString*) get_serialNumber
@@ -4186,9 +4203,9 @@ static double decExp[16] = {
 }
 /**
  * Returns the USB device identifier of the module.
- * 
+ *
  * @return an integer corresponding to the USB device identifier of the module
- * 
+ *
  * On failure, throws an exception or returns Y_PRODUCTID_INVALID.
  */
 -(int) get_productId
@@ -4208,9 +4225,9 @@ static double decExp[16] = {
 }
 /**
  * Returns the hardware release version of the module.
- * 
+ *
  * @return an integer corresponding to the hardware release version of the module
- * 
+ *
  * On failure, throws an exception or returns Y_PRODUCTRELEASE_INVALID.
  */
 -(int) get_productRelease
@@ -4230,9 +4247,9 @@ static double decExp[16] = {
 }
 /**
  * Returns the version of the firmware embedded in the module.
- * 
+ *
  * @return a string corresponding to the version of the firmware embedded in the module
- * 
+ *
  * On failure, throws an exception or returns Y_FIRMWARERELEASE_INVALID.
  */
 -(NSString*) get_firmwareRelease
@@ -4252,10 +4269,10 @@ static double decExp[16] = {
 }
 /**
  * Returns the current state of persistent module settings.
- * 
+ *
  * @return a value among Y_PERSISTENTSETTINGS_LOADED, Y_PERSISTENTSETTINGS_SAVED and
  * Y_PERSISTENTSETTINGS_MODIFIED corresponding to the current state of persistent module settings
- * 
+ *
  * On failure, throws an exception or returns Y_PERSISTENTSETTINGS_INVALID.
  */
 -(Y_PERSISTENTSETTINGS_enum) get_persistentSettings
@@ -4286,9 +4303,9 @@ static double decExp[16] = {
 }
 /**
  * Returns the luminosity of the  module informative leds (from 0 to 100).
- * 
+ *
  * @return an integer corresponding to the luminosity of the  module informative leds (from 0 to 100)
- * 
+ *
  * On failure, throws an exception or returns Y_LUMINOSITY_INVALID.
  */
 -(int) get_luminosity
@@ -4312,11 +4329,11 @@ static double decExp[16] = {
  * value between 0 and 100.
  * Remember to call the saveToFlash() method of the module if the
  * modification must be kept.
- * 
+ *
  * @param newval : an integer corresponding to the luminosity of the module informative leds
- * 
+ *
  * @return YAPI_SUCCESS if the call succeeds.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 -(int) set_luminosity:(int) newval
@@ -4331,9 +4348,9 @@ static double decExp[16] = {
 }
 /**
  * Returns the state of the localization beacon.
- * 
+ *
  * @return either Y_BEACON_OFF or Y_BEACON_ON, according to the state of the localization beacon
- * 
+ *
  * On failure, throws an exception or returns Y_BEACON_INVALID.
  */
 -(Y_BEACON_enum) get_beacon
@@ -4354,11 +4371,11 @@ static double decExp[16] = {
 
 /**
  * Turns on or off the module localization beacon.
- * 
+ *
  * @param newval : either Y_BEACON_OFF or Y_BEACON_ON
- * 
+ *
  * @return YAPI_SUCCESS if the call succeeds.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 -(int) set_beacon:(Y_BEACON_enum) newval
@@ -4373,9 +4390,9 @@ static double decExp[16] = {
 }
 /**
  * Returns the number of milliseconds spent since the module was powered on.
- * 
+ *
  * @return an integer corresponding to the number of milliseconds spent since the module was powered on
- * 
+ *
  * On failure, throws an exception or returns Y_UPTIME_INVALID.
  */
 -(s64) get_upTime
@@ -4395,9 +4412,9 @@ static double decExp[16] = {
 }
 /**
  * Returns the current consumed by the module on the USB bus, in milli-amps.
- * 
+ *
  * @return an integer corresponding to the current consumed by the module on the USB bus, in milli-amps
- * 
+ *
  * On failure, throws an exception or returns Y_USBCURRENT_INVALID.
  */
 -(int) get_usbCurrent
@@ -4418,10 +4435,10 @@ static double decExp[16] = {
 /**
  * Returns the remaining number of seconds before the module restarts, or zero when no
  * reboot has been scheduled.
- * 
+ *
  * @return an integer corresponding to the remaining number of seconds before the module restarts, or zero when no
  *         reboot has been scheduled
- * 
+ *
  * On failure, throws an exception or returns Y_REBOOTCOUNTDOWN_INVALID.
  */
 -(int) get_rebootCountdown
@@ -4453,9 +4470,9 @@ static double decExp[16] = {
 /**
  * Returns the value previously stored in this attribute.
  * On startup and after a device reboot, the value is always reset to zero.
- * 
+ *
  * @return an integer corresponding to the value previously stored in this attribute
- * 
+ *
  * On failure, throws an exception or returns Y_USERVAR_INVALID.
  */
 -(int) get_userVar
@@ -4477,11 +4494,11 @@ static double decExp[16] = {
 /**
  * Returns the value previously stored in this attribute.
  * On startup and after a device reboot, the value is always reset to zero.
- * 
+ *
  * @param newval : an integer
- * 
+ *
  * @return YAPI_SUCCESS if the call succeeds.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 -(int) set_userVar:(int) newval
@@ -4496,7 +4513,7 @@ static double decExp[16] = {
 }
 /**
  * Allows you to find a module from its serial number or from its logical name.
- * 
+ *
  * This function does not require that the module is online at the time
  * it is invoked. The returned object is nevertheless valid.
  * Use the method YModule.isOnline() to test if the module is
@@ -4504,10 +4521,10 @@ static double decExp[16] = {
  * a module by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
- * 
+ *
  * @param func : a string containing either the serial number or
  *         the logical name of the desired module
- * 
+ *
  * @return a YModule object allowing you to drive the module
  *         or get additional information on the module.
  */
@@ -4527,7 +4544,7 @@ static double decExp[16] = {
  * The callback is invoked only during the execution of ySleep or yHandleEvents.
  * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
  * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
- * 
+ *
  * @param callback : the callback function to call, or a null pointer. The callback function should take two
  *         arguments: the function object of which the value has changed, and the character string describing
  *         the new advertised value.
@@ -4566,9 +4583,9 @@ static double decExp[16] = {
  * Saves current settings in the nonvolatile memory of the module.
  * Warning: the number of allowed save operations during a module life is
  * limited (about 100000 cycles). Do not call this function within a loop.
- * 
+ *
  * @return YAPI_SUCCESS when the call succeeds.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 -(int) saveToFlash
@@ -4579,9 +4596,9 @@ static double decExp[16] = {
 /**
  * Reloads the settings stored in the nonvolatile memory, as
  * when the module is powered on.
- * 
+ *
  * @return YAPI_SUCCESS when the call succeeds.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 -(int) revertFromFlash
@@ -4591,11 +4608,11 @@ static double decExp[16] = {
 
 /**
  * Schedules a simple module reboot after the given number of seconds.
- * 
+ *
  * @param secBeforeReboot : number of seconds before rebooting
- * 
+ *
  * @return YAPI_SUCCESS when the call succeeds.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 -(int) reboot:(int)secBeforeReboot
@@ -4605,11 +4622,11 @@ static double decExp[16] = {
 
 /**
  * Schedules a module reboot into special firmware update mode.
- * 
+ *
  * @param secBeforeReboot : number of seconds before rebooting
- * 
+ *
  * @return YAPI_SUCCESS when the call succeeds.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 -(int) triggerFirmwareUpdate:(int)secBeforeReboot
@@ -4625,12 +4642,12 @@ static double decExp[16] = {
  * appropriate byn file. If the parameter onlynew is true, the function discards firmware that are
  * older or equal to
  * the installed firmware.
- * 
+ *
  * @param path    : the path of a byn file or a directory that contains byn files
  * @param onlynew : returns only files that are strictly newer
- * 
+ *
  * @return : the path of the byn file to use or a empty string if no byn files matches the requirement
- * 
+ *
  * On failure, throws an exception or returns a string that start with "error:".
  */
 -(NSString*) checkFirmware:(NSString*)path :(bool)onlynew
@@ -4655,9 +4672,9 @@ static double decExp[16] = {
 /**
  * Prepares a firmware update of the module. This method returns a YFirmwareUpdate object which
  * handles the firmware update process.
- * 
+ *
  * @param path : the path of the byn file to use.
- * 
+ *
  * @return : A YFirmwareUpdate object.
  */
 -(YFirmwareUpdate*) updateFirmware:(NSString*)path
@@ -4673,9 +4690,9 @@ static double decExp[16] = {
 /**
  * Returns all the settings of the module. Useful to backup all the logical names and calibrations parameters
  * of a connected module.
- * 
+ *
  * @return a binary buffer with all the settings.
- * 
+ *
  * On failure, throws an exception or returns  YAPI_INVALID_STRING.
  */
 -(NSMutableData*) get_allSettings
@@ -4694,12 +4711,12 @@ static double decExp[16] = {
     NSString* jsonflat;
     NSString* jsoncomplexstr;
     fullsize = 0;
-    jsoncomplexstr = ARC_sendAutorelease([[NSString alloc] initWithData:jsoncomplex encoding:NSASCIIStringEncoding]);
+    jsoncomplexstr = ARC_sendAutorelease([[NSString alloc] initWithData:jsoncomplex encoding:NSISOLatin1StringEncoding]);
     res = yapiGetAllJsonKeys(STR_oc2y(jsoncomplexstr), smallbuff, 1024, &fullsize, errmsg);
     if (res < 0) {
         [self _throw:YAPI_INVALID_ARGUMENT :STR_y2oc(errmsg)];
         jsonflat = [NSString stringWithFormat:@"%@%@", @"error:", STR_y2oc(errmsg)];
-        return [NSMutableData dataWithData:[jsonflat dataUsingEncoding:NSUTF8StringEncoding]];
+        return [NSMutableData dataWithData:[jsonflat dataUsingEncoding:NSISOLatin1StringEncoding]];
     }
     if (fullsize <= 1024) {
         jsonflat = ARC_sendAutorelease([[NSString alloc] initWithBytes:smallbuff length:fullsize encoding:NSUTF8StringEncoding]);
@@ -4715,7 +4732,7 @@ static double decExp[16] = {
         }
         free(bigbuff);
     }
-    return [NSMutableData dataWithData:[jsonflat dataUsingEncoding:NSUTF8StringEncoding]];
+    return [NSMutableData dataWithData:[jsonflat dataUsingEncoding:NSISOLatin1StringEncoding]];
 }
 
 -(int) calibVersion:(NSString*)cparams
@@ -4769,7 +4786,7 @@ static double decExp[16] = {
     return 32767;
 }
 
--(NSString*) calibConvert:(NSString*)param :(NSString*)calibrationParam :(NSString*)unit_name :(NSString*)sensorType
+-(NSString*) calibConvert:(NSString*)param :(NSString*)currentFuncValue :(NSString*)unit_name :(NSString*)sensorType
 {
     int paramVer;
     int funVer;
@@ -4789,14 +4806,14 @@ static double decExp[16] = {
     double wordVal;
     // Initial guess for parameter encoding
     paramVer = [self calibVersion:param];
-    funVer = [self calibVersion:calibrationParam];
+    funVer = [self calibVersion:currentFuncValue];
     funScale = [self calibScale:unit_name :sensorType];
     funOffset = [self calibOffset:unit_name];
     paramScale = funScale;
     paramOffset = funOffset;
     if (funVer < 3) {
         if (funVer == 2) {
-            words = [YAPI _decodeWords:calibrationParam];
+            words = [YAPI _decodeWords:currentFuncValue];
             if (([[words objectAtIndex:0] intValue] == 1366) && ([[words objectAtIndex:1] intValue] == 12500)) {
                 funScale = 1;
                 funOffset = 0;
@@ -4806,7 +4823,7 @@ static double decExp[16] = {
             }
         } else {
             if (funVer == 1) {
-                if ([calibrationParam isEqualToString:@""] || ([calibrationParam intValue] > 10)) {
+                if ([currentFuncValue isEqualToString:@""] || ([currentFuncValue intValue] > 10)) {
                     funScale = 0;
                 }
             }
@@ -4930,12 +4947,13 @@ static double decExp[16] = {
 
 /**
  * Restores all the settings of the module. Useful to restore all the logical names and calibrations parameters
- * of a module from a backup.
- * 
+ * of a module from a backup.Remember to call the saveToFlash() method of the module if the
+ * modifications must be kept.
+ *
  * @param settings : a binary buffer with all the settings.
- * 
+ *
  * @return YAPI_SUCCESS when the call succeeds.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 -(int) set_allSettings:(NSData*)settings
@@ -4969,6 +4987,7 @@ static double decExp[16] = {
     NSString* newval;
     NSString* oldval;
     NSString* old_calib;
+    NSString* each_str;
     bool do_update;
     bool found;
     oldval = @"";
@@ -4976,16 +4995,16 @@ static double decExp[16] = {
     old_json_flat = [self _flattenJsonStruct:settings];
     old_dslist = [self _json_get_array:old_json_flat];
     for (NSString* _each  in old_dslist) {
-        _each = [self _json_get_string:[NSMutableData dataWithData:[_each dataUsingEncoding:NSUTF8StringEncoding]]];
-        leng = (int)[(_each) length];
-        eqpos = _ystrpos(_each, @"=");
+        each_str = [self _json_get_string:[NSMutableData dataWithData:[_each dataUsingEncoding:NSISOLatin1StringEncoding]]];
+        leng = (int)[(each_str) length];
+        eqpos = _ystrpos(each_str, @"=");
         if ((eqpos < 0) || (leng == 0)) {
             [self _throw:YAPI_INVALID_ARGUMENT :@"Invalid settings"];
             return YAPI_INVALID_ARGUMENT;
         }
-        jpath = [_each substringWithRange:NSMakeRange( 0, eqpos)];
+        jpath = [each_str substringWithRange:NSMakeRange( 0, eqpos)];
         eqpos = eqpos + 1;
-        value = [_each substringWithRange:NSMakeRange( eqpos, leng - eqpos)];
+        value = [each_str substringWithRange:NSMakeRange( eqpos, leng - eqpos)];
         [old_jpath addObject:jpath];
         [old_jpath_len addObject:[NSNumber numberWithLong:(int)[(jpath) length]]];
         [old_val_arr addObject:value];;
@@ -4995,16 +5014,16 @@ static double decExp[16] = {
     actualSettings = [self _flattenJsonStruct:actualSettings];
     new_dslist = [self _json_get_array:actualSettings];
     for (NSString* _each  in new_dslist) {
-        _each = [self _json_get_string:[NSMutableData dataWithData:[_each dataUsingEncoding:NSUTF8StringEncoding]]];
-        leng = (int)[(_each) length];
-        eqpos = _ystrpos(_each, @"=");
+        each_str = [self _json_get_string:[NSMutableData dataWithData:[_each dataUsingEncoding:NSISOLatin1StringEncoding]]];
+        leng = (int)[(each_str) length];
+        eqpos = _ystrpos(each_str, @"=");
         if ((eqpos < 0) || (leng == 0)) {
             [self _throw:YAPI_INVALID_ARGUMENT :@"Invalid settings"];
             return YAPI_INVALID_ARGUMENT;
         }
-        jpath = [_each substringWithRange:NSMakeRange( 0, eqpos)];
+        jpath = [each_str substringWithRange:NSMakeRange( 0, eqpos)];
         eqpos = eqpos + 1;
-        value = [_each substringWithRange:NSMakeRange( eqpos, leng - eqpos)];
+        value = [each_str substringWithRange:NSMakeRange( eqpos, leng - eqpos)];
         [new_jpath addObject:jpath];
         [new_jpath_len addObject:[NSNumber numberWithLong:(int)[(jpath) length]]];
         [new_val_arr addObject:value];;
@@ -5169,7 +5188,7 @@ static double decExp[16] = {
                 while ((j < (int)[new_jpath count]) && !(found)) {
                     if ([tmp isEqualToString:[new_jpath objectAtIndex:j]]) {
                         found = YES;
-                        unit_name = [new_jpath objectAtIndex:j];
+                        unit_name = [new_val_arr objectAtIndex:j];
                     }
                     j = j + 1;
                 }
@@ -5179,11 +5198,11 @@ static double decExp[16] = {
                 while ((j < (int)[new_jpath count]) && !(found)) {
                     if ([tmp isEqualToString:[new_jpath objectAtIndex:j]]) {
                         found = YES;
-                        sensorType = [new_jpath objectAtIndex:j];
+                        sensorType = [new_val_arr objectAtIndex:j];
                     }
                     j = j + 1;
                 }
-                newval = [self calibConvert:[new_val_arr objectAtIndex:i] : old_calib : unit_name :sensorType];
+                newval = [self calibConvert:old_calib : [new_val_arr objectAtIndex:i] : unit_name :sensorType];
                 url = [NSString stringWithFormat:@"%@%@%@%@%@%@", @"api/", fun, @".json?", attr, @"=", [self _escapeAttr:newval]];
                 [self _download:url];
             } else {
@@ -5205,11 +5224,11 @@ static double decExp[16] = {
 
 /**
  * Downloads the specified built-in file and returns a binary buffer with its content.
- * 
+ *
  * @param pathname : name of the new file to load
- * 
+ *
  * @return a binary buffer with the file content
- * 
+ *
  * On failure, throws an exception or returns  YAPI_INVALID_STRING.
  */
 -(NSMutableData*) download:(NSString*)pathname
@@ -5220,7 +5239,7 @@ static double decExp[16] = {
 /**
  * Returns the icon of the module. The icon is a PNG image and does not
  * exceeds 1536 bytes.
- * 
+ *
  * @return a binary buffer with module icon, in png format.
  *         On failure, throws an exception or returns  YAPI_INVALID_STRING.
  */
@@ -5232,7 +5251,7 @@ static double decExp[16] = {
 /**
  * Returns a string with last logs of the module. This method return only
  * logs that are still in the module.
- * 
+ *
  * @return a string with last logs of the module.
  *         On failure, throws an exception or returns  YAPI_INVALID_STRING.
  */
@@ -5241,7 +5260,7 @@ static double decExp[16] = {
     NSMutableData* content;
     // may throw an exception
     content = [self _download:@"logs.txt"];
-    return ARC_sendAutorelease([[NSString alloc] initWithData:content encoding:NSASCIIStringEncoding]);
+    return ARC_sendAutorelease([[NSString alloc] initWithData:content encoding:NSISOLatin1StringEncoding]);
 }
 
 
@@ -5406,7 +5425,7 @@ static double decExp[16] = {
     if (_progress_c < 100) {
         serial = _serial;
         firmwarepath = _firmwarepath;
-        settings = ARC_sendAutorelease([[NSString alloc] initWithData:_settings encoding:NSASCIIStringEncoding]);
+        settings = ARC_sendAutorelease([[NSString alloc] initWithData:_settings encoding:NSISOLatin1StringEncoding]);
         res = yapiUpdateFirmware(STR_oc2y(serial), STR_oc2y(firmwarepath), STR_oc2y(settings), newupdate, errmsg);
         if (res < 0) {
             _progress = res;
@@ -5435,6 +5454,7 @@ static double decExp[16] = {
             }
             if (_progress < 100) {
                 [m set_allSettings:_settings];
+                [m saveToFlash];
                 _settings = [NSMutableData dataWithLength:0];
                 _progress = 100;
                 _progress_msg = @"success";
@@ -5451,7 +5471,7 @@ static double decExp[16] = {
  * Retruns a list of all the modules in "update" mode. Only USB connected
  * devices are listed. For modules connected to a YoctoHub, you must
  * connect yourself to the YoctoHub web interface.
- * 
+ *
  * @return an array of strings containing the serial list of module in "update" mode.
  */
 +(NSMutableArray*) GetAllBootLoaders
@@ -5484,7 +5504,9 @@ static double decExp[16] = {
         }
         free(bigbuff);
     }
-    bootladers = [NSMutableArray arrayWithArray:[bootloader_list componentsSeparatedByString:@"@',"]];
+    if (!([bootloader_list isEqualToString:@""])) {
+        bootladers = [NSMutableArray arrayWithArray:[bootloader_list componentsSeparatedByString:@"@',"]];
+    }
     return bootladers;
 }
 
@@ -5492,13 +5514,13 @@ static double decExp[16] = {
  * Test if the byn file is valid for this module. It's possible to pass an directory instead of a file.
  * In this case this method return the path of the most recent appropriate byn file. This method will
  * ignore firmware that are older than mintrelase.
- * 
+ *
  * @param serial  : the serial number of the module to update
  * @param path    : the path of a byn file or a directory that contain byn files
  * @param minrelease : an positif integer
- * 
+ *
  * @return : the path of the byn file to use or a empty string if no byn files match the requirement
- * 
+ *
  * On failure, returns a string that start with "error:".
  */
 +(NSString*) CheckFirmware:(NSString*)serial :(NSString*)path :(int)minrelease
@@ -5540,7 +5562,7 @@ static double decExp[16] = {
  * the value of 100 is reached. The 100 value means that the firmware update was completed
  * successfully. If an error occurs during the firmware update, a negative value is returned, and the
  * error message can be retrieved with get_progressMessage.
- * 
+ *
  * @return an integer in the range 0 to 100 (percentage of completion)
  *         or a negative error code in case of failure.
  */
@@ -5553,7 +5575,7 @@ static double decExp[16] = {
 /**
  * Returns the last progress message of the firmware update process. If an error occurs during the
  * firmware update process, the error message is returned
- * 
+ *
  * @return a string  with the latest progress message, or the error message.
  */
 -(NSString*) get_progressMessage
@@ -5565,10 +5587,10 @@ static double decExp[16] = {
  * Starts the firmware update process. This method starts the firmware update process in background. This method
  * returns immediately. You can monitor the progress of the firmware update with the get_progress()
  * and get_progressMessage() methods.
- * 
+ *
  * @return an integer in the range 0 to 100 (percentage of completion),
  *         or a negative error code in case of failure.
- * 
+ *
  * On failure returns a negative error code.
  */
 -(int) startUpdate
@@ -5892,7 +5914,7 @@ static double decExp[16] = {
 /**
  * Returns the run index of the data stream. A run can be made of
  * multiple datastreams, for different time intervals.
- * 
+ *
  * @return an unsigned number corresponding to the run index.
  */
 -(int) get_runIndex
@@ -5908,7 +5930,7 @@ static double decExp[16] = {
  * relative to the start of the time the device was powered on, and
  * is always positive.
  * If you need an absolute UTC timestamp, use get_startTimeUTC().
- * 
+ *
  * @return an unsigned number corresponding to the number of seconds
  *         between the start of the run and the beginning of this data
  *         stream.
@@ -5922,7 +5944,7 @@ static double decExp[16] = {
  * Returns the start time of the data stream, relative to the Jan 1, 1970.
  * If the UTC time was not set in the datalogger at the time of the recording
  * of this data stream, this method returns 0.
- * 
+ *
  * @return an unsigned number corresponding to the number of seconds
  *         between the Jan 1, 1970 and the beginning of this data
  *         stream (i.e. Unix time representation of the absolute time).
@@ -5937,7 +5959,7 @@ static double decExp[16] = {
  * rows of this data stream. By default, the data logger records one row
  * per second, but the recording frequency can be changed for
  * each device function
- * 
+ *
  * @return an unsigned number corresponding to a number of milliseconds.
  */
 -(int) get_dataSamplesIntervalMs
@@ -5952,13 +5974,13 @@ static double decExp[16] = {
 
 /**
  * Returns the number of data rows present in this stream.
- * 
+ *
  * If the device uses a firmware older than version 13000,
  * this method fetches the whole data stream from the device
  * if not yet done, which can cause a little delay.
- * 
+ *
  * @return an unsigned number corresponding to the number of rows.
- * 
+ *
  * On failure, throws an exception or returns zero.
  */
 -(int) get_rowCount
@@ -5974,13 +5996,13 @@ static double decExp[16] = {
  * Returns the number of data columns present in this stream.
  * The meaning of the values present in each column can be obtained
  * using the method get_columnNames().
- * 
+ *
  * If the device uses a firmware older than version 13000,
  * this method fetches the whole data stream from the device
  * if not yet done, which can cause a little delay.
- * 
+ *
  * @return an unsigned number corresponding to the number of columns.
- * 
+ *
  * On failure, throws an exception or returns zero.
  */
 -(int) get_columnCount
@@ -5999,14 +6021,14 @@ static double decExp[16] = {
  * recording rate, the dataLogger stores the min, average and max value
  * during each measure interval into three columns with suffixes _min,
  * _avg and _max respectively.
- * 
+ *
  * If the device uses a firmware older than version 13000,
  * this method fetches the whole data stream from the device
  * if not yet done, which can cause a little delay.
- * 
+ *
  * @return a list containing as many strings as there are columns in the
  *         data stream.
- * 
+ *
  * On failure, throws an exception or returns an empty array.
  */
 -(NSMutableArray*) get_columnNames
@@ -6022,10 +6044,10 @@ static double decExp[16] = {
  * Returns the smallest measure observed within this stream.
  * If the device uses a firmware older than version 13000,
  * this method will always return Y_DATA_INVALID.
- * 
+ *
  * @return a floating-point number corresponding to the smallest value,
  *         or Y_DATA_INVALID if the stream is not yet complete (still recording).
- * 
+ *
  * On failure, throws an exception or returns Y_DATA_INVALID.
  */
 -(double) get_minValue
@@ -6037,10 +6059,10 @@ static double decExp[16] = {
  * Returns the average of all measures observed within this stream.
  * If the device uses a firmware older than version 13000,
  * this method will always return Y_DATA_INVALID.
- * 
+ *
  * @return a floating-point number corresponding to the average value,
  *         or Y_DATA_INVALID if the stream is not yet complete (still recording).
- * 
+ *
  * On failure, throws an exception or returns Y_DATA_INVALID.
  */
 -(double) get_averageValue
@@ -6052,10 +6074,10 @@ static double decExp[16] = {
  * Returns the largest measure observed within this stream.
  * If the device uses a firmware older than version 13000,
  * this method will always return Y_DATA_INVALID.
- * 
+ *
  * @return a floating-point number corresponding to the largest value,
  *         or Y_DATA_INVALID if the stream is not yet complete (still recording).
- * 
+ *
  * On failure, throws an exception or returns Y_DATA_INVALID.
  */
 -(double) get_maxValue
@@ -6065,9 +6087,9 @@ static double decExp[16] = {
 
 /**
  * Returns the approximate duration of this stream, in seconds.
- * 
+ *
  * @return the number of seconds covered by this stream.
- * 
+ *
  * On failure, throws an exception or returns Y_DURATION_INVALID.
  */
 -(int) get_duration
@@ -6083,14 +6105,14 @@ static double decExp[16] = {
  * table of numbers.
  * The meaning of the values present in each column can be obtained
  * using the method get_columnNames().
- * 
+ *
  * This method fetches the whole data stream from the device,
  * if not yet done.
- * 
+ *
  * @return a list containing as many elements as there are rows in the
  *         data stream. Each row itself is a list of floating-point
  *         numbers.
- * 
+ *
  * On failure, throws an exception or returns an empty array.
  */
 -(NSMutableArray*) get_dataRows
@@ -6106,15 +6128,15 @@ static double decExp[16] = {
  * row and column index.
  * The meaning of the values present in each column can be obtained
  * using the method get_columnNames().
- * 
+ *
  * This method fetches the whole data stream from the device,
  * if not yet done.
- * 
+ *
  * @param row : row index
  * @param col : column index
- * 
+ *
  * @return a floating-point number
- * 
+ *
  * On failure, throws an exception or returns Y_DATA_INVALID.
  */
 -(double) get_data:(int)row :(int)col
@@ -6190,7 +6212,7 @@ static double decExp[16] = {
  * Returns the start time of the measure, relative to the Jan 1, 1970 UTC
  * (Unix timestamp). When the recording rate is higher then 1 sample
  * per second, the timestamp may have a fractional part.
- * 
+ *
  * @return an floating point number corresponding to the number of seconds
  *         between the Jan 1, 1970 UTC and the beginning of this measure.
  */
@@ -6203,7 +6225,7 @@ static double decExp[16] = {
  * Returns the end time of the measure, relative to the Jan 1, 1970 UTC
  * (Unix timestamp). When the recording rate is higher than 1 sample
  * per second, the timestamp may have a fractional part.
- * 
+ *
  * @return an floating point number corresponding to the number of seconds
  *         between the Jan 1, 1970 UTC and the end of this measure.
  */
@@ -6215,7 +6237,7 @@ static double decExp[16] = {
 /**
  * Returns the smallest value observed during the time interval
  * covered by this measure.
- * 
+ *
  * @return a floating-point number corresponding to the smallest value observed.
  */
 -(double) get_minValue
@@ -6226,7 +6248,7 @@ static double decExp[16] = {
 /**
  * Returns the average value observed during the time interval
  * covered by this measure.
- * 
+ *
  * @return a floating-point number corresponding to the average value observed.
  */
 -(double) get_averageValue
@@ -6237,7 +6259,7 @@ static double decExp[16] = {
 /**
  * Returns the largest value observed during the time interval
  * covered by this measure.
- * 
+ *
  * @return a floating-point number corresponding to the largest value observed.
  */
 -(double) get_maxValue
@@ -6440,7 +6462,7 @@ static double decExp[16] = {
         return _progress;
     }
     if (_progress < 0) {
-        strdata = ARC_sendAutorelease([[NSString alloc] initWithData:data encoding:NSASCIIStringEncoding]);
+        strdata = ARC_sendAutorelease([[NSString alloc] initWithData:data encoding:NSISOLatin1StringEncoding]);
         if ([strdata isEqualToString:@"{}"]) {
             [_parent _throw:YAPI_VERSION_MISMATCH :@"device firmware is too old"];
             return YAPI_VERSION_MISMATCH;
@@ -6492,9 +6514,9 @@ static double decExp[16] = {
  * in the form SERIAL.FUNCTIONID. The unique hardware identifier is composed of the
  * device serial number and of the hardware identifier of the function
  * (for example THRMCPL1-123456.temperature1)
- * 
+ *
  * @return a string that uniquely identifies the function (ex: THRMCPL1-123456.temperature1)
- * 
+ *
  * On failure, throws an exception or returns  Y_HARDWAREID_INVALID.
  */
 -(NSString*) get_hardwareId
@@ -6511,7 +6533,7 @@ static double decExp[16] = {
 /**
  * Returns the hardware identifier of the function that performed the measure,
  * without reference to the module. For example temperature1.
- * 
+ *
  * @return a string that identifies the function (ex: temperature1)
  */
 -(NSString*) get_functionId
@@ -6521,9 +6543,9 @@ static double decExp[16] = {
 
 /**
  * Returns the measuring unit for the measured value.
- * 
+ *
  * @return a string that represents a physical unit.
- * 
+ *
  * On failure, throws an exception or returns  Y_UNIT_INVALID.
  */
 -(NSString*) get_unit
@@ -6538,7 +6560,7 @@ static double decExp[16] = {
  * very first call to loadMore(), the start time is updated
  * to reflect the timestamp of the first measure actually found in the
  * dataLogger within the specified range.
- * 
+ *
  * @return an unsigned number corresponding to the number of seconds
  *         between the Jan 1, 1970 and the beginning of this data
  *         set (i.e. Unix time representation of the absolute time).
@@ -6555,7 +6577,7 @@ static double decExp[16] = {
  * very first call to loadMore(), the end time is updated
  * to reflect the timestamp of the last measure actually found in the
  * dataLogger within the specified range.
- * 
+ *
  * @return an unsigned number corresponding to the number of seconds
  *         between the Jan 1, 1970 and the end of this data
  *         set (i.e. Unix time representation of the absolute time).
@@ -6570,7 +6592,7 @@ static double decExp[16] = {
  * on a scale from 0 to 100. When the object is instantiated by get_dataSet,
  * the progress is zero. Each time loadMore() is invoked, the progress
  * is updated, to reach the value 100 only once all measures have been loaded.
- * 
+ *
  * @return an integer in the range 0 to 100 (percentage of completion).
  */
 -(int) get_progress
@@ -6588,10 +6610,10 @@ static double decExp[16] = {
 /**
  * Loads the the next block of measures from the dataLogger, and updates
  * the progress indicator.
- * 
+ *
  * @return an integer in the range 0 to 100 (percentage of completion),
  *         or a negative error code in case of failure.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 -(int) loadMore
@@ -6619,10 +6641,10 @@ static double decExp[16] = {
  * - the minimal value observed during the time interval
  * - the average value observed during the time interval
  * - the maximal value observed during the time interval
- * 
+ *
  * This summary is available as soon as loadMore() has
  * been called for the first time.
- * 
+ *
  * @return an YMeasure object
  */
 -(YMeasure*) get_summary
@@ -6639,13 +6661,13 @@ static double decExp[16] = {
  * - the minimal value observed during the time interval
  * - the average value observed during the time interval
  * - the maximal value observed during the time interval
- * 
+ *
  * This preview is available as soon as loadMore() has
  * been called for the first time.
- * 
+ *
  * @return a table of records, where each record depicts the
  *         measured values during a time interval
- * 
+ *
  * On failure, throws an exception or returns an empty array.
  */
 -(NSMutableArray*) get_preview
@@ -6661,21 +6683,21 @@ static double decExp[16] = {
  * - the minimal value observed during the time interval
  * - the average value observed during the time interval
  * - the maximal value observed during the time interval
- * 
+ *
  * Before calling this method, you should call loadMore()
  * to load data from the device. You may have to call loadMore()
  * several time until all rows are loaded, but you can start
  * looking at available data rows before the load is complete.
- * 
+ *
  * The oldest measures are always loaded first, and the most
  * recent measures will be loaded last. As a result, timestamps
  * are normally sorted in ascending order within the measure table,
  * unless there was an unexpected adjustment of the datalogger UTC
  * clock.
- * 
+ *
  * @return a table of records, where each record depicts the
  *         measured value for a given time interval
- * 
+ *
  * On failure, throws an exception or returns an empty array.
  */
 -(NSMutableArray*) get_measures
@@ -6692,19 +6714,19 @@ static double decExp[16] = {
  * It is not strictly needed to call yInitAPI(), as the library is
  * automatically  initialized when calling yRegisterHub() for the
  * first time.
- * 
+ *
  * When Y_DETECT_NONE is used as detection mode,
  * you must explicitly use yRegisterHub() to point the API to the
  * VirtualHub on which your devices are connected before trying to access them.
- * 
+ *
  * @param mode : an integer corresponding to the type of automatic
  *         device detection to use. Possible values are
  *         Y_DETECT_NONE, Y_DETECT_USB, Y_DETECT_NET,
  *         and Y_DETECT_ALL.
  * @param errmsg : a string passed by reference to receive any error message.
- * 
+ *
  * @return YAPI_SUCCESS when the call succeeds.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 YRETCODE yInitAPI(int mode, NSError** errmsg)
@@ -6731,13 +6753,13 @@ void yFreeAPI(void)
  * DLL (for instance C#, VisualBasic or Delphi), the character string
  * includes as well the DLL version, for instance
  * "1.01.5535 (1.01.5439)".
- * 
+ *
  * If you want to verify in your code that the library version is
  * compatible with the version that you have used during development,
  * verify that the major number is strictly equal and that the minor
  * number is greater or equal. The build number is not relevant
  * with respect to the library compatibility.
- * 
+ *
  * @return a character string describing the library version.
  */
 NSString* yGetAPIVersion(void)
@@ -6766,24 +6788,24 @@ void yEnableExceptions(void)  { [YAPI EnableExceptions]; }
 /**
  * Setup the Yoctopuce library to use modules connected on a given machine. The
  * parameter will determine how the API will work. Use the following values:
- * 
+ *
  * <b>usb</b>: When the usb keyword is used, the API will work with
  * devices connected directly to the USB bus. Some programming languages such a Javascript,
  * PHP, and Java don't provide direct access to USB hardware, so usb will
  * not work with these. In this case, use a VirtualHub or a networked YoctoHub (see below).
- * 
+ *
  * <b><i>x.x.x.x</i></b> or <b><i>hostname</i></b>: The API will use the devices connected to the
  * host with the given IP address or hostname. That host can be a regular computer
  * running a VirtualHub, or a networked YoctoHub such as YoctoHub-Ethernet or
  * YoctoHub-Wireless. If you want to use the VirtualHub running on you local
  * computer, use the IP address 127.0.0.1.
- * 
+ *
  * <b>callback</b>: that keyword make the API run in "<i>HTTP Callback</i>" mode.
  * This a special mode allowing to take control of Yoctopuce devices
  * through a NAT filter when using a VirtualHub or a networked YoctoHub. You only
  * need to configure your hub to call your server script on a regular basis.
  * This mode is currently available for PHP and Node.JS only.
- * 
+ *
  * Be aware that only one application can use direct USB access at a
  * given time on a machine. Multiple access would cause conflicts
  * while trying to access the USB modules. In particular, this means
@@ -6791,20 +6813,20 @@ void yEnableExceptions(void)  { [YAPI EnableExceptions]; }
  * an application that uses direct USB access. The workaround
  * for this limitation is to setup the library to use the VirtualHub
  * rather than direct USB access.
- * 
+ *
  * If access control has been activated on the hub, virtual or not, you want to
  * reach, the URL parameter should look like:
- * 
+ *
  * http://username:password@address:port
- * 
+ *
  * You can call <i>RegisterHub</i> several times to connect to several machines.
- * 
+ *
  * @param url : a string containing either "usb","callback" or the
  *         root URL of the hub to monitor
  * @param errmsg : a string passed by reference to receive any error message.
- * 
+ *
  * @return YAPI_SUCCESS when the call succeeds.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 YRETCODE yRegisterHub(NSString * url, NSError** errmsg) { return [YAPI RegisterHub:url:errmsg]; }
@@ -6815,13 +6837,13 @@ YRETCODE yRegisterHub(NSString * url, NSError** errmsg) { return [YAPI RegisterH
  * an error when the selected hub is not available at the time of the function call.
  * This makes it possible to register a network hub independently of the current
  * connectivity, and to try to contact it only when a device is actively needed.
- * 
+ *
  * @param url : a string containing either "usb","callback" or the
  *         root URL of the hub to monitor
  * @param errmsg : a string passed by reference to receive any error message.
- * 
+ *
  * @return YAPI_SUCCESS when the call succeeds.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 YRETCODE yPreregisterHub(NSString * url, NSError** errmsg) { return [YAPI PreregisterHub:url:errmsg]; }
@@ -6829,7 +6851,7 @@ YRETCODE yPreregisterHub(NSString * url, NSError** errmsg) { return [YAPI Prereg
 /**
  * Setup the Yoctopuce library to no more use modules connected on a previously
  * registered machine with RegisterHub.
- * 
+ *
  * @param url : a string containing either "usb" or the
  *         root URL of the hub to monitor
  */
@@ -6842,14 +6864,14 @@ void     yUnregisterHub(NSString * url) { [YAPI UnregisterHub:url]; }
  * The library searches the machines or USB ports previously registered using
  * yRegisterHub(), and invokes any user-defined callback function
  * in case a change in the list of connected devices is detected.
- * 
+ *
  * This function can be called as frequently as desired to refresh the device list
  * and to make the application aware of hot-plug events.
- * 
+ *
  * @param errmsg : a string passed by reference to receive any error message.
- * 
+ *
  * @return YAPI_SUCCESS when the call succeeds.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 YRETCODE yUpdateDeviceList(NSError** errmsg) {  return [YAPI  UpdateDeviceList:errmsg]; }
@@ -6861,14 +6883,14 @@ YRETCODE yUpdateDeviceList(NSError** errmsg) {  return [YAPI  UpdateDeviceList:e
  * the information pushed by the modules on the communication channels.
  * This is not strictly necessary, but it may improve the reactivity
  * of the library for the following commands.
- * 
+ *
  * This function may signal an error in case there is a communication problem
  * while contacting a module.
- * 
+ *
  * @param errmsg : a string passed by reference to receive any error message.
- * 
+ *
  * @return YAPI_SUCCESS when the call succeeds.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 YRETCODE yHandleEvents(NSError** errmsg)
@@ -6881,16 +6903,16 @@ YRETCODE yHandleEvents(NSError** errmsg)
  * other threads and processes. During the pause, the library nevertheless
  * reads from time to time information from the Yoctopuce modules by
  * calling yHandleEvents(), in order to stay up-to-date.
- * 
+ *
  * This function may signal an error in case there is a communication problem
  * while contacting a module.
- * 
+ *
  * @param ms_duration : an integer corresponding to the duration of the pause,
  *         in milliseconds.
  * @param errmsg : a string passed by reference to receive any error message.
- * 
+ *
  * @return YAPI_SUCCESS when the call succeeds.
- * 
+ *
  * On failure, throws an exception or returns a negative error code.
  */
 YRETCODE ySleep(unsigned ms_duration, NSError **errmsg)
@@ -6901,7 +6923,7 @@ YRETCODE ySleep(unsigned ms_duration, NSError **errmsg)
  * (Objective-C only) Register an object that must follow the protocol YDeviceHotPlug. The methods
  * yDeviceArrival and yDeviceRemoval  will be invoked while yUpdateDeviceList
  * is running. You will have to call this function on a regular basis.
- * 
+ *
  * @param object : an object that must follow the protocol YAPIDelegate, or nil
  *         to unregister a previously registered  object.
  */
@@ -6916,7 +6938,7 @@ void ySetDelegate(id object)
  * Returns the current value of a monotone millisecond-based time counter.
  * This counter can be used to compute delays in relation with
  * Yoctopuce devices, which also uses the millisecond as timebase.
- * 
+ *
  * @return a long integer corresponding to the millisecond counter.
  */
 u64 yGetTickCount(void) { return [YAPI GetTickCount]; }
@@ -6927,9 +6949,9 @@ u64 yGetTickCount(void) { return [YAPI GetTickCount]; }
  * A..Z, a..z, 0..9, _, and -.
  * If you try to configure a logical name with an incorrect string,
  * the invalid characters are ignored.
- * 
+ *
  * @param name : a string containing the name to check.
- * 
+ *
  * @return true if the name is valid, false otherwise.
  */
 BOOL yCheckLogicalName(NSString * name){  return [YAPI  CheckLogicalName:name]; }
@@ -6938,7 +6960,7 @@ BOOL yCheckLogicalName(NSString * name){  return [YAPI  CheckLogicalName:name]; 
  * Register a callback function, to be called each time
  * a device is plugged. This callback will be invoked while yUpdateDeviceList
  * is running. You will have to call this function on a regular basis.
- * 
+ *
  * @param arrivalCallback : a procedure taking a YModule parameter, or null
  *         to unregister a previously registered  callback.
  */
@@ -6949,7 +6971,7 @@ void    yRegisterDeviceArrivalCallback(yDeviceUpdateCallback arrivalCallback)
  * Register a callback function, to be called each time
  * a device is unplugged. This callback will be invoked while yUpdateDeviceList
  * is running. You will have to call this function on a regular basis.
- * 
+ *
  * @param removalCallback : a procedure taking a YModule parameter, or null
  *         to unregister a previously registered  callback.
  */
@@ -6961,7 +6983,7 @@ void    yRegisterDeviceChangeCallback(yDeviceUpdateCallback changeCallback)
 /**
  * Registers a log callback function. This callback will be called each time
  * the API have something to say. Quite useful to debug the API.
- * 
+ *
  * @param logfun : a procedure taking a string parameter, or null
  *         to unregister a previously registered  callback.
  */
