@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.m 19854 2015-03-26 10:17:46Z seb $
+ * $Id: yocto_api.m 19900 2015-03-31 13:11:09Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -5487,7 +5487,6 @@ static double decExp[16] = {
     fullsize = 0;
     yapi_res = yapiGetBootloaders(smallbuff, 1024, &fullsize, errmsg);
     if (yapi_res < 0) {
-        bootloader_list = [NSString stringWithFormat:@"%@%@", @"error:", STR_y2oc(errmsg)];
         return bootladers;
     }
     if (fullsize <= 1024) {
