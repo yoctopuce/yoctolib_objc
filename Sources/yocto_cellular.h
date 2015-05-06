@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_cellular.h 19678 2015-03-11 07:44:40Z mvuilleu $
+ * $Id: yocto_cellular.h 20167 2015-04-27 14:24:03Z seb $
  *
  * Declares yFindCellular(), the high-level API for Cellular functions
  *
@@ -107,6 +107,7 @@ typedef enum {
 #endif
 #define Y_LINKQUALITY_INVALID           YAPI_INVALID_UINT
 #define Y_CELLOPERATOR_INVALID          YAPI_INVALID_STRING
+#define Y_IMSI_INVALID                  YAPI_INVALID_STRING
 #define Y_MESSAGE_INVALID               YAPI_INVALID_STRING
 #define Y_PIN_INVALID                   YAPI_INVALID_STRING
 #define Y_LOCKEDOPERATOR_INVALID        YAPI_INVALID_STRING
@@ -129,6 +130,7 @@ typedef enum {
 //--- (generated code: YCellular attributes declaration)
     int             _linkQuality;
     NSString*       _cellOperator;
+    NSString*       _imsi;
     NSString*       _message;
     NSString*       _pin;
     NSString*       _lockedOperator;
@@ -170,6 +172,21 @@ typedef enum {
 
 
 -(NSString*) cellOperator;
+/**
+ * Returns an opaque string if a PIN code has been configured in the device to access
+ * the SIM card, or an empty string if none has been configured or if the code provided
+ * was rejected by the SIM card.
+ *
+ * @return a string corresponding to an opaque string if a PIN code has been configured in the device to access
+ *         the SIM card, or an empty string if none has been configured or if the code provided
+ *         was rejected by the SIM card
+ *
+ * On failure, throws an exception or returns Y_IMSI_INVALID.
+ */
+-(NSString*)     get_imsi;
+
+
+-(NSString*) imsi;
 /**
  * Returns the latest status message from the wireless interface.
  *

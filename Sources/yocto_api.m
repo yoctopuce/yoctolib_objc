@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.m 19900 2015-03-31 13:11:09Z seb $
+ * $Id: yocto_api.m 20183 2015-04-29 14:41:00Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -985,6 +985,30 @@ static double decExp[16] = {
         return;
     }
     yapiUnregisterHub(STR_oc2y(url));
+}
+
+/**
+ * Test if the hub is reachable. This method do not register the hub, it only test if the
+ * hub is usable. The url parameter follow the same convention as the RegisterHub
+ * method. This method is useful to verify the authentication parameters for a hub. It
+ * is possible to force this method to return after mstimeout milliseconds.
+ *
+ * @param url : a string containing either "usb","callback" or the
+ *         root URL of the hub to monitor
+ * @param mstimeout : the number of millisecond available to test the connection.
+ * @param errmsg : a string passed by reference to receive any error message.
+ *
+ * @return YAPI_SUCCESS when the call succeeds.
+ *
+ * On failure returns a negative error code.
+ */
++(YRETCODE)   TestHub:(NSString*) url :(int)mstimeout :(NSError**) errmsg
+{
+    char        errbuf[YOCTO_ERRMSG_LEN];
+    YRETCODE    res;
+
+    res = yapiTestHub(STR_oc2y(url), mstimeout, errbuf);
+    return yFormatRetVal(errmsg, res, errbuf);
 }
 
 /**
@@ -4721,6 +4745,7 @@ static double decExp[16] = {
     if (fullsize <= 1024) {
         jsonflat = ARC_sendAutorelease([[NSString alloc] initWithBytes:smallbuff length:fullsize encoding:NSUTF8StringEncoding]);
     } else {
+        fullsize = fullsize * 2;
         buffsize = fullsize;
         bigbuff = (char *)malloc(buffsize);
         res = yapiGetAllJsonKeys(STR_oc2y(jsoncomplexstr), bigbuff, buffsize, &fullsize, errmsg);

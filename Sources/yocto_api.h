@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.h 19854 2015-03-26 10:17:46Z seb $
+ * $Id: yocto_api.h 20070 2015-04-16 15:34:40Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -456,6 +456,22 @@ int _ystrpos(NSString* haystack, NSString* needle);
  */
 +(void)         UnregisterHub:(NSString*) rooturl;
 
+/**
+ * Test if the hub is reachable. This method do not register the hub, it only test if the
+ * hub is usable. The url parameter follow the same convention as the RegisterHub
+ * method. This method is useful to verify the authentication parameters for a hub. It
+ * is possible to force this method to return after mstimeout milliseconds.
+ *
+ * @param url : a string containing either "usb","callback" or the
+ *         root URL of the hub to monitor
+ * @param mstimeout : the number of millisecond available to test the connection.
+ * @param errmsg : a string passed by reference to receive any error message.
+ *
+ * @return YAPI_SUCCESS when the call succeeds.
+ *
+ * On failure returns a negative error code.
+ */
++(YRETCODE)         TestHub:(NSString*) rooturl :(int)mstimeout :(NSError**) error;
 
 /**
  * Triggers a (re)detection of connected Yoctopuce modules.

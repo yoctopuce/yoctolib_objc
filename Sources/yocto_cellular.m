@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_cellular.m 19727 2015-03-13 16:22:10Z mvuilleu $
+ * $Id: yocto_cellular.m 20167 2015-04-27 14:24:03Z seb $
  *
  * Implements the high-level API for Cellular functions
  *
@@ -131,6 +131,7 @@
 //--- (generated code: YCellular attributes initialization)
     _linkQuality = Y_LINKQUALITY_INVALID;
     _cellOperator = Y_CELLOPERATOR_INVALID;
+    _imsi = Y_IMSI_INVALID;
     _message = Y_MESSAGE_INVALID;
     _pin = Y_PIN_INVALID;
     _lockedOperator = Y_LOCKEDOPERATOR_INVALID;
@@ -148,6 +149,8 @@
 //--- (generated code: YCellular cleanup)
     ARC_release(_cellOperator);
     _cellOperator = nil;
+    ARC_release(_imsi);
+    _imsi = nil;
     ARC_release(_message);
     _message = nil;
     ARC_release(_pin);
@@ -177,6 +180,13 @@
        ARC_release(_cellOperator);
         _cellOperator =  [self _parseString:j];
         ARC_retain(_cellOperator);
+        return 1;
+    }
+    if(!strcmp(j->token, "imsi")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+       ARC_release(_imsi);
+        _imsi =  [self _parseString:j];
+        ARC_retain(_imsi);
         return 1;
     }
     if(!strcmp(j->token, "message")) {
@@ -273,6 +283,32 @@
 -(NSString*) cellOperator
 {
     return [self get_cellOperator];
+}
+/**
+ * Returns an opaque string if a PIN code has been configured in the device to access
+ * the SIM card, or an empty string if none has been configured or if the code provided
+ * was rejected by the SIM card.
+ *
+ * @return a string corresponding to an opaque string if a PIN code has been configured in the device to access
+ *         the SIM card, or an empty string if none has been configured or if the code provided
+ *         was rejected by the SIM card
+ *
+ * On failure, throws an exception or returns Y_IMSI_INVALID.
+ */
+-(NSString*) get_imsi
+{
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_IMSI_INVALID;
+        }
+    }
+    return _imsi;
+}
+
+
+-(NSString*) imsi
+{
+    return [self get_imsi];
 }
 /**
  * Returns the latest status message from the wireless interface.
