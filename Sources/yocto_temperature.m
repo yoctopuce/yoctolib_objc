@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_temperature.m 19619 2015-03-05 18:11:23Z mvuilleu $
+ * $Id: yocto_temperature.m 20383 2015-05-19 23:44:31Z mvuilleu $
  *
  * Implements the high-level API for Temperature functions
  *
@@ -300,6 +300,40 @@
         [super _invokeTimedReportCallback:value];
     }
     return 0;
+}
+
+/**
+ * Configure NTC thermistor parameters in order to properly compute the temperature from
+ * the measured resistance. For increased precision, you can enter a complete mapping
+ * table using set_thermistorResponseTable. This function can only be used with a
+ * temperature sensor based on thermistors.
+ *
+ * @param res25 : thermistor resistance at 25 degrees Celsius
+ * @param beta : Beta value
+ *
+ * @return YAPI_SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) set_ntcParameters:(double)res25 :(double)beta
+{
+    double t0;
+    double t1;
+    double res100;
+    NSMutableArray* tempValues = [NSMutableArray array];
+    NSMutableArray* resValues = [NSMutableArray array];
+    t0 = 25.0+275.15;
+    t1 = 100.0+275.15;
+    res100 = res25 * exp(beta*(1.0/t1 - 1.0/t0));
+    [tempValues removeAllObjects];
+    [resValues removeAllObjects];
+    [tempValues addObject:[NSNumber numberWithDouble:25.0]];
+    [resValues addObject:[NSNumber numberWithDouble:res25]];
+    [tempValues addObject:[NSNumber numberWithDouble:100.0]];
+    [resValues addObject:[NSNumber numberWithDouble:res100]];
+    
+    
+    return [self set_thermistorResponseTable:tempValues :resValues];
 }
 
 /**

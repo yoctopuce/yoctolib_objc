@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.h 20070 2015-04-16 15:34:40Z seb $
+ * $Id: yocto_api.h 20380 2015-05-19 16:28:16Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -65,9 +65,10 @@ NSMutableDictionary* YAPI_YFunctions;
 #define YOCTO_API_REVISION          "PATCH_WITH_BUILD"
 
 // yInitAPI argument
-#define Y_DETECT_NONE  0
-#define Y_DETECT_USB   1
-#define Y_DETECT_NET   2
+#define Y_DETECT_NONE           0
+#define Y_DETECT_USB            1
+#define Y_DETECT_NET            2
+#define Y_RESEND_MISSING_PKT    4
 #define Y_DETECT_ALL   (Y_DETECT_USB | Y_DETECT_NET)
 
 // Forward-declaration
