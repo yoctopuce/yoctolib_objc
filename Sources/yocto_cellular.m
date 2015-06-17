@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_cellular.m 20167 2015-04-27 14:24:03Z seb $
+ * $Id: yocto_cellular.m 20410 2015-05-22 08:30:27Z seb $
  *
  * Implements the high-level API for Cellular functions
  *
@@ -683,7 +683,6 @@
 -(int) sendPUK:(NSString*)puk :(NSString*)newPin
 {
     NSString* gsmMsg;
-    
     gsmMsg = [self get_message];
     if (!([gsmMsg isEqualToString:@"Enter SIM PUK"])) {[self _throw:YAPI_INVALID_ARGUMENT: @"PUK not expected at self time"]; return YAPI_INVALID_ARGUMENT;}
     if ([newPin isEqualToString:@""]) {
@@ -744,7 +743,6 @@
         cmdLen = cmdLen + 2;
         chrPos = _ystrpos(cmd, @"=");
     }
-    
     // may throw an exception
     content = [self _download:[NSString stringWithFormat:@"at.txt?cmd=%@",cmd]];
     return ARC_sendAutorelease([[NSString alloc] initWithData:content encoding:NSISOLatin1StringEncoding]);

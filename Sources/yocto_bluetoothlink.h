@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_bluetoothlink.h 20325 2015-05-12 15:34:50Z seb $
+ * $Id: yocto_bluetoothlink.h 20644 2015-06-12 16:04:33Z seb $
  *
  * Declares yFindBluetoothLink(), the high-level API for BluetoothLink functions
  *
@@ -44,10 +44,33 @@ CF_EXTERN_C_BEGIN
 
 //--- (YBluetoothLink globals)
 typedef void (*YBluetoothLinkValueCallback)(YBluetoothLink *func, NSString *functionValue);
+#ifndef _Y_MUTE_ENUM
+#define _Y_MUTE_ENUM
+typedef enum {
+    Y_MUTE_FALSE = 0,
+    Y_MUTE_TRUE = 1,
+    Y_MUTE_INVALID = -1,
+} Y_MUTE_enum;
+#endif
+#ifndef _Y_LINKSTATE_ENUM
+#define _Y_LINKSTATE_ENUM
+typedef enum {
+    Y_LINKSTATE_DOWN = 0,
+    Y_LINKSTATE_FREE = 1,
+    Y_LINKSTATE_SEARCH = 2,
+    Y_LINKSTATE_EXISTS = 3,
+    Y_LINKSTATE_LINKED = 4,
+    Y_LINKSTATE_PLAY = 5,
+    Y_LINKSTATE_INVALID = -1,
+} Y_LINKSTATE_enum;
+#endif
 #define Y_OWNADDRESS_INVALID            YAPI_INVALID_STRING
 #define Y_PAIRINGPIN_INVALID            YAPI_INVALID_STRING
 #define Y_REMOTEADDRESS_INVALID         YAPI_INVALID_STRING
-#define Y_MESSAGE_INVALID               YAPI_INVALID_STRING
+#define Y_REMOTENAME_INVALID            YAPI_INVALID_STRING
+#define Y_PREAMPLIFIER_INVALID          YAPI_INVALID_UINT
+#define Y_VOLUME_INVALID                YAPI_INVALID_UINT
+#define Y_LINKQUALITY_INVALID           YAPI_INVALID_UINT
 #define Y_COMMAND_INVALID               YAPI_INVALID_STRING
 //--- (end of YBluetoothLink globals)
 
@@ -66,7 +89,12 @@ typedef void (*YBluetoothLinkValueCallback)(YBluetoothLink *func, NSString *func
     NSString*       _ownAddress;
     NSString*       _pairingPin;
     NSString*       _remoteAddress;
-    NSString*       _message;
+    NSString*       _remoteName;
+    Y_MUTE_enum     _mute;
+    int             _preAmplifier;
+    int             _volume;
+    Y_LINKSTATE_enum _linkState;
+    int             _linkQuality;
     NSString*       _command;
     YBluetoothLinkValueCallback _valueCallbackBluetoothLink;
 //--- (end of YBluetoothLink attributes declaration)
@@ -145,16 +173,110 @@ typedef void (*YBluetoothLinkValueCallback)(YBluetoothLink *func, NSString *func
 -(int)     setRemoteAddress:(NSString*) newval;
 
 /**
- * Returns the latest status message from the bluetooth interface.
+ * Returns the bluetooth name the remote device, if found on the bluetooth network.
  *
- * @return a string corresponding to the latest status message from the bluetooth interface
+ * @return a string corresponding to the bluetooth name the remote device, if found on the bluetooth network
  *
- * On failure, throws an exception or returns Y_MESSAGE_INVALID.
+ * On failure, throws an exception or returns Y_REMOTENAME_INVALID.
  */
--(NSString*)     get_message;
+-(NSString*)     get_remoteName;
 
 
--(NSString*) message;
+-(NSString*) remoteName;
+/**
+ * Returns the state of the mute function.
+ *
+ * @return either Y_MUTE_FALSE or Y_MUTE_TRUE, according to the state of the mute function
+ *
+ * On failure, throws an exception or returns Y_MUTE_INVALID.
+ */
+-(Y_MUTE_enum)     get_mute;
+
+
+-(Y_MUTE_enum) mute;
+/**
+ * Changes the state of the mute function. Remember to call the matching module
+ * saveToFlash() method to save the setting permanently.
+ *
+ * @param newval : either Y_MUTE_FALSE or Y_MUTE_TRUE, according to the state of the mute function
+ *
+ * @return YAPI_SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     set_mute:(Y_MUTE_enum) newval;
+-(int)     setMute:(Y_MUTE_enum) newval;
+
+/**
+ * Returns the audio pre-amplifier volume, in per cents.
+ *
+ * @return an integer corresponding to the audio pre-amplifier volume, in per cents
+ *
+ * On failure, throws an exception or returns Y_PREAMPLIFIER_INVALID.
+ */
+-(int)     get_preAmplifier;
+
+
+-(int) preAmplifier;
+/**
+ * Changes the audio pre-amplifier volume, in per cents.
+ *
+ * @param newval : an integer corresponding to the audio pre-amplifier volume, in per cents
+ *
+ * @return YAPI_SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     set_preAmplifier:(int) newval;
+-(int)     setPreAmplifier:(int) newval;
+
+/**
+ * Returns the connected headset volume, in per cents.
+ *
+ * @return an integer corresponding to the connected headset volume, in per cents
+ *
+ * On failure, throws an exception or returns Y_VOLUME_INVALID.
+ */
+-(int)     get_volume;
+
+
+-(int) volume;
+/**
+ * Changes the connected headset volume, in per cents.
+ *
+ * @param newval : an integer corresponding to the connected headset volume, in per cents
+ *
+ * @return YAPI_SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     set_volume:(int) newval;
+-(int)     setVolume:(int) newval;
+
+/**
+ * Returns the bluetooth link state.
+ *
+ * @return a value among Y_LINKSTATE_DOWN, Y_LINKSTATE_FREE, Y_LINKSTATE_SEARCH, Y_LINKSTATE_EXISTS,
+ * Y_LINKSTATE_LINKED and Y_LINKSTATE_PLAY corresponding to the bluetooth link state
+ *
+ * On failure, throws an exception or returns Y_LINKSTATE_INVALID.
+ */
+-(Y_LINKSTATE_enum)     get_linkState;
+
+
+-(Y_LINKSTATE_enum) linkState;
+/**
+ * Returns the bluetooth receiver signal strength, in pourcents, or 0 if no connection is established.
+ *
+ * @return an integer corresponding to the bluetooth receiver signal strength, in pourcents, or 0 if
+ * no connection is established
+ *
+ * On failure, throws an exception or returns Y_LINKQUALITY_INVALID.
+ */
+-(int)     get_linkQuality;
+
+
+-(int) linkQuality;
 -(NSString*)     get_command;
 
 

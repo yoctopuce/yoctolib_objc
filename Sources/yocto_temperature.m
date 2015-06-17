@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_temperature.m 20383 2015-05-19 23:44:31Z mvuilleu $
+ * $Id: yocto_temperature.m 20410 2015-05-22 08:30:27Z seb $
  *
  * Implements the high-level API for Temperature functions
  *
@@ -331,8 +331,6 @@
     [resValues addObject:[NSNumber numberWithDouble:res25]];
     [tempValues addObject:[NSNumber numberWithDouble:100.0]];
     [resValues addObject:[NSNumber numberWithDouble:res100]];
-    
-    
     return [self set_thermistorResponseTable:tempValues :resValues];
 }
 
@@ -365,11 +363,9 @@
     siz = (int)[tempValues count];
     if (!(siz >= 2)) {[self _throw: YAPI_INVALID_ARGUMENT: @"thermistor response table must have at least two points"]; return YAPI_INVALID_ARGUMENT;}
     if (!(siz == (int)[resValues count])) {[self _throw: YAPI_INVALID_ARGUMENT: @"table sizes mismatch"]; return YAPI_INVALID_ARGUMENT;}
-    
     // may throw an exception
     res = [self set_command:@"Z"];
     if (!(res==YAPI_SUCCESS)) {[self _throw: YAPI_IO_ERROR: @"unable to reset thermistor parameters"]; return YAPI_IO_ERROR;}
-    
     // add records in growing resistance value
     found = 1;
     prev = 0.0;
@@ -425,10 +421,8 @@
     double prev;
     double curr;
     double currRes;
-    
     [tempValues removeAllObjects];
     [resValues removeAllObjects];
-    
     // may throw an exception
     id = [self get_functionId];
     id = [id substringWithRange:NSMakeRange( 11, (int)[(id) length]-1)];
@@ -468,7 +462,6 @@
             prev = curr;
         }
     }
-    
     return YAPI_SUCCESS;
 }
 

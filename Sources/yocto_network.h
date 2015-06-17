@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_network.h 19608 2015-03-05 10:37:24Z seb $
+ * $Id: yocto_network.h 20599 2015-06-08 12:16:39Z seb $
  *
  * Declares yFindNetwork(), the high-level API for Network functions
  *
@@ -80,6 +80,8 @@ typedef enum {
     Y_CALLBACKENCODING_JSON_ARRAY = 2,
     Y_CALLBACKENCODING_CSV = 3,
     Y_CALLBACKENCODING_YOCTO_API = 4,
+    Y_CALLBACKENCODING_JSON_NUM = 5,
+    Y_CALLBACKENCODING_EMONCMS = 6,
     Y_CALLBACKENCODING_INVALID = -1,
 } Y_CALLBACKENCODING_enum;
 #endif
@@ -90,8 +92,11 @@ typedef enum {
 #define Y_IPCONFIG_INVALID              YAPI_INVALID_STRING
 #define Y_PRIMARYDNS_INVALID            YAPI_INVALID_STRING
 #define Y_SECONDARYDNS_INVALID          YAPI_INVALID_STRING
+#define Y_NTPSERVER_INVALID             YAPI_INVALID_STRING
 #define Y_USERPASSWORD_INVALID          YAPI_INVALID_STRING
 #define Y_ADMINPASSWORD_INVALID         YAPI_INVALID_STRING
+#define Y_HTTPPORT_INVALID              YAPI_INVALID_UINT
+#define Y_DEFAULTPAGE_INVALID           YAPI_INVALID_STRING
 #define Y_WWWWATCHDOGDELAY_INVALID      YAPI_INVALID_UINT
 #define Y_CALLBACKURL_INVALID           YAPI_INVALID_STRING
 #define Y_CALLBACKCREDENTIALS_INVALID   YAPI_INVALID_STRING
@@ -120,8 +125,11 @@ typedef enum {
     NSString*       _ipConfig;
     NSString*       _primaryDNS;
     NSString*       _secondaryDNS;
+    NSString*       _ntpServer;
     NSString*       _userPassword;
     NSString*       _adminPassword;
+    int             _httpPort;
+    NSString*       _defaultPage;
     Y_DISCOVERABLE_enum _discoverable;
     int             _wwwWatchdogDelay;
     NSString*       _callbackUrl;
@@ -272,6 +280,30 @@ typedef enum {
 -(int)     setSecondaryDNS:(NSString*) newval;
 
 /**
+ * Returns the IP address of the NTP server to be used by the device.
+ *
+ * @return a string corresponding to the IP address of the NTP server to be used by the device
+ *
+ * On failure, throws an exception or returns Y_NTPSERVER_INVALID.
+ */
+-(NSString*)     get_ntpServer;
+
+
+-(NSString*) ntpServer;
+/**
+ * Changes the IP address of the NTP server to be used by the module.
+ * Remember to call the saveToFlash() method and then to reboot the module to apply this setting.
+ *
+ * @param newval : a string corresponding to the IP address of the NTP server to be used by the module
+ *
+ * @return YAPI_SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     set_ntpServer:(NSString*) newval;
+-(int)     setNtpServer:(NSString*) newval;
+
+/**
  * Returns a hash string if a password has been set for "user" user,
  * or an empty string otherwise.
  *
@@ -328,6 +360,56 @@ typedef enum {
  */
 -(int)     set_adminPassword:(NSString*) newval;
 -(int)     setAdminPassword:(NSString*) newval;
+
+/**
+ * Returns the HTML page to serve for the URL "/"" of the hub.
+ *
+ * @return an integer corresponding to the HTML page to serve for the URL "/"" of the hub
+ *
+ * On failure, throws an exception or returns Y_HTTPPORT_INVALID.
+ */
+-(int)     get_httpPort;
+
+
+-(int) httpPort;
+/**
+ * Changes the default HTML page returned by the hub. If not value are set the hub return
+ * "index.html" which is the web interface of the hub. It is possible de change this page
+ * for file that has been uploaded on the hub.
+ *
+ * @param newval : an integer corresponding to the default HTML page returned by the hub
+ *
+ * @return YAPI_SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     set_httpPort:(int) newval;
+-(int)     setHttpPort:(int) newval;
+
+/**
+ * Returns the HTML page to serve for the URL "/"" of the hub.
+ *
+ * @return a string corresponding to the HTML page to serve for the URL "/"" of the hub
+ *
+ * On failure, throws an exception or returns Y_DEFAULTPAGE_INVALID.
+ */
+-(NSString*)     get_defaultPage;
+
+
+-(NSString*) defaultPage;
+/**
+ * Changes the default HTML page returned by the hub. If not value are set the hub return
+ * "index.html" which is the web interface of the hub. It is possible de change this page
+ * for file that has been uploaded on the hub.
+ *
+ * @param newval : a string corresponding to the default HTML page returned by the hub
+ *
+ * @return YAPI_SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     set_defaultPage:(NSString*) newval;
+-(int)     setDefaultPage:(NSString*) newval;
 
 /**
  * Returns the activation state of the multicast announce protocols to allow easy
@@ -443,8 +525,9 @@ typedef enum {
  * Returns the encoding standard to use for representing notification values.
  *
  * @return a value among Y_CALLBACKENCODING_FORM, Y_CALLBACKENCODING_JSON,
- * Y_CALLBACKENCODING_JSON_ARRAY, Y_CALLBACKENCODING_CSV and Y_CALLBACKENCODING_YOCTO_API
- * corresponding to the encoding standard to use for representing notification values
+ * Y_CALLBACKENCODING_JSON_ARRAY, Y_CALLBACKENCODING_CSV, Y_CALLBACKENCODING_YOCTO_API,
+ * Y_CALLBACKENCODING_JSON_NUM and Y_CALLBACKENCODING_EMONCMS corresponding to the encoding standard
+ * to use for representing notification values
  *
  * On failure, throws an exception or returns Y_CALLBACKENCODING_INVALID.
  */
@@ -456,8 +539,9 @@ typedef enum {
  * Changes the encoding standard to use for representing notification values.
  *
  * @param newval : a value among Y_CALLBACKENCODING_FORM, Y_CALLBACKENCODING_JSON,
- * Y_CALLBACKENCODING_JSON_ARRAY, Y_CALLBACKENCODING_CSV and Y_CALLBACKENCODING_YOCTO_API
- * corresponding to the encoding standard to use for representing notification values
+ * Y_CALLBACKENCODING_JSON_ARRAY, Y_CALLBACKENCODING_CSV, Y_CALLBACKENCODING_YOCTO_API,
+ * Y_CALLBACKENCODING_JSON_NUM and Y_CALLBACKENCODING_EMONCMS corresponding to the encoding standard
+ * to use for representing notification values
  *
  * @return YAPI_SUCCESS if the call succeeds.
  *

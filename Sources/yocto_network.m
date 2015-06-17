@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_network.m 19608 2015-03-05 10:37:24Z seb $
+ * $Id: yocto_network.m 20599 2015-06-08 12:16:39Z seb $
  *
  * Implements the high-level API for Network functions
  *
@@ -61,8 +61,11 @@
     _ipConfig = Y_IPCONFIG_INVALID;
     _primaryDNS = Y_PRIMARYDNS_INVALID;
     _secondaryDNS = Y_SECONDARYDNS_INVALID;
+    _ntpServer = Y_NTPSERVER_INVALID;
     _userPassword = Y_USERPASSWORD_INVALID;
     _adminPassword = Y_ADMINPASSWORD_INVALID;
+    _httpPort = Y_HTTPPORT_INVALID;
+    _defaultPage = Y_DEFAULTPAGE_INVALID;
     _discoverable = Y_DISCOVERABLE_INVALID;
     _wwwWatchdogDelay = Y_WWWWATCHDOGDELAY_INVALID;
     _callbackUrl = Y_CALLBACKURL_INVALID;
@@ -94,10 +97,14 @@
     _primaryDNS = nil;
     ARC_release(_secondaryDNS);
     _secondaryDNS = nil;
+    ARC_release(_ntpServer);
+    _ntpServer = nil;
     ARC_release(_userPassword);
     _userPassword = nil;
     ARC_release(_adminPassword);
     _adminPassword = nil;
+    ARC_release(_defaultPage);
+    _defaultPage = nil;
     ARC_release(_callbackUrl);
     _callbackUrl = nil;
     ARC_release(_callbackCredentials);
@@ -163,6 +170,13 @@
         ARC_retain(_secondaryDNS);
         return 1;
     }
+    if(!strcmp(j->token, "ntpServer")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+       ARC_release(_ntpServer);
+        _ntpServer =  [self _parseString:j];
+        ARC_retain(_ntpServer);
+        return 1;
+    }
     if(!strcmp(j->token, "userPassword")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
        ARC_release(_userPassword);
@@ -175,6 +189,18 @@
        ARC_release(_adminPassword);
         _adminPassword =  [self _parseString:j];
         ARC_retain(_adminPassword);
+        return 1;
+    }
+    if(!strcmp(j->token, "httpPort")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _httpPort =  atoi(j->token);
+        return 1;
+    }
+    if(!strcmp(j->token, "defaultPage")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+       ARC_release(_defaultPage);
+        _defaultPage =  [self _parseString:j];
+        ARC_retain(_defaultPage);
         return 1;
     }
     if(!strcmp(j->token, "discoverable")) {
@@ -471,6 +497,49 @@
     return [self _setAttr:@"secondaryDNS" :rest_val];
 }
 /**
+ * Returns the IP address of the NTP server to be used by the device.
+ *
+ * @return a string corresponding to the IP address of the NTP server to be used by the device
+ *
+ * On failure, throws an exception or returns Y_NTPSERVER_INVALID.
+ */
+-(NSString*) get_ntpServer
+{
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_NTPSERVER_INVALID;
+        }
+    }
+    return _ntpServer;
+}
+
+
+-(NSString*) ntpServer
+{
+    return [self get_ntpServer];
+}
+
+/**
+ * Changes the IP address of the NTP server to be used by the module.
+ * Remember to call the saveToFlash() method and then to reboot the module to apply this setting.
+ *
+ * @param newval : a string corresponding to the IP address of the NTP server to be used by the module
+ *
+ * @return YAPI_SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) set_ntpServer:(NSString*) newval
+{
+    return [self setNtpServer:newval];
+}
+-(int) setNtpServer:(NSString*) newval
+{
+    NSString* rest_val;
+    rest_val = newval;
+    return [self _setAttr:@"ntpServer" :rest_val];
+}
+/**
  * Returns a hash string if a password has been set for "user" user,
  * or an empty string otherwise.
  *
@@ -565,6 +634,94 @@
     NSString* rest_val;
     rest_val = newval;
     return [self _setAttr:@"adminPassword" :rest_val];
+}
+/**
+ * Returns the HTML page to serve for the URL "/"" of the hub.
+ *
+ * @return an integer corresponding to the HTML page to serve for the URL "/"" of the hub
+ *
+ * On failure, throws an exception or returns Y_HTTPPORT_INVALID.
+ */
+-(int) get_httpPort
+{
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_HTTPPORT_INVALID;
+        }
+    }
+    return _httpPort;
+}
+
+
+-(int) httpPort
+{
+    return [self get_httpPort];
+}
+
+/**
+ * Changes the default HTML page returned by the hub. If not value are set the hub return
+ * "index.html" which is the web interface of the hub. It is possible de change this page
+ * for file that has been uploaded on the hub.
+ *
+ * @param newval : an integer corresponding to the default HTML page returned by the hub
+ *
+ * @return YAPI_SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) set_httpPort:(int) newval
+{
+    return [self setHttpPort:newval];
+}
+-(int) setHttpPort:(int) newval
+{
+    NSString* rest_val;
+    rest_val = [NSString stringWithFormat:@"%d", newval];
+    return [self _setAttr:@"httpPort" :rest_val];
+}
+/**
+ * Returns the HTML page to serve for the URL "/"" of the hub.
+ *
+ * @return a string corresponding to the HTML page to serve for the URL "/"" of the hub
+ *
+ * On failure, throws an exception or returns Y_DEFAULTPAGE_INVALID.
+ */
+-(NSString*) get_defaultPage
+{
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_DEFAULTPAGE_INVALID;
+        }
+    }
+    return _defaultPage;
+}
+
+
+-(NSString*) defaultPage
+{
+    return [self get_defaultPage];
+}
+
+/**
+ * Changes the default HTML page returned by the hub. If not value are set the hub return
+ * "index.html" which is the web interface of the hub. It is possible de change this page
+ * for file that has been uploaded on the hub.
+ *
+ * @param newval : a string corresponding to the default HTML page returned by the hub
+ *
+ * @return YAPI_SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) set_defaultPage:(NSString*) newval
+{
+    return [self setDefaultPage:newval];
+}
+-(int) setDefaultPage:(NSString*) newval
+{
+    NSString* rest_val;
+    rest_val = newval;
+    return [self _setAttr:@"defaultPage" :rest_val];
 }
 /**
  * Returns the activation state of the multicast announce protocols to allow easy
@@ -756,8 +913,9 @@
  * Returns the encoding standard to use for representing notification values.
  *
  * @return a value among Y_CALLBACKENCODING_FORM, Y_CALLBACKENCODING_JSON,
- * Y_CALLBACKENCODING_JSON_ARRAY, Y_CALLBACKENCODING_CSV and Y_CALLBACKENCODING_YOCTO_API
- * corresponding to the encoding standard to use for representing notification values
+ * Y_CALLBACKENCODING_JSON_ARRAY, Y_CALLBACKENCODING_CSV, Y_CALLBACKENCODING_YOCTO_API,
+ * Y_CALLBACKENCODING_JSON_NUM and Y_CALLBACKENCODING_EMONCMS corresponding to the encoding standard
+ * to use for representing notification values
  *
  * On failure, throws an exception or returns Y_CALLBACKENCODING_INVALID.
  */
@@ -781,8 +939,9 @@
  * Changes the encoding standard to use for representing notification values.
  *
  * @param newval : a value among Y_CALLBACKENCODING_FORM, Y_CALLBACKENCODING_JSON,
- * Y_CALLBACKENCODING_JSON_ARRAY, Y_CALLBACKENCODING_CSV and Y_CALLBACKENCODING_YOCTO_API
- * corresponding to the encoding standard to use for representing notification values
+ * Y_CALLBACKENCODING_JSON_ARRAY, Y_CALLBACKENCODING_CSV, Y_CALLBACKENCODING_YOCTO_API,
+ * Y_CALLBACKENCODING_JSON_NUM and Y_CALLBACKENCODING_EMONCMS corresponding to the encoding standard
+ * to use for representing notification values
  *
  * @return YAPI_SUCCESS if the call succeeds.
  *

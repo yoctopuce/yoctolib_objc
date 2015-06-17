@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_bluetoothlink.m 20325 2015-05-12 15:34:50Z seb $
+ * $Id: yocto_bluetoothlink.m 20644 2015-06-12 16:04:33Z seb $
  *
  * Implements the high-level API for BluetoothLink functions
  *
@@ -56,7 +56,12 @@
     _ownAddress = Y_OWNADDRESS_INVALID;
     _pairingPin = Y_PAIRINGPIN_INVALID;
     _remoteAddress = Y_REMOTEADDRESS_INVALID;
-    _message = Y_MESSAGE_INVALID;
+    _remoteName = Y_REMOTENAME_INVALID;
+    _mute = Y_MUTE_INVALID;
+    _preAmplifier = Y_PREAMPLIFIER_INVALID;
+    _volume = Y_VOLUME_INVALID;
+    _linkState = Y_LINKSTATE_INVALID;
+    _linkQuality = Y_LINKQUALITY_INVALID;
     _command = Y_COMMAND_INVALID;
     _valueCallbackBluetoothLink = NULL;
 //--- (end of YBluetoothLink attributes initialization)
@@ -72,8 +77,8 @@
     _pairingPin = nil;
     ARC_release(_remoteAddress);
     _remoteAddress = nil;
-    ARC_release(_message);
-    _message = nil;
+    ARC_release(_remoteName);
+    _remoteName = nil;
     ARC_release(_command);
     _command = nil;
     ARC_dealloc(super);
@@ -104,11 +109,36 @@
         ARC_retain(_remoteAddress);
         return 1;
     }
-    if(!strcmp(j->token, "message")) {
+    if(!strcmp(j->token, "remoteName")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-       ARC_release(_message);
-        _message =  [self _parseString:j];
-        ARC_retain(_message);
+       ARC_release(_remoteName);
+        _remoteName =  [self _parseString:j];
+        ARC_retain(_remoteName);
+        return 1;
+    }
+    if(!strcmp(j->token, "mute")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _mute =  (Y_MUTE_enum)atoi(j->token);
+        return 1;
+    }
+    if(!strcmp(j->token, "preAmplifier")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _preAmplifier =  atoi(j->token);
+        return 1;
+    }
+    if(!strcmp(j->token, "volume")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _volume =  atoi(j->token);
+        return 1;
+    }
+    if(!strcmp(j->token, "linkState")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _linkState =  atoi(j->token);
+        return 1;
+    }
+    if(!strcmp(j->token, "linkQuality")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _linkQuality =  atoi(j->token);
         return 1;
     }
     if(!strcmp(j->token, "command")) {
@@ -236,26 +266,199 @@
     return [self _setAttr:@"remoteAddress" :rest_val];
 }
 /**
- * Returns the latest status message from the bluetooth interface.
+ * Returns the bluetooth name the remote device, if found on the bluetooth network.
  *
- * @return a string corresponding to the latest status message from the bluetooth interface
+ * @return a string corresponding to the bluetooth name the remote device, if found on the bluetooth network
  *
- * On failure, throws an exception or returns Y_MESSAGE_INVALID.
+ * On failure, throws an exception or returns Y_REMOTENAME_INVALID.
  */
--(NSString*) get_message
+-(NSString*) get_remoteName
 {
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
-            return Y_MESSAGE_INVALID;
+            return Y_REMOTENAME_INVALID;
         }
     }
-    return _message;
+    return _remoteName;
 }
 
 
--(NSString*) message
+-(NSString*) remoteName
 {
-    return [self get_message];
+    return [self get_remoteName];
+}
+/**
+ * Returns the state of the mute function.
+ *
+ * @return either Y_MUTE_FALSE or Y_MUTE_TRUE, according to the state of the mute function
+ *
+ * On failure, throws an exception or returns Y_MUTE_INVALID.
+ */
+-(Y_MUTE_enum) get_mute
+{
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_MUTE_INVALID;
+        }
+    }
+    return _mute;
+}
+
+
+-(Y_MUTE_enum) mute
+{
+    return [self get_mute];
+}
+
+/**
+ * Changes the state of the mute function. Remember to call the matching module
+ * saveToFlash() method to save the setting permanently.
+ *
+ * @param newval : either Y_MUTE_FALSE or Y_MUTE_TRUE, according to the state of the mute function
+ *
+ * @return YAPI_SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) set_mute:(Y_MUTE_enum) newval
+{
+    return [self setMute:newval];
+}
+-(int) setMute:(Y_MUTE_enum) newval
+{
+    NSString* rest_val;
+    rest_val = (newval ? @"1" : @"0");
+    return [self _setAttr:@"mute" :rest_val];
+}
+/**
+ * Returns the audio pre-amplifier volume, in per cents.
+ *
+ * @return an integer corresponding to the audio pre-amplifier volume, in per cents
+ *
+ * On failure, throws an exception or returns Y_PREAMPLIFIER_INVALID.
+ */
+-(int) get_preAmplifier
+{
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_PREAMPLIFIER_INVALID;
+        }
+    }
+    return _preAmplifier;
+}
+
+
+-(int) preAmplifier
+{
+    return [self get_preAmplifier];
+}
+
+/**
+ * Changes the audio pre-amplifier volume, in per cents.
+ *
+ * @param newval : an integer corresponding to the audio pre-amplifier volume, in per cents
+ *
+ * @return YAPI_SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) set_preAmplifier:(int) newval
+{
+    return [self setPreAmplifier:newval];
+}
+-(int) setPreAmplifier:(int) newval
+{
+    NSString* rest_val;
+    rest_val = [NSString stringWithFormat:@"%d", newval];
+    return [self _setAttr:@"preAmplifier" :rest_val];
+}
+/**
+ * Returns the connected headset volume, in per cents.
+ *
+ * @return an integer corresponding to the connected headset volume, in per cents
+ *
+ * On failure, throws an exception or returns Y_VOLUME_INVALID.
+ */
+-(int) get_volume
+{
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_VOLUME_INVALID;
+        }
+    }
+    return _volume;
+}
+
+
+-(int) volume
+{
+    return [self get_volume];
+}
+
+/**
+ * Changes the connected headset volume, in per cents.
+ *
+ * @param newval : an integer corresponding to the connected headset volume, in per cents
+ *
+ * @return YAPI_SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) set_volume:(int) newval
+{
+    return [self setVolume:newval];
+}
+-(int) setVolume:(int) newval
+{
+    NSString* rest_val;
+    rest_val = [NSString stringWithFormat:@"%d", newval];
+    return [self _setAttr:@"volume" :rest_val];
+}
+/**
+ * Returns the bluetooth link state.
+ *
+ * @return a value among Y_LINKSTATE_DOWN, Y_LINKSTATE_FREE, Y_LINKSTATE_SEARCH, Y_LINKSTATE_EXISTS,
+ * Y_LINKSTATE_LINKED and Y_LINKSTATE_PLAY corresponding to the bluetooth link state
+ *
+ * On failure, throws an exception or returns Y_LINKSTATE_INVALID.
+ */
+-(Y_LINKSTATE_enum) get_linkState
+{
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_LINKSTATE_INVALID;
+        }
+    }
+    return _linkState;
+}
+
+
+-(Y_LINKSTATE_enum) linkState
+{
+    return [self get_linkState];
+}
+/**
+ * Returns the bluetooth receiver signal strength, in pourcents, or 0 if no connection is established.
+ *
+ * @return an integer corresponding to the bluetooth receiver signal strength, in pourcents, or 0 if
+ * no connection is established
+ *
+ * On failure, throws an exception or returns Y_LINKQUALITY_INVALID.
+ */
+-(int) get_linkQuality
+{
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_LINKQUALITY_INVALID;
+        }
+    }
+    return _linkQuality;
+}
+
+
+-(int) linkQuality
+{
+    return [self get_linkQuality];
 }
 -(NSString*) get_command
 {

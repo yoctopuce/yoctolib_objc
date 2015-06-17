@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.h 20380 2015-05-19 16:28:16Z seb $
+ * $Id: yocto_api.h 20400 2015-05-21 14:58:16Z mvuilleu $
  *
  * High-level programming interface, common to all modules
  *
@@ -156,6 +156,7 @@ typedef void (*YSensorTimedReportCallback)(YSensor *func, YMeasure *measure);
 #define Y_REPORTFREQUENCY_INVALID       YAPI_INVALID_STRING
 #define Y_CALIBRATIONPARAM_INVALID      YAPI_INVALID_STRING
 #define Y_RESOLUTION_INVALID            YAPI_INVALID_DOUBLE
+#define Y_SENSORSTATE_INVALID           YAPI_INVALID_INT
 //--- (end of generated code: YSensor globals)
 
 //--- (generated code: YDataStream globals)
@@ -1472,6 +1473,7 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
     NSString*       _reportFrequency;
     NSString*       _calibrationParam;
     double          _resolution;
+    int             _sensorState;
     YSensorValueCallback _valueCallbackSensor;
     YSensorTimedReportCallback _timedReportCallbackSensor;
     double          _prevTimedReport;
@@ -1681,6 +1683,20 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
 
 -(double) resolution;
 /**
+ * Returns the sensor health state code, which is zero when there is an up-to-date measure
+ * available or a positive code if the sensor is not able to provide a measure right now.
+ *
+ * @return an integer corresponding to the sensor health state code, which is zero when there is an
+ * up-to-date measure
+ *         available or a positive code if the sensor is not able to provide a measure right now
+ *
+ * On failure, throws an exception or returns Y_SENSORSTATE_INVALID.
+ */
+-(int)     get_sensorState;
+
+
+-(int) sensorState;
+/**
  * Retrieves a sensor for a given identifier.
  * The identifier can be specified using several formats:
  * <ul>
@@ -1721,6 +1737,16 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
 -(int)     _invokeValueCallback:(NSString*)value;
 
 -(int)     _parserHelper;
+
+/**
+ * Checks if the sensor is currently able to provide an up-to-date measure.
+ * Returns false if the device is unreachable, or if the sensor does not have
+ * a current measure to transmit. No exception is raised if there is an error
+ * while trying to contact the device hosting $THEFUNCTION$.
+ *
+ * @return true if the sensor can provide an up-to-date measure, and false otherwise
+ */
+-(bool)     isSensorReady;
 
 /**
  * Starts the data logger on the device. Note that the data logger

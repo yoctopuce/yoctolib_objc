@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.m 20183 2015-04-29 14:41:00Z seb $
+ * $Id: yocto_api.m 20412 2015-05-22 08:52:39Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -2832,6 +2832,7 @@ static double decExp[16] = {
     _reportFrequency = Y_REPORTFREQUENCY_INVALID;
     _calibrationParam = Y_CALIBRATIONPARAM_INVALID;
     _resolution = Y_RESOLUTION_INVALID;
+    _sensorState = Y_SENSORSTATE_INVALID;
     _valueCallbackSensor = NULL;
     _timedReportCallbackSensor = NULL;
     _prevTimedReport = 0;
@@ -2919,6 +2920,11 @@ static double decExp[16] = {
     if(!strcmp(j->token, "resolution")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
         _resolution =  floor(atof(j->token) * 1000.0 / 65536.0 + 0.5) / 1000.0;
+        return 1;
+    }
+    if(!strcmp(j->token, "sensorState")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _sensorState =  atoi(j->token);
         return 1;
     }
     return [super _parseAttr:j];
@@ -3367,6 +3373,31 @@ static double decExp[16] = {
     return [self get_resolution];
 }
 /**
+ * Returns the sensor health state code, which is zero when there is an up-to-date measure
+ * available or a positive code if the sensor is not able to provide a measure right now.
+ *
+ * @return an integer corresponding to the sensor health state code, which is zero when there is an
+ * up-to-date measure
+ *         available or a positive code if the sensor is not able to provide a measure right now
+ *
+ * On failure, throws an exception or returns Y_SENSORSTATE_INVALID.
+ */
+-(int) get_sensorState
+{
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_SENSORSTATE_INVALID;
+        }
+    }
+    return _sensorState;
+}
+
+
+-(int) sensorState
+{
+    return [self get_sensorState];
+}
+/**
  * Retrieves a sensor for a given identifier.
  * The identifier can be specified using several formats:
  * <ul>
@@ -3571,6 +3602,25 @@ static double decExp[16] = {
         }
     }
     return 0;
+}
+
+/**
+ * Checks if the sensor is currently able to provide an up-to-date measure.
+ * Returns false if the device is unreachable, or if the sensor does not have
+ * a current measure to transmit. No exception is raised if there is an error
+ * while trying to contact the device hosting $THEFUNCTION$.
+ *
+ * @return true if the sensor can provide an up-to-date measure, and false otherwise
+ */
+-(bool) isSensorReady
+{
+    if (!([self isOnline])) {
+        return NO;
+    }
+    if (!(_sensorState == 0)) {
+        return NO;
+    }
+    return YES;
 }
 
 /**

@@ -1,8 +1,8 @@
 /*********************************************************************
  *
- * $Id: yocto_audioout.m 20565 2015-06-04 09:59:10Z seb $
+ * $Id: pic24config.php 20612 2015-06-09 01:27:02Z mvuilleu $
  *
- * Implements the high-level API for AudioOut functions
+ * Implements the high-level API for AudioIn functions
  *
  * - - - - - - - - - License information: - - - - - - - - - 
  *
@@ -38,37 +38,37 @@
  *********************************************************************/
 
 
-#import "yocto_audioout.h"
+#import "yocto_audioin.h"
 #include "yapi/yjson.h"
 #include "yapi/yapi.h"
 
 
 
-@implementation YAudioOut
+@implementation YAudioIn
 
-// Constructor is protected, use yFindAudioOut factory function to instantiate
+// Constructor is protected, use yFindAudioIn factory function to instantiate
 -(id)              initWith:(NSString*) func
 {
    if(!(self = [super initWith:func]))
           return nil;
-    _className = @"AudioOut";
-//--- (YAudioOut attributes initialization)
+    _className = @"AudioIn";
+//--- (YAudioIn attributes initialization)
     _volume = Y_VOLUME_INVALID;
     _mute = Y_MUTE_INVALID;
     _signal = Y_SIGNAL_INVALID;
     _noSignalFor = Y_NOSIGNALFOR_INVALID;
-    _valueCallbackAudioOut = NULL;
-//--- (end of YAudioOut attributes initialization)
+    _valueCallbackAudioIn = NULL;
+//--- (end of YAudioIn attributes initialization)
     return self;
 }
 // destructor
 -(void)  dealloc
 {
-//--- (YAudioOut cleanup)
+//--- (YAudioIn cleanup)
     ARC_dealloc(super);
-//--- (end of YAudioOut cleanup)
+//--- (end of YAudioIn cleanup)
 }
-//--- (YAudioOut private methods implementation)
+//--- (YAudioIn private methods implementation)
 
 -(int) _parseAttr:(yJsonStateMachine*) j
 {
@@ -94,12 +94,12 @@
     }
     return [super _parseAttr:j];
 }
-//--- (end of YAudioOut private methods implementation)
-//--- (YAudioOut public methods implementation)
+//--- (end of YAudioIn private methods implementation)
+//--- (YAudioIn public methods implementation)
 /**
- * Returns audio output volume, in per cents.
+ * Returns audio input gain, in per cents.
  *
- * @return an integer corresponding to audio output volume, in per cents
+ * @return an integer corresponding to audio input gain, in per cents
  *
  * On failure, throws an exception or returns Y_VOLUME_INVALID.
  */
@@ -120,9 +120,9 @@
 }
 
 /**
- * Changes audio output volume, in per cents.
+ * Changes audio input gain, in per cents.
  *
- * @param newval : an integer corresponding to audio output volume, in per cents
+ * @param newval : an integer corresponding to audio input gain, in per cents
  *
  * @return YAPI_SUCCESS if the call succeeds.
  *
@@ -182,9 +182,9 @@
     return [self _setAttr:@"mute" :rest_val];
 }
 /**
- * Returns the detected output current level.
+ * Returns the detected input signal level.
  *
- * @return an integer corresponding to the detected output current level
+ * @return an integer corresponding to the detected input signal level
  *
  * On failure, throws an exception or returns Y_SIGNAL_INVALID.
  */
@@ -238,7 +238,7 @@
  *
  * This function does not require that $THEFUNCTION$ is online at the time
  * it is invoked. The returned object is nevertheless valid.
- * Use the method YAudioOut.isOnline() to test if $THEFUNCTION$ is
+ * Use the method YAudioIn.isOnline() to test if $THEFUNCTION$ is
  * indeed online at a given time. In case of ambiguity when looking for
  * $AFUNCTION$ by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
@@ -246,15 +246,15 @@
  *
  * @param func : a string that uniquely characterizes $THEFUNCTION$
  *
- * @return a YAudioOut object allowing you to drive $THEFUNCTION$.
+ * @return a YAudioIn object allowing you to drive $THEFUNCTION$.
  */
-+(YAudioOut*) FindAudioOut:(NSString*)func
++(YAudioIn*) FindAudioIn:(NSString*)func
 {
-    YAudioOut* obj;
-    obj = (YAudioOut*) [YFunction _FindFromCache:@"AudioOut" :func];
+    YAudioIn* obj;
+    obj = (YAudioIn*) [YFunction _FindFromCache:@"AudioIn" :func];
     if (obj == nil) {
-        obj = ARC_sendAutorelease([[YAudioOut alloc] initWith:func]);
-        [YFunction _AddToCache:@"AudioOut" : func :obj];
+        obj = ARC_sendAutorelease([[YAudioIn alloc] initWith:func]);
+        [YFunction _AddToCache:@"AudioIn" : func :obj];
     }
     return obj;
 }
@@ -270,7 +270,7 @@
  *         the new advertised value.
  * @noreturn
  */
--(int) registerValueCallback:(YAudioOutValueCallback)callback
+-(int) registerValueCallback:(YAudioInValueCallback)callback
 {
     NSString* val;
     if (callback != NULL) {
@@ -278,7 +278,7 @@
     } else {
         [YFunction _UpdateValueCallbackList:self :NO];
     }
-    _valueCallbackAudioOut = callback;
+    _valueCallbackAudioIn = callback;
     // Immediately invoke value callback with current value
     if (callback != NULL && [self isOnline]) {
         val = _advertisedValue;
@@ -291,8 +291,8 @@
 
 -(int) _invokeValueCallback:(NSString*)value
 {
-    if (_valueCallbackAudioOut != NULL) {
-        _valueCallbackAudioOut(self, value);
+    if (_valueCallbackAudioIn != NULL) {
+        _valueCallbackAudioIn(self, value);
     } else {
         [super _invokeValueCallback:value];
     }
@@ -300,44 +300,44 @@
 }
 
 
--(YAudioOut*)   nextAudioOut
+-(YAudioIn*)   nextAudioIn
 {
     NSString  *hwid;
 
     if(YISERR([self _nextFunction:&hwid]) || [hwid isEqualToString:@""]) {
         return NULL;
     }
-    return [YAudioOut FindAudioOut:hwid];
+    return [YAudioIn FindAudioIn:hwid];
 }
 
-+(YAudioOut *) FirstAudioOut
++(YAudioIn *) FirstAudioIn
 {
     NSMutableArray    *ar_fundescr;
     YDEV_DESCR        ydevice;
     NSString          *serial, *funcId, *funcName, *funcVal;
 
-    if(!YISERR([YapiWrapper getFunctionsByClass:@"AudioOut":0:&ar_fundescr:NULL]) && [ar_fundescr count] > 0){
+    if(!YISERR([YapiWrapper getFunctionsByClass:@"AudioIn":0:&ar_fundescr:NULL]) && [ar_fundescr count] > 0){
         NSNumber*  ns_devdescr = [ar_fundescr objectAtIndex:0];
         if (!YISERR([YapiWrapper getFunctionInfo:[ns_devdescr intValue] :&ydevice :&serial :&funcId :&funcName :&funcVal :NULL])) {
-            return  [YAudioOut FindAudioOut:[NSString stringWithFormat:@"%@.%@",serial,funcId]];
+            return  [YAudioIn FindAudioIn:[NSString stringWithFormat:@"%@.%@",serial,funcId]];
         }
     }
     return nil;
 }
 
-//--- (end of YAudioOut public methods implementation)
+//--- (end of YAudioIn public methods implementation)
 
 @end
-//--- (AudioOut functions)
+//--- (AudioIn functions)
 
-YAudioOut *yFindAudioOut(NSString* func)
+YAudioIn *yFindAudioIn(NSString* func)
 {
-    return [YAudioOut FindAudioOut:func];
+    return [YAudioIn FindAudioIn:func];
 }
 
-YAudioOut *yFirstAudioOut(void)
+YAudioIn *yFirstAudioIn(void)
 {
-    return [YAudioOut FirstAudioOut];
+    return [YAudioIn FirstAudioIn];
 }
 
-//--- (end of AudioOut functions)
+//--- (end of AudioIn functions)

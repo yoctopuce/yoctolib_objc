@@ -1,8 +1,8 @@
 /*********************************************************************
  *
- * $Id: yocto_audioout.h 20565 2015-06-04 09:59:10Z seb $
+ * $Id: pic24config.php 20612 2015-06-09 01:27:02Z mvuilleu $
  *
- * Declares yFindAudioOut(), the high-level API for AudioOut functions
+ * Declares yFindAudioIn(), the high-level API for AudioIn functions
  *
  * - - - - - - - - - License information: - - - - - - - - - 
  *
@@ -40,10 +40,10 @@
 #include "yocto_api.h"
 CF_EXTERN_C_BEGIN
 
-@class YAudioOut;
+@class YAudioIn;
 
-//--- (YAudioOut globals)
-typedef void (*YAudioOutValueCallback)(YAudioOut *func, NSString *functionValue);
+//--- (YAudioIn globals)
+typedef void (*YAudioInValueCallback)(YAudioIn *func, NSString *functionValue);
 #ifndef _Y_MUTE_ENUM
 #define _Y_MUTE_ENUM
 typedef enum {
@@ -55,39 +55,39 @@ typedef enum {
 #define Y_VOLUME_INVALID                YAPI_INVALID_UINT
 #define Y_SIGNAL_INVALID                YAPI_INVALID_INT
 #define Y_NOSIGNALFOR_INVALID           YAPI_INVALID_INT
-//--- (end of YAudioOut globals)
+//--- (end of YAudioIn globals)
 
-//--- (YAudioOut class start)
+//--- (YAudioIn class start)
 /**
- * YAudioOut Class: AudioOut function interface
+ * YAudioIn Class: AudioIn function interface
  *
- * The Yoctopuce application programming interface allows you to configure the volume of the outout.
+ * The Yoctopuce application programming interface allows you to configure the volume of the input channel.
  */
-@interface YAudioOut : YFunction
-//--- (end of YAudioOut class start)
+@interface YAudioIn : YFunction
+//--- (end of YAudioIn class start)
 {
 @protected
-//--- (YAudioOut attributes declaration)
+//--- (YAudioIn attributes declaration)
     int             _volume;
     Y_MUTE_enum     _mute;
     int             _signal;
     int             _noSignalFor;
-    YAudioOutValueCallback _valueCallbackAudioOut;
-//--- (end of YAudioOut attributes declaration)
+    YAudioInValueCallback _valueCallbackAudioIn;
+//--- (end of YAudioIn attributes declaration)
 }
-// Constructor is protected, use yFindAudioOut factory function to instantiate
+// Constructor is protected, use yFindAudioIn factory function to instantiate
 -(id)    initWith:(NSString*) func;
 
-//--- (YAudioOut private methods declaration)
+//--- (YAudioIn private methods declaration)
 // Function-specific method for parsing of JSON output and caching result
 -(int)             _parseAttr:(yJsonStateMachine*) j;
 
-//--- (end of YAudioOut private methods declaration)
-//--- (YAudioOut public methods declaration)
+//--- (end of YAudioIn private methods declaration)
+//--- (YAudioIn public methods declaration)
 /**
- * Returns audio output volume, in per cents.
+ * Returns audio input gain, in per cents.
  *
- * @return an integer corresponding to audio output volume, in per cents
+ * @return an integer corresponding to audio input gain, in per cents
  *
  * On failure, throws an exception or returns Y_VOLUME_INVALID.
  */
@@ -96,9 +96,9 @@ typedef enum {
 
 -(int) volume;
 /**
- * Changes audio output volume, in per cents.
+ * Changes audio input gain, in per cents.
  *
- * @param newval : an integer corresponding to audio output volume, in per cents
+ * @param newval : an integer corresponding to audio input gain, in per cents
  *
  * @return YAPI_SUCCESS if the call succeeds.
  *
@@ -132,9 +132,9 @@ typedef enum {
 -(int)     setMute:(Y_MUTE_enum) newval;
 
 /**
- * Returns the detected output current level.
+ * Returns the detected input signal level.
  *
- * @return an integer corresponding to the detected output current level
+ * @return an integer corresponding to the detected input signal level
  *
  * On failure, throws an exception or returns Y_SIGNAL_INVALID.
  */
@@ -154,7 +154,7 @@ typedef enum {
 
 -(int) noSignalFor;
 /**
- * Retrieves an audio output for a given identifier.
+ * Retrieves an audio input for a given identifier.
  * The identifier can be specified using several formats:
  * <ul>
  * <li>FunctionLogicalName</li>
@@ -164,19 +164,19 @@ typedef enum {
  * <li>ModuleLogicalName.FunctionLogicalName</li>
  * </ul>
  *
- * This function does not require that the audio output is online at the time
+ * This function does not require that the audio input is online at the time
  * it is invoked. The returned object is nevertheless valid.
- * Use the method YAudioOut.isOnline() to test if the audio output is
+ * Use the method YAudioIn.isOnline() to test if the audio input is
  * indeed online at a given time. In case of ambiguity when looking for
- * an audio output by logical name, no error is notified: the first instance
+ * an audio input by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
  *
- * @param func : a string that uniquely characterizes the audio output
+ * @param func : a string that uniquely characterizes the audio input
  *
- * @return a YAudioOut object allowing you to drive the audio output.
+ * @return a YAudioIn object allowing you to drive the audio input.
  */
-+(YAudioOut*)     FindAudioOut:(NSString*)func;
++(YAudioIn*)     FindAudioIn:(NSString*)func;
 
 /**
  * Registers the callback function that is invoked on every change of advertised value.
@@ -189,36 +189,36 @@ typedef enum {
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerValueCallback:(YAudioOutValueCallback)callback;
+-(int)     registerValueCallback:(YAudioInValueCallback)callback;
 
 -(int)     _invokeValueCallback:(NSString*)value;
 
 
 /**
- * Continues the enumeration of audio outputs started using yFirstAudioOut().
+ * Continues the enumeration of audio inputs started using yFirstAudioIn().
  *
- * @return a pointer to a YAudioOut object, corresponding to
- *         an audio output currently online, or a null pointer
- *         if there are no more audio outputs to enumerate.
+ * @return a pointer to a YAudioIn object, corresponding to
+ *         an audio input currently online, or a null pointer
+ *         if there are no more audio inputs to enumerate.
  */
--(YAudioOut*) nextAudioOut;
+-(YAudioIn*) nextAudioIn;
 /**
- * Starts the enumeration of audio outputs currently accessible.
- * Use the method YAudioOut.nextAudioOut() to iterate on
- * next audio outputs.
+ * Starts the enumeration of audio inputs currently accessible.
+ * Use the method YAudioIn.nextAudioIn() to iterate on
+ * next audio inputs.
  *
- * @return a pointer to a YAudioOut object, corresponding to
- *         the first audio output currently online, or a null pointer
+ * @return a pointer to a YAudioIn object, corresponding to
+ *         the first audio input currently online, or a null pointer
  *         if there are none.
  */
-+(YAudioOut*) FirstAudioOut;
-//--- (end of YAudioOut public methods declaration)
++(YAudioIn*) FirstAudioIn;
+//--- (end of YAudioIn public methods declaration)
 
 @end
 
-//--- (AudioOut functions declaration)
+//--- (AudioIn functions declaration)
 /**
- * Retrieves an audio output for a given identifier.
+ * Retrieves an audio input for a given identifier.
  * The identifier can be specified using several formats:
  * <ul>
  * <li>FunctionLogicalName</li>
@@ -228,30 +228,30 @@ typedef enum {
  * <li>ModuleLogicalName.FunctionLogicalName</li>
  * </ul>
  *
- * This function does not require that the audio output is online at the time
+ * This function does not require that the audio input is online at the time
  * it is invoked. The returned object is nevertheless valid.
- * Use the method YAudioOut.isOnline() to test if the audio output is
+ * Use the method YAudioIn.isOnline() to test if the audio input is
  * indeed online at a given time. In case of ambiguity when looking for
- * an audio output by logical name, no error is notified: the first instance
+ * an audio input by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
  *
- * @param func : a string that uniquely characterizes the audio output
+ * @param func : a string that uniquely characterizes the audio input
  *
- * @return a YAudioOut object allowing you to drive the audio output.
+ * @return a YAudioIn object allowing you to drive the audio input.
  */
-YAudioOut* yFindAudioOut(NSString* func);
+YAudioIn* yFindAudioIn(NSString* func);
 /**
- * Starts the enumeration of audio outputs currently accessible.
- * Use the method YAudioOut.nextAudioOut() to iterate on
- * next audio outputs.
+ * Starts the enumeration of audio inputs currently accessible.
+ * Use the method YAudioIn.nextAudioIn() to iterate on
+ * next audio inputs.
  *
- * @return a pointer to a YAudioOut object, corresponding to
- *         the first audio output currently online, or a null pointer
+ * @return a pointer to a YAudioIn object, corresponding to
+ *         the first audio input currently online, or a null pointer
  *         if there are none.
  */
-YAudioOut* yFirstAudioOut(void);
+YAudioIn* yFirstAudioIn(void);
 
-//--- (end of AudioOut functions declaration)
+//--- (end of AudioIn functions declaration)
 CF_EXTERN_C_END
 
