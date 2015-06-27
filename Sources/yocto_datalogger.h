@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_datalogger.h 19608 2015-03-05 10:37:24Z seb $
+ * $Id: yocto_datalogger.h 20704 2015-06-20 19:43:34Z mvuilleu $
  *
  * Declares yFindDataLogger(), the high-level API for DataLogger functions
  *
@@ -49,6 +49,7 @@ typedef void (*YDataLoggerValueCallback)(YDataLogger *func, NSString *functionVa
 typedef enum {
     Y_RECORDING_OFF = 0,
     Y_RECORDING_ON = 1,
+    Y_RECORDING_PENDING = 2,
     Y_RECORDING_INVALID = -1,
 } Y_RECORDING_enum;
 #endif
@@ -243,7 +244,8 @@ typedef enum {
 /**
  * Returns the current activation state of the data logger.
  *
- * @return either Y_RECORDING_OFF or Y_RECORDING_ON, according to the current activation state of the data logger
+ * @return a value among Y_RECORDING_OFF, Y_RECORDING_ON and Y_RECORDING_PENDING corresponding to the
+ * current activation state of the data logger
  *
  * On failure, throws an exception or returns Y_RECORDING_INVALID.
  */
@@ -254,8 +256,8 @@ typedef enum {
 /**
  * Changes the activation state of the data logger to start/stop recording data.
  *
- * @param newval : either Y_RECORDING_OFF or Y_RECORDING_ON, according to the activation state of the
- * data logger to start/stop recording data
+ * @param newval : a value among Y_RECORDING_OFF, Y_RECORDING_ON and Y_RECORDING_PENDING corresponding
+ * to the activation state of the data logger to start/stop recording data
  *
  * @return YAPI_SUCCESS if the call succeeds.
  *
