@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_network.h 20599 2015-06-08 12:16:39Z seb $
+ * $Id: yocto_network.h 20815 2015-07-09 17:23:30Z mvuilleu $
  *
  * Declares yFindNetwork(), the high-level API for Network functions
  *
@@ -82,6 +82,7 @@ typedef enum {
     Y_CALLBACKENCODING_YOCTO_API = 4,
     Y_CALLBACKENCODING_JSON_NUM = 5,
     Y_CALLBACKENCODING_EMONCMS = 6,
+    Y_CALLBACKENCODING_AZURE = 7,
     Y_CALLBACKENCODING_INVALID = -1,
 } Y_CALLBACKENCODING_enum;
 #endif
@@ -526,8 +527,8 @@ typedef enum {
  *
  * @return a value among Y_CALLBACKENCODING_FORM, Y_CALLBACKENCODING_JSON,
  * Y_CALLBACKENCODING_JSON_ARRAY, Y_CALLBACKENCODING_CSV, Y_CALLBACKENCODING_YOCTO_API,
- * Y_CALLBACKENCODING_JSON_NUM and Y_CALLBACKENCODING_EMONCMS corresponding to the encoding standard
- * to use for representing notification values
+ * Y_CALLBACKENCODING_JSON_NUM, Y_CALLBACKENCODING_EMONCMS and Y_CALLBACKENCODING_AZURE corresponding
+ * to the encoding standard to use for representing notification values
  *
  * On failure, throws an exception or returns Y_CALLBACKENCODING_INVALID.
  */
@@ -540,8 +541,8 @@ typedef enum {
  *
  * @param newval : a value among Y_CALLBACKENCODING_FORM, Y_CALLBACKENCODING_JSON,
  * Y_CALLBACKENCODING_JSON_ARRAY, Y_CALLBACKENCODING_CSV, Y_CALLBACKENCODING_YOCTO_API,
- * Y_CALLBACKENCODING_JSON_NUM and Y_CALLBACKENCODING_EMONCMS corresponding to the encoding standard
- * to use for representing notification values
+ * Y_CALLBACKENCODING_JSON_NUM, Y_CALLBACKENCODING_EMONCMS and Y_CALLBACKENCODING_AZURE corresponding
+ * to the encoding standard to use for representing notification values
  *
  * @return YAPI_SUCCESS if the call succeeds.
  *

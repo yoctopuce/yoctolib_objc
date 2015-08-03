@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.h 20400 2015-05-21 14:58:16Z mvuilleu $
+ * $Id: yocto_api.h 20918 2015-07-23 13:29:15Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -249,6 +249,9 @@ int _ystrpos(NSString* haystack, NSString* needle);
 +(s16)      _doubleToDecimal:(double) val;
 +(NSMutableArray*) _decodeWords:(NSString*)s;
 +(NSMutableArray*) _decodeFloats:(NSString*)s;
++(NSString*) _bin2HexStr:(NSMutableData*)s;
++(NSMutableData*) _hexStr2Bin:(NSString*)s;
+
 
 // declare defaultCacheValidity,exceptionsDisabled, and INVALID_STRING as "static" methode since
 // there is no "static" data member in Objective-C
@@ -1369,6 +1372,10 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
  */
 -(NSMutableData*)     get_allSettings;
 
+-(bool)     hasFunction:(NSString*)funcId;
+
+-(NSMutableArray*)     get_functionIds:(NSString*)funType;
+
 -(NSMutableData*)     _flattenJsonStruct:(NSData*)jsoncomplex;
 
 -(int)     calibVersion:(NSString*)cparams;
@@ -2470,6 +2477,21 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
  * On failure, throws an exception or returns an empty array.
  */
 -(NSMutableArray*)     get_preview;
+
+/**
+ * Returns the detailed set of measures for the time interval corresponding
+ * to a given condensed measures previously returned by get_preview().
+ * The result is provided as a list of YMeasure objects.
+ *
+ * @param measure : condensed measure from the list previously returned by
+ *         get_preview().
+ *
+ * @return a table of records, where each record depicts the
+ *         measured values during a time interval
+ *
+ * On failure, throws an exception or returns an empty array.
+ */
+-(NSMutableArray*)     get_measuresAt:(YMeasure*)measure;
 
 /**
  * Returns all measured values currently available for this DataSet,

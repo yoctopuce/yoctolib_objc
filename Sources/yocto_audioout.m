@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_audioout.m 20565 2015-06-04 09:59:10Z seb $
+ * $Id: yocto_audioout.m 20797 2015-07-06 16:49:40Z mvuilleu $
  *
  * Implements the high-level API for AudioOut functions
  *
@@ -55,6 +55,7 @@
 //--- (YAudioOut attributes initialization)
     _volume = Y_VOLUME_INVALID;
     _mute = Y_MUTE_INVALID;
+    _volumeRange = Y_VOLUMERANGE_INVALID;
     _signal = Y_SIGNAL_INVALID;
     _noSignalFor = Y_NOSIGNALFOR_INVALID;
     _valueCallbackAudioOut = NULL;
@@ -65,6 +66,8 @@
 -(void)  dealloc
 {
 //--- (YAudioOut cleanup)
+    ARC_release(_volumeRange);
+    _volumeRange = nil;
     ARC_dealloc(super);
 //--- (end of YAudioOut cleanup)
 }
@@ -80,6 +83,13 @@
     if(!strcmp(j->token, "mute")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
         _mute =  (Y_MUTE_enum)atoi(j->token);
+        return 1;
+    }
+    if(!strcmp(j->token, "volumeRange")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+       ARC_release(_volumeRange);
+        _volumeRange =  [self _parseString:j];
+        ARC_retain(_volumeRange);
         return 1;
     }
     if(!strcmp(j->token, "signal")) {
@@ -180,6 +190,31 @@
     NSString* rest_val;
     rest_val = (newval ? @"1" : @"0");
     return [self _setAttr:@"mute" :rest_val];
+}
+/**
+ * Returns the supported volume range. The low value of the
+ * range corresponds to the minimal audible value. To
+ * completely mute the sound, use set_mute()
+ * instead of the set_volume().
+ *
+ * @return a string corresponding to the supported volume range
+ *
+ * On failure, throws an exception or returns Y_VOLUMERANGE_INVALID.
+ */
+-(NSString*) get_volumeRange
+{
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_VOLUMERANGE_INVALID;
+        }
+    }
+    return _volumeRange;
+}
+
+
+-(NSString*) volumeRange
+{
+    return [self get_volumeRange];
 }
 /**
  * Returns the detected output current level.

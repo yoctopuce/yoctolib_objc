@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.m 20412 2015-05-22 08:52:39Z seb $
+ * $Id: yocto_api.m 20938 2015-07-27 15:22:22Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -603,6 +603,51 @@ static double decExp[16] = {
         [idat addObject:[NSNumber numberWithInt:sign*val]];
     }
     return idat;
+}
+
+
+static const char* hexArray = "0123456789ABCDEF";
+
++(NSString*) _bin2HexStr:(NSMutableData*)data
+{
+    NSUInteger len = [data length];
+    if (len) {
+        const u8 *ptr = [data bytes];
+        char *buffer = malloc(len * 2 + 1);
+        memset(buffer, 0, len * 2 + 1);
+        for (unsigned long j = 0; j < len; j++, ptr++) {
+            u8 v = *ptr;
+            buffer[j * 2] = hexArray[v >> 4];
+            buffer[j * 2 + 1] = hexArray[v & 0x0F];
+        }
+        NSString *res = STR_y2oc(buffer);
+        free(buffer);
+        return res;
+    }
+    return @"";
+}
++(NSMutableData*) _hexStr2Bin:(NSString*)hex_str
+{
+    unsigned long len = [hex_str length] / 2;
+    const char *p  = STR_oc2y(hex_str);
+    NSMutableData *res = [NSMutableData dataWithLength:len];
+    for (unsigned long i = 0; i < len; i++) {
+        u8 b = 0;
+        int j;
+        for(j = 0; j < 2; j++) {
+            b <<= 4;
+            if(*p >= 'a' && *p <='f'){
+                b +=  10 + *p - 'a';
+            }else if(*p >= 'A' && *p <='F'){
+                b +=  10 + *p - 'A';
+            }else if(*p >='0' && *p <='9'){
+                b += *p - '0';
+            }
+            p++;
+        }
+        (((u8*)([res mutableBytes]))[i]) = b;
+    }
+    return res;
 }
 
 
@@ -4774,6 +4819,43 @@ static double decExp[16] = {
     return [self _download:@"api.json"];
 }
 
+-(bool) hasFunction:(NSString*)funcId
+{
+    int count;
+    int i;
+    NSString* fid;
+    // may throw an exception
+    count  = [self functionCount];
+    i = 0;
+    while (i < count) {
+        fid  = [self functionId:i];
+        if ([fid isEqualToString:funcId]) {
+            return YES;
+        }
+        i = i + 1;
+    }
+    return NO;
+}
+
+-(NSMutableArray*) get_functionIds:(NSString*)funType
+{
+    int count;
+    int i;
+    NSString* ftype;
+    NSMutableArray* res = [NSMutableArray array];
+    // may throw an exception
+    count = [self functionCount];
+    i = 0;
+    while (i < count) {
+        ftype  = [self functionType:i];
+        if ([ftype isEqualToString:funType]) {
+            [res addObject:[self functionId:i]];
+        }
+        i = i + 1;
+    }
+    return res;
+}
+
 -(NSMutableData*) _flattenJsonStruct:(NSData*)jsoncomplex
 {
     char errmsg[YOCTO_ERRMSG_LEN];
@@ -5424,6 +5506,21 @@ static double decExp[16] = {
     return funcId;
 }
 
+// Retrieve the type of the nth function (beside "module") in the device
+-(NSString*)           functionType:(int) functionIndex
+{
+    NSString      *serial, *funcId, *funcName, *funcVal;
+    NSError       *error;
+
+    int res = [self _getFunction:functionIndex:&serial:&funcId:&funcName:&funcVal:&error];
+    if(YISERR(res)) {
+        [self _throw:error];
+        return [YAPI INVALID_STRING];
+    }
+    return funcId;
+}
+
+
 // Retrieve the logical name of the nth function (beside "module") in the device
 -(NSString*)           functionName:(int) functionIndex
 {
@@ -5887,6 +5984,10 @@ static double decExp[16] = {
     int idx;
     NSMutableArray* udat = [NSMutableArray array];
     NSMutableArray* dat = [NSMutableArray array];
+    if ((int)[sdata length] == 0) {
+        _nRows = 0;
+        return YAPI_SUCCESS;
+    }
     // may throw an exception
     udat = [YAPI _decodeWords:[_parent _json_get_string:sdata]];
     [_values removeAllObjects];
@@ -5924,7 +6025,7 @@ static double decExp[16] = {
             }
         }
     }
-    
+
     _nRows = (int)[_values count];
     return YAPI_SUCCESS;
 }
@@ -6443,6 +6544,8 @@ static double decExp[16] = {
             }
         } else if (!strcmp(j.token, "streams")) {
             YDataStream *stream;
+            s64 streamEndTime, endTime = 0;
+            s64 streamStartTime, startTime = 0x7fffffff;
             _streams = [[NSMutableArray alloc] init];
             _preview = [[NSMutableArray alloc] init];
             _measures = [[NSMutableArray alloc] init];
@@ -6452,12 +6555,20 @@ static double decExp[16] = {
             // select streams for specified timeframe
             while(yJsonParse(&j) == YJSON_PARSE_AVAIL && j.token[0] != ']') {
                 stream = [_parent _findDataStream:self:[_parent _parseString:&j]];
+                streamStartTime = [stream get_startTimeUTC] - [stream get_dataSamplesIntervalMs] / 1000;
+                streamEndTime = [stream get_startTimeUTC] + [stream get_duration];
                 if(_startTime > 0 && [stream get_startTimeUTC] + [stream get_duration] <= _startTime) {
                     // this stream is too early, drop it
                 } else if(_endTime > 0 && [stream get_startTimeUTC] > _endTime) {
                     // this stream is too late, drop it
                 } else {
                     [_streams addObject:stream];
+                    if(startTime > streamStartTime) {
+                        startTime = streamStartTime;
+                    }
+                    if(endTime < streamEndTime) {
+                        endTime = streamEndTime;
+                    }
                     if([stream isClosed] && [stream get_startTimeUTC] >= _startTime &&
                        (_endTime == 0 || [stream get_startTimeUTC] + [stream get_duration] <= _endTime)) {
                         if (summaryMinVal > [stream get_minValue])
@@ -6478,15 +6589,11 @@ static double decExp[16] = {
             }
             if(([_streams count] > 0) && (summaryTotalTime>0)) {
                 // update time boundaries with actual data
-                stream = [_streams objectAtIndex:[_streams count]-1];
-                long endtime = [stream get_startTimeUTC] + [stream get_duration];
-                YDataStream *stream0 =[_streams objectAtIndex:0];
-                long startTime = [stream0 get_startTimeUTC] - [stream get_dataSamplesIntervalMs]/1000;
                 if(_startTime < startTime) {
                     _startTime = startTime;
                 }
-                if(_endTime == 0 || _endTime > endtime) {
-                    _endTime = endtime;
+                if(_endTime == 0 || _endTime > endTime) {
+                    _endTime = endTime;
                 }
                 _summary = [[YMeasure alloc] initWith :_startTime
                                                       :_endTime
@@ -6567,14 +6674,14 @@ static double decExp[16] = {
     } else {
         maxCol = 0;
     }
-    
+
     for (NSMutableArray* _each  in dataRows) {
         if ((tim >= _startTime) && ((_endTime == 0) || (tim <= _endTime))) {
             [_measures addObject:ARC_sendAutorelease([[YMeasure alloc] initWith:tim - itv :tim :[[_each objectAtIndex:minCol] doubleValue] :[[_each objectAtIndex:avgCol] doubleValue] :[[_each objectAtIndex:maxCol] doubleValue]])];
         }
         tim = tim + itv;
     }
-    
+
     return [self get_progress];
 }
 
@@ -6747,6 +6854,74 @@ static double decExp[16] = {
 -(NSMutableArray*) get_preview
 {
     return _preview;
+}
+
+/**
+ * Returns the detailed set of measures for the time interval corresponding
+ * to a given condensed measures previously returned by get_preview().
+ * The result is provided as a list of YMeasure objects.
+ *
+ * @param measure : condensed measure from the list previously returned by
+ *         get_preview().
+ *
+ * @return a table of records, where each record depicts the
+ *         measured values during a time interval
+ *
+ * On failure, throws an exception or returns an empty array.
+ */
+-(NSMutableArray*) get_measuresAt:(YMeasure*)measure
+{
+    s64 startUtc;
+    YDataStream* stream;
+    NSMutableArray* dataRows = [NSMutableArray array];
+    NSMutableArray* measures = [NSMutableArray array];
+    double tim;
+    double itv;
+    int nCols;
+    int minCol;
+    int avgCol;
+    int maxCol;
+    // may throw an exception
+    startUtc = (s64) floor(measure.get_startTimeUTC+0.5);
+    stream = nil;
+    for (YDataStream* _each  in _streams) {
+        if ([_each get_startTimeUTC] == startUtc) {
+            stream = _each;
+        }
+        ;;
+    }
+    if (stream == nil) {
+        return measures;
+    }
+    dataRows = [stream get_dataRows];
+    if ((int)[dataRows count] == 0) {
+        return measures;
+    }
+    tim = (double) [stream get_startTimeUTC];
+    itv = [stream get_dataSamplesInterval];
+    if (tim < itv) {
+        tim = itv;
+    }
+    nCols = (int)[[dataRows objectAtIndex:0] count];
+    minCol = 0;
+    if (nCols > 2) {
+        avgCol = 1;
+    } else {
+        avgCol = 0;
+    }
+    if (nCols > 2) {
+        maxCol = 2;
+    } else {
+        maxCol = 0;
+    }
+
+    for (NSMutableArray* _each  in dataRows) {
+        if ((tim >= _startTime) && ((_endTime == 0) || (tim <= _endTime))) {
+            [measures addObject:ARC_sendAutorelease([[YMeasure alloc] initWith:tim - itv :tim :[[_each objectAtIndex:minCol] doubleValue] :[[_each objectAtIndex:avgCol] doubleValue] :[[_each objectAtIndex:maxCol] doubleValue]])];
+        }
+        tim = tim + itv;;
+    }
+    return measures;
 }
 
 /**

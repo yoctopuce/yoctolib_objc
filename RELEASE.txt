@@ -1,3 +1,2 @@
-- Improve time auto-adjustments
-- Add datalogger PENDING status
-- Fix restore settings for devices with many functions
+(Misc)- yoctoapi js:add get_measuresAt_async method
+(Objective-C)- fix datalogger retrieval in case of time singularity

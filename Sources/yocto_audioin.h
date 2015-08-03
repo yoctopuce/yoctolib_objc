@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_audioin.h 20746 2015-06-25 11:15:45Z seb $
+ * $Id: yocto_audioin.h 20797 2015-07-06 16:49:40Z mvuilleu $
  *
  * Declares yFindAudioIn(), the high-level API for AudioIn functions
  *
@@ -53,6 +53,7 @@ typedef enum {
 } Y_MUTE_enum;
 #endif
 #define Y_VOLUME_INVALID                YAPI_INVALID_UINT
+#define Y_VOLUMERANGE_INVALID           YAPI_INVALID_STRING
 #define Y_SIGNAL_INVALID                YAPI_INVALID_INT
 #define Y_NOSIGNALFOR_INVALID           YAPI_INVALID_INT
 //--- (end of YAudioIn globals)
@@ -70,6 +71,7 @@ typedef enum {
 //--- (YAudioIn attributes declaration)
     int             _volume;
     Y_MUTE_enum     _mute;
+    NSString*       _volumeRange;
     int             _signal;
     int             _noSignalFor;
     YAudioInValueCallback _valueCallbackAudioIn;
@@ -131,6 +133,20 @@ typedef enum {
 -(int)     set_mute:(Y_MUTE_enum) newval;
 -(int)     setMute:(Y_MUTE_enum) newval;
 
+/**
+ * Returns the supported volume range. The low value of the
+ * range corresponds to the minimal audible value. To
+ * completely mute the sound, use set_mute()
+ * instead of the set_volume().
+ *
+ * @return a string corresponding to the supported volume range
+ *
+ * On failure, throws an exception or returns Y_VOLUMERANGE_INVALID.
+ */
+-(NSString*)     get_volumeRange;
+
+
+-(NSString*) volumeRange;
 /**
  * Returns the detected input signal level.
  *
