@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_humidity.m 19608 2015-03-05 10:37:24Z seb $
+ * $Id: yocto_humidity.m 21211 2015-08-19 16:03:29Z seb $
  *
  * Implements the high-level API for Humidity functions
  *
@@ -53,6 +53,8 @@
           return nil;
     _className = @"Humidity";
 //--- (YHumidity attributes initialization)
+    _relHum = Y_RELHUM_INVALID;
+    _absHum = Y_ABSHUM_INVALID;
     _valueCallbackHumidity = NULL;
     _timedReportCallbackHumidity = NULL;
 //--- (end of YHumidity attributes initialization)
@@ -69,10 +71,90 @@
 
 -(int) _parseAttr:(yJsonStateMachine*) j
 {
+    if(!strcmp(j->token, "relHum")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _relHum =  floor(atof(j->token) * 1000.0 / 65536.0 + 0.5) / 1000.0;
+        return 1;
+    }
+    if(!strcmp(j->token, "absHum")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _absHum =  floor(atof(j->token) * 1000.0 / 65536.0 + 0.5) / 1000.0;
+        return 1;
+    }
     return [super _parseAttr:j];
 }
 //--- (end of YHumidity private methods implementation)
 //--- (YHumidity public methods implementation)
+
+/**
+ * Changes the primary unit for measuring humidity. That unit is a string.
+ * If that strings starts with the letter 'g', the primary measured value is the absolute
+ * humidity, in g/m3. Otherwise, the primary measured value will be the relative humidity
+ * (RH), in per cents.
+ *
+ * Remember to call the saveToFlash() method of the module if the modification
+ * must be kept.
+ *
+ * @param newval : a string corresponding to the primary unit for measuring humidity
+ *
+ * @return YAPI_SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) set_unit:(NSString*) newval
+{
+    return [self setUnit:newval];
+}
+-(int) setUnit:(NSString*) newval
+{
+    NSString* rest_val;
+    rest_val = newval;
+    return [self _setAttr:@"unit" :rest_val];
+}
+/**
+ * Returns the current relative humidity, in per cents.
+ *
+ * @return a floating point number corresponding to the current relative humidity, in per cents
+ *
+ * On failure, throws an exception or returns Y_RELHUM_INVALID.
+ */
+-(double) get_relHum
+{
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_RELHUM_INVALID;
+        }
+    }
+    return _relHum;
+}
+
+
+-(double) relHum
+{
+    return [self get_relHum];
+}
+/**
+ * Returns the current absolute humidity, in grams per cubic meter of air.
+ *
+ * @return a floating point number corresponding to the current absolute humidity, in grams per cubic meter of air
+ *
+ * On failure, throws an exception or returns Y_ABSHUM_INVALID.
+ */
+-(double) get_absHum
+{
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_ABSHUM_INVALID;
+        }
+    }
+    return _absHum;
+}
+
+
+-(double) absHum
+{
+    return [self get_absHum];
+}
 /**
  * Retrieves $AFUNCTION$ for a given identifier.
  * The identifier can be specified using several formats:

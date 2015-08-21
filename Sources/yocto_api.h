@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.h 20918 2015-07-23 13:29:15Z seb $
+ * $Id: yocto_api.h 21180 2015-08-18 17:11:53Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -251,7 +251,7 @@ int _ystrpos(NSString* haystack, NSString* needle);
 +(NSMutableArray*) _decodeFloats:(NSString*)s;
 +(NSString*) _bin2HexStr:(NSMutableData*)s;
 +(NSMutableData*) _hexStr2Bin:(NSString*)s;
-
++(NSMutableData*) _binMerge:(NSData*)dataA :(NSData*)dataB;
 
 // declare defaultCacheValidity,exceptionsDisabled, and INVALID_STRING as "static" methode since
 // there is no "static" data member in Objective-C
@@ -699,9 +699,13 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
 -(NSString*)   _json_get_key:(NSData*)json :(NSString*)data;
 -(NSMutableArray*) _json_get_array:(NSData*)json;
 -(NSString*)   _json_get_string:(NSData*)json;
+-(NSString*)   _get_json_path:(NSString*)json :(NSString*)path;
+-(NSString*)   _decode_json_string:(NSString*)json;
 
 // Method used to cache DataStream objects (new DataLogger)
 -(YDataStream*) _findDataStream:(YDataSet*)dataset :(NSString*)def;
+// Method used to clear cache of DataStream object (undocumented)
+-(void) _clearDataStreamCache;
 
 +(id) _FindFromCache:(NSString*)classname :(NSString*)func;
 +(void) _AddToCache:(NSString*)classname :(NSString*)func :(id)obj;
@@ -1372,8 +1376,38 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
  */
 -(NSMutableData*)     get_allSettings;
 
+-(NSMutableData*)     get_allSettings_dev;
+
+/**
+ * Restores all the settings of the module. Useful to restore all the logical names and calibrations parameters
+ * of a module from a backup.Remember to call the saveToFlash() method of the module if the
+ * modifications must be kept.
+ *
+ * @param settings : a binary buffer with all the settings.
+ *
+ * @return YAPI_SUCCESS when the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     set_allSettings_dev:(NSData*)settings;
+
+/**
+ * Test if the device has a specific function. This method took an function identifier
+ * and return a boolean.
+ *
+ * @param funcId : the requested function identifier
+ *
+ * @return : true if the device has the function identifier
+ */
 -(bool)     hasFunction:(NSString*)funcId;
 
+/**
+ * Retrieve all hardware identifier that match the type passed in argument.
+ *
+ * @param funType : The type of function (Relay, LightSensor, Voltage,...)
+ *
+ * @return : A array of string.
+ */
 -(NSMutableArray*)     get_functionIds:(NSString*)funType;
 
 -(NSMutableData*)     _flattenJsonStruct:(NSData*)jsoncomplex;

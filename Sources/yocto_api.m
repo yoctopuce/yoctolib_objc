@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.m 20938 2015-07-27 15:22:22Z seb $
+ * $Id: yocto_api.m 21209 2015-08-19 15:41:33Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -650,7 +650,13 @@ static const char* hexArray = "0123456789ABCDEF";
     return res;
 }
 
-
++(NSMutableData*) _binMerge:(NSData*)dataA :(NSData*)dataB
+{
+    NSMutableData *data = [NSMutableData dataWithCapacity:[dataA length] + [dataB length]];
+    [data appendData:dataA];
+    [data appendData:dataB];
+    return data;
+}
 
 // Default cache validity (in [ms]) before reloading data from device. This saves a lots of trafic.
 // Note that a value under 2 ms makes little sense since a USB bus itself has a 2ms roundtrip period
@@ -2205,6 +2211,39 @@ static const char* hexArray = "0123456789ABCDEF";
     }
     return [self _parseString:&j];
 }
+-(NSString*)   _get_json_path:(NSString*)json :(NSString*)path
+{
+    const char *json_data = STR_oc2y(json);
+    int len = (int)strlen(json_data);
+    const char *p;
+    char        errbuff[YOCTO_ERRMSG_LEN];
+    int res;
+
+    res = yapiJsonGetPath(STR_oc2y(path), json_data, len, &p, errbuff);
+    if (res >= 0) {
+        NSString *result = ARC_sendAutorelease([[NSString  alloc] initWithBytes:p length:res encoding:NSISOLatin1StringEncoding]);
+        return result;
+    }
+    return @"";
+}
+-(NSString*)   _decode_json_string:(NSString*)json
+{
+    int len = (int)[json length];
+    char buffer[128];
+    char *p = buffer;
+    int decoded_len;
+
+    if (len >= 127){
+        p = (char*) malloc(len + 1);
+
+    }
+    decoded_len = yapiJsonDecodeString(STR_oc2y(json), p);
+    NSString *result =ARC_sendAutorelease([[NSString  alloc] initWithBytes:p length:decoded_len encoding:NSISOLatin1StringEncoding]);
+    if (len >= 127){
+        free(p);
+    }
+    return result;
+}
 
 
 // Method used to cache DataStream objects (new DataLogger)
@@ -2219,7 +2258,11 @@ static const char* hexArray = "0123456789ABCDEF";
     return newDataStream;
 }
 
-
+// Method used to clear cache of DataStream object (undocumented)
+-(void) _clearDataStreamCache
+{
+    [_dataStreams removeAllObjects];
+}
 
 
 +(id) _FindFromCache:(NSString*)classname :(NSString*)func
@@ -4819,6 +4862,88 @@ static const char* hexArray = "0123456789ABCDEF";
     return [self _download:@"api.json"];
 }
 
+-(NSMutableData*) get_allSettings_dev
+{
+    NSMutableData* settings;
+    NSMutableData* json;
+    NSMutableData* res;
+    NSString* sep;
+    NSString* name;
+    NSString* file_data;
+    NSMutableData* file_data_bin;
+    NSString* all_file_data;
+    NSMutableArray* filelist = [NSMutableArray array];
+    // may throw an exception
+    settings = [self _download:@"api.json"];
+    all_file_data = @", \"files\":[";
+    if ([self hasFunction:@"files"]) {
+        json = [self _download:@"files.json?a=dir&f="];
+        filelist = [self _json_get_array:json];
+        sep = @"";
+        for (NSString* _each  in  filelist) {
+            name = [self _json_get_key:[NSMutableData dataWithData:[_each dataUsingEncoding:NSISOLatin1StringEncoding]] :@"name"];
+            file_data_bin = [self _download:[self _escapeAttr:name]];
+            file_data = [YAPI _bin2HexStr:file_data_bin];
+            file_data = [NSString stringWithFormat:@"%@{\"name\":\"%@\", \"data\":\"%@\"}\n", sep, name,file_data];
+            sep = @",";
+            all_file_data = [NSString stringWithFormat:@"%@%@", all_file_data, file_data];;
+        }
+    }
+    all_file_data = [NSString stringWithFormat:@"%@%@", all_file_data, @"]}"];
+    res = [YAPI _binMerge:[NSMutableData dataWithData:[@"{ \"api\":" dataUsingEncoding:NSISOLatin1StringEncoding]] :[YAPI _binMerge:settings :[NSMutableData dataWithData:[all_file_data dataUsingEncoding:NSISOLatin1StringEncoding]]]];
+    return res;
+}
+
+/**
+ * Restores all the settings of the module. Useful to restore all the logical names and calibrations parameters
+ * of a module from a backup.Remember to call the saveToFlash() method of the module if the
+ * modifications must be kept.
+ *
+ * @param settings : a binary buffer with all the settings.
+ *
+ * @return YAPI_SUCCESS when the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) set_allSettings_dev:(NSData*)settings
+{
+    NSMutableData* down;
+    NSString* json;
+    NSString* json_api;
+    NSString* json_files;
+    json = ARC_sendAutorelease([[NSString alloc] initWithData:settings encoding:NSISOLatin1StringEncoding]);
+    json_api = [self _get_json_path:json :@"api"];
+    [self set_allSettings:[NSMutableData dataWithData:[json_api dataUsingEncoding:NSISOLatin1StringEncoding]]];
+    if ([self hasFunction:@"files"]) {
+        NSMutableArray* files = [NSMutableArray array];
+        NSString* res;
+        NSString* name;
+        NSString* data;
+        down = [self _download:@"files.json?a=format"];
+        res = [self _get_json_path:ARC_sendAutorelease([[NSString alloc] initWithData:down encoding:NSISOLatin1StringEncoding]) :@"res"];
+        res = [self _decode_json_string:res];
+        if (!([res isEqualToString:@"ok"])) {[self _throw: YAPI_IO_ERROR: @"format failed"]; return YAPI_IO_ERROR;}
+        json_files = [self _get_json_path:json :@"files"];
+        files = [self _json_get_array:[NSMutableData dataWithData:[json_files dataUsingEncoding:NSISOLatin1StringEncoding]]];
+        for (NSString* _each  in  files) {
+            name = [self _get_json_path:_each :@"name"];
+            name = [self _decode_json_string:name];
+            data = [self _get_json_path:_each :@"data"];
+            data = [self _decode_json_string:data];
+            [self _upload:name :[YAPI _hexStr2Bin:data]];;
+        }
+    }
+    return YAPI_SUCCESS;
+}
+
+/**
+ * Test if the device has a specific function. This method took an function identifier
+ * and return a boolean.
+ *
+ * @param funcId : the requested function identifier
+ *
+ * @return : true if the device has the function identifier
+ */
 -(bool) hasFunction:(NSString*)funcId
 {
     int count;
@@ -4837,6 +4962,13 @@ static const char* hexArray = "0123456789ABCDEF";
     return NO;
 }
 
+/**
+ * Retrieve all hardware identifier that match the type passed in argument.
+ *
+ * @param funType : The type of function (Relay, LightSensor, Voltage,...)
+ *
+ * @return : A array of string.
+ */
 -(NSMutableArray*) get_functionIds:(NSString*)funType
 {
     int count;
@@ -6025,7 +6157,7 @@ static const char* hexArray = "0123456789ABCDEF";
             }
         }
     }
-
+    
     _nRows = (int)[_values count];
     return YAPI_SUCCESS;
 }
@@ -6674,14 +6806,14 @@ static const char* hexArray = "0123456789ABCDEF";
     } else {
         maxCol = 0;
     }
-
+    
     for (NSMutableArray* _each  in dataRows) {
         if ((tim >= _startTime) && ((_endTime == 0) || (tim <= _endTime))) {
             [_measures addObject:ARC_sendAutorelease([[YMeasure alloc] initWith:tim - itv :tim :[[_each objectAtIndex:minCol] doubleValue] :[[_each objectAtIndex:avgCol] doubleValue] :[[_each objectAtIndex:maxCol] doubleValue]])];
         }
         tim = tim + itv;
     }
-
+    
     return [self get_progress];
 }
 
@@ -6914,7 +7046,7 @@ static const char* hexArray = "0123456789ABCDEF";
     } else {
         maxCol = 0;
     }
-
+    
     for (NSMutableArray* _each  in dataRows) {
         if ((tim >= _startTime) && ((_endTime == 0) || (tim <= _endTime))) {
             [measures addObject:ARC_sendAutorelease([[YMeasure alloc] initWith:tim - itv :tim :[[_each objectAtIndex:minCol] doubleValue] :[[_each objectAtIndex:avgCol] doubleValue] :[[_each objectAtIndex:maxCol] doubleValue]])];

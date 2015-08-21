@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_humidity.h 19608 2015-03-05 10:37:24Z seb $
+ * $Id: yocto_humidity.h 21211 2015-08-19 16:03:29Z seb $
  *
  * Declares yFindHumidity(), the high-level API for Humidity functions
  *
@@ -45,6 +45,8 @@ CF_EXTERN_C_BEGIN
 //--- (YHumidity globals)
 typedef void (*YHumidityValueCallback)(YHumidity *func, NSString *functionValue);
 typedef void (*YHumidityTimedReportCallback)(YHumidity *func, YMeasure *measure);
+#define Y_RELHUM_INVALID                YAPI_INVALID_DOUBLE
+#define Y_ABSHUM_INVALID                YAPI_INVALID_DOUBLE
 //--- (end of YHumidity globals)
 
 //--- (YHumidity class start)
@@ -60,6 +62,8 @@ typedef void (*YHumidityTimedReportCallback)(YHumidity *func, YMeasure *measure)
 {
 @protected
 //--- (YHumidity attributes declaration)
+    double          _relHum;
+    double          _absHum;
     YHumidityValueCallback _valueCallbackHumidity;
     YHumidityTimedReportCallback _timedReportCallbackHumidity;
 //--- (end of YHumidity attributes declaration)
@@ -73,6 +77,46 @@ typedef void (*YHumidityTimedReportCallback)(YHumidity *func, YMeasure *measure)
 
 //--- (end of YHumidity private methods declaration)
 //--- (YHumidity public methods declaration)
+/**
+ * Changes the primary unit for measuring humidity. That unit is a string.
+ * If that strings starts with the letter 'g', the primary measured value is the absolute
+ * humidity, in g/m3. Otherwise, the primary measured value will be the relative humidity
+ * (RH), in per cents.
+ *
+ * Remember to call the saveToFlash() method of the module if the modification
+ * must be kept.
+ *
+ * @param newval : a string corresponding to the primary unit for measuring humidity
+ *
+ * @return YAPI_SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     set_unit:(NSString*) newval;
+-(int)     setUnit:(NSString*) newval;
+
+/**
+ * Returns the current relative humidity, in per cents.
+ *
+ * @return a floating point number corresponding to the current relative humidity, in per cents
+ *
+ * On failure, throws an exception or returns Y_RELHUM_INVALID.
+ */
+-(double)     get_relHum;
+
+
+-(double) relHum;
+/**
+ * Returns the current absolute humidity, in grams per cubic meter of air.
+ *
+ * @return a floating point number corresponding to the current absolute humidity, in grams per cubic meter of air
+ *
+ * On failure, throws an exception or returns Y_ABSHUM_INVALID.
+ */
+-(double)     get_absHum;
+
+
+-(double) absHum;
 /**
  * Retrieves a humidity sensor for a given identifier.
  * The identifier can be specified using several formats:
