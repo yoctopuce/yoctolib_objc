@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.m 21209 2015-08-19 15:41:33Z seb $
+ * $Id: yocto_api.m 21312 2015-08-24 12:25:37Z mvuilleu $
  *
  * High-level programming interface, common to all modules
  *
@@ -50,6 +50,7 @@ static yDeviceUpdateCallback YAPI_deviceChangeCallback = NULL;
 static YHubDiscoveryCallback YAPI_HubDiscoveryCallback = NULL;
 static id              YAPI_delegate=nil;
 
+NSMutableDictionary* YAPI_YFunctions;
 
 @implementation  YapiEvent
 

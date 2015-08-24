@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.h 21180 2015-08-18 17:11:53Z seb $
+ * $Id: yocto_api.h 21312 2015-08-24 12:25:37Z mvuilleu $
  *
  * High-level programming interface, common to all modules
  *
@@ -59,8 +59,8 @@
 
 #define STR_y2oc(c_str)          [NSString stringWithCString:c_str encoding:NSISOLatin1StringEncoding]
 #define STR_oc2y(objective_str)  [objective_str cStringUsingEncoding:NSISOLatin1StringEncoding]
-NSMutableDictionary* YAPI_YFunctions;
 
+extern NSMutableDictionary* YAPI_YFunctions;
 
 #define YOCTO_API_REVISION          "PATCH_WITH_BUILD"
 
