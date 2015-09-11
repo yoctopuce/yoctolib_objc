@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_cellular.m 20410 2015-05-22 08:30:27Z seb $
+ * $Id: yocto_cellular.m 21485 2015-09-11 14:10:22Z seb $
  *
  * Implements the high-level API for Cellular functions
  *
@@ -131,6 +131,7 @@
 //--- (generated code: YCellular attributes initialization)
     _linkQuality = Y_LINKQUALITY_INVALID;
     _cellOperator = Y_CELLOPERATOR_INVALID;
+    _cellIdentifier = Y_CELLIDENTIFIER_INVALID;
     _imsi = Y_IMSI_INVALID;
     _message = Y_MESSAGE_INVALID;
     _pin = Y_PIN_INVALID;
@@ -149,6 +150,8 @@
 //--- (generated code: YCellular cleanup)
     ARC_release(_cellOperator);
     _cellOperator = nil;
+    ARC_release(_cellIdentifier);
+    _cellIdentifier = nil;
     ARC_release(_imsi);
     _imsi = nil;
     ARC_release(_message);
@@ -180,6 +183,13 @@
        ARC_release(_cellOperator);
         _cellOperator =  [self _parseString:j];
         ARC_retain(_cellOperator);
+        return 1;
+    }
+    if(!strcmp(j->token, "cellIdentifier")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+       ARC_release(_cellIdentifier);
+        _cellIdentifier =  [self _parseString:j];
+        ARC_retain(_cellIdentifier);
         return 1;
     }
     if(!strcmp(j->token, "imsi")) {
@@ -283,6 +293,29 @@
 -(NSString*) cellOperator
 {
     return [self get_cellOperator];
+}
+/**
+ * Returns the unique identifier of the cellular antenna in use: MCC, MNC, LAC and Cell ID.
+ *
+ * @return a string corresponding to the unique identifier of the cellular antenna in use: MCC, MNC,
+ * LAC and Cell ID
+ *
+ * On failure, throws an exception or returns Y_CELLIDENTIFIER_INVALID.
+ */
+-(NSString*) get_cellIdentifier
+{
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_CELLIDENTIFIER_INVALID;
+        }
+    }
+    return _cellIdentifier;
+}
+
+
+-(NSString*) cellIdentifier
+{
+    return [self get_cellIdentifier];
 }
 /**
  * Returns an opaque string if a PIN code has been configured in the device to access

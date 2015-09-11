@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.m 21312 2015-08-24 12:25:37Z mvuilleu $
+ * $Id: yocto_api.m 21393 2015-09-02 14:40:06Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -4851,19 +4851,15 @@ static const char* hexArray = "0123456789ABCDEF";
 }
 
 /**
- * Returns all the settings of the module. Useful to backup all the logical names and calibrations parameters
- * of a connected module.
+ * Returns all the settings and uploaded files of the module. Useful to backup all the logical names,
+ * calibrations parameters,
+ * and uploaded files of a connected module.
  *
  * @return a binary buffer with all the settings.
  *
  * On failure, throws an exception or returns  YAPI_INVALID_STRING.
  */
 -(NSMutableData*) get_allSettings
-{
-    return [self _download:@"api.json"];
-}
-
--(NSMutableData*) get_allSettings_dev
 {
     NSMutableData* settings;
     NSMutableData* json;
@@ -4896,8 +4892,9 @@ static const char* hexArray = "0123456789ABCDEF";
 }
 
 /**
- * Restores all the settings of the module. Useful to restore all the logical names and calibrations parameters
- * of a module from a backup.Remember to call the saveToFlash() method of the module if the
+ * Restores all the settings and uploaded files of the module. Useful to restore all the logical names
+ * and calibrations parameters, uploaded
+ * files etc.. of a module from a backup.Remember to call the saveToFlash() method of the module if the
  * modifications must be kept.
  *
  * @param settings : a binary buffer with all the settings.
@@ -4906,7 +4903,7 @@ static const char* hexArray = "0123456789ABCDEF";
  *
  * On failure, throws an exception or returns a negative error code.
  */
--(int) set_allSettings_dev:(NSData*)settings
+-(int) set_allSettingsAndFiles:(NSData*)settings
 {
     NSMutableData* down;
     NSString* json;
@@ -4914,6 +4911,9 @@ static const char* hexArray = "0123456789ABCDEF";
     NSString* json_files;
     json = ARC_sendAutorelease([[NSString alloc] initWithData:settings encoding:NSISOLatin1StringEncoding]);
     json_api = [self _get_json_path:json :@"api"];
+    if ([json_api isEqualToString:@""]) {
+        return [self set_allSettings:settings];
+    }
     [self set_allSettings:[NSMutableData dataWithData:[json_api dataUsingEncoding:NSISOLatin1StringEncoding]]];
     if ([self hasFunction:@"files"]) {
         NSMutableArray* files = [NSMutableArray array];
@@ -5280,6 +5280,11 @@ static const char* hexArray = "0123456789ABCDEF";
     NSString* each_str;
     bool do_update;
     bool found;
+    tmp = ARC_sendAutorelease([[NSString alloc] initWithData:settings encoding:NSISOLatin1StringEncoding]);
+    tmp = [self _get_json_path:tmp :@"api"];
+    if (!([tmp isEqualToString:@""])) {
+        settings = [NSMutableData dataWithData:[tmp dataUsingEncoding:NSISOLatin1StringEncoding]];
+    }
     oldval = @"";
     newval = @"";
     old_json_flat = [self _flattenJsonStruct:settings];
@@ -5644,13 +5649,21 @@ static const char* hexArray = "0123456789ABCDEF";
 {
     NSString      *serial, *funcId, *funcName, *funcVal;
     NSError       *error;
-
+    char        buffer[YOCTO_FUNCTION_LEN], *d = buffer;
+    const char *p;
+    
     int res = [self _getFunction:functionIndex:&serial:&funcId:&funcName:&funcVal:&error];
     if(YISERR(res)) {
         [self _throw:error];
         return [YAPI INVALID_STRING];
     }
-    return funcId;
+    p = STR_oc2y(funcId);
+    *d++ = *p++ & 0xdf;
+    while (*p && (*p <'0' || *p >'9')) {
+        *d++ = *p++;
+    }
+    *d = 0;
+    return STR_y2oc(buffer);
 }
 
 
@@ -5758,7 +5771,7 @@ static const char* hexArray = "0123456789ABCDEF";
                 }
             }
             if (_progress < 100) {
-                [m set_allSettings:_settings];
+                [m set_allSettingsAndFiles:_settings];
                 [m saveToFlash];
                 _settings = [NSMutableData dataWithLength:0];
                 _progress = 100;

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_cellular.h 20167 2015-04-27 14:24:03Z seb $
+ * $Id: yocto_cellular.h 21485 2015-09-11 14:10:22Z seb $
  *
  * Declares yFindCellular(), the high-level API for Cellular functions
  *
@@ -107,6 +107,7 @@ typedef enum {
 #endif
 #define Y_LINKQUALITY_INVALID           YAPI_INVALID_UINT
 #define Y_CELLOPERATOR_INVALID          YAPI_INVALID_STRING
+#define Y_CELLIDENTIFIER_INVALID        YAPI_INVALID_STRING
 #define Y_IMSI_INVALID                  YAPI_INVALID_STRING
 #define Y_MESSAGE_INVALID               YAPI_INVALID_STRING
 #define Y_PIN_INVALID                   YAPI_INVALID_STRING
@@ -130,6 +131,7 @@ typedef enum {
 //--- (generated code: YCellular attributes declaration)
     int             _linkQuality;
     NSString*       _cellOperator;
+    NSString*       _cellIdentifier;
     NSString*       _imsi;
     NSString*       _message;
     NSString*       _pin;
@@ -172,6 +174,18 @@ typedef enum {
 
 
 -(NSString*) cellOperator;
+/**
+ * Returns the unique identifier of the cellular antenna in use: MCC, MNC, LAC and Cell ID.
+ *
+ * @return a string corresponding to the unique identifier of the cellular antenna in use: MCC, MNC,
+ * LAC and Cell ID
+ *
+ * On failure, throws an exception or returns Y_CELLIDENTIFIER_INVALID.
+ */
+-(NSString*)     get_cellIdentifier;
+
+
+-(NSString*) cellIdentifier;
 /**
  * Returns an opaque string if a PIN code has been configured in the device to access
  * the SIM card, or an empty string if none has been configured or if the code provided
