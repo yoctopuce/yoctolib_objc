@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.m 21393 2015-09-02 14:40:06Z seb $
+ * $Id: yocto_api.m 21683 2015-10-05 09:38:41Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -1708,6 +1708,14 @@ static const char* hexArray = "0123456789ABCDEF";
     return YAPI_SUCCESS;
 }
 
+
+-(void)   clearCache
+{
+    _cacheStamp = 0;
+    ARC_release(_cacheJson);
+    _cacheJson =nil;
+}
+
 -(YRETCODE)   getFunctions:(NSArray**)functions :(NSError**)error
 {
     if(_functions == nil) {
@@ -2830,6 +2838,39 @@ static const char* hexArray = "0123456789ABCDEF";
 
     return YAPI_SUCCESS;
 }
+
+
+/**
+ * Preloads the function cache with a specified validity duration.
+ * By default, whenever accessing a device, all function attributes
+ * are kept in cache for the standard duration (5 ms). This method can be
+ * used to temporarily mark the cache as valid for a longer period, in order
+ * to reduce network traffic for instance.
+ *
+ * @param msValidity : an integer corresponding to the validity attributed to the
+ *         loaded function parameters, in milliseconds
+ *
+ * @return YAPI_SUCCESS when the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(void)    clearCache
+{
+    YDevice     *dev;
+    NSError     *error;
+    YRETCODE    res;
+    
+    // Resolve our reference to our device, load REST API
+    res = [self _getDevice:&dev:&error];
+    if(YISERR(res)) {
+        return;
+    }
+    [dev clearCache];
+    if (_cacheExpiration){
+        _cacheExpiration = yapiGetTickCount();
+    }
+}
+
 
 /**
  * Gets the YModule object for the device on which the function is located.
@@ -4838,7 +4879,7 @@ static const char* hexArray = "0123456789ABCDEF";
  *
  * @param path : the path of the byn file to use.
  *
- * @return : A YFirmwareUpdate object.
+ * @return : A YFirmwareUpdate object or NULL on error.
  */
 -(YFirmwareUpdate*) updateFirmware:(NSString*)path
 {
@@ -4847,6 +4888,10 @@ static const char* hexArray = "0123456789ABCDEF";
     // may throw an exception
     serial = [self get_serialNumber];
     settings = [self get_allSettings];
+    if ((int)[settings length] == 0) {
+        [self _throw:YAPI_IO_ERROR :@"Unable to get device settings"];
+        settings = [NSMutableData dataWithData:[@"error:Unable to get device settings" dataUsingEncoding:NSISOLatin1StringEncoding]];
+    }
     return ARC_sendAutorelease([[YFirmwareUpdate alloc] initWith:serial :path :settings]);
 }
 
@@ -4857,7 +4902,7 @@ static const char* hexArray = "0123456789ABCDEF";
  *
  * @return a binary buffer with all the settings.
  *
- * On failure, throws an exception or returns  YAPI_INVALID_STRING.
+ * On failure, throws an exception or returns an binary object of size 0.
  */
 -(NSMutableData*) get_allSettings
 {
@@ -4866,29 +4911,105 @@ static const char* hexArray = "0123456789ABCDEF";
     NSMutableData* res;
     NSString* sep;
     NSString* name;
+    NSString* item;
+    NSString* t_type;
+    NSString* id;
+    NSString* url;
     NSString* file_data;
     NSMutableData* file_data_bin;
-    NSString* all_file_data;
+    NSMutableData* temp_data_bin;
+    NSString* ext_settings;
     NSMutableArray* filelist = [NSMutableArray array];
+    NSMutableArray* templist = [NSMutableArray array];
     // may throw an exception
     settings = [self _download:@"api.json"];
-    all_file_data = @", \"files\":[";
+    if ((int)[settings length] == 0) {
+        return settings;
+    }
+    ext_settings = @", \"extras\":[";
+    templist = [self get_functionIds:@"Temperature"];
+    sep = @"";
+    for (NSString* _each  in  templist) {
+        if ([[self get_firmwareRelease] intValue] > 9000) {
+            url = [NSString stringWithFormat:@"api/%@/sensorType",_each];
+            t_type = ARC_sendAutorelease([[NSString alloc] initWithData:[self _download:url] encoding:NSISOLatin1StringEncoding]);
+            if ([t_type isEqualToString:@"RES_NTC"]) {
+                id = [_each substringWithRange:NSMakeRange( 11, (int)[(_each) length] - 11)];
+                temp_data_bin = [self _download:[NSString stringWithFormat:@"extra.json?page=%@",id]];
+                if ((int)[temp_data_bin length] == 0) {
+                    return temp_data_bin;
+                }
+                item = [NSString stringWithFormat:@"%@{\"fid\":\"%@\", \"json\":%@}\n", sep, _each,ARC_sendAutorelease([[NSString alloc] initWithData:temp_data_bin encoding:NSISOLatin1StringEncoding])];
+                ext_settings = [NSString stringWithFormat:@"%@%@", ext_settings, item];
+                sep = @",";
+            }
+        };
+    }
+    ext_settings =  [NSString stringWithFormat:@"%@%@", ext_settings, @"],\n\"files\":["];
     if ([self hasFunction:@"files"]) {
         json = [self _download:@"files.json?a=dir&f="];
+        if ((int)[json length] == 0) {
+            return json;
+        }
         filelist = [self _json_get_array:json];
         sep = @"";
         for (NSString* _each  in  filelist) {
             name = [self _json_get_key:[NSMutableData dataWithData:[_each dataUsingEncoding:NSISOLatin1StringEncoding]] :@"name"];
+            if ((int)[(name) length] == 0) {
+                return [NSMutableData dataWithData:[name dataUsingEncoding:NSISOLatin1StringEncoding]];
+            }
             file_data_bin = [self _download:[self _escapeAttr:name]];
             file_data = [YAPI _bin2HexStr:file_data_bin];
-            file_data = [NSString stringWithFormat:@"%@{\"name\":\"%@\", \"data\":\"%@\"}\n", sep, name,file_data];
-            sep = @",";
-            all_file_data = [NSString stringWithFormat:@"%@%@", all_file_data, file_data];;
+            item = [NSString stringWithFormat:@"%@{\"name\":\"%@\", \"data\":\"%@\"}\n", sep, name,file_data];
+            ext_settings = [NSString stringWithFormat:@"%@%@", ext_settings, item];
+            sep = @",";;
         }
     }
-    all_file_data = [NSString stringWithFormat:@"%@%@", all_file_data, @"]}"];
-    res = [YAPI _binMerge:[NSMutableData dataWithData:[@"{ \"api\":" dataUsingEncoding:NSISOLatin1StringEncoding]] :[YAPI _binMerge:settings :[NSMutableData dataWithData:[all_file_data dataUsingEncoding:NSISOLatin1StringEncoding]]]];
+    ext_settings = [NSString stringWithFormat:@"%@%@", ext_settings, @"]}"];
+    res = [YAPI _binMerge:[NSMutableData dataWithData:[@"{ \"api\":" dataUsingEncoding:NSISOLatin1StringEncoding]] :[YAPI _binMerge:settings :[NSMutableData dataWithData:[ext_settings dataUsingEncoding:NSISOLatin1StringEncoding]]]];
     return res;
+}
+
+-(int) loadThermistorExtra:(NSString*)funcId :(NSString*)jsonExtra
+{
+    NSMutableArray* values = [NSMutableArray array];
+    NSString* url;
+    NSString* curr;
+    NSString* currTemp;
+    int ofs;
+    int size;
+    url = [NSString stringWithFormat:@"%@%@%@", @"api/", funcId, @".json?command=Z"];
+    // may throw an exception
+    [self _download:url];
+    // add records in growing resistance value
+    values = [self _json_get_array:[NSMutableData dataWithData:[jsonExtra dataUsingEncoding:NSISOLatin1StringEncoding]]];
+    ofs = 0;
+    size = (int)[values count];
+    while (ofs + 1 < size) {
+        curr = [values objectAtIndex:ofs];
+        currTemp = [values objectAtIndex:ofs + 1];
+        url = [NSString stringWithFormat:@"api/%@/.json?command=m%@:%@",  funcId, curr,currTemp];
+        [self _download:url];
+        ofs = ofs + 2;
+    }
+    return YAPI_SUCCESS;
+}
+
+-(int) set_extraSettings:(NSString*)jsonExtra
+{
+    NSMutableArray* extras = [NSMutableArray array];
+    NSString* functionId;
+    NSString* data;
+    extras = [self _json_get_array:[NSMutableData dataWithData:[jsonExtra dataUsingEncoding:NSISOLatin1StringEncoding]]];
+    for (NSString* _each  in  extras) {
+        functionId = [self _get_json_path:_each :@"fid"];
+        functionId = [self _decode_json_string:functionId];
+        data = [self _get_json_path:_each :@"json"];
+        if ([self hasFunction:functionId]) {
+            [self loadThermistorExtra:functionId :data];
+        };
+    }
+    return YAPI_SUCCESS;
 }
 
 /**
@@ -4909,10 +5030,15 @@ static const char* hexArray = "0123456789ABCDEF";
     NSString* json;
     NSString* json_api;
     NSString* json_files;
+    NSString* json_extra;
     json = ARC_sendAutorelease([[NSString alloc] initWithData:settings encoding:NSISOLatin1StringEncoding]);
     json_api = [self _get_json_path:json :@"api"];
     if ([json_api isEqualToString:@""]) {
         return [self set_allSettings:settings];
+    }
+    json_extra = [self _get_json_path:json :@"extras"];
+    if (!([json_extra isEqualToString:@""])) {
+        [self set_extraSettings:json_extra];
     }
     [self set_allSettings:[NSMutableData dataWithData:[json_api dataUsingEncoding:NSISOLatin1StringEncoding]]];
     if ([self hasFunction:@"files"]) {
@@ -5885,7 +6011,9 @@ static const char* hexArray = "0123456789ABCDEF";
  */
 -(int) get_progress
 {
-    [self _processMore:0];
+    if (_progress >= 0) {
+        [self _processMore:0];
+    }
     return _progress;
 }
 
@@ -5912,9 +6040,18 @@ static const char* hexArray = "0123456789ABCDEF";
  */
 -(int) startUpdate
 {
-    _progress = 0;
-    _progress_c = 0;
-    [self _processMore:1];
+    NSString* err;
+    int leng;
+    err = ARC_sendAutorelease([[NSString alloc] initWithData:_settings encoding:NSISOLatin1StringEncoding]);
+    leng = (int)[(err) length];
+    if (( leng >= 6) && ([@"error:" isEqualToString:[err substringWithRange:NSMakeRange(0, 6)]])) {
+        _progress = -1;
+        _progress_msg = [err substringWithRange:NSMakeRange( 6, leng - 6)];
+    } else {
+        _progress = 0;
+        _progress_c = 0;
+        [self _processMore:1];
+    }
     return _progress;
 }
 

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_cellular.m 21485 2015-09-11 14:10:22Z seb $
+ * $Id: yocto_cellular.m 21511 2015-09-14 16:25:19Z seb $
  *
  * Implements the high-level API for Cellular functions
  *
@@ -755,7 +755,14 @@
 {
     int chrPos;
     int cmdLen;
-    NSMutableData* content;
+    int waitMore;
+    NSString* res;
+    NSMutableData* buff;
+    int bufflen;
+    NSString* buffstr;
+    int buffstrlen;
+    int idx;
+    int suffixlen;
     // quote dangerous characters used in AT commands
     cmdLen = (int)[(cmd) length];
     chrPos = _ystrpos(cmd, @"#");
@@ -776,9 +783,67 @@
         cmdLen = cmdLen + 2;
         chrPos = _ystrpos(cmd, @"=");
     }
+    cmd = [NSString stringWithFormat:@"at.txt?cmd=%@",cmd];
+    res = [NSString stringWithFormat:@""];
+    // max 2 minutes (each iteration may take up to 5 seconds if waiting)
+    waitMore = 24;
+    while (waitMore > 0) {
+        buff = [self _download:cmd];
+        bufflen = (int)[buff length];
+        buffstr = ARC_sendAutorelease([[NSString alloc] initWithData:buff encoding:NSISOLatin1StringEncoding]);
+        buffstrlen = (int)[(buffstr) length];
+        idx = bufflen - 1;
+        while ((idx > 0) && ((((u8*)([buff bytes]))[idx]) != 64) && ((((u8*)([buff bytes]))[idx]) != 10) && ((((u8*)([buff bytes]))[idx]) != 13)) {
+            idx = idx - 1;
+        }
+        if ((((u8*)([buff bytes]))[idx]) == 64) {
+            suffixlen = bufflen - idx;
+            cmd = [NSString stringWithFormat:@"at.txt?cmd=%@",[buffstr substringWithRange:NSMakeRange( buffstrlen - suffixlen, suffixlen)]];
+            buffstr = [buffstr substringWithRange:NSMakeRange( 0, buffstrlen - suffixlen)];
+            waitMore = waitMore - 1;
+        } else {
+            waitMore = 0;
+        }
+        res = [NSString stringWithFormat:@"%@%@", res,buffstr];
+    }
+    return res;
+}
+
+/**
+ * Returns the list detected cell operators in the neighborhood.
+ * This function will typically take between 30 seconds to 1 minute to
+ * return. Note that any SIM card can usually only connect to specific
+ * operators. All networks returned by this function might therefore
+ * not be available for connection.
+ *
+ * @return a list of string (cell operator names).
+ */
+-(NSMutableArray*) get_availableOperators
+{
+    NSString* cops;
+    int idx;
+    int slen;
+    NSMutableArray* res = [NSMutableArray array];
     // may throw an exception
-    content = [self _download:[NSString stringWithFormat:@"at.txt?cmd=%@",cmd]];
-    return ARC_sendAutorelease([[NSString alloc] initWithData:content encoding:NSISOLatin1StringEncoding]);
+    cops = [self _AT:@"+COPS=?"];
+    slen = (int)[(cops) length];
+    [res removeAllObjects];
+    idx = _ystrpos(cops, @"(");
+    while (idx >= 0) {
+        slen = slen - (idx+1);
+        cops = [cops substringWithRange:NSMakeRange( idx+1, slen)];
+        idx = _ystrpos(cops, @"\"");
+        if (idx > 0) {
+            slen = slen - (idx+1);
+            cops = [cops substringWithRange:NSMakeRange( idx+1, slen)];
+            idx = _ystrpos(cops, @"\"");
+            if (idx > 0) {
+                [res addObject:[cops substringWithRange:NSMakeRange( 0, idx)]];
+            }
+        }
+        idx = _ystrpos(cops, @"(");
+    }
+    return res;
 }
 
 /**

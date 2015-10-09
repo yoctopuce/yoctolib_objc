@@ -11,17 +11,17 @@ import Foundation
 var error: NSError?
 // Sets up the API to use local USB devices
 var res = YAPI.RegisterHub("usb", &error)
-if res.value != YAPI_SUCCESS.value {
-    println("Error: \(error?.localizedDescription)")
+if res.rawValue != YAPI_SUCCESS.rawValue {
+    print("Error: \(error?.localizedDescription)")
     exit(0)
 }
 
-println("Device list:")
+print("Device list:")
 var module = YModule.FirstModule()
 while module != nil {
     var serial = module.get_serialNumber()
     var productName = module.get_productName()
-    println("\(serial) \(productName)")
+    print("\(serial) \(productName)")
     module = module.nextModule()
 }
 YAPI.FreeAPI()

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_temperature.m 21211 2015-08-19 16:03:29Z seb $
+ * $Id: yocto_temperature.m 21576 2015-09-21 13:17:28Z seb $
  *
  * Implements the high-level API for Temperature functions
  *
@@ -425,7 +425,7 @@
     [resValues removeAllObjects];
     // may throw an exception
     id = [self get_functionId];
-    id = [id substringWithRange:NSMakeRange( 11, (int)[(id) length]-1)];
+    id = [id substringWithRange:NSMakeRange( 11, (int)[(id) length] - 11)];
     bin_json = [self _download:[NSString stringWithFormat:@"extra.json?page=%@",id]];
     paramlist = [self _json_get_array:bin_json];
     // first convert all temperatures to float

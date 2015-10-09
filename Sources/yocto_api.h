@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.h 21368 2015-08-31 10:10:55Z seb $
+ * $Id: yocto_api.h 21683 2015-10-05 09:38:41Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -62,7 +62,7 @@
 
 extern NSMutableDictionary* YAPI_YFunctions;
 
-#define YOCTO_API_REVISION          "PATCH_WITH_BUILD"
+#define YOCTO_API_REVISION          "21701"
 
 // yInitAPI argument
 #define Y_DETECT_NONE           0
@@ -624,6 +624,7 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
 -(YRETCODE)     HTTPRequestAsync:(NSString*)request :(HTTPRequestCallback)callback :(NSMutableDictionary*)context :(NSError**)error;
 -(YRETCODE)     HTTPRequest:(NSString*)request :(NSMutableData**)buffer :(NSError**)error;
 -(YRETCODE)     requestAPI:(NSString**)apires :(NSError**)error;
+-(void)         clearCache;
 -(YRETCODE)     getFunctions:(NSArray**)functions :(NSError**)error;
 @end
 
@@ -925,6 +926,23 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
  * On failure, throws an exception or returns a negative error code.
  */
 -(YRETCODE)    load:(int) msValidity;
+
+
+/**
+ * Preloads the function cache with a specified validity duration.
+ * By default, whenever accessing a device, all function attributes
+ * are kept in cache for the standard duration (5 ms). This method can be
+ * used to temporarily mark the cache as valid for a longer period, in order
+ * to reduce network traffic for instance.
+ *
+ * @param msValidity : an integer corresponding to the validity attributed to the
+ *         loaded function parameters, in milliseconds
+ *
+ * @return YAPI_SUCCESS when the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(void)    clearCache;
 
 /**
  * Gets the YModule object for the device on which the function is located.
@@ -1362,7 +1380,7 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
  *
  * @param path : the path of the byn file to use.
  *
- * @return : A YFirmwareUpdate object.
+ * @return : A YFirmwareUpdate object or NULL on error.
  */
 -(YFirmwareUpdate*)     updateFirmware:(NSString*)path;
 
@@ -1373,9 +1391,13 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
  *
  * @return a binary buffer with all the settings.
  *
- * On failure, throws an exception or returns  YAPI_INVALID_STRING.
+ * On failure, throws an exception or returns an binary object of size 0.
  */
 -(NSMutableData*)     get_allSettings;
+
+-(int)     loadThermistorExtra:(NSString*)funcId :(NSString*)jsonExtra;
+
+-(int)     set_extraSettings:(NSString*)jsonExtra;
 
 /**
  * Restores all the settings and uploaded files of the module. Useful to restore all the logical names

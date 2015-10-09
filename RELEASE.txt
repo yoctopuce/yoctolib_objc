@@ -1,4 +1,6 @@
-- Add new methods set_allSettingsAndFiles() that restore settings and files.
-- Fix bad definition of YAPI_YFunctions that generate compilation error on latest version of XCode.
-- Fix potential crash if YAPI.RegisterHUB("usb") is called after YAPI.UnregisterHub("usb").
-- Add compiler sanity check on library initialization.
+- Detect invalid settings before updating firmware
+- Add clearCache() method to YFunctions object
+- Fix loadThermistorResponseTable() method
+- Save thermistor response table during firmware update
+- Fix Prog-UseWithSwift example to work with Swift 2.0
+- Improve error message when another process is already locking the USB port.
