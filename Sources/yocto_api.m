@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.m 21683 2015-10-05 09:38:41Z seb $
+ * $Id: yocto_api.m 21732 2015-10-09 16:32:36Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -2841,18 +2841,10 @@ static const char* hexArray = "0123456789ABCDEF";
 
 
 /**
- * Preloads the function cache with a specified validity duration.
- * By default, whenever accessing a device, all function attributes
- * are kept in cache for the standard duration (5 ms). This method can be
- * used to temporarily mark the cache as valid for a longer period, in order
- * to reduce network traffic for instance.
+ * Invalidate the cache. Invalidate the cache of the function attributes. Force the
+ * next call to get_xxx() or loadxxx() to use value that come from the device..
  *
- * @param msValidity : an integer corresponding to the validity attributed to the
- *         loaded function parameters, in milliseconds
- *
- * @return YAPI_SUCCESS when the call succeeds.
- *
- * On failure, throws an exception or returns a negative error code.
+ * @noreturn
  */
 -(void)    clearCache
 {
