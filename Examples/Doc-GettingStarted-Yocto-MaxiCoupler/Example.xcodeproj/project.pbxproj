@@ -14,6 +14,7 @@
 		49FB814617B2539C0049F7E9 /* yocto_realtimeclock.m in Sources */ = {isa = PBXBuildFile; fileRef = 49FB814517B2539C0049F7E9 /* yocto_realtimeclock.m */; };
 		49FB814B17B253C70049F7E9 /* yocto_wakeupmonitor.m in Sources */ = {isa = PBXBuildFile; fileRef = 49FB814817B253C70049F7E9 /* yocto_wakeupmonitor.m */; };
 		49FB814C17B253C70049F7E9 /* yocto_wakeupschedule.m in Sources */ = {isa = PBXBuildFile; fileRef = 49FB814A17B253C70049F7E9 /* yocto_wakeupschedule.m */; };
+		49FEE9471BD0FA1A00C04EE5 /* yocto_quadraturedecoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 49FEE9461BD0FA1A00C04EE5 /* yocto_quadraturedecoder.m */; };
 		B8140ABD18C0E814000A935D /* yocto_accelerometer.m in Sources */ = {isa = PBXBuildFile; fileRef = B8140ABC18C0E814000A935D /* yocto_accelerometer.m */; };
 		B8140AC018C0E81F000A935D /* yocto_compass.m in Sources */ = {isa = PBXBuildFile; fileRef = B8140ABF18C0E81F000A935D /* yocto_compass.m */; };
 		B8140AC318C0E82E000A935D /* yocto_gyro.m in Sources */ = {isa = PBXBuildFile; fileRef = B8140AC218C0E82E000A935D /* yocto_gyro.m */; };
@@ -101,6 +102,8 @@
 		49FB814817B253C70049F7E9 /* yocto_wakeupmonitor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = yocto_wakeupmonitor.m; path = ../../../Sources/yocto_wakeupmonitor.m; sourceTree = "<group>"; };
 		49FB814917B253C70049F7E9 /* yocto_wakeupschedule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yocto_wakeupschedule.h; path = ../../../Sources/yocto_wakeupschedule.h; sourceTree = "<group>"; };
 		49FB814A17B253C70049F7E9 /* yocto_wakeupschedule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = yocto_wakeupschedule.m; path = ../../../Sources/yocto_wakeupschedule.m; sourceTree = "<group>"; };
+		49FEE9451BD0FA1A00C04EE5 /* yocto_quadraturedecoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yocto_quadraturedecoder.h; path = ../../../Sources/yocto_quadraturedecoder.h; sourceTree = "<group>"; };
+		49FEE9461BD0FA1A00C04EE5 /* yocto_quadraturedecoder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = yocto_quadraturedecoder.m; path = ../../../Sources/yocto_quadraturedecoder.m; sourceTree = "<group>"; };
 		B8140ABB18C0E814000A935D /* yocto_accelerometer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yocto_accelerometer.h; path = ../../../Sources/yocto_accelerometer.h; sourceTree = "<group>"; };
 		B8140ABC18C0E814000A935D /* yocto_accelerometer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = yocto_accelerometer.m; path = ../../../Sources/yocto_accelerometer.m; sourceTree = "<group>"; };
 		B8140ABE18C0E81F000A935D /* yocto_compass.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yocto_compass.h; path = ../../../Sources/yocto_compass.h; sourceTree = "<group>"; };
@@ -348,6 +351,8 @@
 				B82F4E8E18C9D66A009320CE /* yocto_pwmoutput.m */,
 				B82F4E8F18C9D66A009320CE /* yocto_pwmpowersource.h */,
 				B82F4E9018C9D66A009320CE /* yocto_pwmpowersource.m */,
+				49FEE9451BD0FA1A00C04EE5 /* yocto_quadraturedecoder.h */,
+				49FEE9461BD0FA1A00C04EE5 /* yocto_quadraturedecoder.m */,
 				49FB814417B2539C0049F7E9 /* yocto_realtimeclock.h */,
 				49FB814517B2539C0049F7E9 /* yocto_realtimeclock.m */,
 				B8140AC718C0E845000A935D /* yocto_refframe.h */,
@@ -484,6 +489,7 @@
 				B8DD8C2D14A9370B008A9E8F /* ymemory.c in Sources */,
 				B8DD8C2E14A9370B008A9E8F /* ypkt_lin.c in Sources */,
 				B8DD8C2F14A9370B008A9E8F /* ypkt_osx.c in Sources */,
+				49FEE9471BD0FA1A00C04EE5 /* yocto_quadraturedecoder.m in Sources */,
 				B8DD8C3014A9370B008A9E8F /* ypkt_win.c in Sources */,
 				B8DD8C3114A9370B008A9E8F /* yprog.c in Sources */,
 				B8DD8C3214A9370B008A9E8F /* ystream.c in Sources */,
