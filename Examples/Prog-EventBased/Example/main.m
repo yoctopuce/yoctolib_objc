@@ -7,7 +7,10 @@
 
 static void anButtonValueChangeCallBack(YAnButton* fct, NSString* value)
 {
-     NSLog(@"%@ : %@ (new value)", [fct get_hardwareId], value);
+    int value_f = [fct get_calibratedValue];
+    [fct clearCache];
+    int value_g = [fct get_calibratedValue];
+     NSLog(@"%@: %@=%d (%d)", [fct get_hardwareId], value, value_g, value_f);
 }
 
 static void sensorValueChangeCallBack(YSensor* fct, NSString* value)
@@ -68,6 +71,7 @@ int main (int argc, const char * argv[])
 {
     NSError    *error;
     @autoreleasepool {
+        [YAPI SetDefaultCacheValidity: 5000];
         [YAPI RegisterLogFunction:customLog];
         [YAPI RegisterDeviceArrivalCallback:deviceArrival];
         [YAPI RegisterDeviceRemovalCallback:deviceRemoval];

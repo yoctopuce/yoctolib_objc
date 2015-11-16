@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: ydef.h 21746 2015-10-13 09:46:59Z mvuilleu $
+ * $Id: ydef.h 21864 2015-10-26 16:27:41Z mvuilleu $
  *
  * Standard definitions common to all yoctopuce projects
  *
@@ -138,8 +138,13 @@ typedef unsigned short int      u16;
 typedef signed short int        s16;
 typedef unsigned int            u32;
 typedef signed int              s32;
+#ifdef __LP64__
 typedef unsigned long           u64;
 typedef signed long             s64;
+#else
+typedef unsigned long long      u64;
+typedef signed long long        s64;
+#endif
 #define VARIABLE_SIZE           0
 #define FMTs64 "ld"
 #define FMTu64 "lu"

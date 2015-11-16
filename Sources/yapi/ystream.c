@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: ystream.c 21030 2015-08-05 14:38:36Z seb $
+ * $Id: ystream.c 21956 2015-11-06 15:22:56Z seb $
  *
  * USB multi-interface stream implementation
  *
@@ -1392,7 +1392,7 @@ static int ySendStart(yPrivDeviceSt *dev,char *errmsg)
     if (dev->pktAckDelay) {
         // update ack delay with the one from the device (in case device does not implement pkt ack)
         dev->pktAckDelay = rpkt->pkt.confpkt.conf.start.ack_delay;
-        dbglog("Acktivate USB pkt ack (%dms)\n", dev->pktAckDelay);
+        dbglog("Activate USB pkt ack (%dms)\n", dev->pktAckDelay);
     }
     dev->lastpktno = rpkt->pkt.first_stream.pktno;
     yFree(rpkt);
@@ -1455,8 +1455,10 @@ again:
     if (item != NULL) {
         if (dev->pktAckDelay > 0) {
             res = yAckPkt(iface, item->pkt.first_stream.pktno, errmsg);
-            if (YISERR(res))
+            if (YISERR(res)){
+                yFree(item);
                 return res;
+            }
         }
         // verfiy the packet
         if (item->pkt.first_stream.pkt == YPKT_CONF) {
@@ -1473,6 +1475,7 @@ again:
         }
         if (item->pkt.first_stream.pktno == dev->lastpktno) {
             //late retry : drop it since we allready have the packet.
+            yFree(item);
             goto again;
         }
 
@@ -1486,6 +1489,7 @@ again:
             return YAPI_SUCCESS;
         } else {
             yPktQueueDup(&iface->rxQueue, nextpktno, __FILE_ID__, __LINE__);
+            yFree(item);
             return YERRMSG(YAPI_IO_ERROR, "Missing Packet");
         }
     }

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.m 21732 2015-10-09 16:32:36Z seb $
+ * $Id: yocto_api.m 21975 2015-11-06 23:52:10Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -1422,14 +1422,20 @@ static const char* hexArray = "0123456789ABCDEF";
 
 +(YRETCODE)    getFunctionInfo:(YFUN_DESCR)fundesc :(YDEV_DESCR*)devdescr :(NSString**)serial :(NSString**)funcId :(NSString**)funcName :(NSString**)funcVal :(NSError**)error
 {
+    return [YapiWrapper getFunctionInfoEx:fundesc :devdescr :serial :funcId :nil :funcName :funcVal :error];
+}
+
++(YRETCODE)    getFunctionInfoEx:(YFUN_DESCR)fundesc :(YDEV_DESCR*)devdescr :(NSString**)serial :(NSString**)funcId :(NSString**)baseType :(NSString**)funcName :(NSString**)funcVal :(NSError**)error
+{
     char    errbuf[YOCTO_ERRMSG_LEN];
     char    snum[YOCTO_SERIAL_LEN];
     char    fnid[YOCTO_FUNCTION_LEN];
+    char    fnbt[YOCTO_FUNCTION_LEN];
     char    fnam[YOCTO_LOGICAL_LEN];
     char    fval[YOCTO_PUBVAL_LEN];
     YAPI_DEVICE devdescr_c;
 
-    YRETCODE res = yapiGetFunctionInfo(fundesc, &devdescr_c, snum, fnid, fnam, fval, errbuf);
+    YRETCODE res = yapiGetFunctionInfoEx(fundesc, &devdescr_c, snum, fnid, fnbt, fnam, fval, errbuf);
     if(YISERR(res)) {
         return yFormatRetVal(error, res, errbuf);
     } else {
@@ -1437,6 +1443,8 @@ static const char* hexArray = "0123456789ABCDEF";
             *serial   = STR_y2oc(snum);
         if(funcId)
             *funcId   = STR_y2oc(fnid);
+        if(baseType)
+            *baseType = STR_y2oc(fnbt);
         if(funcName)
             *funcName = STR_y2oc(fnam);
         if(funcVal)
@@ -2444,6 +2452,17 @@ static const char* hexArray = "0123456789ABCDEF";
 {
     return [self get_advertisedValue];
 }
+
+-(int) set_advertisedValue:(NSString*) newval
+{
+    return [self setAdvertisedValue:newval];
+}
+-(int) setAdvertisedValue:(NSString*) newval
+{
+    NSString* rest_val;
+    rest_val = newval;
+    return [self _setAttr:@"advertisedValue" :rest_val];
+}
 /**
  * Retrieves a function for a given identifier.
  * The identifier can be specified using several formats:
@@ -2515,6 +2534,37 @@ static const char* hexArray = "0123456789ABCDEF";
     } else {
     }
     return 0;
+}
+
+/**
+ * Disable the propagation of every new advertised value to the parent hub.
+ * You can use this function to save bandwidth and CPU on computers with limited
+ * resources, or to prevent unwanted invocations of the HTTP callback.
+ * Remember to call the saveToFlash() method of the module if the
+ * modification must be kept.
+ *
+ * @return YAPI_SUCCESS when the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) muteValueCallbacks
+{
+    return [self set_advertisedValue:@"SILENT"];
+}
+
+/**
+ * Re-enable the propagation of every new advertised value to the parent hub.
+ * This function reverts the effect of a previous call to muteValueCallbacks().
+ * Remember to call the saveToFlash() method of the module if the
+ * modification must be kept.
+ *
+ * @return YAPI_SUCCESS when the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) unmuteValueCallbacks
+{
+    return [self set_advertisedValue:@""];
 }
 
 -(int) _parserHelper
@@ -4223,7 +4273,7 @@ static const char* hexArray = "0123456789ABCDEF";
 }
 
 // Method used to retrieve details of the nth function of our device
--(YRETCODE)        _getFunction:(int) idx  :(NSString**)serial  :(NSString**)funcId :(NSString**)funcName :(NSString**)funcVal :(NSError**)error
+-(YRETCODE)        _getFunction:(int) idx  :(NSString**)serial  :(NSString**)funcId :(NSString**)baseType :(NSString**)funcName :(NSString**)funcVal :(NSError**)error
 {
     NSArray         *functions;
     NSNumber        *ns_fundescr;
@@ -4250,7 +4300,7 @@ static const char* hexArray = "0123456789ABCDEF";
 
     ns_fundescr = [functions objectAtIndex:idx];
     fundescr = [ns_fundescr intValue];
-    res = [YapiWrapper getFunctionInfo:fundescr:&devdescr:serial:funcId:funcName:funcVal:error];
+    res = [YapiWrapper getFunctionInfoEx:fundescr:&devdescr:serial:funcId :baseType :funcName:funcVal:error];
     if(YISERR(res)) return (YRETCODE)res;
 
     return YAPI_SUCCESS;
@@ -5098,9 +5148,14 @@ static const char* hexArray = "0123456789ABCDEF";
     count = [self functionCount];
     i = 0;
     while (i < count) {
-        ftype  = [self functionType:i];
+        ftype = [self functionType:i];
         if ([ftype isEqualToString:funType]) {
             [res addObject:[self functionId:i]];
+        } else {
+            ftype = [self functionBaseType:i];
+            if ([ftype isEqualToString:funType]) {
+                [res addObject:[self functionId:i]];
+            }
         }
         i = i + 1;
     }
@@ -5751,10 +5806,11 @@ static const char* hexArray = "0123456789ABCDEF";
 // Retrieve the Id of the nth function (beside "module") in the device
 -(NSString*)           functionId:(int) functionIndex
 {
-    NSString      *serial, *funcId, *funcName, *funcVal;
+    NSString      *serial, *funcId,  *funcName, *funcVal;
     NSError       *error;
 
-    int res = [self _getFunction:functionIndex:&serial:&funcId:&funcName:&funcVal:&error];
+    int res = [self _getFunction:functionIndex :&serial :&funcId :nil :&funcName :&funcVal :&error];
+
     if(YISERR(res)) {
         [self _throw:error];
         return [YAPI INVALID_STRING];
@@ -5770,7 +5826,7 @@ static const char* hexArray = "0123456789ABCDEF";
     char        buffer[YOCTO_FUNCTION_LEN], *d = buffer;
     const char *p;
     
-    int res = [self _getFunction:functionIndex:&serial:&funcId:&funcName:&funcVal:&error];
+    int res = [self _getFunction:functionIndex :&serial :&funcId :nil :&funcName :&funcVal :&error];
     if(YISERR(res)) {
         [self _throw:error];
         return [YAPI INVALID_STRING];
@@ -5784,6 +5840,20 @@ static const char* hexArray = "0123456789ABCDEF";
     return STR_y2oc(buffer);
 }
 
+// Retrieve the base type of the nth function (beside "module") in the device
+-(NSString*)           functionBaseType:(int) functionIndex
+{
+    NSString      *serial, *funcId, *baseType, *funcName, *funcVal;
+    NSError       *error;
+    
+    int res = [self _getFunction:functionIndex :&serial :&funcId :&baseType :&funcName :&funcVal :&error];
+    if(YISERR(res)) {
+        [self _throw:error];
+        return [YAPI INVALID_STRING];
+    }
+    return baseType;
+}
+
 
 // Retrieve the logical name of the nth function (beside "module") in the device
 -(NSString*)           functionName:(int) functionIndex
@@ -5791,7 +5861,7 @@ static const char* hexArray = "0123456789ABCDEF";
     NSString    *serial, *funcId, *funcName, *funcVal;
     NSError     *error;
 
-    int res = [self _getFunction:functionIndex:&serial:&funcId:&funcName:&funcVal:&error];
+    int res = [self _getFunction:functionIndex :&serial :&funcId :nil :&funcName :&funcVal :&error];
     if(YISERR(res)) {
         [self _throw:error];
         return [YAPI INVALID_STRING];
@@ -5807,7 +5877,7 @@ static const char* hexArray = "0123456789ABCDEF";
     NSString    *serial, *funcId, *funcName, *funcVal;
     NSError     *error;
 
-    int res = [self _getFunction:functionIndex:&serial:&funcId:&funcName:&funcVal:&error];
+    int res = [self _getFunction:functionIndex :&serial :&funcId :nil :&funcName :&funcVal :&error];
     if(YISERR(res)) {
         [self _throw:error];
         return [YAPI INVALID_STRING];

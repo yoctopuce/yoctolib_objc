@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.h 21732 2015-10-09 16:32:36Z seb $
+ * $Id: yocto_api.h 21975 2015-11-06 23:52:10Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -62,7 +62,7 @@
 
 extern NSMutableDictionary* YAPI_YFunctions;
 
-#define YOCTO_API_REVISION          "21816"
+#define YOCTO_API_REVISION          "22001"
 
 // yInitAPI argument
 #define Y_DETECT_NONE           0
@@ -582,6 +582,7 @@ int _ystrpos(NSString* haystack, NSString* needle);
 +(int)         getFunctionsByDevice:(YDEV_DESCR) devdesc :(YFUN_DESCR) prevfundesc :(NSMutableArray **) buffer :(NSError**) error;
 +(YDEV_DESCR)  getDeviceByFunction:(YFUN_DESCR) fundesc :(NSError**) error;
 +(YRETCODE)    getFunctionInfo:(YFUN_DESCR)fundesc :(YDEV_DESCR*) devdescr :(NSString**) serial :(NSString**) funcId :(NSString**) funcName :(NSString**) funcVal :(NSError**) error;
++(YRETCODE)    getFunctionInfoEx:(YFUN_DESCR)fundesc :(YDEV_DESCR*) devdescr :(NSString**) serial :(NSString**) funcId :(NSString**) baseType :(NSString**) funcName :(NSString**) funcVal :(NSError**) error;
 +(YRETCODE)    updateDeviceList:(bool) forceupdate :(NSError**)error;
 +(YRETCODE)    handleEvents:(NSError**) error;
 
@@ -758,6 +759,9 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
 
 
 -(NSString*) advertisedValue;
+-(int)     set_advertisedValue:(NSString*) newval;
+-(int)     setAdvertisedValue:(NSString*) newval;
+
 /**
  * Retrieves a function for a given identifier.
  * The identifier can be specified using several formats:
@@ -797,6 +801,31 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
 -(int)     registerValueCallback:(YFunctionValueCallback)callback;
 
 -(int)     _invokeValueCallback:(NSString*)value;
+
+/**
+ * Disable the propagation of every new advertised value to the parent hub.
+ * You can use this function to save bandwidth and CPU on computers with limited
+ * resources, or to prevent unwanted invocations of the HTTP callback.
+ * Remember to call the saveToFlash() method of the module if the
+ * modification must be kept.
+ *
+ * @return YAPI_SUCCESS when the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     muteValueCallbacks;
+
+/**
+ * Re-enable the propagation of every new advertised value to the parent hub.
+ * This function reverts the effect of a previous call to muteValueCallbacks().
+ * Remember to call the saveToFlash() method of the module if the
+ * modification must be kept.
+ *
+ * @return YAPI_SUCCESS when the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     unmuteValueCallbacks;
 
 -(int)     _parserHelper;
 
@@ -1019,7 +1048,7 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
 
 
 // Method used to retrieve details of the nth function of our device
--(YRETCODE)        _getFunction:(int) idx  :(NSString**)serial  :(NSString**)funcId :(NSString**)funcName :(NSString**)funcVal :(NSError**)error;
+-(YRETCODE)        _getFunction:(int) idx  :(NSString**)serial  :(NSString**)funcId :(NSString**)baseType :(NSString**)funcName :(NSString**)funcVal :(NSError**)error;
 
 //--- (generated code: YModule private methods declaration)
 // Function-specific method for parsing of JSON output and caching result

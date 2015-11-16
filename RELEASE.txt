@@ -1,1 +1,2 @@
-- Add YQuadratureDecoder class
+- Fix compilation for IOS
+- Fix small memory leak on host that drop a lots of USB packet
