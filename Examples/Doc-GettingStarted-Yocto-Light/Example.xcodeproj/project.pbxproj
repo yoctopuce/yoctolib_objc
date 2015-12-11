@@ -44,6 +44,7 @@
 		B8AB28FE1A94D7150094AB3F /* yocto_groundspeed.m in Sources */ = {isa = PBXBuildFile; fileRef = B8AB28F71A94D7150094AB3F /* yocto_groundspeed.m */; };
 		B8AB28FF1A94D7150094AB3F /* yocto_latitude.m in Sources */ = {isa = PBXBuildFile; fileRef = B8AB28F91A94D7150094AB3F /* yocto_latitude.m */; };
 		B8AB29001A94D7150094AB3F /* yocto_longitude.m in Sources */ = {isa = PBXBuildFile; fileRef = B8AB28FB1A94D7150094AB3F /* yocto_longitude.m */; };
+		B8D5FCEA1C047A5B00E214BA /* yocto_currentloopoutput.m in Sources */ = {isa = PBXBuildFile; fileRef = B8D5FCE91C047A5B00E214BA /* yocto_currentloopoutput.m */; };
 		B8DD8BDB14A9360E008A9E8F /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B8DD8BDA14A9360E008A9E8F /* Foundation.framework */; };
 		B8DD8BDE14A9360E008A9E8F /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = B8DD8BDD14A9360E008A9E8F /* main.m */; };
 		B8DD8C0514A936EF008A9E8F /* yocto_anbutton.m in Sources */ = {isa = PBXBuildFile; fileRef = B8DD8BEA14A936EF008A9E8F /* yocto_anbutton.m */; };
@@ -162,6 +163,8 @@
 		B8AB28F91A94D7150094AB3F /* yocto_latitude.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = yocto_latitude.m; path = ../../../Sources/yocto_latitude.m; sourceTree = "<group>"; };
 		B8AB28FA1A94D7150094AB3F /* yocto_longitude.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yocto_longitude.h; path = ../../../Sources/yocto_longitude.h; sourceTree = "<group>"; };
 		B8AB28FB1A94D7150094AB3F /* yocto_longitude.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = yocto_longitude.m; path = ../../../Sources/yocto_longitude.m; sourceTree = "<group>"; };
+		B8D5FCE81C047A5B00E214BA /* yocto_currentloopoutput.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yocto_currentloopoutput.h; path = ../../../Sources/yocto_currentloopoutput.h; sourceTree = "<group>"; };
+		B8D5FCE91C047A5B00E214BA /* yocto_currentloopoutput.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = yocto_currentloopoutput.m; path = ../../../Sources/yocto_currentloopoutput.m; sourceTree = "<group>"; };
 		B8DD8BD614A9360E008A9E8F /* Example */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Example; sourceTree = BUILT_PRODUCTS_DIR; };
 		B8DD8BDA14A9360E008A9E8F /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		B8DD8BDD14A9360E008A9E8F /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -301,6 +304,8 @@
 				B8140ABF18C0E81F000A935D /* yocto_compass.m */,
 				B89BD766152DFE2D00EC253E /* yocto_current.h */,
 				B89BD767152DFE2D00EC253E /* yocto_current.m */,
+				B8D5FCE81C047A5B00E214BA /* yocto_currentloopoutput.h */,
+				B8D5FCE91C047A5B00E214BA /* yocto_currentloopoutput.m */,
 				B845588914DC2CDE00425F49 /* yocto_datalogger.h */,
 				B845588A14DC2CDE00425F49 /* yocto_datalogger.m */,
 				B8FE48F217CCC2CA000070E2 /* yocto_digitalio.h */,
@@ -500,6 +505,7 @@
 				B89BD76B152DFE2D00EC253E /* yocto_voltage.m in Sources */,
 				B853FE21161B49CA0086F1F5 /* ykey.c in Sources */,
 				B8376D6F161B574D0074590C /* yocto_carbondioxide.m in Sources */,
+				B8D5FCEA1C047A5B00E214BA /* yocto_currentloopoutput.m in Sources */,
 				B8376D70161B574D0074590C /* yocto_network.m in Sources */,
 				B8376D72161B574D0074590C /* yocto_wireless.m in Sources */,
 				B82227BF1631721F00392D9B /* yocto_voc.m in Sources */,

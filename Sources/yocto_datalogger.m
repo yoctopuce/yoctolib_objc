@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_datalogger.m 20704 2015-06-20 19:43:34Z mvuilleu $
+ * $Id: yocto_datalogger.m 22197 2015-12-02 12:58:24Z mvuilleu $
  *
  * Implements yFindDataLogger(), the high-level API for DataLogger functions
  *
@@ -887,12 +887,15 @@
 -(NSMutableArray*) parse_dataSets:(NSData*)json
 {
     NSMutableArray* dslist = [NSMutableArray array];
+    YDataSet* dataset;
     NSMutableArray* res = [NSMutableArray array];
     // may throw an exception
     dslist = [self _json_get_array:json];
     [res removeAllObjects];
     for (NSString* _each  in dslist) {
-        [res addObject:ARC_sendAutorelease([[YDataSet alloc] initWith:self :_each])];
+        dataset = ARC_sendAutorelease([[YDataSet alloc] initWith:self]);
+        [dataset _parse:_each];
+        [res addObject:dataset];;
     }
     return res;
 }

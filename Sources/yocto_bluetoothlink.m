@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_bluetoothlink.m 20644 2015-06-12 16:04:33Z seb $
+ * $Id: yocto_bluetoothlink.m 22191 2015-12-02 06:49:31Z mvuilleu $
  *
  * Implements the high-level API for BluetoothLink functions
  *

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: ystream.c 21956 2015-11-06 15:22:56Z seb $
+ * $Id: ystream.c 22320 2015-12-11 09:13:02Z seb $
  *
  * USB multi-interface stream implementation
  *
@@ -1110,18 +1110,18 @@ YRETCODE  yPktQueuePushD2H(yInterfaceSt *iface,const USB_Packet *pkt, char * err
     return yPktQueuePushEx(&iface->rxQueue,pkt,errmsg);
 }
 
-YRETCODE yPktQueueWaitAndPopD2H(yInterfaceSt *iface,pktItem **pkt,int ms,char * errmsg)
+YRETCODE yPktQueueWaitAndPopD2H(yInterfaceSt *iface,pktItem **pkt, int ms, char * errmsg)
 {
 
     YRETCODE res;
     *pkt=NULL;
     res= yPktQueuePop(&iface->rxQueue,pkt,errmsg);
-    if(res !=YAPI_SUCCESS || ms==0){
+    if(res != YAPI_SUCCESS || ms == 0){
         return  res;
     }
     if (*pkt == NULL) {
-        yWaitForEvent(&iface->rxQueue.notEmptyEvent,ms);
-        return  yPktQueuePop(&iface->rxQueue,pkt,errmsg);
+        yWaitForEvent(&iface->rxQueue.notEmptyEvent, ms);
+        return  yPktQueuePop(&iface->rxQueue,pkt, errmsg);
     }
     return res;
 }
@@ -1136,7 +1136,7 @@ YRETCODE  yPktQueuePushH2D(yInterfaceSt *iface,const USB_Packet *pkt, char * err
 static int yPktQueueWaitEmptyH2D(yInterfaceSt *iface,int ms, char * errmsg)
 {
     if(ms > 0){
-        yWaitForEvent(&iface->txQueue.emptyEvent,ms);
+        yWaitForEvent(&iface->txQueue.emptyEvent, ms);
     }
     return yPktQueueIsEmpty(&iface->txQueue,errmsg);
 }
@@ -1149,7 +1149,7 @@ YRETCODE yPktQueuePeekH2D(yInterfaceSt *iface,pktItem **pkt)
     pktItem *tmp;
     YRETCODE res = yPktQueuePeek(&iface->txQueue,&tmp,NULL);
     if(tmp!=NULL){
-        dumpPktSummary(iface->serial, iface->ifaceno,0,&tmp->pkt);
+        dumpPktSummary(iface->serial, iface->ifaceno, 0, &tmp->pkt);
     }
     *pkt=tmp;
     return res;
@@ -1428,7 +1428,7 @@ error:
 }
 
 // Trigger a non blocking read
-static int yGetNextPktEx(yPrivDeviceSt *dev, pktItem **pkt_out,u64 blockUntilTime,char *errmsg)
+static int yGetNextPktEx(yPrivDeviceSt *dev, pktItem **pkt_out, u64 blockUntilTime, char *errmsg)
 {
     int             nextiface,dropcount=0;
     u8              nextpktno;
@@ -1535,24 +1535,23 @@ static int yStreamSetup(yPrivDeviceSt *dev,char *errmsg)
 }
 
 
-static int yStreamReceived(yPrivDeviceSt *dev,  u8 *stream, u8 **data, u8 *size,u64 blockUntilTime,char *errmsg)
+static int yStreamReceived(yPrivDeviceSt *dev, u8 *stream, u8 **data, u8 *size, u64 blockUntilTime, char *errmsg)
 {
     YSTREAM_Head  *yshead;
     int res;
 
-
-     //check if we have processed the full usb packet
-    if(dev->curxofs >= USB_PKT_SIZE-sizeof(YSTREAM_Head)){
+    //check if we have processed the full usb packet
+    if (dev->curxofs >= USB_PKT_SIZE - sizeof(YSTREAM_Head)) {
         // look if we have the next packet on a interface
-        if(dev->currxpkt){
+        if (dev->currxpkt) {
             yFree(dev->currxpkt);
             dev->currxpkt=NULL;
         }
-        res = yGetNextPktEx(dev,&dev->currxpkt,blockUntilTime,errmsg);
+        res = yGetNextPktEx(dev, &dev->currxpkt, blockUntilTime, errmsg);
         YPROPERR(res);
-        if(dev->currxpkt != NULL){
+        if (dev->currxpkt != NULL) {
             dev->curxofs=0;
-        }else{
+        } else {
             // no pkt avail
             return 0;
         }
@@ -1561,8 +1560,8 @@ static int yStreamReceived(yPrivDeviceSt *dev,  u8 *stream, u8 **data, u8 *size,
     yshead= (YSTREAM_Head*) &dev->currxpkt->pkt.data[dev->curxofs];
     YASSERT(dev->curxofs + sizeof(YSTREAM_Head) + yshead->size <= USB_PKT_SIZE);
     *stream = yshead->stream;
-    *size  = yshead->size;
-    *data  = &dev->currxpkt->pkt.data[ dev->curxofs + sizeof(YSTREAM_Head) ];
+    *size = yshead->size;
+    *data = &dev->currxpkt->pkt.data[ dev->curxofs + sizeof(YSTREAM_Head) ];
 
     return 1;
 }
@@ -1916,7 +1915,7 @@ static void yDispatchReportV2(yPrivDeviceSt *dev, u8 *data, int pktsize)
 // blockUntilTime:
 //    0 -> only check pending (non blocking)
 //    >0 -> wait util yapiGetTickCount is >= blockUntilTime
-static int yDispatchReceive(yPrivDeviceSt *dev,u64 blockUntilTime,char *errmsg)
+static int yDispatchReceive(yPrivDeviceSt *dev, u64 blockUntilTime, char *errmsg)
 {
     u8 stream;
     u8 size;
@@ -1941,7 +1940,7 @@ static int yDispatchReceive(yPrivDeviceSt *dev,u64 blockUntilTime,char *errmsg)
 #endif
                 if(dev->httpstate == YHTTP_OPENED) {
                     //handle new received packet
-                    if(size!=yPushFifo(&dev->http_fifo, data, size)){
+                    if(size != yPushFifo(&dev->http_fifo, data, size)){
                         return YERRMSG(YAPI_IO_ERROR,"FIFO overrun");
                     }
                     dev->httpstate = YHTTP_CLOSE_BY_DEV;
@@ -2071,23 +2070,23 @@ static int StartDevice(yPrivDeviceSt *dev,char *errmsg)
     unsigned delay=10;
     int nb_try;
 
-    for (nb_try=0; nb_try<4 ; nb_try++,delay*=4,dbglog("retrying StartDevice...\n")) {
+    for (nb_try = 0; nb_try < 4 ; nb_try++, delay *= 4, dbglog("retrying StartDevice...\n")) {
         u64 timeout;
-        int streamres =yStreamSetup(dev,errmsg);
-        if (YISERR(streamres)){
+        int streamres = yStreamSetup(dev, errmsg);
+        if (YISERR(streamres)) {
             continue;
         }
-        timeout=yapiGetTickCount()+10000;
+        timeout = yapiGetTickCount() + 10000;
         do {
-            res = yDispatchReceive(dev,timeout,errmsg);
+            res = yDispatchReceive(dev, timeout, errmsg);
             if(dev->ifaces[0].pkt_version == YPKT_VERSION_ORIGINAL_RELEASE &&  !dev->infos.productname[0]){
-                dev->rstatus =YRUN_AVAIL;
+                dev->rstatus = YRUN_AVAIL;
             }
-            if (yapiGetTickCount()>=timeout){
+            if (yapiGetTickCount() >= timeout) {
                 yStreamShutdown(dev);
                 return YERRMSG(YAPI_TIMEOUT, "Negotiation failed (device did not respond for 10 secs");
             }
-        } while(res==YAPI_SUCCESS && dev->rstatus !=YRUN_AVAIL);
+        } while(res == YAPI_SUCCESS && dev->rstatus != YRUN_AVAIL);
         if(res==YAPI_SUCCESS && dev->rstatus ==YRUN_AVAIL){
             return YAPI_SUCCESS;
         } else{
@@ -2136,7 +2135,7 @@ static void enuUpdateDStatus(void)
                 dbglog("Unable to stop the device %s correctly:(%s)\n",p->infos.serial,errmsg);
             }
             p->dStatus = YDEV_WORKING; //we need to put the device in working to start device (safe because we alread have the mutex)
-            res = StartDevice(p,errmsg);
+            res = StartDevice(p, errmsg);
             if(YISERR(res)){
                 // we are unable to restart the device -> unplug it and follow the traditional process (white page update etc...)
 #ifdef DEBUG_DEV_ENUM
@@ -2157,7 +2156,7 @@ static void enuUpdateDStatus(void)
             devStartEnum(p);
             if( p->next_startup_attempt <= yapiGetTickCount()) {
                 p->dStatus = YDEV_WORKING; //we need to put the device in working to start device (safe because we alread have the mutex)
-                res = StartDevice(p,errmsg);
+                res = StartDevice(p, errmsg);
                 if(YISERR(res)){
                     if (res !=YAPI_TIMEOUT && p->nb_startup_retry < NB_MAX_STARTUP_RETRY) {
                         dbglog("Unable to start the device %s correctly (%s). retry later\n",p->infos.serial,errmsg);

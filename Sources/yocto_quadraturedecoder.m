@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_quadraturedecoder.m 21782 2015-10-16 07:53:41Z seb $
+ * $Id: yocto_quadraturedecoder.m 22191 2015-12-02 06:49:31Z mvuilleu $
  *
  * Implements the high-level API for QuadratureDecoder functions
  *

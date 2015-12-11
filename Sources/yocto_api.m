@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.m 21975 2015-11-06 23:52:10Z seb $
+ * $Id: yocto_api.m 22191 2015-12-02 06:49:31Z mvuilleu $
  *
  * High-level programming interface, common to all modules
  *
@@ -2891,8 +2891,8 @@ static const char* hexArray = "0123456789ABCDEF";
 
 
 /**
- * Invalidate the cache. Invalidate the cache of the function attributes. Force the
- * next call to get_xxx() or loadxxx() to use value that come from the device..
+ * Invalidates the cache. Invalidates the cache of the function attributes. Forces the
+ * next call to get_xxx() or loadxxx() to use values that come from the device.
  *
  * @noreturn
  */
@@ -6250,7 +6250,7 @@ static const char* hexArray = "0123456789ABCDEF";
             i = i + 1;
         }
     }
-    iCalib = [dataset get_calibration];
+    iCalib = [dataset _get_calibration];
     _caltyp = [[iCalib objectAtIndex:0] intValue];
     if (_caltyp != 0) {
         _calhdl = [YAPI _getCalibrationHandler:_caltyp];
@@ -6324,7 +6324,7 @@ static const char* hexArray = "0123456789ABCDEF";
     return 0;
 }
 
--(int) parse:(NSData*)sdata
+-(int) _parseStream:(NSData*)sdata
 {
     int idx;
     NSMutableArray* udat = [NSMutableArray array];
@@ -6375,7 +6375,7 @@ static const char* hexArray = "0123456789ABCDEF";
     return YAPI_SUCCESS;
 }
 
--(NSString*) get_url
+-(NSString*) _get_url
 {
     NSString* url;
     url = [NSString stringWithFormat:@"logger.json?id=%@&run=%d&utc=%lu",
@@ -6385,7 +6385,7 @@ static const char* hexArray = "0123456789ABCDEF";
 
 -(int) loadStream
 {
-    return [self parse:[_parent _download:[self get_url]]];
+    return [self _parseStream:[_parent _download:[self _get_url]]];
 }
 
 -(double) _decodeVal:(int)w
@@ -6825,7 +6825,7 @@ static const char* hexArray = "0123456789ABCDEF";
     return self;
 }
 
--(id)   initWith:(YFunction *)parent :(NSString *)json
+-(id)   initWith:(YFunction *)parent
 {
     if(!(self = [super init]))
         return nil;
@@ -6842,7 +6842,6 @@ static const char* hexArray = "0123456789ABCDEF";
     _startTime = 0;
     _endTime   = 0;
     _summary = [[YMeasure alloc] init];
-    [self _parse:json];
     return self;
 }
 
@@ -6967,7 +6966,7 @@ static const char* hexArray = "0123456789ABCDEF";
 //--- (end of generated code: YDataSet private methods implementation)
 
 //--- (generated code: YDataSet public methods implementation)
--(NSMutableArray*) get_calibration
+-(NSMutableArray*) _get_calibration
 {
     return _calib;
 }
@@ -6996,7 +6995,7 @@ static const char* hexArray = "0123456789ABCDEF";
         return [self _parse:strdata];
     }
     stream = [_streams objectAtIndex:_progress];
-    [stream parse:data];
+    [stream _parseStream:data];
     dataRows = [stream get_dataRows];
     _progress = _progress + 1;
     if ((int)[dataRows count] == 0) {
@@ -7153,7 +7152,7 @@ static const char* hexArray = "0123456789ABCDEF";
             return 100;
         } else {
             stream = [_streams objectAtIndex:_progress];
-            url = [stream get_url];
+            url = [stream _get_url];
         }
     }
     return [self processMore:_progress :[_parent _download:url]];

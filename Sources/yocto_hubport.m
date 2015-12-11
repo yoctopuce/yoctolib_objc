@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_hubport.m 19608 2015-03-05 10:37:24Z seb $
+ * $Id: yocto_hubport.m 22191 2015-12-02 06:49:31Z mvuilleu $
  *
  * Implements the high-level API for HubPort functions
  *

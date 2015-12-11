@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_network.m 20815 2015-07-09 17:23:30Z mvuilleu $
+ * $Id: yocto_network.m 22194 2015-12-02 10:50:41Z mvuilleu $
  *
  * Implements the high-level API for Network functions
  *
@@ -914,8 +914,8 @@
  *
  * @return a value among Y_CALLBACKENCODING_FORM, Y_CALLBACKENCODING_JSON,
  * Y_CALLBACKENCODING_JSON_ARRAY, Y_CALLBACKENCODING_CSV, Y_CALLBACKENCODING_YOCTO_API,
- * Y_CALLBACKENCODING_JSON_NUM, Y_CALLBACKENCODING_EMONCMS and Y_CALLBACKENCODING_AZURE corresponding
- * to the encoding standard to use for representing notification values
+ * Y_CALLBACKENCODING_JSON_NUM, Y_CALLBACKENCODING_EMONCMS, Y_CALLBACKENCODING_AZURE and
+ * Y_CALLBACKENCODING_INFLUXDB corresponding to the encoding standard to use for representing notification values
  *
  * On failure, throws an exception or returns Y_CALLBACKENCODING_INVALID.
  */
@@ -940,8 +940,8 @@
  *
  * @param newval : a value among Y_CALLBACKENCODING_FORM, Y_CALLBACKENCODING_JSON,
  * Y_CALLBACKENCODING_JSON_ARRAY, Y_CALLBACKENCODING_CSV, Y_CALLBACKENCODING_YOCTO_API,
- * Y_CALLBACKENCODING_JSON_NUM, Y_CALLBACKENCODING_EMONCMS and Y_CALLBACKENCODING_AZURE corresponding
- * to the encoding standard to use for representing notification values
+ * Y_CALLBACKENCODING_JSON_NUM, Y_CALLBACKENCODING_EMONCMS, Y_CALLBACKENCODING_AZURE and
+ * Y_CALLBACKENCODING_INFLUXDB corresponding to the encoding standard to use for representing notification values
  *
  * @return YAPI_SUCCESS if the call succeeds.
  *

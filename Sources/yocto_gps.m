@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_gps.m 19746 2015-03-17 10:34:00Z seb $
+ * $Id: yocto_gps.m 22191 2015-12-02 06:49:31Z mvuilleu $
  *
  * Implements the high-level API for Gps functions
  *

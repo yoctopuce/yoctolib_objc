@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_temperature.m 21576 2015-09-21 13:17:28Z seb $
+ * $Id: yocto_temperature.m 22191 2015-12-02 06:49:31Z mvuilleu $
  *
  * Implements the high-level API for Temperature functions
  *
