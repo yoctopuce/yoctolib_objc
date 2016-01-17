@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_altitude.m 22191 2015-12-02 06:49:31Z mvuilleu $
+ * $Id: yocto_altitude.m 22697 2016-01-12 23:14:40Z seb $
  *
  * Implements the high-level API for Altitude functions
  *
@@ -269,10 +269,12 @@
  */
 -(int) registerTimedReportCallback:(YAltitudeTimedReportCallback)callback
 {
+    YSensor* sensor;
+    sensor = self;
     if (callback != NULL) {
-        [YFunction _UpdateTimedReportCallbackList:self :YES];
+        [YFunction _UpdateTimedReportCallbackList:sensor :YES];
     } else {
-        [YFunction _UpdateTimedReportCallbackList:self :NO];
+        [YFunction _UpdateTimedReportCallbackList:sensor :NO];
     }
     _timedReportCallbackAltitude = callback;
     return 0;

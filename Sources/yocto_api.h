@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.h 22191 2015-12-02 06:49:31Z mvuilleu $
+ * $Id: yocto_api.h 22697 2016-01-12 23:14:40Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -62,7 +62,7 @@
 
 extern NSMutableDictionary* YAPI_YFunctions;
 
-#define YOCTO_API_REVISION          "22324"
+#define YOCTO_API_REVISION          "22835"
 
 // yInitAPI argument
 #define Y_DETECT_NONE           0
@@ -1386,7 +1386,7 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
  * older or equal to
  * the installed firmware.
  *
- * @param path    : the path of a byn file or a directory that contains byn files
+ * @param path : the path of a byn file or a directory that contains byn files
  * @param onlynew : returns only files that are strictly newer
  *
  * @return : the path of the byn file to use or a empty string if no byn files matches the requirement
@@ -1504,6 +1504,33 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
  *         On failure, throws an exception or returns  YAPI_INVALID_STRING.
  */
 -(NSString*)     get_lastLogs;
+
+/**
+ * Returns a list of all the modules that are plugged into the current module. This
+ * method is only useful on a YoctoHub/VirtualHub. This method return the serial number of all
+ * module connected to a YoctoHub. Calling this method on a standard device is not an
+ * error, and an empty array will be returned.
+ *
+ * @return an array of strings containing the sub modules.
+ */
+-(NSMutableArray*)     get_subDevices;
+
+/**
+ * Returns the serial number of the YoctoHub on which this module is connected.
+ * If the module is connected by USB or if the module is the root YoctoHub an
+ * empty string is returned.
+ *
+ * @return a string with the serial number of the YoctoHub or an empty string
+ */
+-(NSString*)     get_parentHub;
+
+/**
+ * Returns the URL used to access the module. If the module is connected by USB the
+ * string 'usb' is returned.
+ *
+ * @return a string with the URL of the module.
+ */
+-(NSString*)     get_url;
 
 
 /**
@@ -2008,11 +2035,11 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
  * In this case this method return the path of the most recent appropriate byn file. This method will
  * ignore firmware that are older than mintrelase.
  *
- * @param serial  : the serial number of the module to update
- * @param path    : the path of a byn file or a directory that contain byn files
- * @param minrelease : an positif integer
+ * @param serial : the serial number of the module to update
+ * @param path : the path of a byn file or a directory that contains byn files
+ * @param minrelease : a positive integer
  *
- * @return : the path of the byn file to use or a empty string if no byn files match the requirement
+ * @return : the path of the byn file to use or an empty string if no byn files match the requirement
  *
  * On failure, returns a string that start with "error:".
  */

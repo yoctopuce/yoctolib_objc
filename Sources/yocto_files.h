@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_files.h 19608 2015-03-05 10:37:24Z seb $
+ * $Id: yocto_files.h 22697 2016-01-12 23:14:40Z seb $
  *
  * Declares yFindFiles(), the high-level API for Files functions
  *
@@ -207,6 +207,17 @@ typedef void (*YFilesValueCallback)(YFiles *func, NSString *functionValue);
  * On failure, throws an exception or returns an empty list.
  */
 -(NSMutableArray*)     get_list:(NSString*)pattern;
+
+/**
+ * Test if a file exist on the filesystem of the module.
+ *
+ * @param filename : the file name to test.
+ *
+ * @return a true if the file existe, false ortherwise.
+ *
+ * On failure, throws an exception.
+ */
+-(bool)     fileExist:(NSString*)filename;
 
 /**
  * Downloads the requested file and returns a binary buffer with its content.

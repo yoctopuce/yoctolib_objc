@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_files.m 19608 2015-03-05 10:37:24Z seb $
+ * $Id: yocto_files.m 22697 2016-01-12 23:14:40Z seb $
  *
  * Implements yFindFiles(), the high-level API for Files functions
  *
@@ -341,6 +341,30 @@
         [res addObject:ARC_sendAutorelease([[YFileRecord alloc] initWith:_each])];
     }
     return res;
+}
+
+/**
+ * Test if a file exist on the filesystem of the module.
+ *
+ * @param filename : the file name to test.
+ *
+ * @return a true if the file existe, false ortherwise.
+ *
+ * On failure, throws an exception.
+ */
+-(bool) fileExist:(NSString*)filename
+{
+    NSMutableData* json;
+    NSMutableArray* filelist = [NSMutableArray array];
+    if ((int)[(filename) length] == 0) {
+        return NO;
+    }
+    json = [self sendCommand:[NSString stringWithFormat:@"dir&f=%@",filename]];
+    filelist = [self _json_get_array:json];
+    if ((int)[filelist count] > 0) {
+        return YES;
+    }
+    return NO;
 }
 
 /**

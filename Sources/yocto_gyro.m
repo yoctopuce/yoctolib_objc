@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_gyro.m 19704 2015-03-13 06:10:37Z mvuilleu $
+ * $Id: yocto_gyro.m 22697 2016-01-12 23:14:40Z seb $
  *
  * Implements the high-level API for Gyro functions
  *
@@ -160,10 +160,12 @@
  */
 -(int) registerTimedReportCallback:(YQtTimedReportCallback)callback
 {
+    YSensor* sensor;
+    sensor = self;
     if (callback != NULL) {
-        [YFunction _UpdateTimedReportCallbackList:self :YES];
+        [YFunction _UpdateTimedReportCallbackList:sensor :YES];
     } else {
-        [YFunction _UpdateTimedReportCallbackList:self :NO];
+        [YFunction _UpdateTimedReportCallbackList:sensor :NO];
     }
     _timedReportCallbackQt = callback;
     return 0;
@@ -450,10 +452,12 @@ static void yInternalGyroCallback(YQt *obj, NSString *value)
  */
 -(int) registerTimedReportCallback:(YGyroTimedReportCallback)callback
 {
+    YSensor* sensor;
+    sensor = self;
     if (callback != NULL) {
-        [YFunction _UpdateTimedReportCallbackList:self :YES];
+        [YFunction _UpdateTimedReportCallbackList:sensor :YES];
     } else {
-        [YFunction _UpdateTimedReportCallbackList:self :NO];
+        [YFunction _UpdateTimedReportCallbackList:sensor :NO];
     }
     _timedReportCallbackGyro = callback;
     return 0;
@@ -473,7 +477,6 @@ static void yInternalGyroCallback(YQt *obj, NSString *value)
 {
     int now_stamp;
     int age_ms;
-    
     now_stamp = (int) (([YAPI GetTickCount]) & (0x7FFFFFFF));
     age_ms = (((now_stamp - _qt_stamp)) & (0x7FFFFFFF));
     if ((age_ms >= 10) || (_qt_stamp == 0)) {

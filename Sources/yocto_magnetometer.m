@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_magnetometer.m 22191 2015-12-02 06:49:31Z mvuilleu $
+ * $Id: yocto_magnetometer.m 22697 2016-01-12 23:14:40Z seb $
  *
  * Implements the high-level API for Magnetometer functions
  *
@@ -247,10 +247,12 @@
  */
 -(int) registerTimedReportCallback:(YMagnetometerTimedReportCallback)callback
 {
+    YSensor* sensor;
+    sensor = self;
     if (callback != NULL) {
-        [YFunction _UpdateTimedReportCallbackList:self :YES];
+        [YFunction _UpdateTimedReportCallbackList:sensor :YES];
     } else {
-        [YFunction _UpdateTimedReportCallbackList:self :NO];
+        [YFunction _UpdateTimedReportCallbackList:sensor :NO];
     }
     _timedReportCallbackMagnetometer = callback;
     return 0;

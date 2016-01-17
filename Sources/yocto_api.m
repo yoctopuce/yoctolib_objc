@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.m 22191 2015-12-02 06:49:31Z mvuilleu $
+ * $Id: yocto_api.m 22707 2016-01-13 11:40:52Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -3874,10 +3874,12 @@ static const char* hexArray = "0123456789ABCDEF";
  */
 -(int) registerTimedReportCallback:(YSensorTimedReportCallback)callback
 {
+    YSensor* sensor;
+    sensor = self;
     if (callback != NULL) {
-        [YFunction _UpdateTimedReportCallbackList:self :YES];
+        [YFunction _UpdateTimedReportCallbackList:sensor :YES];
     } else {
-        [YFunction _UpdateTimedReportCallbackList:self :NO];
+        [YFunction _UpdateTimedReportCallbackList:sensor :NO];
     }
     _timedReportCallbackSensor = callback;
     return 0;
@@ -4889,7 +4891,7 @@ static const char* hexArray = "0123456789ABCDEF";
  * older or equal to
  * the installed firmware.
  *
- * @param path    : the path of a byn file or a directory that contains byn files
+ * @param path : the path of a byn file or a directory that contains byn files
  * @param onlynew : returns only files that are strictly newer
  *
  * @return : the path of the byn file to use or a empty string if no byn files matches the requirement
@@ -5731,6 +5733,101 @@ static const char* hexArray = "0123456789ABCDEF";
     return ARC_sendAutorelease([[NSString alloc] initWithData:content encoding:NSISOLatin1StringEncoding]);
 }
 
+/**
+ * Returns a list of all the modules that are plugged into the current module. This
+ * method is only useful on a YoctoHub/VirtualHub. This method return the serial number of all
+ * module connected to a YoctoHub. Calling this method on a standard device is not an
+ * error, and an empty array will be returned.
+ *
+ * @return an array of strings containing the sub modules.
+ */
+-(NSMutableArray*) get_subDevices
+{
+    char errmsg[YOCTO_ERRMSG_LEN];
+    char smallbuff[1024];
+    char *bigbuff;
+    int buffsize;
+    int fullsize;
+    int yapi_res;
+    NSString* subdevice_list;
+    NSMutableArray* subdevices = [NSMutableArray array];
+    NSString* serial;
+    // may throw an exception
+    serial = [self get_serialNumber];
+    fullsize = 0;
+    yapi_res = yapiGetSubdevices(STR_oc2y(serial), smallbuff, 1024, &fullsize, errmsg);
+    if (yapi_res < 0) {
+        return subdevices;
+    }
+    if (fullsize <= 1024) {
+        subdevice_list = ARC_sendAutorelease([[NSString alloc] initWithBytes:smallbuff length:yapi_res encoding:NSUTF8StringEncoding]);
+    } else {
+        buffsize = fullsize;
+        bigbuff = (char *)malloc(buffsize);
+        yapi_res = yapiGetSubdevices(STR_oc2y(serial), bigbuff, buffsize, &fullsize, errmsg);
+        if (yapi_res < 0) {
+            free(bigbuff);
+            return subdevices;
+        } else {
+            subdevice_list = ARC_sendAutorelease([[NSString alloc] initWithBytes:bigbuff length:yapi_res encoding:NSUTF8StringEncoding]);
+        }
+        free(bigbuff);
+    }
+    if (!([subdevice_list isEqualToString:@""])) {
+        subdevices = [NSMutableArray arrayWithArray:[subdevice_list componentsSeparatedByString:@"@',"]];
+    }
+    return subdevices;
+}
+
+/**
+ * Returns the serial number of the YoctoHub on which this module is connected.
+ * If the module is connected by USB or if the module is the root YoctoHub an
+ * empty string is returned.
+ *
+ * @return a string with the serial number of the YoctoHub or an empty string
+ */
+-(NSString*) get_parentHub
+{
+    char errmsg[YOCTO_ERRMSG_LEN];
+    char hubserial[YOCTO_SERIAL_LEN];
+    int pathsize;
+    int yapi_res;
+    NSString* serial;
+    // may throw an exception
+    serial = [self get_serialNumber];
+    // retrieve device object
+    pathsize = 0;
+    yapi_res = yapiGetDevicePathEx(STR_oc2y(serial), hubserial, nil, 0, &pathsize, errmsg);
+    if (yapi_res < 0) {
+        return @"";
+    }
+    return STR_y2oc(hubserial);
+}
+
+/**
+ * Returns the URL used to access the module. If the module is connected by USB the
+ * string 'usb' is returned.
+ *
+ * @return a string with the URL of the module.
+ */
+-(NSString*) get_url
+{
+    char errmsg[YOCTO_ERRMSG_LEN];
+    char path[1024];
+    int pathsize;
+    int yapi_res;
+    NSString* serial;
+    // may throw an exception
+    serial = [self get_serialNumber];
+    // retrieve device object
+    pathsize = 0;
+    yapi_res = yapiGetDevicePathEx(STR_oc2y(serial), nil, path, 1024, &pathsize, errmsg);
+    if (yapi_res < 0) {
+        return @"";
+    }
+    return STR_y2oc(path);
+}
+
 
 -(YModule*)   nextModule
 {
@@ -5996,7 +6093,7 @@ static const char* hexArray = "0123456789ABCDEF";
         return bootladers;
     }
     if (fullsize <= 1024) {
-        bootloader_list = ARC_sendAutorelease([[NSString alloc] initWithBytes:smallbuff length:fullsize encoding:NSUTF8StringEncoding]);
+        bootloader_list = ARC_sendAutorelease([[NSString alloc] initWithBytes:smallbuff length:yapi_res encoding:NSUTF8StringEncoding]);
     } else {
         buffsize = fullsize;
         bigbuff = (char *)malloc(buffsize);
@@ -6005,7 +6102,7 @@ static const char* hexArray = "0123456789ABCDEF";
             free(bigbuff);
             return bootladers;
         } else {
-            bootloader_list = ARC_sendAutorelease([[NSString alloc] initWithBytes:bigbuff length:fullsize encoding:NSUTF8StringEncoding]);
+            bootloader_list = ARC_sendAutorelease([[NSString alloc] initWithBytes:bigbuff length:yapi_res encoding:NSUTF8StringEncoding]);
         }
         free(bigbuff);
     }
@@ -6020,11 +6117,11 @@ static const char* hexArray = "0123456789ABCDEF";
  * In this case this method return the path of the most recent appropriate byn file. This method will
  * ignore firmware that are older than mintrelase.
  *
- * @param serial  : the serial number of the module to update
- * @param path    : the path of a byn file or a directory that contain byn files
- * @param minrelease : an positif integer
+ * @param serial : the serial number of the module to update
+ * @param path : the path of a byn file or a directory that contains byn files
+ * @param minrelease : a positive integer
  *
- * @return : the path of the byn file to use or a empty string if no byn files match the requirement
+ * @return : the path of the byn file to use or an empty string if no byn files match the requirement
  *
  * On failure, returns a string that start with "error:".
  */
