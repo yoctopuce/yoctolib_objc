@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.m 22707 2016-01-13 11:40:52Z seb $
+ * $Id: yocto_api.m 22933 2016-01-27 17:20:24Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -4480,7 +4480,7 @@ static const char* hexArray = "0123456789ABCDEF";
  */
 -(int) get_productRelease
 {
-    if (_cacheExpiration == 0) {
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_PRODUCTRELEASE_INVALID;
         }
