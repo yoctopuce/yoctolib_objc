@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_temperature.h 21211 2015-08-19 16:03:29Z seb $
+ * $Id: yocto_temperature.h 23527 2016-03-18 21:49:19Z mvuilleu $
  *
  * Declares yFindTemperature(), the high-level API for Temperature functions
  *
@@ -28,8 +28,8 @@
  *  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
  *  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
  *  INDIRECT OR CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA,
- *  COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY OR 
- *  SERVICES, ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT 
+ *  COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY OR
+ *  SERVICES, ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT
  *  LIMITED TO ANY DEFENSE THEREOF), ANY CLAIMS FOR INDEMNITY OR
  *  CONTRIBUTION, OR OTHER SIMILAR COSTS, WHETHER ASSERTED ON THE
  *  BASIS OF CONTRACT, TORT (INCLUDING NEGLIGENCE), BREACH OF
@@ -65,6 +65,8 @@ typedef enum {
     Y_SENSORTYPE_INVALID = -1,
 } Y_SENSORTYPE_enum;
 #endif
+#define Y_SIGNALVALUE_INVALID           YAPI_INVALID_DOUBLE
+#define Y_SIGNALUNIT_INVALID            YAPI_INVALID_STRING
 #define Y_COMMAND_INVALID               YAPI_INVALID_STRING
 //--- (end of YTemperature globals)
 
@@ -84,6 +86,8 @@ typedef enum {
 @protected
 //--- (YTemperature attributes declaration)
     Y_SENSORTYPE_enum _sensorType;
+    double          _signalValue;
+    NSString*       _signalUnit;
     NSString*       _command;
     YTemperatureValueCallback _valueCallbackTemperature;
     YTemperatureTimedReportCallback _timedReportCallbackTemperature;
@@ -152,6 +156,29 @@ typedef enum {
 -(int)     set_sensorType:(Y_SENSORTYPE_enum) newval;
 -(int)     setSensorType:(Y_SENSORTYPE_enum) newval;
 
+/**
+ * Returns the current value of the electrical signal measured by the sensor.
+ *
+ * @return a floating point number corresponding to the current value of the electrical signal
+ * measured by the sensor
+ *
+ * On failure, throws an exception or returns Y_SIGNALVALUE_INVALID.
+ */
+-(double)     get_signalValue;
+
+
+-(double) signalValue;
+/**
+ * Returns the measuring unit of the electrical signal used by the sensor.
+ *
+ * @return a string corresponding to the measuring unit of the electrical signal used by the sensor
+ *
+ * On failure, throws an exception or returns Y_SIGNALUNIT_INVALID.
+ */
+-(NSString*)     get_signalUnit;
+
+
+-(NSString*) signalUnit;
 -(NSString*)     get_command;
 
 

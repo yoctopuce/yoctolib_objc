@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_realtimeclock.m 22191 2015-12-02 06:49:31Z mvuilleu $
+ * $Id: yocto_realtimeclock.m 23242 2016-02-23 14:12:17Z seb $
  *
  * Implements the high-level API for RealTimeClock functions
  *
@@ -28,8 +28,8 @@
  *  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
  *  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
  *  INDIRECT OR CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA,
- *  COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY OR 
- *  SERVICES, ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT 
+ *  COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY OR
+ *  SERVICES, ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT
  *  LIMITED TO ANY DEFENSE THEREOF), ANY CLAIMS FOR INDEMNITY OR
  *  CONTRIBUTION, OR OTHER SIMILAR COSTS, WHETHER ASSERTED ON THE
  *  BASIS OF CONTRACT, TORT (INCLUDING NEGLIGENCE), BREACH OF
@@ -144,7 +144,7 @@
     return [self _setAttr:@"unixTime" :rest_val];
 }
 /**
- * Returns the current time in the form "YYYY/MM/DD hh:mm:ss"
+ * Returns the current time in the form "YYYY/MM/DD hh:mm:ss".
  *
  * @return a string corresponding to the current time in the form "YYYY/MM/DD hh:mm:ss"
  *

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_network.m 22194 2015-12-02 10:50:41Z mvuilleu $
+ * $Id: yocto_network.m 23930 2016-04-15 09:31:14Z seb $
  *
  * Implements the high-level API for Network functions
  *
@@ -28,8 +28,8 @@
  *  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
  *  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
  *  INDIRECT OR CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA,
- *  COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY OR 
- *  SERVICES, ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT 
+ *  COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY OR
+ *  SERVICES, ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT
  *  LIMITED TO ANY DEFENSE THEREOF), ANY CLAIMS FOR INDEMNITY OR
  *  CONTRIBUTION, OR OTHER SIMILAR COSTS, WHETHER ASSERTED ON THE
  *  BASIS OF CONTRACT, TORT (INCLUDING NEGLIGENCE), BREACH OF
@@ -72,6 +72,7 @@
     _callbackMethod = Y_CALLBACKMETHOD_INVALID;
     _callbackEncoding = Y_CALLBACKENCODING_INVALID;
     _callbackCredentials = Y_CALLBACKCREDENTIALS_INVALID;
+    _callbackInitialDelay = Y_CALLBACKINITIALDELAY_INVALID;
     _callbackMinDelay = Y_CALLBACKMINDELAY_INVALID;
     _callbackMaxDelay = Y_CALLBACKMAXDELAY_INVALID;
     _poeCurrent = Y_POECURRENT_INVALID;
@@ -235,6 +236,11 @@
        ARC_release(_callbackCredentials);
         _callbackCredentials =  [self _parseString:j];
         ARC_retain(_callbackCredentials);
+        return 1;
+    }
+    if(!strcmp(j->token, "callbackInitialDelay")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _callbackInitialDelay =  atoi(j->token);
         return 1;
     }
     if(!strcmp(j->token, "callbackMinDelay")) {
@@ -914,8 +920,9 @@
  *
  * @return a value among Y_CALLBACKENCODING_FORM, Y_CALLBACKENCODING_JSON,
  * Y_CALLBACKENCODING_JSON_ARRAY, Y_CALLBACKENCODING_CSV, Y_CALLBACKENCODING_YOCTO_API,
- * Y_CALLBACKENCODING_JSON_NUM, Y_CALLBACKENCODING_EMONCMS, Y_CALLBACKENCODING_AZURE and
- * Y_CALLBACKENCODING_INFLUXDB corresponding to the encoding standard to use for representing notification values
+ * Y_CALLBACKENCODING_JSON_NUM, Y_CALLBACKENCODING_EMONCMS, Y_CALLBACKENCODING_AZURE,
+ * Y_CALLBACKENCODING_INFLUXDB and Y_CALLBACKENCODING_MQTT corresponding to the encoding standard to
+ * use for representing notification values
  *
  * On failure, throws an exception or returns Y_CALLBACKENCODING_INVALID.
  */
@@ -940,8 +947,9 @@
  *
  * @param newval : a value among Y_CALLBACKENCODING_FORM, Y_CALLBACKENCODING_JSON,
  * Y_CALLBACKENCODING_JSON_ARRAY, Y_CALLBACKENCODING_CSV, Y_CALLBACKENCODING_YOCTO_API,
- * Y_CALLBACKENCODING_JSON_NUM, Y_CALLBACKENCODING_EMONCMS, Y_CALLBACKENCODING_AZURE and
- * Y_CALLBACKENCODING_INFLUXDB corresponding to the encoding standard to use for representing notification values
+ * Y_CALLBACKENCODING_JSON_NUM, Y_CALLBACKENCODING_EMONCMS, Y_CALLBACKENCODING_AZURE,
+ * Y_CALLBACKENCODING_INFLUXDB and Y_CALLBACKENCODING_MQTT corresponding to the encoding standard to
+ * use for representing notification values
  *
  * @return YAPI_SUCCESS if the call succeeds.
  *
@@ -1028,6 +1036,49 @@
     NSString* rest_val;
     rest_val = [NSString stringWithFormat:@"%@:%@",username,password];
     return [self _setAttr:@"callbackCredentials" :rest_val];
+}
+/**
+ * Returns the initial waiting time before first callback notifications, in seconds.
+ *
+ * @return an integer corresponding to the initial waiting time before first callback notifications, in seconds
+ *
+ * On failure, throws an exception or returns Y_CALLBACKINITIALDELAY_INVALID.
+ */
+-(int) get_callbackInitialDelay
+{
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_CALLBACKINITIALDELAY_INVALID;
+        }
+    }
+    return _callbackInitialDelay;
+}
+
+
+-(int) callbackInitialDelay
+{
+    return [self get_callbackInitialDelay];
+}
+
+/**
+ * Changes the initial waiting time before first callback notifications, in seconds.
+ *
+ * @param newval : an integer corresponding to the initial waiting time before first callback
+ * notifications, in seconds
+ *
+ * @return YAPI_SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) set_callbackInitialDelay:(int) newval
+{
+    return [self setCallbackInitialDelay:newval];
+}
+-(int) setCallbackInitialDelay:(int) newval
+{
+    NSString* rest_val;
+    rest_val = [NSString stringWithFormat:@"%d", newval];
+    return [self _setAttr:@"callbackInitialDelay" :rest_val];
 }
 /**
  * Returns the minimum waiting time between two callback notifications, in seconds.
@@ -1252,8 +1303,8 @@
 }
 
 /**
- * Pings str_host to test the network connectivity. Sends four ICMP ECHO_REQUEST requests from the
- * module to the target str_host. This method returns a string with the result of the
+ * Pings host to test the network connectivity. Sends four ICMP ECHO_REQUEST requests from the
+ * module to the target host. This method returns a string with the result of the
  * 4 ICMP ECHO_REQUEST requests.
  *
  * @param host : the hostname or the IP address of the target
@@ -1266,6 +1317,21 @@
     // may throw an exception
     content = [self _download:[NSString stringWithFormat:@"ping.txt?host=%@",host]];
     return ARC_sendAutorelease([[NSString alloc] initWithData:content encoding:NSISOLatin1StringEncoding]);
+}
+
+/**
+ * Trigger an HTTP callback quickly. This function can even be called within
+ * an HTTP callback, in which case the next callback will be triggered 5 seconds
+ * after the end of the current callback, regardless if the minimum time between
+ * callbacks configured in the device.
+ *
+ * @return YAPI_SUCCESS when the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) triggerCallback
+{
+    return [self set_callbackMethod:[self get_callbackMethod]];
 }
 
 

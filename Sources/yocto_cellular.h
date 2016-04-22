@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_cellular.h 21495 2015-09-14 07:33:16Z mvuilleu $
+ * $Id: yocto_cellular.h 23960 2016-04-15 21:30:18Z mvuilleu $
  *
  * Declares yFindCellular(), the high-level API for Cellular functions
  *
@@ -96,6 +96,26 @@ CF_EXTERN_C_BEGIN
 
 //--- (generated code: YCellular globals)
 typedef void (*YCellularValueCallback)(YCellular *func, NSString *functionValue);
+#ifndef _Y_CELLTYPE_ENUM
+#define _Y_CELLTYPE_ENUM
+typedef enum {
+    Y_CELLTYPE_GPRS = 0,
+    Y_CELLTYPE_EGPRS = 1,
+    Y_CELLTYPE_WCDMA = 2,
+    Y_CELLTYPE_HSDPA = 3,
+    Y_CELLTYPE_NONE = 4,
+    Y_CELLTYPE_CDMA = 5,
+    Y_CELLTYPE_INVALID = -1,
+} Y_CELLTYPE_enum;
+#endif
+#ifndef _Y_AIRPLANEMODE_ENUM
+#define _Y_AIRPLANEMODE_ENUM
+typedef enum {
+    Y_AIRPLANEMODE_OFF = 0,
+    Y_AIRPLANEMODE_ON = 1,
+    Y_AIRPLANEMODE_INVALID = -1,
+} Y_AIRPLANEMODE_enum;
+#endif
 #ifndef _Y_ENABLEDATA_ENUM
 #define _Y_ENABLEDATA_ENUM
 typedef enum {
@@ -114,6 +134,7 @@ typedef enum {
 #define Y_LOCKEDOPERATOR_INVALID        YAPI_INVALID_STRING
 #define Y_APN_INVALID                   YAPI_INVALID_STRING
 #define Y_APNSECRET_INVALID             YAPI_INVALID_STRING
+#define Y_PINGINTERVAL_INVALID          YAPI_INVALID_UINT
 #define Y_COMMAND_INVALID               YAPI_INVALID_STRING
 //--- (end of generated code: YCellular globals)
 
@@ -132,13 +153,16 @@ typedef enum {
     int             _linkQuality;
     NSString*       _cellOperator;
     NSString*       _cellIdentifier;
+    Y_CELLTYPE_enum _cellType;
     NSString*       _imsi;
     NSString*       _message;
     NSString*       _pin;
     NSString*       _lockedOperator;
+    Y_AIRPLANEMODE_enum _airplaneMode;
     Y_ENABLEDATA_enum _enableData;
     NSString*       _apn;
     NSString*       _apnSecret;
+    int             _pingInterval;
     NSString*       _command;
     YCellularValueCallback _valueCallbackCellular;
 //--- (end of generated code: YCellular attributes declaration)
@@ -186,6 +210,18 @@ typedef enum {
 
 
 -(NSString*) cellIdentifier;
+/**
+ * Active cellular connection type.
+ *
+ * @return a value among Y_CELLTYPE_GPRS, Y_CELLTYPE_EGPRS, Y_CELLTYPE_WCDMA, Y_CELLTYPE_HSDPA,
+ * Y_CELLTYPE_NONE and Y_CELLTYPE_CDMA
+ *
+ * On failure, throws an exception or returns Y_CELLTYPE_INVALID.
+ */
+-(Y_CELLTYPE_enum)     get_cellType;
+
+
+-(Y_CELLTYPE_enum) cellType;
 /**
  * Returns an opaque string if a PIN code has been configured in the device to access
  * the SIM card, or an empty string if none has been configured or if the code provided
@@ -279,6 +315,31 @@ typedef enum {
 -(int)     setLockedOperator:(NSString*) newval;
 
 /**
+ * Returns true if the airplane mode is active (radio turned off).
+ *
+ * @return either Y_AIRPLANEMODE_OFF or Y_AIRPLANEMODE_ON, according to true if the airplane mode is
+ * active (radio turned off)
+ *
+ * On failure, throws an exception or returns Y_AIRPLANEMODE_INVALID.
+ */
+-(Y_AIRPLANEMODE_enum)     get_airplaneMode;
+
+
+-(Y_AIRPLANEMODE_enum) airplaneMode;
+/**
+ * Changes the activation state of airplane mode (radio turned off).
+ *
+ * @param newval : either Y_AIRPLANEMODE_OFF or Y_AIRPLANEMODE_ON, according to the activation state
+ * of airplane mode (radio turned off)
+ *
+ * @return YAPI_SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     set_airplaneMode:(Y_AIRPLANEMODE_enum) newval;
+-(int)     setAirplaneMode:(Y_AIRPLANEMODE_enum) newval;
+
+/**
  * Returns the condition for enabling IP data services (GPRS).
  * When data services are disabled, SMS are the only mean of communication.
  *
@@ -350,6 +411,29 @@ typedef enum {
 -(NSString*) apnSecret;
 -(int)     set_apnSecret:(NSString*) newval;
 -(int)     setApnSecret:(NSString*) newval;
+
+/**
+ * Returns the automated connectivity check interval, in seconds.
+ *
+ * @return an integer corresponding to the automated connectivity check interval, in seconds
+ *
+ * On failure, throws an exception or returns Y_PINGINTERVAL_INVALID.
+ */
+-(int)     get_pingInterval;
+
+
+-(int) pingInterval;
+/**
+ * Changes the automated connectivity check interval, in seconds.
+ *
+ * @param newval : an integer corresponding to the automated connectivity check interval, in seconds
+ *
+ * @return YAPI_SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     set_pingInterval:(int) newval;
+-(int)     setPingInterval:(int) newval;
 
 -(NSString*)     get_command;
 

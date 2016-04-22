@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.m 22933 2016-01-27 17:20:24Z seb $
+ * $Id: yocto_api.m 23802 2016-04-08 08:40:45Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -2233,12 +2233,13 @@ static const char* hexArray = "0123456789ABCDEF";
     const char *json_data = STR_oc2y(json);
     int len = (int)strlen(json_data);
     const char *p;
-    char        errbuff[YOCTO_ERRMSG_LEN];
+    char        errbuff[YOCTO_ERRMSG_LEN];     
     int res;
 
     res = yapiJsonGetPath(STR_oc2y(path), json_data, len, &p, errbuff);
-    if (res >= 0) {
+    if (res > 0) {
         NSString *result = ARC_sendAutorelease([[NSString  alloc] initWithBytes:p length:res encoding:NSISOLatin1StringEncoding]);
+        yapiFreeMem((void*)p);
         return result;
     }
     return @"";
@@ -2901,7 +2902,7 @@ static const char* hexArray = "0123456789ABCDEF";
     YDevice     *dev;
     NSError     *error;
     YRETCODE    res;
-    
+
     // Resolve our reference to our device, load REST API
     res = [self _getDevice:&dev:&error];
     if(YISERR(res)) {
@@ -4887,14 +4888,13 @@ static const char* hexArray = "0123456789ABCDEF";
  * needs to be updated.
  * It is possible to pass a directory as argument instead of a file. In this case, this method returns
  * the path of the most recent
- * appropriate byn file. If the parameter onlynew is true, the function discards firmware that are
- * older or equal to
- * the installed firmware.
+ * appropriate .byn file. If the parameter onlynew is true, the function discards firmwares that are older or
+ * equal to the installed firmware.
  *
  * @param path : the path of a byn file or a directory that contains byn files
  * @param onlynew : returns only files that are strictly newer
  *
- * @return : the path of the byn file to use or a empty string if no byn files matches the requirement
+ * @return the path of the byn file to use or a empty string if no byn files matches the requirement
  *
  * On failure, throws an exception or returns a string that start with "error:".
  */
@@ -4921,11 +4921,12 @@ static const char* hexArray = "0123456789ABCDEF";
  * Prepares a firmware update of the module. This method returns a YFirmwareUpdate object which
  * handles the firmware update process.
  *
- * @param path : the path of the byn file to use.
+ * @param path : the path of the .byn file to use.
+ * @param force : true to force the firmware update even if some prerequisites appear not to be met
  *
- * @return : A YFirmwareUpdate object or NULL on error.
+ * @return a YFirmwareUpdate object or NULL on error.
  */
--(YFirmwareUpdate*) updateFirmware:(NSString*)path
+-(YFirmwareUpdate*) updateFirmwareEx:(NSString*)path :(bool)force
 {
     NSString* serial;
     NSMutableData* settings;
@@ -4936,13 +4937,25 @@ static const char* hexArray = "0123456789ABCDEF";
         [self _throw:YAPI_IO_ERROR :@"Unable to get device settings"];
         settings = [NSMutableData dataWithData:[@"error:Unable to get device settings" dataUsingEncoding:NSISOLatin1StringEncoding]];
     }
-    return ARC_sendAutorelease([[YFirmwareUpdate alloc] initWith:serial :path :settings]);
+    return ARC_sendAutorelease([[YFirmwareUpdate alloc] initWith:serial :path :settings :force]);
 }
 
 /**
- * Returns all the settings and uploaded files of the module. Useful to backup all the logical names,
- * calibrations parameters,
- * and uploaded files of a connected module.
+ * Prepares a firmware update of the module. This method returns a YFirmwareUpdate object which
+ * handles the firmware update process.
+ *
+ * @param path : the path of the .byn file to use.
+ *
+ * @return a YFirmwareUpdate object or NULL on error.
+ */
+-(YFirmwareUpdate*) updateFirmware:(NSString*)path
+{
+    return [self updateFirmwareEx:path :NO];
+}
+
+/**
+ * Returns all the settings and uploaded files of the module. Useful to backup all the
+ * logical names, calibrations parameters, and uploaded files of a device.
  *
  * @return a binary buffer with all the settings.
  *
@@ -4989,7 +5002,7 @@ static const char* hexArray = "0123456789ABCDEF";
             }
         };
     }
-    ext_settings =  [NSString stringWithFormat:@"%@%@", ext_settings, @"],\n\"files\":["];
+    ext_settings = [NSString stringWithFormat:@"%@%@", ext_settings, @"],\n\"files\":["];
     if ([self hasFunction:@"files"]) {
         json = [self _download:@"files.json?a=dir&f="];
         if ((int)[json length] == 0) {
@@ -4999,18 +5012,16 @@ static const char* hexArray = "0123456789ABCDEF";
         sep = @"";
         for (NSString* _each  in  filelist) {
             name = [self _json_get_key:[NSMutableData dataWithData:[_each dataUsingEncoding:NSISOLatin1StringEncoding]] :@"name"];
-            if ((int)[(name) length] == 0) {
-                return [NSMutableData dataWithData:[name dataUsingEncoding:NSISOLatin1StringEncoding]];
-            }
-            file_data_bin = [self _download:[self _escapeAttr:name]];
-            file_data = [YAPI _bin2HexStr:file_data_bin];
-            item = [NSString stringWithFormat:@"%@{\"name\":\"%@\", \"data\":\"%@\"}\n", sep, name,file_data];
-            ext_settings = [NSString stringWithFormat:@"%@%@", ext_settings, item];
-            sep = @",";;
+            if (((int)[(name) length] > 0) && !([name isEqualToString:@"startupConf.json"])) {
+                file_data_bin = [self _download:[self _escapeAttr:name]];
+                file_data = [YAPI _bin2HexStr:file_data_bin];
+                item = [NSString stringWithFormat:@"%@{\"name\":\"%@\", \"data\":\"%@\"}\n", sep, name,file_data];
+                ext_settings = [NSString stringWithFormat:@"%@%@", ext_settings, item];
+                sep = @",";
+            };
         }
     }
-    ext_settings = [NSString stringWithFormat:@"%@%@", ext_settings, @"]}"];
-    res = [YAPI _binMerge:[NSMutableData dataWithData:[@"{ \"api\":" dataUsingEncoding:NSISOLatin1StringEncoding]] :[YAPI _binMerge:settings :[NSMutableData dataWithData:[ext_settings dataUsingEncoding:NSISOLatin1StringEncoding]]]];
+    res = [NSMutableData dataWithData:[[NSString stringWithFormat:@"%@%@%@%@", @"{ \"api\":", ARC_sendAutorelease([[NSString alloc] initWithData:settings encoding:NSISOLatin1StringEncoding]), ext_settings, @"]}"] dataUsingEncoding:NSISOLatin1StringEncoding]];
     return res;
 }
 
@@ -5057,9 +5068,10 @@ static const char* hexArray = "0123456789ABCDEF";
 }
 
 /**
- * Restores all the settings and uploaded files of the module. Useful to restore all the logical names
- * and calibrations parameters, uploaded
- * files etc.. of a module from a backup.Remember to call the saveToFlash() method of the module if the
+ * Restores all the settings and uploaded files to the module.
+ * This method is useful to restore all the logical names and calibrations parameters,
+ * uploaded files etc. of a device from a backup.
+ * Remember to call the saveToFlash() method of the module if the
  * modifications must be kept.
  *
  * @param settings : a binary buffer with all the settings.
@@ -5108,12 +5120,12 @@ static const char* hexArray = "0123456789ABCDEF";
 }
 
 /**
- * Test if the device has a specific function. This method took an function identifier
- * and return a boolean.
+ * Tests if the device includes a specific function. This method takes a function identifier
+ * and returns a boolean.
  *
  * @param funcId : the requested function identifier
  *
- * @return : true if the device has the function identifier
+ * @return true if the device has the function identifier
  */
 -(bool) hasFunction:(NSString*)funcId
 {
@@ -5138,7 +5150,7 @@ static const char* hexArray = "0123456789ABCDEF";
  *
  * @param funType : The type of function (Relay, LightSensor, Voltage,...)
  *
- * @return : A array of string.
+ * @return an array of strings.
  */
 -(NSMutableArray*) get_functionIds:(NSString*)funType
 {
@@ -5411,7 +5423,7 @@ static const char* hexArray = "0123456789ABCDEF";
 }
 
 /**
- * Restores all the settings of the module. Useful to restore all the logical names and calibrations parameters
+ * Restores all the settings of the device. Useful to restore all the logical names and calibrations parameters
  * of a module from a backup.Remember to call the saveToFlash() method of the module if the
  * modifications must be kept.
  *
@@ -5734,10 +5746,25 @@ static const char* hexArray = "0123456789ABCDEF";
 }
 
 /**
- * Returns a list of all the modules that are plugged into the current module. This
- * method is only useful on a YoctoHub/VirtualHub. This method return the serial number of all
- * module connected to a YoctoHub. Calling this method on a standard device is not an
- * error, and an empty array will be returned.
+ * Adds a text message to the device logs. This function is useful in
+ * particular to trace the execution of HTTP callbacks. If a newline
+ * is desired after the message, it must be included in the string.
+ *
+ * @param text : the string to append to the logs.
+ *
+ * @return YAPI_SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) log:(NSString*)text
+{
+    return [self _upload:@"logs.txt" :[NSMutableData dataWithData:[text dataUsingEncoding:NSISOLatin1StringEncoding]]];
+}
+
+/**
+ * Returns a list of all the modules that are plugged into the current module.
+ * This method only makes sense when called for a YoctoHub/VirtualHub.
+ * Otherwise, an empty array will be returned.
  *
  * @return an array of strings containing the sub modules.
  */
@@ -5781,7 +5808,7 @@ static const char* hexArray = "0123456789ABCDEF";
 
 /**
  * Returns the serial number of the YoctoHub on which this module is connected.
- * If the module is connected by USB or if the module is the root YoctoHub an
+ * If the module is connected by USB, or if the module is the root YoctoHub, an
  * empty string is returned.
  *
  * @return a string with the serial number of the YoctoHub or an empty string
@@ -5805,7 +5832,7 @@ static const char* hexArray = "0123456789ABCDEF";
 }
 
 /**
- * Returns the URL used to access the module. If the module is connected by USB the
+ * Returns the URL used to access the module. If the module is connected by USB, the
  * string 'usb' is returned.
  *
  * @return a string with the URL of the module.
@@ -5922,7 +5949,7 @@ static const char* hexArray = "0123456789ABCDEF";
     NSError       *error;
     char        buffer[YOCTO_FUNCTION_LEN], *d = buffer;
     const char *p;
-    
+
     int res = [self _getFunction:functionIndex :&serial :&funcId :nil :&funcName :&funcVal :&error];
     if(YISERR(res)) {
         [self _throw:error];
@@ -5942,7 +5969,7 @@ static const char* hexArray = "0123456789ABCDEF";
 {
     NSString      *serial, *funcId, *baseType, *funcName, *funcVal;
     NSError       *error;
-    
+
     int res = [self _getFunction:functionIndex :&serial :&funcId :&baseType :&funcName :&funcVal :&error];
     if(YISERR(res)) {
         [self _throw:error];
@@ -5988,7 +6015,7 @@ static const char* hexArray = "0123456789ABCDEF";
 
 @implementation YFirmwareUpdate
 
--(id)   initWith:(NSString*)serial :(NSString*)path :(NSData*)settings
+-(id)   initWith:(NSString*)serial :(NSString*)path :(NSData*)settings :(bool)force
 {
     if(!(self = [super init]))
         return nil;
@@ -6000,6 +6027,7 @@ static const char* hexArray = "0123456789ABCDEF";
     _serial = serial;
     _firmwarepath = path,
     _settings = settings;
+    _force = force;
     return self;
 }
 
@@ -6025,11 +6053,17 @@ static const char* hexArray = "0123456789ABCDEF";
     NSString* firmwarepath;
     NSString* settings;
     NSString* prod_prefix;
+    int force;
     if (_progress_c < 100) {
         serial = _serial;
         firmwarepath = _firmwarepath;
         settings = ARC_sendAutorelease([[NSString alloc] initWithData:_settings encoding:NSISOLatin1StringEncoding]);
-        res = yapiUpdateFirmware(STR_oc2y(serial), STR_oc2y(firmwarepath), STR_oc2y(settings), newupdate, errmsg);
+        if (_force) {
+            force = 1;
+        } else {
+            force = 0;
+        }
+        res = yapiUpdateFirmwareEx(STR_oc2y(serial), STR_oc2y(firmwarepath), STR_oc2y(settings), force, newupdate, errmsg);
         if (res < 0) {
             _progress = res;
             _progress_msg = STR_y2oc(errmsg);
@@ -6071,11 +6105,11 @@ static const char* hexArray = "0123456789ABCDEF";
 }
 
 /**
- * Retruns a list of all the modules in "update" mode. Only USB connected
- * devices are listed. For modules connected to a YoctoHub, you must
- * connect yourself to the YoctoHub web interface.
+ * Returns a list of all the modules in "firmware update" mode. Only devices
+ * connected over USB are listed. For devices connected to a YoctoHub, you
+ * must connect yourself to the YoctoHub web interface.
  *
- * @return an array of strings containing the serial list of module in "update" mode.
+ * @return an array of strings containing the serial numbers of devices in "firmware update" mode.
  */
 +(NSMutableArray*) GetAllBootLoaders
 {
@@ -6113,17 +6147,17 @@ static const char* hexArray = "0123456789ABCDEF";
 }
 
 /**
- * Test if the byn file is valid for this module. It's possible to pass an directory instead of a file.
- * In this case this method return the path of the most recent appropriate byn file. This method will
- * ignore firmware that are older than mintrelase.
+ * Test if the byn file is valid for this module. It is possible to pass a directory instead of a file.
+ * In that case, this method returns the path of the most recent appropriate byn file. This method will
+ * ignore any firmware older than minrelease.
  *
  * @param serial : the serial number of the module to update
  * @param path : the path of a byn file or a directory that contains byn files
  * @param minrelease : a positive integer
  *
- * @return : the path of the byn file to use or an empty string if no byn files match the requirement
+ * @return : the path of the byn file to use, or an empty string if no byn files matches the requirement
  *
- * On failure, returns a string that start with "error:".
+ * On failure, returns a string that starts with "error:".
  */
 +(NSString*) CheckFirmware:(NSString*)serial :(NSString*)path :(int)minrelease
 {

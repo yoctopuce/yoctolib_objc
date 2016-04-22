@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_buzzer.h 19608 2015-03-05 10:37:24Z seb $
+ * $Id: yocto_buzzer.h 23242 2016-02-23 14:12:17Z seb $
  *
  * Declares yFindBuzzer(), the high-level API for Buzzer functions
  *
@@ -28,8 +28,8 @@
  *  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
  *  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
  *  INDIRECT OR CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA,
- *  COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY OR 
- *  SERVICES, ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT 
+ *  COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY OR
+ *  SERVICES, ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT
  *  LIMITED TO ANY DEFENSE THEREOF), ANY CLAIMS FOR INDEMNITY OR
  *  CONTRIBUTION, OR OTHER SIMILAR COSTS, WHETHER ASSERTED ON THE
  *  BASIS OF CONTRACT, TORT (INCLUDING NEGLIGENCE), BREACH OF
@@ -130,7 +130,7 @@ typedef void (*YBuzzerValueCallback)(YBuzzer *func, NSString *functionValue);
 -(int)     setVolume:(int) newval;
 
 /**
- * Returns the current length of the playing sequence
+ * Returns the current length of the playing sequence.
  *
  * @return an integer corresponding to the current length of the playing sequence
  *
@@ -141,7 +141,7 @@ typedef void (*YBuzzerValueCallback)(YBuzzer *func, NSString *functionValue);
 
 -(int) playSeqSize;
 /**
- * Returns the maximum length of the playing sequence
+ * Returns the maximum length of the playing sequence.
  *
  * @return an integer corresponding to the maximum length of the playing sequence
  *

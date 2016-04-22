@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_temperature.m 22697 2016-01-12 23:14:40Z seb $
+ * $Id: yocto_temperature.m 23527 2016-03-18 21:49:19Z mvuilleu $
  *
  * Implements the high-level API for Temperature functions
  *
@@ -28,8 +28,8 @@
  *  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
  *  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
  *  INDIRECT OR CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA,
- *  COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY OR 
- *  SERVICES, ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT 
+ *  COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY OR
+ *  SERVICES, ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT
  *  LIMITED TO ANY DEFENSE THEREOF), ANY CLAIMS FOR INDEMNITY OR
  *  CONTRIBUTION, OR OTHER SIMILAR COSTS, WHETHER ASSERTED ON THE
  *  BASIS OF CONTRACT, TORT (INCLUDING NEGLIGENCE), BREACH OF
@@ -54,6 +54,8 @@
     _className = @"Temperature";
 //--- (YTemperature attributes initialization)
     _sensorType = Y_SENSORTYPE_INVALID;
+    _signalValue = Y_SIGNALVALUE_INVALID;
+    _signalUnit = Y_SIGNALUNIT_INVALID;
     _command = Y_COMMAND_INVALID;
     _valueCallbackTemperature = NULL;
     _timedReportCallbackTemperature = NULL;
@@ -64,6 +66,8 @@
 -(void)  dealloc
 {
 //--- (YTemperature cleanup)
+    ARC_release(_signalUnit);
+    _signalUnit = nil;
     ARC_release(_command);
     _command = nil;
     ARC_dealloc(super);
@@ -76,6 +80,18 @@
     if(!strcmp(j->token, "sensorType")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
         _sensorType =  atoi(j->token);
+        return 1;
+    }
+    if(!strcmp(j->token, "signalValue")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _signalValue =  floor(atof(j->token) * 1000.0 / 65536.0 + 0.5) / 1000.0;
+        return 1;
+    }
+    if(!strcmp(j->token, "signalUnit")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+       ARC_release(_signalUnit);
+        _signalUnit =  [self _parseString:j];
+        ARC_retain(_signalUnit);
         return 1;
     }
     if(!strcmp(j->token, "command")) {
@@ -169,6 +185,51 @@
     NSString* rest_val;
     rest_val = [NSString stringWithFormat:@"%d", newval];
     return [self _setAttr:@"sensorType" :rest_val];
+}
+/**
+ * Returns the current value of the electrical signal measured by the sensor.
+ *
+ * @return a floating point number corresponding to the current value of the electrical signal
+ * measured by the sensor
+ *
+ * On failure, throws an exception or returns Y_SIGNALVALUE_INVALID.
+ */
+-(double) get_signalValue
+{
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_SIGNALVALUE_INVALID;
+        }
+    }
+    return floor(_signalValue * 1000+0.5) / 1000;
+}
+
+
+-(double) signalValue
+{
+    return [self get_signalValue];
+}
+/**
+ * Returns the measuring unit of the electrical signal used by the sensor.
+ *
+ * @return a string corresponding to the measuring unit of the electrical signal used by the sensor
+ *
+ * On failure, throws an exception or returns Y_SIGNALUNIT_INVALID.
+ */
+-(NSString*) get_signalUnit
+{
+    if (_cacheExpiration == 0) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_SIGNALUNIT_INVALID;
+        }
+    }
+    return _signalUnit;
+}
+
+
+-(NSString*) signalUnit
+{
+    return [self get_signalUnit];
 }
 -(NSString*) get_command
 {

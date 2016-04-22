@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_serialport.m 22191 2015-12-02 06:49:31Z mvuilleu $
+ * $Id: yocto_serialport.m 23780 2016-04-06 10:27:21Z seb $
  *
  * Implements the high-level API for SerialPort functions
  *
@@ -28,8 +28,8 @@
  *  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
  *  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
  *  INDIRECT OR CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA,
- *  COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY OR 
- *  SERVICES, ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT 
+ *  COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY OR
+ *  SERVICES, ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT
  *  LIMITED TO ANY DEFENSE THEREOF), ANY CLAIMS FOR INDEMNITY OR
  *  CONTRIBUTION, OR OTHER SIMILAR COSTS, WHETHER ASSERTED ON THE
  *  BASIS OF CONTRACT, TORT (INCLUDING NEGLIGENCE), BREACH OF
@@ -53,9 +53,6 @@
           return nil;
     _className = @"SerialPort";
 //--- (YSerialPort attributes initialization)
-    _serialMode = Y_SERIALMODE_INVALID;
-    _protocol = Y_PROTOCOL_INVALID;
-    _voltageLevel = Y_VOLTAGELEVEL_INVALID;
     _rxCount = Y_RXCOUNT_INVALID;
     _txCount = Y_TXCOUNT_INVALID;
     _errCount = Y_ERRCOUNT_INVALID;
@@ -65,6 +62,9 @@
     _currentJob = Y_CURRENTJOB_INVALID;
     _startupJob = Y_STARTUPJOB_INVALID;
     _command = Y_COMMAND_INVALID;
+    _voltageLevel = Y_VOLTAGELEVEL_INVALID;
+    _protocol = Y_PROTOCOL_INVALID;
+    _serialMode = Y_SERIALMODE_INVALID;
     _valueCallbackSerialPort = NULL;
     _rxptr = 0;
 //--- (end of YSerialPort attributes initialization)
@@ -74,10 +74,6 @@
 -(void)  dealloc
 {
 //--- (YSerialPort cleanup)
-    ARC_release(_serialMode);
-    _serialMode = nil;
-    ARC_release(_protocol);
-    _protocol = nil;
     ARC_release(_lastMsg);
     _lastMsg = nil;
     ARC_release(_currentJob);
@@ -86,6 +82,10 @@
     _startupJob = nil;
     ARC_release(_command);
     _command = nil;
+    ARC_release(_protocol);
+    _protocol = nil;
+    ARC_release(_serialMode);
+    _serialMode = nil;
     ARC_dealloc(super);
 //--- (end of YSerialPort cleanup)
 }
@@ -93,25 +93,6 @@
 
 -(int) _parseAttr:(yJsonStateMachine*) j
 {
-    if(!strcmp(j->token, "serialMode")) {
-        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-       ARC_release(_serialMode);
-        _serialMode =  [self _parseString:j];
-        ARC_retain(_serialMode);
-        return 1;
-    }
-    if(!strcmp(j->token, "protocol")) {
-        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-       ARC_release(_protocol);
-        _protocol =  [self _parseString:j];
-        ARC_retain(_protocol);
-        return 1;
-    }
-    if(!strcmp(j->token, "voltageLevel")) {
-        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-        _voltageLevel =  atoi(j->token);
-        return 1;
-    }
     if(!strcmp(j->token, "rxCount")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
         _rxCount =  atoi(j->token);
@@ -165,170 +146,29 @@
         ARC_retain(_command);
         return 1;
     }
+    if(!strcmp(j->token, "voltageLevel")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _voltageLevel =  atoi(j->token);
+        return 1;
+    }
+    if(!strcmp(j->token, "protocol")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+       ARC_release(_protocol);
+        _protocol =  [self _parseString:j];
+        ARC_retain(_protocol);
+        return 1;
+    }
+    if(!strcmp(j->token, "serialMode")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+       ARC_release(_serialMode);
+        _serialMode =  [self _parseString:j];
+        ARC_retain(_serialMode);
+        return 1;
+    }
     return [super _parseAttr:j];
 }
 //--- (end of YSerialPort private methods implementation)
 //--- (YSerialPort public methods implementation)
-/**
- * Returns the serial port communication parameters, as a string such as
- * "9600,8N1". The string includes the baud rate, the number of data bits,
- * the parity, and the number of stop bits. An optional suffix is included
- * if flow control is active: "CtsRts" for hardware handshake, "XOnXOff"
- * for logical flow control and "Simplex" for acquiring a shared bus using
- * the RTS line (as used by some RS485 adapters for instance).
- *
- * @return a string corresponding to the serial port communication parameters, as a string such as
- *         "9600,8N1"
- *
- * On failure, throws an exception or returns Y_SERIALMODE_INVALID.
- */
--(NSString*) get_serialMode
-{
-    if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
-            return Y_SERIALMODE_INVALID;
-        }
-    }
-    return _serialMode;
-}
-
-
--(NSString*) serialMode
-{
-    return [self get_serialMode];
-}
-
-/**
- * Changes the serial port communication parameters, with a string such as
- * "9600,8N1". The string includes the baud rate, the number of data bits,
- * the parity, and the number of stop bits. An optional suffix can be added
- * to enable flow control: "CtsRts" for hardware handshake, "XOnXOff"
- * for logical flow control and "Simplex" for acquiring a shared bus using
- * the RTS line (as used by some RS485 adapters for instance).
- *
- * @param newval : a string corresponding to the serial port communication parameters, with a string such as
- *         "9600,8N1"
- *
- * @return YAPI_SUCCESS if the call succeeds.
- *
- * On failure, throws an exception or returns a negative error code.
- */
--(int) set_serialMode:(NSString*) newval
-{
-    return [self setSerialMode:newval];
-}
--(int) setSerialMode:(NSString*) newval
-{
-    NSString* rest_val;
-    rest_val = newval;
-    return [self _setAttr:@"serialMode" :rest_val];
-}
-/**
- * Returns the type of protocol used over the serial line, as a string.
- * Possible values are "Line" for ASCII messages separated by CR and/or LF,
- * "Frame:[timeout]ms" for binary messages separated by a delay time,
- * "Modbus-ASCII" for MODBUS messages in ASCII mode,
- * "Modbus-RTU" for MODBUS messages in RTU mode,
- * "Char" for a continuous ASCII stream or
- * "Byte" for a continuous binary stream.
- *
- * @return a string corresponding to the type of protocol used over the serial line, as a string
- *
- * On failure, throws an exception or returns Y_PROTOCOL_INVALID.
- */
--(NSString*) get_protocol
-{
-    if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
-            return Y_PROTOCOL_INVALID;
-        }
-    }
-    return _protocol;
-}
-
-
--(NSString*) protocol
-{
-    return [self get_protocol];
-}
-
-/**
- * Changes the type of protocol used over the serial line.
- * Possible values are "Line" for ASCII messages separated by CR and/or LF,
- * "Frame:[timeout]ms" for binary messages separated by a delay time,
- * "Modbus-ASCII" for MODBUS messages in ASCII mode,
- * "Modbus-RTU" for MODBUS messages in RTU mode,
- * "Char" for a continuous ASCII stream or
- * "Byte" for a continuous binary stream.
- * The suffix "/[wait]ms" can be added to reduce the transmit rate so that there
- * is always at lest the specified number of milliseconds between each bytes sent.
- *
- * @param newval : a string corresponding to the type of protocol used over the serial line
- *
- * @return YAPI_SUCCESS if the call succeeds.
- *
- * On failure, throws an exception or returns a negative error code.
- */
--(int) set_protocol:(NSString*) newval
-{
-    return [self setProtocol:newval];
-}
--(int) setProtocol:(NSString*) newval
-{
-    NSString* rest_val;
-    rest_val = newval;
-    return [self _setAttr:@"protocol" :rest_val];
-}
-/**
- * Returns the voltage level used on the serial line.
- *
- * @return a value among Y_VOLTAGELEVEL_OFF, Y_VOLTAGELEVEL_TTL3V, Y_VOLTAGELEVEL_TTL3VR,
- * Y_VOLTAGELEVEL_TTL5V, Y_VOLTAGELEVEL_TTL5VR, Y_VOLTAGELEVEL_RS232 and Y_VOLTAGELEVEL_RS485
- * corresponding to the voltage level used on the serial line
- *
- * On failure, throws an exception or returns Y_VOLTAGELEVEL_INVALID.
- */
--(Y_VOLTAGELEVEL_enum) get_voltageLevel
-{
-    if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
-            return Y_VOLTAGELEVEL_INVALID;
-        }
-    }
-    return _voltageLevel;
-}
-
-
--(Y_VOLTAGELEVEL_enum) voltageLevel
-{
-    return [self get_voltageLevel];
-}
-
-/**
- * Changes the voltage type used on the serial line. Valid
- * values  will depend on the Yoctopuce device model featuring
- * the serial port feature.  Check your device documentation
- * to find out which values are valid for that specific model.
- * Trying to set an invalid value will have no effect.
- *
- * @param newval : a value among Y_VOLTAGELEVEL_OFF, Y_VOLTAGELEVEL_TTL3V, Y_VOLTAGELEVEL_TTL3VR,
- * Y_VOLTAGELEVEL_TTL5V, Y_VOLTAGELEVEL_TTL5VR, Y_VOLTAGELEVEL_RS232 and Y_VOLTAGELEVEL_RS485
- * corresponding to the voltage type used on the serial line
- *
- * @return YAPI_SUCCESS if the call succeeds.
- *
- * On failure, throws an exception or returns a negative error code.
- */
--(int) set_voltageLevel:(Y_VOLTAGELEVEL_enum) newval
-{
-    return [self setVoltageLevel:newval];
-}
--(int) setVoltageLevel:(Y_VOLTAGELEVEL_enum) newval
-{
-    NSString* rest_val;
-    rest_val = [NSString stringWithFormat:@"%d", newval];
-    return [self _setAttr:@"voltageLevel" :rest_val];
-}
 /**
  * Returns the total number of bytes received since last reset.
  *
@@ -576,6 +416,166 @@
     return [self _setAttr:@"command" :rest_val];
 }
 /**
+ * Returns the voltage level used on the serial line.
+ *
+ * @return a value among Y_VOLTAGELEVEL_OFF, Y_VOLTAGELEVEL_TTL3V, Y_VOLTAGELEVEL_TTL3VR,
+ * Y_VOLTAGELEVEL_TTL5V, Y_VOLTAGELEVEL_TTL5VR, Y_VOLTAGELEVEL_RS232 and Y_VOLTAGELEVEL_RS485
+ * corresponding to the voltage level used on the serial line
+ *
+ * On failure, throws an exception or returns Y_VOLTAGELEVEL_INVALID.
+ */
+-(Y_VOLTAGELEVEL_enum) get_voltageLevel
+{
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_VOLTAGELEVEL_INVALID;
+        }
+    }
+    return _voltageLevel;
+}
+
+
+-(Y_VOLTAGELEVEL_enum) voltageLevel
+{
+    return [self get_voltageLevel];
+}
+
+/**
+ * Changes the voltage type used on the serial line. Valid
+ * values  will depend on the Yoctopuce device model featuring
+ * the serial port feature.  Check your device documentation
+ * to find out which values are valid for that specific model.
+ * Trying to set an invalid value will have no effect.
+ *
+ * @param newval : a value among Y_VOLTAGELEVEL_OFF, Y_VOLTAGELEVEL_TTL3V, Y_VOLTAGELEVEL_TTL3VR,
+ * Y_VOLTAGELEVEL_TTL5V, Y_VOLTAGELEVEL_TTL5VR, Y_VOLTAGELEVEL_RS232 and Y_VOLTAGELEVEL_RS485
+ * corresponding to the voltage type used on the serial line
+ *
+ * @return YAPI_SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) set_voltageLevel:(Y_VOLTAGELEVEL_enum) newval
+{
+    return [self setVoltageLevel:newval];
+}
+-(int) setVoltageLevel:(Y_VOLTAGELEVEL_enum) newval
+{
+    NSString* rest_val;
+    rest_val = [NSString stringWithFormat:@"%d", newval];
+    return [self _setAttr:@"voltageLevel" :rest_val];
+}
+/**
+ * Returns the type of protocol used over the serial line, as a string.
+ * Possible values are "Line" for ASCII messages separated by CR and/or LF,
+ * "Frame:[timeout]ms" for binary messages separated by a delay time,
+ * "Modbus-ASCII" for MODBUS messages in ASCII mode,
+ * "Modbus-RTU" for MODBUS messages in RTU mode,
+ * "Char" for a continuous ASCII stream or
+ * "Byte" for a continuous binary stream.
+ *
+ * @return a string corresponding to the type of protocol used over the serial line, as a string
+ *
+ * On failure, throws an exception or returns Y_PROTOCOL_INVALID.
+ */
+-(NSString*) get_protocol
+{
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_PROTOCOL_INVALID;
+        }
+    }
+    return _protocol;
+}
+
+
+-(NSString*) protocol
+{
+    return [self get_protocol];
+}
+
+/**
+ * Changes the type of protocol used over the serial line.
+ * Possible values are "Line" for ASCII messages separated by CR and/or LF,
+ * "Frame:[timeout]ms" for binary messages separated by a delay time,
+ * "Modbus-ASCII" for MODBUS messages in ASCII mode,
+ * "Modbus-RTU" for MODBUS messages in RTU mode,
+ * "Char" for a continuous ASCII stream or
+ * "Byte" for a continuous binary stream.
+ * The suffix "/[wait]ms" can be added to reduce the transmit rate so that there
+ * is always at lest the specified number of milliseconds between each bytes sent.
+ *
+ * @param newval : a string corresponding to the type of protocol used over the serial line
+ *
+ * @return YAPI_SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) set_protocol:(NSString*) newval
+{
+    return [self setProtocol:newval];
+}
+-(int) setProtocol:(NSString*) newval
+{
+    NSString* rest_val;
+    rest_val = newval;
+    return [self _setAttr:@"protocol" :rest_val];
+}
+/**
+ * Returns the serial port communication parameters, as a string such as
+ * "9600,8N1". The string includes the baud rate, the number of data bits,
+ * the parity, and the number of stop bits. An optional suffix is included
+ * if flow control is active: "CtsRts" for hardware handshake, "XOnXOff"
+ * for logical flow control and "Simplex" for acquiring a shared bus using
+ * the RTS line (as used by some RS485 adapters for instance).
+ *
+ * @return a string corresponding to the serial port communication parameters, as a string such as
+ *         "9600,8N1"
+ *
+ * On failure, throws an exception or returns Y_SERIALMODE_INVALID.
+ */
+-(NSString*) get_serialMode
+{
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_SERIALMODE_INVALID;
+        }
+    }
+    return _serialMode;
+}
+
+
+-(NSString*) serialMode
+{
+    return [self get_serialMode];
+}
+
+/**
+ * Changes the serial port communication parameters, with a string such as
+ * "9600,8N1". The string includes the baud rate, the number of data bits,
+ * the parity, and the number of stop bits. An optional suffix can be added
+ * to enable flow control: "CtsRts" for hardware handshake, "XOnXOff"
+ * for logical flow control and "Simplex" for acquiring a shared bus using
+ * the RTS line (as used by some RS485 adapters for instance).
+ *
+ * @param newval : a string corresponding to the serial port communication parameters, with a string such as
+ *         "9600,8N1"
+ *
+ * @return YAPI_SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) set_serialMode:(NSString*) newval
+{
+    return [self setSerialMode:newval];
+}
+-(int) setSerialMode:(NSString*) newval
+{
+    NSString* rest_val;
+    rest_val = newval;
+    return [self _setAttr:@"serialMode" :rest_val];
+}
+/**
  * Retrieves $AFUNCTION$ for a given identifier.
  * The identifier can be specified using several formats:
  * <ul>
@@ -666,40 +666,6 @@
     _rxptr = 0;
     // may throw an exception
     return [self sendCommand:@"Z"];
-}
-
-/**
- * Manually sets the state of the RTS line. This function has no effect when
- * hardware handshake is enabled, as the RTS line is driven automatically.
- *
- * @param val : 1 to turn RTS on, 0 to turn RTS off
- *
- * @return YAPI_SUCCESS if the call succeeds.
- *
- * On failure, throws an exception or returns a negative error code.
- */
--(int) set_RTS:(int)val
-{
-    return [self sendCommand:[NSString stringWithFormat:@"R%d",val]];
-}
-
-/**
- * Reads the level of the CTS line. The CTS line is usually driven by
- * the RTS signal of the connected serial device.
- *
- * @return 1 if the CTS line is high, 0 if the CTS line is low.
- *
- * On failure, throws an exception or returns a negative error code.
- */
--(int) get_CTS
-{
-    NSMutableData* buff;
-    int res;
-    // may throw an exception
-    buff = [self _download:@"cts.txt"];
-    if (!((int)[buff length] == 1)) {[self _throw: YAPI_IO_ERROR: @"invalid CTS reply"]; return YAPI_IO_ERROR;}
-    res = (((u8*)([buff bytes]))[0]) - 48;
-    return res;
 }
 
 /**
@@ -862,22 +828,6 @@
     }
     // send string using file upload
     return [self _upload:@"txdata" :buff];
-}
-
-/**
- * Sends a MODBUS message (provided as a hexadecimal string) to the serial port.
- * The message must start with the slave address. The MODBUS CRC/LRC is
- * automatically added by the function. This function does not wait for a reply.
- *
- * @param hexString : a hexadecimal message string, including device address but no CRC/LRC
- *
- * @return YAPI_SUCCESS if the call succeeds.
- *
- * On failure, throws an exception or returns a negative error code.
- */
--(int) writeMODBUS:(NSString*)hexString
-{
-    return [self sendCommand:[NSString stringWithFormat:@":%@",hexString]];
 }
 
 /**
@@ -1085,7 +1035,7 @@
 /**
  * Reads a single line (or message) from the receive buffer, starting at current stream position.
  * This function is intended to be used when the serial port is configured for a message protocol,
- * such as 'Line' mode or MODBUS protocols.
+ * such as 'Line' mode or frame protocols.
  *
  * If data at current stream position is not available anymore in the receive buffer,
  * the function returns the oldest available line and moves the stream position just after.
@@ -1170,7 +1120,7 @@
 
 /**
  * Changes the current internal stream position to the specified value. This function
- * does not affect the device, it only changes the value stored in the YSerialPort object
+ * does not affect the device, it only changes the value stored in the API object
  * for the next read operations.
  *
  * @param absPos : the absolute position index for next read operations.
@@ -1184,7 +1134,7 @@
 }
 
 /**
- * Returns the current absolute stream position pointer of the YSerialPort object.
+ * Returns the current absolute stream position pointer of the API object.
  *
  * @return the absolute position index for next read operations.
  */
@@ -1195,7 +1145,7 @@
 
 /**
  * Returns the number of bytes available to read in the input buffer starting from the
- * current absolute stream position pointer of the YSerialPort object.
+ * current absolute stream position pointer of the API object.
  *
  * @return the number of bytes available to read
  */
@@ -1249,6 +1199,89 @@
     }
     res = [self _json_get_string:[NSMutableData dataWithData:[[msgarr objectAtIndex:0] dataUsingEncoding:NSISOLatin1StringEncoding]]];
     return res;
+}
+
+/**
+ * Saves the job definition string (JSON data) into a job file.
+ * The job file can be later enabled using selectJob().
+ *
+ * @param jobfile : name of the job file to save on the device filesystem
+ * @param jsonDef : a string containing a JSON definition of the job
+ *
+ * @return YAPI_SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) uploadJob:(NSString*)jobfile :(NSString*)jsonDef
+{
+    [self _upload:jobfile :[NSMutableData dataWithData:[jsonDef dataUsingEncoding:NSISOLatin1StringEncoding]]];
+    return YAPI_SUCCESS;
+}
+
+/**
+ * Load and start processing the specified job file. The file must have
+ * been previously created using the user interface or uploaded on the
+ * device filesystem using the uploadJob() function.
+ *
+ * @param jobfile : name of the job file (on the device filesystem)
+ *
+ * @return YAPI_SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) selectJob:(NSString*)jobfile
+{
+    return [self set_currentJob:jobfile];
+}
+
+/**
+ * Manually sets the state of the RTS line. This function has no effect when
+ * hardware handshake is enabled, as the RTS line is driven automatically.
+ *
+ * @param val : 1 to turn RTS on, 0 to turn RTS off
+ *
+ * @return YAPI_SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) set_RTS:(int)val
+{
+    return [self sendCommand:[NSString stringWithFormat:@"R%d",val]];
+}
+
+/**
+ * Reads the level of the CTS line. The CTS line is usually driven by
+ * the RTS signal of the connected serial device.
+ *
+ * @return 1 if the CTS line is high, 0 if the CTS line is low.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) get_CTS
+{
+    NSMutableData* buff;
+    int res;
+    // may throw an exception
+    buff = [self _download:@"cts.txt"];
+    if (!((int)[buff length] == 1)) {[self _throw: YAPI_IO_ERROR: @"invalid CTS reply"]; return YAPI_IO_ERROR;}
+    res = (((u8*)([buff bytes]))[0]) - 48;
+    return res;
+}
+
+/**
+ * Sends a MODBUS message (provided as a hexadecimal string) to the serial port.
+ * The message must start with the slave address. The MODBUS CRC/LRC is
+ * automatically added by the function. This function does not wait for a reply.
+ *
+ * @param hexString : a hexadecimal message string, including device address but no CRC/LRC
+ *
+ * @return YAPI_SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) writeMODBUS:(NSString*)hexString
+{
+    return [self sendCommand:[NSString stringWithFormat:@":%@",hexString]];
 }
 
 /**
@@ -1767,39 +1800,6 @@
         regpos = regpos + 1;
     }
     return res;
-}
-
-/**
- * Saves the job definition string (JSON data) into a job file.
- * The job file can be later enabled using selectJob().
- *
- * @param jobfile : name of the job file to save on the device filesystem
- * @param jsonDef : a string containing a JSON definition of the job
- *
- * @return YAPI_SUCCESS if the call succeeds.
- *
- * On failure, throws an exception or returns a negative error code.
- */
--(int) uploadJob:(NSString*)jobfile :(NSString*)jsonDef
-{
-    [self _upload:jobfile :[NSMutableData dataWithData:[jsonDef dataUsingEncoding:NSISOLatin1StringEncoding]]];
-    return YAPI_SUCCESS;
-}
-
-/**
- * Load and start processing the specified job file. The file must have
- * been previously created using the user interface or uploaded on the
- * device filesystem using the uploadJob() function.
- *
- * @param jobfile : name of the job file (on the device filesystem)
- *
- * @return YAPI_SUCCESS if the call succeeds.
- *
- * On failure, throws an exception or returns a negative error code.
- */
--(int) selectJob:(NSString*)jobfile
-{
-    return [self set_currentJob:jobfile];
 }
 
 

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_led.h 19608 2015-03-05 10:37:24Z seb $
+ * $Id: yocto_led.h 23578 2016-03-22 23:00:41Z mvuilleu $
  *
  * Declares yFindLed(), the high-level API for Led functions
  *
@@ -28,8 +28,8 @@
  *  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
  *  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
  *  INDIRECT OR CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA,
- *  COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY OR 
- *  SERVICES, ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT 
+ *  COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY OR
+ *  SERVICES, ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT
  *  LIMITED TO ANY DEFENSE THEREOF), ANY CLAIMS FOR INDEMNITY OR
  *  CONTRIBUTION, OR OTHER SIMILAR COSTS, WHETHER ASSERTED ON THE
  *  BASIS OF CONTRACT, TORT (INCLUDING NEGLIGENCE), BREACH OF
@@ -72,7 +72,7 @@ typedef enum {
  * YLed Class: Led function interface
  *
  * Yoctopuce application programming interface
- * allows you not only to drive the intensity of the led, but also to
+ * allows you not only to drive the intensity of the LED, but also to
  * have it blink at various preset frequencies.
  */
 @interface YLed : YFunction
@@ -96,9 +96,9 @@ typedef enum {
 //--- (end of YLed private methods declaration)
 //--- (YLed public methods declaration)
 /**
- * Returns the current led state.
+ * Returns the current LED state.
  *
- * @return either Y_POWER_OFF or Y_POWER_ON, according to the current led state
+ * @return either Y_POWER_OFF or Y_POWER_ON, according to the current LED state
  *
  * On failure, throws an exception or returns Y_POWER_INVALID.
  */
@@ -107,9 +107,9 @@ typedef enum {
 
 -(Y_POWER_enum) power;
 /**
- * Changes the state of the led.
+ * Changes the state of the LED.
  *
- * @param newval : either Y_POWER_OFF or Y_POWER_ON, according to the state of the led
+ * @param newval : either Y_POWER_OFF or Y_POWER_ON, according to the state of the LED
  *
  * @return YAPI_SUCCESS if the call succeeds.
  *
@@ -119,9 +119,9 @@ typedef enum {
 -(int)     setPower:(Y_POWER_enum) newval;
 
 /**
- * Returns the current led intensity (in per cent).
+ * Returns the current LED intensity (in per cent).
  *
- * @return an integer corresponding to the current led intensity (in per cent)
+ * @return an integer corresponding to the current LED intensity (in per cent)
  *
  * On failure, throws an exception or returns Y_LUMINOSITY_INVALID.
  */
@@ -130,9 +130,9 @@ typedef enum {
 
 -(int) luminosity;
 /**
- * Changes the current led intensity (in per cent).
+ * Changes the current LED intensity (in per cent).
  *
- * @param newval : an integer corresponding to the current led intensity (in per cent)
+ * @param newval : an integer corresponding to the current LED intensity (in per cent)
  *
  * @return YAPI_SUCCESS if the call succeeds.
  *
@@ -142,10 +142,10 @@ typedef enum {
 -(int)     setLuminosity:(int) newval;
 
 /**
- * Returns the current led signaling mode.
+ * Returns the current LED signaling mode.
  *
  * @return a value among Y_BLINKING_STILL, Y_BLINKING_RELAX, Y_BLINKING_AWARE, Y_BLINKING_RUN,
- * Y_BLINKING_CALL and Y_BLINKING_PANIC corresponding to the current led signaling mode
+ * Y_BLINKING_CALL and Y_BLINKING_PANIC corresponding to the current LED signaling mode
  *
  * On failure, throws an exception or returns Y_BLINKING_INVALID.
  */
@@ -154,10 +154,10 @@ typedef enum {
 
 -(Y_BLINKING_enum) blinking;
 /**
- * Changes the current led signaling mode.
+ * Changes the current LED signaling mode.
  *
  * @param newval : a value among Y_BLINKING_STILL, Y_BLINKING_RELAX, Y_BLINKING_AWARE, Y_BLINKING_RUN,
- * Y_BLINKING_CALL and Y_BLINKING_PANIC corresponding to the current led signaling mode
+ * Y_BLINKING_CALL and Y_BLINKING_PANIC corresponding to the current LED signaling mode
  *
  * @return YAPI_SUCCESS if the call succeeds.
  *
@@ -167,7 +167,7 @@ typedef enum {
 -(int)     setBlinking:(Y_BLINKING_enum) newval;
 
 /**
- * Retrieves a led for a given identifier.
+ * Retrieves a LED for a given identifier.
  * The identifier can be specified using several formats:
  * <ul>
  * <li>FunctionLogicalName</li>
@@ -177,17 +177,17 @@ typedef enum {
  * <li>ModuleLogicalName.FunctionLogicalName</li>
  * </ul>
  *
- * This function does not require that the led is online at the time
+ * This function does not require that the LED is online at the time
  * it is invoked. The returned object is nevertheless valid.
- * Use the method YLed.isOnline() to test if the led is
+ * Use the method YLed.isOnline() to test if the LED is
  * indeed online at a given time. In case of ambiguity when looking for
- * a led by logical name, no error is notified: the first instance
+ * a LED by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
  *
- * @param func : a string that uniquely characterizes the led
+ * @param func : a string that uniquely characterizes the LED
  *
- * @return a YLed object allowing you to drive the led.
+ * @return a YLed object allowing you to drive the LED.
  */
 +(YLed*)     FindLed:(NSString*)func;
 
@@ -208,20 +208,20 @@ typedef enum {
 
 
 /**
- * Continues the enumeration of leds started using yFirstLed().
+ * Continues the enumeration of LEDs started using yFirstLed().
  *
  * @return a pointer to a YLed object, corresponding to
- *         a led currently online, or a null pointer
- *         if there are no more leds to enumerate.
+ *         a LED currently online, or a null pointer
+ *         if there are no more LEDs to enumerate.
  */
 -(YLed*) nextLed;
 /**
- * Starts the enumeration of leds currently accessible.
+ * Starts the enumeration of LEDs currently accessible.
  * Use the method YLed.nextLed() to iterate on
- * next leds.
+ * next LEDs.
  *
  * @return a pointer to a YLed object, corresponding to
- *         the first led currently online, or a null pointer
+ *         the first LED currently online, or a null pointer
  *         if there are none.
  */
 +(YLed*) FirstLed;
@@ -231,7 +231,7 @@ typedef enum {
 
 //--- (Led functions declaration)
 /**
- * Retrieves a led for a given identifier.
+ * Retrieves a LED for a given identifier.
  * The identifier can be specified using several formats:
  * <ul>
  * <li>FunctionLogicalName</li>
@@ -241,26 +241,26 @@ typedef enum {
  * <li>ModuleLogicalName.FunctionLogicalName</li>
  * </ul>
  *
- * This function does not require that the led is online at the time
+ * This function does not require that the LED is online at the time
  * it is invoked. The returned object is nevertheless valid.
- * Use the method YLed.isOnline() to test if the led is
+ * Use the method YLed.isOnline() to test if the LED is
  * indeed online at a given time. In case of ambiguity when looking for
- * a led by logical name, no error is notified: the first instance
+ * a LED by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
  *
- * @param func : a string that uniquely characterizes the led
+ * @param func : a string that uniquely characterizes the LED
  *
- * @return a YLed object allowing you to drive the led.
+ * @return a YLed object allowing you to drive the LED.
  */
 YLed* yFindLed(NSString* func);
 /**
- * Starts the enumeration of leds currently accessible.
+ * Starts the enumeration of LEDs currently accessible.
  * Use the method YLed.nextLed() to iterate on
- * next leds.
+ * next LEDs.
  *
  * @return a pointer to a YLed object, corresponding to
- *         the first led currently online, or a null pointer
+ *         the first LED currently online, or a null pointer
  *         if there are none.
  */
 YLed* yFirstLed(void);

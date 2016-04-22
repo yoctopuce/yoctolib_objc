@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_led.m 22191 2015-12-02 06:49:31Z mvuilleu $
+ * $Id: yocto_led.m 23578 2016-03-22 23:00:41Z mvuilleu $
  *
  * Implements the high-level API for Led functions
  *
@@ -28,8 +28,8 @@
  *  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
  *  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
  *  INDIRECT OR CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA,
- *  COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY OR 
- *  SERVICES, ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT 
+ *  COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY OR
+ *  SERVICES, ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT
  *  LIMITED TO ANY DEFENSE THEREOF), ANY CLAIMS FOR INDEMNITY OR
  *  CONTRIBUTION, OR OTHER SIMILAR COSTS, WHETHER ASSERTED ON THE
  *  BASIS OF CONTRACT, TORT (INCLUDING NEGLIGENCE), BREACH OF
@@ -91,9 +91,9 @@
 //--- (end of YLed private methods implementation)
 //--- (YLed public methods implementation)
 /**
- * Returns the current led state.
+ * Returns the current LED state.
  *
- * @return either Y_POWER_OFF or Y_POWER_ON, according to the current led state
+ * @return either Y_POWER_OFF or Y_POWER_ON, according to the current LED state
  *
  * On failure, throws an exception or returns Y_POWER_INVALID.
  */
@@ -114,9 +114,9 @@
 }
 
 /**
- * Changes the state of the led.
+ * Changes the state of the LED.
  *
- * @param newval : either Y_POWER_OFF or Y_POWER_ON, according to the state of the led
+ * @param newval : either Y_POWER_OFF or Y_POWER_ON, according to the state of the LED
  *
  * @return YAPI_SUCCESS if the call succeeds.
  *
@@ -133,9 +133,9 @@
     return [self _setAttr:@"power" :rest_val];
 }
 /**
- * Returns the current led intensity (in per cent).
+ * Returns the current LED intensity (in per cent).
  *
- * @return an integer corresponding to the current led intensity (in per cent)
+ * @return an integer corresponding to the current LED intensity (in per cent)
  *
  * On failure, throws an exception or returns Y_LUMINOSITY_INVALID.
  */
@@ -156,9 +156,9 @@
 }
 
 /**
- * Changes the current led intensity (in per cent).
+ * Changes the current LED intensity (in per cent).
  *
- * @param newval : an integer corresponding to the current led intensity (in per cent)
+ * @param newval : an integer corresponding to the current LED intensity (in per cent)
  *
  * @return YAPI_SUCCESS if the call succeeds.
  *
@@ -175,10 +175,10 @@
     return [self _setAttr:@"luminosity" :rest_val];
 }
 /**
- * Returns the current led signaling mode.
+ * Returns the current LED signaling mode.
  *
  * @return a value among Y_BLINKING_STILL, Y_BLINKING_RELAX, Y_BLINKING_AWARE, Y_BLINKING_RUN,
- * Y_BLINKING_CALL and Y_BLINKING_PANIC corresponding to the current led signaling mode
+ * Y_BLINKING_CALL and Y_BLINKING_PANIC corresponding to the current LED signaling mode
  *
  * On failure, throws an exception or returns Y_BLINKING_INVALID.
  */
@@ -199,10 +199,10 @@
 }
 
 /**
- * Changes the current led signaling mode.
+ * Changes the current LED signaling mode.
  *
  * @param newval : a value among Y_BLINKING_STILL, Y_BLINKING_RELAX, Y_BLINKING_AWARE, Y_BLINKING_RUN,
- * Y_BLINKING_CALL and Y_BLINKING_PANIC corresponding to the current led signaling mode
+ * Y_BLINKING_CALL and Y_BLINKING_PANIC corresponding to the current LED signaling mode
  *
  * @return YAPI_SUCCESS if the call succeeds.
  *

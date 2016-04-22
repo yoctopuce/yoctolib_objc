@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_cellular.m 21511 2015-09-14 16:25:19Z seb $
+ * $Id: yocto_cellular.m 23960 2016-04-15 21:30:18Z mvuilleu $
  *
  * Implements the high-level API for Cellular functions
  *
@@ -132,13 +132,16 @@
     _linkQuality = Y_LINKQUALITY_INVALID;
     _cellOperator = Y_CELLOPERATOR_INVALID;
     _cellIdentifier = Y_CELLIDENTIFIER_INVALID;
+    _cellType = Y_CELLTYPE_INVALID;
     _imsi = Y_IMSI_INVALID;
     _message = Y_MESSAGE_INVALID;
     _pin = Y_PIN_INVALID;
     _lockedOperator = Y_LOCKEDOPERATOR_INVALID;
+    _airplaneMode = Y_AIRPLANEMODE_INVALID;
     _enableData = Y_ENABLEDATA_INVALID;
     _apn = Y_APN_INVALID;
     _apnSecret = Y_APNSECRET_INVALID;
+    _pingInterval = Y_PINGINTERVAL_INVALID;
     _command = Y_COMMAND_INVALID;
     _valueCallbackCellular = NULL;
 //--- (end of generated code: YCellular attributes initialization)
@@ -192,6 +195,11 @@
         ARC_retain(_cellIdentifier);
         return 1;
     }
+    if(!strcmp(j->token, "cellType")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _cellType =  atoi(j->token);
+        return 1;
+    }
     if(!strcmp(j->token, "imsi")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
        ARC_release(_imsi);
@@ -220,6 +228,11 @@
         ARC_retain(_lockedOperator);
         return 1;
     }
+    if(!strcmp(j->token, "airplaneMode")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _airplaneMode =  (Y_AIRPLANEMODE_enum)atoi(j->token);
+        return 1;
+    }
     if(!strcmp(j->token, "enableData")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
         _enableData =  atoi(j->token);
@@ -237,6 +250,11 @@
        ARC_release(_apnSecret);
         _apnSecret =  [self _parseString:j];
         ARC_retain(_apnSecret);
+        return 1;
+    }
+    if(!strcmp(j->token, "pingInterval")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _pingInterval =  atoi(j->token);
         return 1;
     }
     if(!strcmp(j->token, "command")) {
@@ -316,6 +334,29 @@
 -(NSString*) cellIdentifier
 {
     return [self get_cellIdentifier];
+}
+/**
+ * Active cellular connection type.
+ *
+ * @return a value among Y_CELLTYPE_GPRS, Y_CELLTYPE_EGPRS, Y_CELLTYPE_WCDMA, Y_CELLTYPE_HSDPA,
+ * Y_CELLTYPE_NONE and Y_CELLTYPE_CDMA
+ *
+ * On failure, throws an exception or returns Y_CELLTYPE_INVALID.
+ */
+-(Y_CELLTYPE_enum) get_cellType
+{
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_CELLTYPE_INVALID;
+        }
+    }
+    return _cellType;
+}
+
+
+-(Y_CELLTYPE_enum) cellType
+{
+    return [self get_cellType];
 }
 /**
  * Returns an opaque string if a PIN code has been configured in the device to access
@@ -470,6 +511,50 @@
     return [self _setAttr:@"lockedOperator" :rest_val];
 }
 /**
+ * Returns true if the airplane mode is active (radio turned off).
+ *
+ * @return either Y_AIRPLANEMODE_OFF or Y_AIRPLANEMODE_ON, according to true if the airplane mode is
+ * active (radio turned off)
+ *
+ * On failure, throws an exception or returns Y_AIRPLANEMODE_INVALID.
+ */
+-(Y_AIRPLANEMODE_enum) get_airplaneMode
+{
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_AIRPLANEMODE_INVALID;
+        }
+    }
+    return _airplaneMode;
+}
+
+
+-(Y_AIRPLANEMODE_enum) airplaneMode
+{
+    return [self get_airplaneMode];
+}
+
+/**
+ * Changes the activation state of airplane mode (radio turned off).
+ *
+ * @param newval : either Y_AIRPLANEMODE_OFF or Y_AIRPLANEMODE_ON, according to the activation state
+ * of airplane mode (radio turned off)
+ *
+ * @return YAPI_SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) set_airplaneMode:(Y_AIRPLANEMODE_enum) newval
+{
+    return [self setAirplaneMode:newval];
+}
+-(int) setAirplaneMode:(Y_AIRPLANEMODE_enum) newval
+{
+    NSString* rest_val;
+    rest_val = (newval ? @"1" : @"0");
+    return [self _setAttr:@"airplaneMode" :rest_val];
+}
+/**
  * Returns the condition for enabling IP data services (GPRS).
  * When data services are disabled, SMS are the only mean of communication.
  *
@@ -598,6 +683,48 @@
     NSString* rest_val;
     rest_val = newval;
     return [self _setAttr:@"apnSecret" :rest_val];
+}
+/**
+ * Returns the automated connectivity check interval, in seconds.
+ *
+ * @return an integer corresponding to the automated connectivity check interval, in seconds
+ *
+ * On failure, throws an exception or returns Y_PINGINTERVAL_INVALID.
+ */
+-(int) get_pingInterval
+{
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_PINGINTERVAL_INVALID;
+        }
+    }
+    return _pingInterval;
+}
+
+
+-(int) pingInterval
+{
+    return [self get_pingInterval];
+}
+
+/**
+ * Changes the automated connectivity check interval, in seconds.
+ *
+ * @param newval : an integer corresponding to the automated connectivity check interval, in seconds
+ *
+ * @return YAPI_SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) set_pingInterval:(int) newval
+{
+    return [self setPingInterval:newval];
+}
+-(int) setPingInterval:(int) newval
+{
+    NSString* rest_val;
+    rest_val = [NSString stringWithFormat:@"%d", newval];
+    return [self _setAttr:@"pingInterval" :rest_val];
 }
 -(NSString*) get_command
 {

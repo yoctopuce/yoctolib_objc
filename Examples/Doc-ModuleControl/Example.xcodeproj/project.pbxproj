@@ -45,6 +45,8 @@
 		B8AB28FF1A94D7150094AB3F /* yocto_latitude.m in Sources */ = {isa = PBXBuildFile; fileRef = B8AB28F91A94D7150094AB3F /* yocto_latitude.m */; };
 		B8AB29001A94D7150094AB3F /* yocto_longitude.m in Sources */ = {isa = PBXBuildFile; fileRef = B8AB28FB1A94D7150094AB3F /* yocto_longitude.m */; };
 		B8D5FCEA1C047A5B00E214BA /* yocto_currentloopoutput.m in Sources */ = {isa = PBXBuildFile; fileRef = B8D5FCE91C047A5B00E214BA /* yocto_currentloopoutput.m */; };
+		B8DCC6961CC93C1E00553725 /* yocto_colorledcluster.m in Sources */ = {isa = PBXBuildFile; fileRef = B8DCC6951CC93C1E00553725 /* yocto_colorledcluster.m */; };
+		B8DCC6991CC93C2E00553725 /* yocto_spiport.m in Sources */ = {isa = PBXBuildFile; fileRef = B8DCC6981CC93C2E00553725 /* yocto_spiport.m */; };
 		B8DD8BDB14A9360E008A9E8F /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B8DD8BDA14A9360E008A9E8F /* Foundation.framework */; };
 		B8DD8BDE14A9360E008A9E8F /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = B8DD8BDD14A9360E008A9E8F /* main.m */; };
 		B8DD8C0514A936EF008A9E8F /* yocto_anbutton.m in Sources */ = {isa = PBXBuildFile; fileRef = B8DD8BEA14A936EF008A9E8F /* yocto_anbutton.m */; };
@@ -165,6 +167,10 @@
 		B8AB28FB1A94D7150094AB3F /* yocto_longitude.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = yocto_longitude.m; path = ../../../Sources/yocto_longitude.m; sourceTree = "<group>"; };
 		B8D5FCE81C047A5B00E214BA /* yocto_currentloopoutput.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yocto_currentloopoutput.h; path = ../../../Sources/yocto_currentloopoutput.h; sourceTree = "<group>"; };
 		B8D5FCE91C047A5B00E214BA /* yocto_currentloopoutput.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = yocto_currentloopoutput.m; path = ../../../Sources/yocto_currentloopoutput.m; sourceTree = "<group>"; };
+		B8DCC6941CC93C1E00553725 /* yocto_colorledcluster.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yocto_colorledcluster.h; path = ../../../Sources/yocto_colorledcluster.h; sourceTree = "<group>"; };
+		B8DCC6951CC93C1E00553725 /* yocto_colorledcluster.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = yocto_colorledcluster.m; path = ../../../Sources/yocto_colorledcluster.m; sourceTree = "<group>"; };
+		B8DCC6971CC93C2E00553725 /* yocto_spiport.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yocto_spiport.h; path = ../../../Sources/yocto_spiport.h; sourceTree = "<group>"; };
+		B8DCC6981CC93C2E00553725 /* yocto_spiport.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = yocto_spiport.m; path = ../../../Sources/yocto_spiport.m; sourceTree = "<group>"; };
 		B8DD8BD614A9360E008A9E8F /* Example */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Example; sourceTree = BUILT_PRODUCTS_DIR; };
 		B8DD8BDA14A9360E008A9E8F /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		B8DD8BDD14A9360E008A9E8F /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -300,6 +306,8 @@
 				B8AB28F31A94D7150094AB3F /* yocto_cellular.m */,
 				B8DD8BED14A936EF008A9E8F /* yocto_colorled.h */,
 				B8DD8BEE14A936EF008A9E8F /* yocto_colorled.m */,
+				B8DCC6941CC93C1E00553725 /* yocto_colorledcluster.h */,
+				B8DCC6951CC93C1E00553725 /* yocto_colorledcluster.m */,
 				B8140ABE18C0E81F000A935D /* yocto_compass.h */,
 				B8140ABF18C0E81F000A935D /* yocto_compass.m */,
 				B89BD766152DFE2D00EC253E /* yocto_current.h */,
@@ -370,6 +378,8 @@
 				B8F2FD6119B4C533005F9AE9 /* yocto_serialport.m */,
 				B8DD8C0114A936EF008A9E8F /* yocto_servo.h */,
 				B8DD8C0214A936EF008A9E8F /* yocto_servo.m */,
+				B8DCC6971CC93C2E00553725 /* yocto_spiport.h */,
+				B8DCC6981CC93C2E00553725 /* yocto_spiport.m */,
 				B8DD8C0314A936EF008A9E8F /* yocto_temperature.h */,
 				B8DD8C0414A936EF008A9E8F /* yocto_temperature.m */,
 				B8140ACA18C0E851000A935D /* yocto_tilt.h */,
@@ -478,11 +488,13 @@
 				B8DD8C0614A936EF008A9E8F /* yocto_api.m in Sources */,
 				B8DD8C0714A936EF008A9E8F /* yocto_colorled.m in Sources */,
 				B8DD8C0814A936EF008A9E8F /* yocto_dualpower.m in Sources */,
+				B8DCC6961CC93C1E00553725 /* yocto_colorledcluster.m in Sources */,
 				B8DD8C0914A936EF008A9E8F /* yocto_hubport.m in Sources */,
 				B8DD8C0B14A936EF008A9E8F /* yocto_humidity.m in Sources */,
 				B8DD8C0C14A936EF008A9E8F /* yocto_led.m in Sources */,
 				B8DD8C0D14A936EF008A9E8F /* yocto_lightsensor.m in Sources */,
 				B8DD8C0F14A936EF008A9E8F /* yocto_pressure.m in Sources */,
+				B8DCC6991CC93C2E00553725 /* yocto_spiport.m in Sources */,
 				B8DD8C1014A936EF008A9E8F /* yocto_relay.m in Sources */,
 				B8DD8C1114A936EF008A9E8F /* yocto_servo.m in Sources */,
 				B8DD8C1214A936EF008A9E8F /* yocto_temperature.m in Sources */,
