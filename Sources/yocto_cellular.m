@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_cellular.m 23960 2016-04-15 21:30:18Z mvuilleu $
+ * $Id: yocto_cellular.m 24465 2016-05-12 07:30:46Z mvuilleu $
  *
  * Implements the high-level API for Cellular functions
  *
@@ -844,7 +844,7 @@
 {
     NSString* gsmMsg;
     gsmMsg = [self get_message];
-    if (!([gsmMsg isEqualToString:@"Enter SIM PUK"])) {[self _throw:YAPI_INVALID_ARGUMENT: @"PUK not expected at self time"]; return YAPI_INVALID_ARGUMENT;}
+    if (!([[gsmMsg substringWithRange:NSMakeRange(0, 13)] isEqualToString:@"Enter SIM PUK"])) {[self _throw:YAPI_INVALID_ARGUMENT: @"PUK not expected at self time"]; return YAPI_INVALID_ARGUMENT;}
     if ([newPin isEqualToString:@""]) {
         return [self set_command:[NSString stringWithFormat:@"AT+CPIN=%@,0000;+CLCK=SC,0,0000",puk]];
     }

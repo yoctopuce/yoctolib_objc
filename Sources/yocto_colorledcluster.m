@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_colorledcluster.m 24149 2016-04-22 07:02:18Z mvuilleu $
+ * $Id: yocto_colorledcluster.m 24475 2016-05-12 14:03:35Z mvuilleu $
  *
  * Implements the high-level API for ColorLedCluster functions
  *
@@ -107,9 +107,9 @@
 //--- (end of YColorLedCluster private methods implementation)
 //--- (YColorLedCluster public methods implementation)
 /**
- * Returns the count of LEDs currently handled by the device.
+ * Returns the number of LEDs currently handled by the device.
  *
- * @return an integer corresponding to the count of LEDs currently handled by the device
+ * @return an integer corresponding to the number of LEDs currently handled by the device
  *
  * On failure, throws an exception or returns Y_ACTIVELEDCOUNT_INVALID.
  */
@@ -130,9 +130,9 @@
 }
 
 /**
- * Changes the count of LEDs currently handled by the device.
+ * Changes the number of LEDs currently handled by the device.
  *
- * @param newval : an integer corresponding to the count of LEDs currently handled by the device
+ * @param newval : an integer corresponding to the number of LEDs currently handled by the device
  *
  * @return YAPI_SUCCESS if the call succeeds.
  *
@@ -149,9 +149,9 @@
     return [self _setAttr:@"activeLedCount" :rest_val];
 }
 /**
- * Returns the maximum count of LEDs that the device can handle.
+ * Returns the maximum number of LEDs that the device can handle.
  *
- * @return an integer corresponding to the maximum count of LEDs that the device can handle
+ * @return an integer corresponding to the maximum number of LEDs that the device can handle
  *
  * On failure, throws an exception or returns Y_MAXLEDCOUNT_INVALID.
  */
@@ -171,9 +171,9 @@
     return [self get_maxLedCount];
 }
 /**
- * Returns the maximum count of sequences.
+ * Returns the maximum number of sequences that the device can handle
  *
- * @return an integer corresponding to the maximum count of sequences
+ * @return an integer corresponding to the maximum number of sequences that the device can handle
  *
  * On failure, throws an exception or returns Y_BLINKSEQMAXCOUNT_INVALID.
  */
@@ -334,7 +334,21 @@
 }
 
 /**
- * Changes the current color of consecutive LEDs in the cluster , using a HSL color. Encoding is done
+ * Changes the  color at device startup of consecutve LEDs in the cluster , using a RGB color.
+ * Encoding is done as follows: 0xRRGGBB.
+ *
+ * @param ledIndex :  index of the first affected LED.
+ * @param count    :  affected LED count.
+ * @param rgbValue :  new color.
+ *         On failure, throws an exception or returns a negative error code.
+ */
+-(int) set_rgbColorAtPowerOn:(int)ledIndex :(int)count :(int)rgbValue
+{
+    return [self sendCommand:[NSString stringWithFormat:@"SC%d,%d,%x",ledIndex,count,rgbValue]];
+}
+
+/**
+ * Changes the current color of consecutive LEDs in the cluster, using a HSL color. Encoding is done
  * as follows: 0xHHSSLL.
  *
  * @param ledIndex :  index of the first affected LED.
@@ -348,8 +362,8 @@
 }
 
 /**
- * Allows you to modify the current color of a group of adjacent LED  to another color, in a seamless and
- * autonomous manner. The transition is performed in the RGB space..
+ * Allows you to modify the current color of a group of adjacent LEDs to another color, in a seamless and
+ * autonomous manner. The transition is performed in the RGB space.
  *
  * @param ledIndex :  index of the first affected LED.
  * @param count    :  affected LED count.
@@ -382,9 +396,9 @@
 }
 
 /**
- * Adds a RGB transition to a sequence. A sequence is a transitions list, which can
- * be executed in loop by an group of LEDs.  Sequences are persistent and are saved
- * in the device flash as soon as the module saveToFlash() method is called.
+ * Adds an RGB transition to a sequence. A sequence is a transition list, which can
+ * be executed in loop by a group of LEDs.  Sequences are persistent and are saved
+ * in the device flash memory as soon as the module saveToFlash() method is called.
  *
  * @param seqIndex :  sequence index.
  * @param rgbValue :  target color (0xRRGGBB)
@@ -397,9 +411,9 @@
 }
 
 /**
- * Adds a HSL transition to a sequence. A sequence is a transitions list, which can
+ * Adds an HSL transition to a sequence. A sequence is a transition list, which can
  * be executed in loop by an group of LEDs.  Sequences are persistant and are saved
- * in the device flash as soon as the module saveToFlash() method is called.
+ * in the device flash memory as soon as the module saveToFlash() method is called.
  *
  * @param seqIndex : sequence index.
  * @param hslValue : target color (0xHHSSLL)
@@ -413,9 +427,9 @@
 
 /**
  * Adds a mirror ending to a sequence. When the sequence will reach the end of the last
- * transition, its running speed will automatically be reverted so that the sequence plays
- * in the reverse direction, like in a mirror. When the first transition of the sequence
- * will be played at the end of the reverse execution, the sequence will start again in
+ * transition, its running speed will automatically be reversed so that the sequence plays
+ * in the reverse direction, like in a mirror. After the first transition of the sequence
+ * is played at the end of the reverse execution, the sequence starts again in
  * the initial direction.
  *
  * @param seqIndex : sequence index.
@@ -427,10 +441,10 @@
 }
 
 /**
- * Links adjacent LEDs to a specific sequence. these LED will start to execute
+ * Links adjacent LEDs to a specific sequence. These LEDs start to execute
  * the sequence as soon as  startBlinkSeq is called. It is possible to add an offset
  * in the execution: that way we  can have several groups of LED executing the same
- * sequence, with a  temporal offset. A LED cannot be linked to more than one LED.
+ * sequence, with a  temporal offset. A LED cannot be linked to more than one sequence.
  *
  * @param ledIndex :  index of the first affected LED.
  * @param count    :  affected LED count.
@@ -444,9 +458,26 @@
 }
 
 /**
- * Links adjacent LEDs to a specific sequence. these LED will start to execute
+ * Links adjacent LEDs to a specific sequence at device poweron. Don't forget to configure
+ * the sequence auto start flag as well and call saveLedsState. It is possible to add an offset
+ * in the execution: that way we  can have several groups of LEDs executing the same
+ * sequence, with a  temporal offset. A LED cannot be linked to more than one sequence.
+ *
+ * @param ledIndex :  index of the first affected LED.
+ * @param count    :  affected LED count.
+ * @param seqIndex :  sequence index.
+ * @param offset   :  execution offset in ms.
+ *         On failure, throws an exception or returns a negative error code.
+ */
+-(int) linkLedToBlinkSeqAtPowerOn:(int)ledIndex :(int)count :(int)seqIndex :(int)offset
+{
+    return [self sendCommand:[NSString stringWithFormat:@"LO%d,%d,%d,%d",ledIndex,count,seqIndex,offset]];
+}
+
+/**
+ * Links adjacent LEDs to a specific sequence. These LED start to execute
  * the sequence as soon as  startBlinkSeq is called. This function automatically
- * introduce a shift between LEDs so that the specified number of sequence periods
+ * introduces a shift between LEDs so that the specified number of sequence periods
  * appears on the group of LEDs (wave effect).
  *
  * @param ledIndex :  index of the first affected LED.
@@ -461,7 +492,7 @@
 }
 
 /**
- * UnLink adjacent LED  from a  sequence.
+ * Unlinks adjacent LEDs from a  sequence.
  *
  * @param ledIndex  :  index of the first affected LED.
  * @param count     :  affected LED count.
@@ -473,7 +504,7 @@
 }
 
 /**
- * Start a sequence execution: every LED linked to that sequence will start to
+ * Starts a sequence execution: every LED linked to that sequence starts to
  * run it in a loop.
  *
  * @param seqIndex :  index of the sequence to start.
@@ -485,8 +516,8 @@
 }
 
 /**
- * Stop a sequence execution. if started again, the execution
- * will restart from the beginning.
+ * Stops a sequence execution. If started again, the execution
+ * restarts from the beginning.
  *
  * @param seqIndex :  index of the sequence to stop.
  *         On failure, throws an exception or returns a negative error code.
@@ -497,8 +528,8 @@
 }
 
 /**
- * Stop a sequence execution and reset its contents. Leds linked to this
- * sequences will no more be automatically updated.
+ * Stops a sequence execution and resets its contents. Leds linked to this
+ * sequence are not automatically updated anymore.
  *
  * @param seqIndex :  index of the sequence to reset
  *         On failure, throws an exception or returns a negative error code.
@@ -509,7 +540,21 @@
 }
 
 /**
- * Change the execution speed of a sequence. The natural execution speed is 1000 per
+ * Configures a sequence to make it start automatically at device
+ * startup. Don't forget to call  saveLedsState() to make sure the
+ * modification is saved in the device flash memory.
+ *
+ * @param seqIndex :  index of the sequence to reset
+ * @param autostart :  boolean telling if the sequence must start automatically or not.
+ *         On failure, throws an exception or returns a negative error code.
+ */
+-(int) set_blinkSeqAutoStart:(int)seqIndex :(bool)autostart
+{
+    return [self sendCommand:[NSString stringWithFormat:@"AS%d,%d",seqIndex,autostart]];
+}
+
+/**
+ * Changes the execution speed of a sequence. The natural execution speed is 1000 per
  * thousand. If you configure a slower speed, you can play the sequence in slow-motion.
  * If you set a negative speed, you can play the sequence in reverse direction.
  *
@@ -517,14 +562,14 @@
  * @param speed :     sequence running speed (-1000...1000).
  *         On failure, throws an exception or returns a negative error code.
  */
--(int) changeBlinkSeqSpeed:(int)seqIndex :(int)speed
+-(int) set_blinkSeqSpeed:(int)seqIndex :(int)speed
 {
-    return [self sendCommand:[NSString stringWithFormat:@"CS%d",seqIndex]];
+    return [self sendCommand:[NSString stringWithFormat:@"CS%d,%d",seqIndex,speed]];
 }
 
 /**
- * Save the current state of all LEDs as the initial startup state.
- * The initial startup state includes the choice of sequence linked to each LED.
+ * Saves the cluster power-on configuration, this includes
+ * LED start-up colors, sequence steps and sequence auto-start flags.
  * On failure, throws an exception or returns a negative error code.
  */
 -(int) saveLedsState
@@ -580,7 +625,7 @@
 }
 
 /**
- * Setup a smooth RGB color transition to the specified pixel-by-pixel list of RGB
+ * Sets up a smooth RGB color transition to the specified pixel-by-pixel list of RGB
  * color codes. The first color code represents the target RGB value of the first LED,
  * the second color code represents the target value of the second LED, etc.
  *
@@ -660,7 +705,7 @@
 }
 
 /**
- * Setup a smooth HSL color transition to the specified pixel-by-pixel list of HSL
+ * Sets up a smooth HSL color transition to the specified pixel-by-pixel list of HSL
  * color codes. The first color code represents the target HSL value of the first LED,
  * the second color code represents the target value of the second LED, etc.
  *
@@ -742,6 +787,39 @@
 }
 
 /**
+ * Returns a list on 24bit RGB color values with the RGB LEDs startup colors.
+ * The first number represents the startup RGB value of the first LED,
+ * the second number represents the RGB value of the second LED, etc.
+ *
+ * @param ledIndex : index of the first LED  which should be returned
+ * @param count    : number of LEDs which should be returned
+ *
+ * @return a list of 24bit color codes with RGB components of selected LEDs, as 0xRRGGBB.
+ *         On failure, throws an exception or returns an empty array.
+ */
+-(NSMutableArray*) get_rgbColorArrayAtPowerOn:(int)ledIndex :(int)count
+{
+    NSMutableData* buff;
+    NSMutableArray* res = [NSMutableArray array];
+    int idx;
+    int r;
+    int g;
+    int b;
+    // may throw an exception
+    buff = [self _download:[NSString stringWithFormat:@"rgb.bin?typ=4&pos=%d&len=%d",3*ledIndex,3*count]];
+    [res removeAllObjects];
+    idx = 0;
+    while (idx < count) {
+        r = (((u8*)([buff bytes]))[3*idx]);
+        g = (((u8*)([buff bytes]))[3*idx+1]);
+        b = (((u8*)([buff bytes]))[3*idx+2]);
+        [res addObject:[NSNumber numberWithLong:r*65536+g*256+b]];
+        idx = idx + 1;
+    }
+    return res;
+}
+
+/**
  * Returns a list on sequence index for each RGB LED. The first number represents the
  * sequence index for the the first LED, the second number represents the sequence
  * index for the second LED, etc.
@@ -800,6 +878,62 @@
         lh = (((u8*)([buff bytes]))[4*idx+2]);
         ll = (((u8*)([buff bytes]))[4*idx+3]);
         [res addObject:[NSNumber numberWithLong:((hh) << (24))+((hl) << (16))+((lh) << (8))+ll]];
+        idx = idx + 1;
+    }
+    return res;
+}
+
+/**
+ * Returns a list of integers with the current speed for specified blinking sequences.
+ *
+ * @param seqIndex : index of the first sequence speed which should be returned
+ * @param count    : number of sequence speeds which should be returned
+ *
+ * @return a list of integers, 0 for sequences turned off and 1 for sequences running
+ *         On failure, throws an exception or returns an empty array.
+ */
+-(NSMutableArray*) get_blinkSeqStateSpeed:(int)seqIndex :(int)count
+{
+    NSMutableData* buff;
+    NSMutableArray* res = [NSMutableArray array];
+    int idx;
+    int lh;
+    int ll;
+    // may throw an exception
+    buff = [self _download:[NSString stringWithFormat:@"rgb.bin?typ=6&pos=%d&len=%d",seqIndex,count]];
+    [res removeAllObjects];
+    idx = 0;
+    while (idx < count) {
+        lh = (((u8*)([buff bytes]))[2*idx]);
+        ll = (((u8*)([buff bytes]))[2*idx+1]);
+        [res addObject:[NSNumber numberWithLong:((lh) << (8))+ll]];
+        idx = idx + 1;
+    }
+    return res;
+}
+
+/**
+ * Returns a list of integers with the "auto-start at power on" flag state for specified blinking sequences.
+ *
+ * @param seqIndex : index of the first blinking sequence which should be returned
+ * @param count    : number of blinking sequences which should be returned
+ *
+ * @return a list of integers, 0 for sequences turned off and 1 for sequences running
+ *         On failure, throws an exception or returns an empty array.
+ */
+-(NSMutableArray*) get_blinkSeqStateAtPowerOn:(int)seqIndex :(int)count
+{
+    NSMutableData* buff;
+    NSMutableArray* res = [NSMutableArray array];
+    int idx;
+    int started;
+    // may throw an exception
+    buff = [self _download:[NSString stringWithFormat:@"rgb.bin?typ=5&pos=%d&len=%d",seqIndex,count]];
+    [res removeAllObjects];
+    idx = 0;
+    while (idx < count) {
+        started = (((u8*)([buff bytes]))[idx]);
+        [res addObject:[NSNumber numberWithLong:started]];
         idx = idx + 1;
     }
     return res;
