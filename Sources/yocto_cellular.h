@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_cellular.h 23960 2016-04-15 21:30:18Z mvuilleu $
+ * $Id: yocto_cellular.h 24590 2016-05-26 13:57:42Z seb $
  *
  * Declares yFindCellular(), the high-level API for Cellular functions
  *
@@ -135,6 +135,8 @@ typedef enum {
 #define Y_APN_INVALID                   YAPI_INVALID_STRING
 #define Y_APNSECRET_INVALID             YAPI_INVALID_STRING
 #define Y_PINGINTERVAL_INVALID          YAPI_INVALID_UINT
+#define Y_DATASENT_INVALID              YAPI_INVALID_UINT
+#define Y_DATARECEIVED_INVALID          YAPI_INVALID_UINT
 #define Y_COMMAND_INVALID               YAPI_INVALID_STRING
 //--- (end of generated code: YCellular globals)
 
@@ -163,6 +165,8 @@ typedef enum {
     NSString*       _apn;
     NSString*       _apnSecret;
     int             _pingInterval;
+    int             _dataSent;
+    int             _dataReceived;
     NSString*       _command;
     YCellularValueCallback _valueCallbackCellular;
 //--- (end of generated code: YCellular attributes declaration)
@@ -435,6 +439,52 @@ typedef enum {
 -(int)     set_pingInterval:(int) newval;
 -(int)     setPingInterval:(int) newval;
 
+/**
+ * Returns the number of bytes sent so far.
+ *
+ * @return an integer corresponding to the number of bytes sent so far
+ *
+ * On failure, throws an exception or returns Y_DATASENT_INVALID.
+ */
+-(int)     get_dataSent;
+
+
+-(int) dataSent;
+/**
+ * Changes the value of the outgoing data counter.
+ *
+ * @param newval : an integer corresponding to the value of the outgoing data counter
+ *
+ * @return YAPI_SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     set_dataSent:(int) newval;
+-(int)     setDataSent:(int) newval;
+
+/**
+ * Returns the number of bytes received so far.
+ *
+ * @return an integer corresponding to the number of bytes received so far
+ *
+ * On failure, throws an exception or returns Y_DATARECEIVED_INVALID.
+ */
+-(int)     get_dataReceived;
+
+
+-(int) dataReceived;
+/**
+ * Changes the value of the incoming data counter.
+ *
+ * @param newval : an integer corresponding to the value of the incoming data counter
+ *
+ * @return YAPI_SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     set_dataReceived:(int) newval;
+-(int)     setDataReceived:(int) newval;
+
 -(NSString*)     get_command;
 
 
@@ -510,6 +560,15 @@ typedef enum {
  * On failure, throws an exception or returns a negative error code.
  */
 -(int)     set_apnAuth:(NSString*)username :(NSString*)password;
+
+/**
+ * Clear the transmitted data counters.
+ *
+ * @return YAPI_SUCCESS when the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     clearDataCounters;
 
 /**
  * Sends an AT command to the GSM module and returns the command output.

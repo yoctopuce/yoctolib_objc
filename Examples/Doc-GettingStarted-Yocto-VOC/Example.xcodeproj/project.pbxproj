@@ -73,6 +73,7 @@
 		B8DD8C3214A9370B008A9E8F /* ystream.c in Sources */ = {isa = PBXBuildFile; fileRef = B8DD8C2514A9370B008A9E8F /* ystream.c */; };
 		B8DD8C3314A9370B008A9E8F /* ytcp.c in Sources */ = {isa = PBXBuildFile; fileRef = B8DD8C2614A9370B008A9E8F /* ytcp.c */; };
 		B8E72EE4166DF011000E2AF6 /* yocto_power.m in Sources */ = {isa = PBXBuildFile; fileRef = B8E72EE3166DF011000E2AF6 /* yocto_power.m */; };
+		B8EB05621CF7446400343BD3 /* yocto_messagebox.m in Sources */ = {isa = PBXBuildFile; fileRef = B8EB05611CF7446400343BD3 /* yocto_messagebox.m */; };
 		B8F2FD6219B4C533005F9AE9 /* yocto_serialport.m in Sources */ = {isa = PBXBuildFile; fileRef = B8F2FD6119B4C533005F9AE9 /* yocto_serialport.m */; };
 		B8F48A9314A93A3E008FBD0C /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B8F48A9214A93A3E008FBD0C /* IOKit.framework */; };
 		B8FE48F417CCC2CA000070E2 /* yocto_digitalio.m in Sources */ = {isa = PBXBuildFile; fileRef = B8FE48F317CCC2CA000070E2 /* yocto_digitalio.m */; };
@@ -222,6 +223,8 @@
 		B8DD8C2814A9370B008A9E8F /* yversion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yversion.h; path = ../../../Sources/yapi/yversion.h; sourceTree = "<group>"; };
 		B8E72EE2166DF011000E2AF6 /* yocto_power.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yocto_power.h; path = ../../../Sources/yocto_power.h; sourceTree = "<group>"; };
 		B8E72EE3166DF011000E2AF6 /* yocto_power.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = yocto_power.m; path = ../../../Sources/yocto_power.m; sourceTree = "<group>"; };
+		B8EB05601CF7446400343BD3 /* yocto_messagebox.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yocto_messagebox.h; path = ../../../Sources/yocto_messagebox.h; sourceTree = "<group>"; };
+		B8EB05611CF7446400343BD3 /* yocto_messagebox.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = yocto_messagebox.m; path = ../../../Sources/yocto_messagebox.m; sourceTree = "<group>"; };
 		B8F2FD6019B4C533005F9AE9 /* yocto_serialport.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yocto_serialport.h; path = ../../../Sources/yocto_serialport.h; sourceTree = "<group>"; };
 		B8F2FD6119B4C533005F9AE9 /* yocto_serialport.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = yocto_serialport.m; path = ../../../Sources/yocto_serialport.m; sourceTree = "<group>"; };
 		B8F48A9214A93A3E008FBD0C /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
@@ -346,6 +349,8 @@
 				B8AB28FB1A94D7150094AB3F /* yocto_longitude.m */,
 				B8140AC418C0E839000A935D /* yocto_magnetometer.h */,
 				B8140AC518C0E839000A935D /* yocto_magnetometer.m */,
+				B8EB05601CF7446400343BD3 /* yocto_messagebox.h */,
+				B8EB05611CF7446400343BD3 /* yocto_messagebox.m */,
 				B837709F191BEBA600EA7360 /* yocto_motor.h */,
 				B83770A0191BEBA600EA7360 /* yocto_motor.m */,
 				B8376D69161B574D0074590C /* yocto_network.h */,
@@ -511,6 +516,7 @@
 				B8DD8C3114A9370B008A9E8F /* yprog.c in Sources */,
 				B8DD8C3214A9370B008A9E8F /* ystream.c in Sources */,
 				B8DD8C3314A9370B008A9E8F /* ytcp.c in Sources */,
+				B8EB05621CF7446400343BD3 /* yocto_messagebox.m in Sources */,
 				B845588B14DC2CDE00425F49 /* yocto_datalogger.m in Sources */,
 				B845588F14DC315D00425F49 /* ythread.c in Sources */,
 				B89BD76A152DFE2D00EC253E /* yocto_current.m in Sources */,

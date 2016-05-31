@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.h 23695 2016-04-01 08:43:46Z mvuilleu $
+ * $Id: yocto_api.h 24628 2016-05-27 15:01:14Z mvuilleu $
  *
  * High-level programming interface, common to all modules
  *
@@ -62,7 +62,7 @@
 
 extern NSMutableDictionary* YAPI_YFunctions;
 
-#define YOCTO_API_REVISION          "24497"
+#define YOCTO_API_REVISION          "24655"
 
 // yInitAPI argument
 #define Y_DETECT_NONE           0
@@ -249,7 +249,7 @@ int _ystrpos(NSString* haystack, NSString* needle);
 +(s16)      _doubleToDecimal:(double) val;
 +(NSMutableArray*) _decodeWords:(NSString*)s;
 +(NSMutableArray*) _decodeFloats:(NSString*)s;
-+(NSString*) _bin2HexStr:(NSMutableData*)s;
++(NSString*) _bin2HexStr:(NSData*)s;
 +(NSMutableData*) _hexStr2Bin:(NSString*)s;
 +(NSMutableData*) _binMerge:(NSData*)dataA :(NSData*)dataB;
 
@@ -2026,7 +2026,7 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
 @protected
 //--- (generated code: YFirmwareUpdate attributes declaration)
     NSString*       _serial;
-    NSData*         _settings;
+    NSMutableData*  _settings;
     NSString*       _firmwarepath;
     NSString*       _progress_msg;
     int             _progress_c;

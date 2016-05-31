@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.m 23802 2016-04-08 08:40:45Z seb $
+ * $Id: yocto_api.m 24628 2016-05-27 15:01:14Z mvuilleu $
  *
  * High-level programming interface, common to all modules
  *
@@ -609,7 +609,7 @@ static double decExp[16] = {
 
 static const char* hexArray = "0123456789ABCDEF";
 
-+(NSString*) _bin2HexStr:(NSMutableData*)data
++(NSString*) _bin2HexStr:(NSData*)data
 {
     NSUInteger len = [data length];
     if (len) {
@@ -6026,7 +6026,7 @@ static const char* hexArray = "0123456789ABCDEF";
 //--- (end of generated code: YFirmwareUpdate attributes initialization)
     _serial = serial;
     _firmwarepath = path,
-    _settings = settings;
+    _settings = [NSMutableData dataWithData: settings];
     _force = force;
     return self;
 }

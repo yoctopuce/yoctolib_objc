@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_cellular.m 24465 2016-05-12 07:30:46Z mvuilleu $
+ * $Id: yocto_cellular.m 24622 2016-05-27 12:51:52Z mvuilleu $
  *
  * Implements the high-level API for Cellular functions
  *
@@ -142,6 +142,8 @@
     _apn = Y_APN_INVALID;
     _apnSecret = Y_APNSECRET_INVALID;
     _pingInterval = Y_PINGINTERVAL_INVALID;
+    _dataSent = Y_DATASENT_INVALID;
+    _dataReceived = Y_DATARECEIVED_INVALID;
     _command = Y_COMMAND_INVALID;
     _valueCallbackCellular = NULL;
 //--- (end of generated code: YCellular attributes initialization)
@@ -255,6 +257,16 @@
     if(!strcmp(j->token, "pingInterval")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
         _pingInterval =  atoi(j->token);
+        return 1;
+    }
+    if(!strcmp(j->token, "dataSent")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _dataSent =  atoi(j->token);
+        return 1;
+    }
+    if(!strcmp(j->token, "dataReceived")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _dataReceived =  atoi(j->token);
         return 1;
     }
     if(!strcmp(j->token, "command")) {
@@ -726,6 +738,90 @@
     rest_val = [NSString stringWithFormat:@"%d", newval];
     return [self _setAttr:@"pingInterval" :rest_val];
 }
+/**
+ * Returns the number of bytes sent so far.
+ *
+ * @return an integer corresponding to the number of bytes sent so far
+ *
+ * On failure, throws an exception or returns Y_DATASENT_INVALID.
+ */
+-(int) get_dataSent
+{
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_DATASENT_INVALID;
+        }
+    }
+    return _dataSent;
+}
+
+
+-(int) dataSent
+{
+    return [self get_dataSent];
+}
+
+/**
+ * Changes the value of the outgoing data counter.
+ *
+ * @param newval : an integer corresponding to the value of the outgoing data counter
+ *
+ * @return YAPI_SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) set_dataSent:(int) newval
+{
+    return [self setDataSent:newval];
+}
+-(int) setDataSent:(int) newval
+{
+    NSString* rest_val;
+    rest_val = [NSString stringWithFormat:@"%d", newval];
+    return [self _setAttr:@"dataSent" :rest_val];
+}
+/**
+ * Returns the number of bytes received so far.
+ *
+ * @return an integer corresponding to the number of bytes received so far
+ *
+ * On failure, throws an exception or returns Y_DATARECEIVED_INVALID.
+ */
+-(int) get_dataReceived
+{
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_DATARECEIVED_INVALID;
+        }
+    }
+    return _dataReceived;
+}
+
+
+-(int) dataReceived
+{
+    return [self get_dataReceived];
+}
+
+/**
+ * Changes the value of the incoming data counter.
+ *
+ * @param newval : an integer corresponding to the value of the incoming data counter
+ *
+ * @return YAPI_SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) set_dataReceived:(int) newval
+{
+    return [self setDataReceived:newval];
+}
+-(int) setDataReceived:(int) newval
+{
+    NSString* rest_val;
+    rest_val = [NSString stringWithFormat:@"%d", newval];
+    return [self _setAttr:@"dataReceived" :rest_val];
+}
 -(NSString*) get_command
 {
     if (_cacheExpiration <= [YAPI GetTickCount]) {
@@ -844,7 +940,7 @@
 {
     NSString* gsmMsg;
     gsmMsg = [self get_message];
-    if (!([[gsmMsg substringWithRange:NSMakeRange(0, 13)] isEqualToString:@"Enter SIM PUK"])) {[self _throw:YAPI_INVALID_ARGUMENT: @"PUK not expected at self time"]; return YAPI_INVALID_ARGUMENT;}
+    if (!(!([[gsmMsg substringWithRange:NSMakeRange(0, 13)] isEqualToString:@"Enter SIM PUK"]))) {[self _throw:YAPI_INVALID_ARGUMENT: @"PUK not expected at self time"]; return YAPI_INVALID_ARGUMENT;}
     if ([newPin isEqualToString:@""]) {
         return [self set_command:[NSString stringWithFormat:@"AT+CPIN=%@,0000;+CLCK=SC,0,0000",puk]];
     }
@@ -865,6 +961,25 @@
 -(int) set_apnAuth:(NSString*)username :(NSString*)password
 {
     return [self set_apnSecret:[NSString stringWithFormat:@"%@,%@",username,password]];
+}
+
+/**
+ * Clear the transmitted data counters.
+ *
+ * @return YAPI_SUCCESS when the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) clearDataCounters
+{
+    int retcode;
+    // may throw an exception
+    retcode = [self set_dataReceived:0];
+    if (retcode != YAPI_SUCCESS) {
+        return retcode;
+    }
+    retcode = [self set_dataSent:0];
+    return retcode;
 }
 
 /**
