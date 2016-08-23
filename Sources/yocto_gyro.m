@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_gyro.m 22697 2016-01-12 23:14:40Z seb $
+ * $Id: yocto_gyro.m 24948 2016-07-01 20:57:28Z mvuilleu $
  *
  * Implements the high-level API for Gyro functions
  *
@@ -247,6 +247,7 @@ static void yInternalGyroCallback(YQt *obj, NSString *value)
           return nil;
     _className = @"Gyro";
 //--- (generated code: YGyro attributes initialization)
+    _bandwidth = Y_BANDWIDTH_INVALID;
     _xValue = Y_XVALUE_INVALID;
     _yValue = Y_YVALUE_INVALID;
     _zValue = Y_ZVALUE_INVALID;
@@ -277,6 +278,11 @@ static void yInternalGyroCallback(YQt *obj, NSString *value)
 
 -(int) _parseAttr:(yJsonStateMachine*) j
 {
+    if(!strcmp(j->token, "bandwidth")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _bandwidth =  atoi(j->token);
+        return 1;
+    }
     if(!strcmp(j->token, "xValue")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
         _xValue =  floor(atof(j->token) * 1000.0 / 65536.0 + 0.5) / 1000.0;
@@ -296,6 +302,49 @@ static void yInternalGyroCallback(YQt *obj, NSString *value)
 }
 //--- (end of generated code: YGyro private methods implementation)
 //--- (generated code: YGyro public methods implementation)
+/**
+ * Returns the measure update frequency, measured in Hz (Yocto-3D-V2 only).
+ *
+ * @return an integer corresponding to the measure update frequency, measured in Hz (Yocto-3D-V2 only)
+ *
+ * On failure, throws an exception or returns Y_BANDWIDTH_INVALID.
+ */
+-(int) get_bandwidth
+{
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_BANDWIDTH_INVALID;
+        }
+    }
+    return _bandwidth;
+}
+
+
+-(int) bandwidth
+{
+    return [self get_bandwidth];
+}
+
+/**
+ * Changes the measure update frequency, measured in Hz (Yocto-3D-V2 only). When the
+ * frequency is lower, the device performs averaging.
+ *
+ * @param newval : an integer corresponding to the measure update frequency, measured in Hz (Yocto-3D-V2 only)
+ *
+ * @return YAPI_SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) set_bandwidth:(int) newval
+{
+    return [self setBandwidth:newval];
+}
+-(int) setBandwidth:(int) newval
+{
+    NSString* rest_val;
+    rest_val = [NSString stringWithFormat:@"%d", newval];
+    return [self _setAttr:@"bandwidth" :rest_val];
+}
 /**
  * Returns the angular velocity around the X axis of the device, as a floating point number.
  *
@@ -531,11 +580,11 @@ static void yInternalGyroCallback(YQt *obj, NSString *value)
         delta = _y * _w - _x * _z;
         if (delta > 0.499 * norm) {
             _pitch = 90.0;
-            _head  = floor(2.0 * 1800.0/3.141592653589793238463 * atan2(_x,_w)+0.5) / 10.0;
+            _head  = floor(2.0 * 1800.0/3.141592653589793238463 * atan2(_x,-_w)+0.5) / 10.0;
         } else {
             if (delta < -0.499 * norm) {
                 _pitch = -90.0;
-                _head  = floor(-2.0 * 1800.0/3.141592653589793238463 * atan2(_x,_w)+0.5) / 10.0;
+                _head  = floor(-2.0 * 1800.0/3.141592653589793238463 * atan2(_x,-_w)+0.5) / 10.0;
             } else {
                 _roll  = floor(1800.0/3.141592653589793238463 * atan2(2.0 * (_w * _x + _y * _z),sqw - sqx - sqy + sqz)+0.5) / 10.0;
                 _pitch = floor(1800.0/3.141592653589793238463 * asin(2.0 * delta / norm)+0.5) / 10.0;

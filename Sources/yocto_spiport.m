@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_spiport.m 24252 2016-04-26 13:39:30Z seb $
+ * $Id: yocto_spiport.m 25085 2016-07-26 16:38:36Z mvuilleu $
  *
  * Implements the high-level API for SpiPort functions
  *
@@ -69,6 +69,7 @@
     _shitftSampling = Y_SHITFTSAMPLING_INVALID;
     _valueCallbackSpiPort = NULL;
     _rxptr = 0;
+    _rxbuffptr = 0;
 //--- (end of YSpiPort attributes initialization)
     return self;
 }
@@ -753,6 +754,8 @@
 -(int) reset
 {
     _rxptr = 0;
+    _rxbuffptr = 0;
+    _rxbuff = [NSMutableData dataWithLength:0];
     // may throw an exception
     return [self sendCommand:@"Z"];
 }
@@ -930,11 +933,49 @@
  */
 -(int) readByte
 {
+    int currpos;
+    int reqlen;
     NSMutableData* buff;
     int bufflen;
     int mult;
     int endpos;
     int res;
+    
+    // first check if we have the requested character in the look-ahead buffer
+    bufflen = (int)[_rxbuff length];
+    if ((_rxptr >= _rxbuffptr) && (_rxptr < _rxbuffptr+bufflen)) {
+        res = (((u8*)([_rxbuff bytes]))[_rxptr-_rxbuffptr]);
+        _rxptr = _rxptr + 1;
+        return res;
+    }
+    
+    // try to preload more than one byte to speed-up byte-per-byte access
+    currpos = _rxptr;
+    reqlen = 1024;
+    buff = [self readBin:reqlen];
+    bufflen = (int)[buff length];
+    if (_rxptr == currpos+bufflen) {
+        res = (((u8*)([buff bytes]))[0]);
+        _rxptr = currpos+1;
+        _rxbuffptr = currpos;
+        _rxbuff = buff;
+        return res;
+    }
+    // mixed bidirectional data, retry with a smaller block
+    _rxptr = currpos;
+    reqlen = 16;
+    buff = [self readBin:reqlen];
+    bufflen = (int)[buff length];
+    if (_rxptr == currpos+bufflen) {
+        res = (((u8*)([buff bytes]))[0]);
+        _rxptr = currpos+1;
+        _rxbuffptr = currpos;
+        _rxbuff = buff;
+        return res;
+    }
+    // still mixed, need to process character by character
+    _rxptr = currpos;
+    
     // may throw an exception
     buff = [self _download:[NSString stringWithFormat:@"rxdata.bin?pos=%d&len=1",_rxptr]];
     bufflen = (int)[buff length] - 1;

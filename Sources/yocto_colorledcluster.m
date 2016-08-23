@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_colorledcluster.m 24717 2016-06-03 16:09:53Z seb $
+ * $Id: yocto_colorledcluster.m 24934 2016-06-30 22:32:01Z mvuilleu $
  *
  * Implements the high-level API for ColorLedCluster functions
  *
@@ -630,6 +630,11 @@
  * On failure, throws an exception or returns a negative error code.
  */
 -(int) saveLedsConfigAtPowerOn
+{
+    return [self sendCommand:@"WL"];
+}
+
+-(int) saveLedsState
 {
     return [self sendCommand:@"WL"];
 }

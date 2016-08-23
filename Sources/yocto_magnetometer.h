@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_magnetometer.h 23242 2016-02-23 14:12:17Z seb $
+ * $Id: yocto_magnetometer.h 24934 2016-06-30 22:32:01Z mvuilleu $
  *
  * Declares yFindMagnetometer(), the high-level API for Magnetometer functions
  *
@@ -45,6 +45,7 @@ CF_EXTERN_C_BEGIN
 //--- (YMagnetometer globals)
 typedef void (*YMagnetometerValueCallback)(YMagnetometer *func, NSString *functionValue);
 typedef void (*YMagnetometerTimedReportCallback)(YMagnetometer *func, YMeasure *measure);
+#define Y_BANDWIDTH_INVALID             YAPI_INVALID_INT
 #define Y_XVALUE_INVALID                YAPI_INVALID_DOUBLE
 #define Y_YVALUE_INVALID                YAPI_INVALID_DOUBLE
 #define Y_ZVALUE_INVALID                YAPI_INVALID_DOUBLE
@@ -69,6 +70,7 @@ typedef void (*YMagnetometerTimedReportCallback)(YMagnetometer *func, YMeasure *
 {
 @protected
 //--- (YMagnetometer attributes declaration)
+    int             _bandwidth;
     double          _xValue;
     double          _yValue;
     double          _zValue;
@@ -85,6 +87,30 @@ typedef void (*YMagnetometerTimedReportCallback)(YMagnetometer *func, YMeasure *
 
 //--- (end of YMagnetometer private methods declaration)
 //--- (YMagnetometer public methods declaration)
+/**
+ * Returns the measure update frequency, measured in Hz (Yocto-3D-V2 only).
+ *
+ * @return an integer corresponding to the measure update frequency, measured in Hz (Yocto-3D-V2 only)
+ *
+ * On failure, throws an exception or returns Y_BANDWIDTH_INVALID.
+ */
+-(int)     get_bandwidth;
+
+
+-(int) bandwidth;
+/**
+ * Changes the measure update frequency, measured in Hz (Yocto-3D-V2 only). When the
+ * frequency is lower, the device performs averaging.
+ *
+ * @param newval : an integer corresponding to the measure update frequency, measured in Hz (Yocto-3D-V2 only)
+ *
+ * @return YAPI_SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     set_bandwidth:(int) newval;
+-(int)     setBandwidth:(int) newval;
+
 /**
  * Returns the X component of the magnetic field, as a floating point number.
  *

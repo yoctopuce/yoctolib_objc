@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_magnetometer.m 23242 2016-02-23 14:12:17Z seb $
+ * $Id: yocto_magnetometer.m 24934 2016-06-30 22:32:01Z mvuilleu $
  *
  * Implements the high-level API for Magnetometer functions
  *
@@ -53,6 +53,7 @@
           return nil;
     _className = @"Magnetometer";
 //--- (YMagnetometer attributes initialization)
+    _bandwidth = Y_BANDWIDTH_INVALID;
     _xValue = Y_XVALUE_INVALID;
     _yValue = Y_YVALUE_INVALID;
     _zValue = Y_ZVALUE_INVALID;
@@ -72,6 +73,11 @@
 
 -(int) _parseAttr:(yJsonStateMachine*) j
 {
+    if(!strcmp(j->token, "bandwidth")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _bandwidth =  atoi(j->token);
+        return 1;
+    }
     if(!strcmp(j->token, "xValue")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
         _xValue =  floor(atof(j->token) * 1000.0 / 65536.0 + 0.5) / 1000.0;
@@ -91,6 +97,49 @@
 }
 //--- (end of YMagnetometer private methods implementation)
 //--- (YMagnetometer public methods implementation)
+/**
+ * Returns the measure update frequency, measured in Hz (Yocto-3D-V2 only).
+ *
+ * @return an integer corresponding to the measure update frequency, measured in Hz (Yocto-3D-V2 only)
+ *
+ * On failure, throws an exception or returns Y_BANDWIDTH_INVALID.
+ */
+-(int) get_bandwidth
+{
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_BANDWIDTH_INVALID;
+        }
+    }
+    return _bandwidth;
+}
+
+
+-(int) bandwidth
+{
+    return [self get_bandwidth];
+}
+
+/**
+ * Changes the measure update frequency, measured in Hz (Yocto-3D-V2 only). When the
+ * frequency is lower, the device performs averaging.
+ *
+ * @param newval : an integer corresponding to the measure update frequency, measured in Hz (Yocto-3D-V2 only)
+ *
+ * @return YAPI_SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) set_bandwidth:(int) newval
+{
+    return [self setBandwidth:newval];
+}
+-(int) setBandwidth:(int) newval
+{
+    NSString* rest_val;
+    rest_val = [NSString stringWithFormat:@"%d", newval];
+    return [self _setAttr:@"bandwidth" :rest_val];
+}
 /**
  * Returns the X component of the magnetic field, as a floating point number.
  *

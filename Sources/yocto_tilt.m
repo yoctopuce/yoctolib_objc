@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_tilt.m 23242 2016-02-23 14:12:17Z seb $
+ * $Id: yocto_tilt.m 24934 2016-06-30 22:32:01Z mvuilleu $
  *
  * Implements the high-level API for Tilt functions
  *
@@ -53,6 +53,7 @@
           return nil;
     _className = @"Tilt";
 //--- (YTilt attributes initialization)
+    _bandwidth = Y_BANDWIDTH_INVALID;
     _axis = Y_AXIS_INVALID;
     _valueCallbackTilt = NULL;
     _timedReportCallbackTilt = NULL;
@@ -70,6 +71,11 @@
 
 -(int) _parseAttr:(yJsonStateMachine*) j
 {
+    if(!strcmp(j->token, "bandwidth")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _bandwidth =  atoi(j->token);
+        return 1;
+    }
     if(!strcmp(j->token, "axis")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
         _axis =  atoi(j->token);
@@ -79,6 +85,49 @@
 }
 //--- (end of YTilt private methods implementation)
 //--- (YTilt public methods implementation)
+/**
+ * Returns the measure update frequency, measured in Hz (Yocto-3D-V2 only).
+ *
+ * @return an integer corresponding to the measure update frequency, measured in Hz (Yocto-3D-V2 only)
+ *
+ * On failure, throws an exception or returns Y_BANDWIDTH_INVALID.
+ */
+-(int) get_bandwidth
+{
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_BANDWIDTH_INVALID;
+        }
+    }
+    return _bandwidth;
+}
+
+
+-(int) bandwidth
+{
+    return [self get_bandwidth];
+}
+
+/**
+ * Changes the measure update frequency, measured in Hz (Yocto-3D-V2 only). When the
+ * frequency is lower, the device performs averaging.
+ *
+ * @param newval : an integer corresponding to the measure update frequency, measured in Hz (Yocto-3D-V2 only)
+ *
+ * @return YAPI_SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) set_bandwidth:(int) newval
+{
+    return [self setBandwidth:newval];
+}
+-(int) setBandwidth:(int) newval
+{
+    NSString* rest_val;
+    rest_val = [NSString stringWithFormat:@"%d", newval];
+    return [self _setAttr:@"bandwidth" :rest_val];
+}
 -(Y_AXIS_enum) get_axis
 {
     if (_cacheExpiration <= [YAPI GetTickCount]) {

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_cellular.h 24590 2016-05-26 13:57:42Z seb $
+ * $Id: yocto_cellular.h 24921 2016-06-29 13:15:24Z mvuilleu $
  *
  * Declares yFindCellular(), the high-level API for Cellular functions
  *
@@ -122,6 +122,7 @@ typedef enum {
     Y_ENABLEDATA_HOMENETWORK = 0,
     Y_ENABLEDATA_ROAMING = 1,
     Y_ENABLEDATA_NEVER = 2,
+    Y_ENABLEDATA_NEUTRALITY = 3,
     Y_ENABLEDATA_INVALID = -1,
 } Y_ENABLEDATA_enum;
 #endif
@@ -347,8 +348,8 @@ typedef enum {
  * Returns the condition for enabling IP data services (GPRS).
  * When data services are disabled, SMS are the only mean of communication.
  *
- * @return a value among Y_ENABLEDATA_HOMENETWORK, Y_ENABLEDATA_ROAMING and Y_ENABLEDATA_NEVER
- * corresponding to the condition for enabling IP data services (GPRS)
+ * @return a value among Y_ENABLEDATA_HOMENETWORK, Y_ENABLEDATA_ROAMING, Y_ENABLEDATA_NEVER and
+ * Y_ENABLEDATA_NEUTRALITY corresponding to the condition for enabling IP data services (GPRS)
  *
  * On failure, throws an exception or returns Y_ENABLEDATA_INVALID.
  */
@@ -364,8 +365,8 @@ typedef enum {
  *
  * When data services are disabled, SMS are the only mean of communication.
  *
- * @param newval : a value among Y_ENABLEDATA_HOMENETWORK, Y_ENABLEDATA_ROAMING and Y_ENABLEDATA_NEVER
- * corresponding to the condition for enabling IP data services (GPRS)
+ * @param newval : a value among Y_ENABLEDATA_HOMENETWORK, Y_ENABLEDATA_ROAMING, Y_ENABLEDATA_NEVER
+ * and Y_ENABLEDATA_NEUTRALITY corresponding to the condition for enabling IP data services (GPRS)
  *
  * @return YAPI_SUCCESS if the call succeeds.
  *

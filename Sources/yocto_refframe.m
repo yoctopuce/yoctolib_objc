@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_refframe.m 23242 2016-02-23 14:12:17Z seb $
+ * $Id: yocto_refframe.m 24943 2016-07-01 14:02:25Z seb $
  *
  * Implements the high-level API for RefFrame functions
  *
@@ -368,6 +368,67 @@
     return [self set_mountPos:mixedPos];
 }
 
+/**
+ * Returns the 3D sensor calibration state (Yocto-3D-V2 only). This function returns
+ * an integer representing the calibration state of the 3 inertial sensors of
+ * the BNO055 chip, found in the Yocto-3D-V2. Hundredths show the calibration state
+ * of the accelerometer, tenths show the calibration state of the magnetometer while
+ * units show the calibration state of the gyroscope. For each sensor, the value 0
+ * means no calibration and the value 3 means full calibration.
+ *
+ * @return an integer representing the calibration state of Yocto-3D-V2:
+ *         333 when fully calibrated, 0 when not calibrated at all.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ * For the Yocto-3D (V1), this function always return -3 (unsupported function).
+ */
+-(int) get_calibrationState
+{
+    NSString* calibParam;
+    NSMutableArray* iCalib = [NSMutableArray array];
+    int caltyp;
+    int res;
+    // may throw an exception
+    calibParam = [self get_calibrationParam];
+    iCalib = [YAPI _decodeFloats:calibParam];
+    caltyp = (([[iCalib objectAtIndex:0] intValue]) / (1000));
+    if (caltyp != 33) {
+        return YAPI_NOT_SUPPORTED;
+    }
+    res = (([[iCalib objectAtIndex:1] intValue]) / (1000));
+    return res;
+}
+
+/**
+ * Returns estimated quality of the orientation (Yocto-3D-V2 only). This function returns
+ * an integer between 0 and 3 representing the degree of confidence of the position
+ * estimate. When the value is 3, the estimation is reliable. Below 3, one should
+ * expect sudden corrections, in particular for heading (compass function).
+ * The most frequent causes for values below 3 are magnetic interferences, and
+ * accelerations or rotations beyond the sensor range.
+ *
+ * @return an integer between 0 and 3 (3 when the measure is reliable)
+ *
+ * On failure, throws an exception or returns a negative error code.
+ * For the Yocto-3D (V1), this function always return -3 (unsupported function).
+ */
+-(int) get_measureQuality
+{
+    NSString* calibParam;
+    NSMutableArray* iCalib = [NSMutableArray array];
+    int caltyp;
+    int res;
+    // may throw an exception
+    calibParam = [self get_calibrationParam];
+    iCalib = [YAPI _decodeFloats:calibParam];
+    caltyp = (([[iCalib objectAtIndex:0] intValue]) / (1000));
+    if (caltyp != 33) {
+        return YAPI_NOT_SUPPORTED;
+    }
+    res = (([[iCalib objectAtIndex:2] intValue]) / (1000));
+    return res;
+}
+
 -(int) _calibSort:(int)start :(int)stopidx
 {
     int idx;
@@ -434,6 +495,7 @@
         [self cancel3DCalibration];
     }
     _calibSavedParams = [self get_calibrationParam];
+    _calibV2 = ([_calibSavedParams intValue] == 33);
     [self set_calibrationParam:@"0"];
     _calibCount = 50;
     _calibStage = 1;
@@ -461,6 +523,14 @@
  * On failure, throws an exception or returns a negative error code.
  */
 -(int) more3DCalibration
+{
+    if (_calibV2) {
+        return [self more3DCalibrationV2];
+    }
+    return [self more3DCalibrationV1];
+}
+
+-(int) more3DCalibrationV1
 {
     int currTick;
     NSMutableData* jsonData;
@@ -659,6 +729,65 @@
     return YAPI_SUCCESS;
 }
 
+-(int) more3DCalibrationV2
+{
+    int currTick;
+    NSMutableData* calibParam;
+    NSMutableArray* iCalib = [NSMutableArray array];
+    int cal3;
+    int calAcc;
+    int calMag;
+    int calGyr;
+    // make sure calibration has been started
+    if (_calibStage == 0) {
+        return YAPI_INVALID_ARGUMENT;
+    }
+    if (_calibProgress == 100) {
+        return YAPI_SUCCESS;
+    }
+    // make sure we don't start before previous calibration is cleared
+    if (_calibStage == 1) {
+        currTick = (int) (([YAPI GetTickCount]) & (0x7FFFFFFF));
+        currTick = ((currTick - _calibPrevTick) & (0x7FFFFFFF));
+        if (currTick < 1600) {
+            _calibStageHint = @"Set down the device on a steady horizontal surface";
+            _calibStageProgress = ((currTick) / (40));
+            _calibProgress = 1;
+            return YAPI_SUCCESS;
+        }
+    }
+    // may throw an exception
+    calibParam = [self _download:@"api/refFrame/calibrationParam.txt"];
+    iCalib = [YAPI _decodeFloats:ARC_sendAutorelease([[NSString alloc] initWithData:calibParam encoding:NSISOLatin1StringEncoding])];
+    cal3 = (([[iCalib objectAtIndex:1] intValue]) / (1000));
+    calAcc = ((cal3) / (100));
+    calMag = ((cal3) / (10)) - 10*calAcc;
+    calGyr = ((cal3) % (10));
+    if (calGyr < 3) {
+        _calibStageHint = @"Set down the device on a steady horizontal surface";
+        _calibStageProgress = 40 + calGyr*20;
+        _calibProgress = 4 + calGyr*2;
+    } else {
+        _calibStage = 2;
+        if (calMag < 3) {
+            _calibStageHint = @"Slowly draw '8' shapes along the 3 axis";
+            _calibStageProgress = 1 + calMag*33;
+            _calibProgress = 10 + calMag*5;
+        } else {
+            _calibStage = 3;
+            if (calAcc < 3) {
+                _calibStageHint = @"Slowly turn the device, stopping at each 90 degrees";
+                _calibStageProgress = 1 + calAcc*33;
+                _calibProgress = 25 + calAcc*25;
+            } else {
+                _calibStageProgress = 99;
+                _calibProgress = 100;
+            }
+        }
+    }
+    return YAPI_SUCCESS;
+}
+
 /**
  * Returns instructions to proceed to the tridimensional calibration initiated with
  * method start3DCalibration.
@@ -726,6 +855,14 @@
  */
 -(int) save3DCalibration
 {
+    if (_calibV2) {
+        return [self save3DCalibrationV2];
+    }
+    return [self save3DCalibrationV1];
+}
+
+-(int) save3DCalibrationV1
+{
     int shiftX;
     int shiftY;
     int shiftZ;
@@ -788,6 +925,11 @@
     newcalib = [NSString stringWithFormat:@"5,%d,%d,%d,%d,%d", shiftX, shiftY, shiftZ, scaleLo,scaleHi];
     _calibStage = 0;
     return [self set_calibrationParam:newcalib];
+}
+
+-(int) save3DCalibrationV2
+{
+    return [self set_calibrationParam:@"5,5,5,5,5,5"];
 }
 
 /**

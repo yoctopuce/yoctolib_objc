@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_gyro.h 19608 2015-03-05 10:37:24Z seb $
+ * $Id: yocto_gyro.h 24934 2016-06-30 22:32:01Z mvuilleu $
  *
  * Declares yFindGyro(), the high-level API for Gyro functions
  *
@@ -196,6 +196,7 @@ YQt* yFirstQt(void);
 //--- (generated code: YGyro globals)
 typedef void (*YGyroValueCallback)(YGyro *func, NSString *functionValue);
 typedef void (*YGyroTimedReportCallback)(YGyro *func, YMeasure *measure);
+#define Y_BANDWIDTH_INVALID             YAPI_INVALID_INT
 #define Y_XVALUE_INVALID                YAPI_INVALID_DOUBLE
 #define Y_YVALUE_INVALID                YAPI_INVALID_DOUBLE
 #define Y_ZVALUE_INVALID                YAPI_INVALID_DOUBLE
@@ -223,6 +224,7 @@ typedef void(*YAnglesCallback)(YGyro *yGyro, double roll, double pitch, double h
 {
 @protected
 //--- (generated code: YGyro attributes declaration)
+    int             _bandwidth;
     double          _xValue;
     double          _yValue;
     double          _zValue;
@@ -254,6 +256,30 @@ typedef void(*YAnglesCallback)(YGyro *yGyro, double roll, double pitch, double h
 
 //--- (end of generated code: YGyro private methods declaration)
 //--- (generated code: YGyro public methods declaration)
+/**
+ * Returns the measure update frequency, measured in Hz (Yocto-3D-V2 only).
+ *
+ * @return an integer corresponding to the measure update frequency, measured in Hz (Yocto-3D-V2 only)
+ *
+ * On failure, throws an exception or returns Y_BANDWIDTH_INVALID.
+ */
+-(int)     get_bandwidth;
+
+
+-(int) bandwidth;
+/**
+ * Changes the measure update frequency, measured in Hz (Yocto-3D-V2 only). When the
+ * frequency is lower, the device performs averaging.
+ *
+ * @param newval : an integer corresponding to the measure update frequency, measured in Hz (Yocto-3D-V2 only)
+ *
+ * @return YAPI_SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     set_bandwidth:(int) newval;
+-(int)     setBandwidth:(int) newval;
+
 /**
  * Returns the angular velocity around the X axis of the device, as a floating point number.
  *

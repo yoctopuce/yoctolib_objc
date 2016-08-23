@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_colorledcluster.h 24717 2016-06-03 16:09:53Z seb $
+ * $Id: yocto_colorledcluster.h 24934 2016-06-30 22:32:01Z mvuilleu $
  *
  * Declares yFindColorLedCluster(), the high-level API for ColorLedCluster functions
  *
@@ -451,6 +451,8 @@ typedef void (*YColorLedClusterValueCallback)(YColorLedCluster *func, NSString *
  * On failure, throws an exception or returns a negative error code.
  */
 -(int)     saveLedsConfigAtPowerOn;
+
+-(int)     saveLedsState;
 
 /**
  * Saves the definition of a sequence. Warning: only sequence steps and flags are saved.

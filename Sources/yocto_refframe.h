@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_refframe.h 23242 2016-02-23 14:12:17Z seb $
+ * $Id: yocto_refframe.h 24925 2016-06-29 15:26:26Z mvuilleu $
  *
  * Declares yFindRefFrame(), the high-level API for RefFrame functions
  *
@@ -90,6 +90,7 @@ typedef enum {
     double          _bearing;
     NSString*       _calibrationParam;
     YRefFrameValueCallback _valueCallbackRefFrame;
+    bool            _calibV2;
     int             _calibStage;
     NSString*       _calibStageHint;
     int             _calibStageProgress;
@@ -272,6 +273,37 @@ typedef enum {
  */
 -(int)     set_mountPosition:(Y_MOUNTPOSITION)position :(Y_MOUNTORIENTATION)orientation;
 
+/**
+ * Returns the 3D sensor calibration state (Yocto-3D-V2 only). This function returns
+ * an integer representing the calibration state of the 3 inertial sensors of
+ * the BNO055 chip, found in the Yocto-3D-V2. Hundredths show the calibration state
+ * of the accelerometer, tenths show the calibration state of the magnetometer while
+ * units show the calibration state of the gyroscope. For each sensor, the value 0
+ * means no calibration and the value 3 means full calibration.
+ *
+ * @return an integer representing the calibration state of Yocto-3D-V2:
+ *         333 when fully calibrated, 0 when not calibrated at all.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ * For the Yocto-3D (V1), this function always return -3 (unsupported function).
+ */
+-(int)     get_calibrationState;
+
+/**
+ * Returns estimated quality of the orientation (Yocto-3D-V2 only). This function returns
+ * an integer between 0 and 3 representing the degree of confidence of the position
+ * estimate. When the value is 3, the estimation is reliable. Below 3, one should
+ * expect sudden corrections, in particular for heading (compass function).
+ * The most frequent causes for values below 3 are magnetic interferences, and
+ * accelerations or rotations beyond the sensor range.
+ *
+ * @return an integer between 0 and 3 (3 when the measure is reliable)
+ *
+ * On failure, throws an exception or returns a negative error code.
+ * For the Yocto-3D (V1), this function always return -3 (unsupported function).
+ */
+-(int)     get_measureQuality;
+
 -(int)     _calibSort:(int)start :(int)stopidx;
 
 /**
@@ -303,6 +335,10 @@ typedef enum {
  * On failure, throws an exception or returns a negative error code.
  */
 -(int)     more3DCalibration;
+
+-(int)     more3DCalibrationV1;
+
+-(int)     more3DCalibrationV2;
 
 /**
  * Returns instructions to proceed to the tridimensional calibration initiated with
@@ -352,6 +388,10 @@ typedef enum {
  * On failure, throws an exception or returns a negative error code.
  */
 -(int)     save3DCalibration;
+
+-(int)     save3DCalibrationV1;
+
+-(int)     save3DCalibrationV2;
 
 /**
  * Aborts the sensors tridimensional calibration process et restores normal settings.
