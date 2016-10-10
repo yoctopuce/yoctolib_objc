@@ -28,18 +28,18 @@ int main(int argc, const char * argv[])
             usage();
             return 1;
         }
-        if(argc < 2){
+        if(argc < 2) {
             disp = [YDisplay FirstDisplay];
-            if(disp == nil){
+            if(disp == nil) {
                 NSLog(@"No module connected (check USB cable)");
                 usage();
                 return 1;
             }
         } else {
             NSString *target = [NSString stringWithUTF8String:argv[1]];
-            
+
             disp = [YDisplay FindDisplay:target];
-            if(![disp isOnline]){
+            if(![disp isOnline]) {
                 NSLog(@"Module not connected (check identification and USB cable)");
                 usage();
                 return 1;
@@ -58,10 +58,18 @@ int main(int argc, const char * argv[])
         [l0 drawText:w / 2 :h / 2 :Y_ALIGN_CENTER  :@"Hello world!"];
 
         // visualize each corner
-        [l0 moveTo:0 :5]; [l0 lineTo:0 :0]; [l0 lineTo:5 :0];
-        [l0 moveTo:0 :h - 6]; [l0 lineTo:0 :h - 1]; [l0 lineTo:5 :h - 1];
-        [l0 moveTo:w - 1 :h - 6]; [l0 lineTo:w - 1 :h - 1]; [l0 lineTo:w - 6 :h - 1];
-        [l0 moveTo:w - 1 :5]; [l0 lineTo:w - 1  :0]; [l0 lineTo:w - 6 :0];
+        [l0 moveTo:0 :5];
+        [l0 lineTo:0 :0];
+        [l0 lineTo:5 :0];
+        [l0 moveTo:0 :h - 6];
+        [l0 lineTo:0 :h - 1];
+        [l0 lineTo:5 :h - 1];
+        [l0 moveTo:w - 1 :h - 6];
+        [l0 lineTo:w - 1 :h - 1];
+        [l0 lineTo:w - 6 :h - 1];
+        [l0 moveTo:w - 1 :5];
+        [l0 lineTo:w - 1  :0];
+        [l0 lineTo:w - 6 :0];
 
         // draw a circle in the top left corner of layer 1
         l1 = [disp get_displayLayer:1];
@@ -70,9 +78,13 @@ int main(int argc, const char * argv[])
 
         // and animate the layer
         NSLog(@"Use Ctrl-C to stop");
-        x = 0; y = 0; vx = 1; vy = 1;
+        x = 0;
+        y = 0;
+        vx = 1;
+        vy = 1;
         while (true) {
-            x += vx; y += vy;
+            x += vx;
+            y += vy;
             if ((x < 0) || (x > w - (h / 4))) vx = -vx;
             if ((y < 0) || (y > h - (h / 4))) vy = -vy;
             [l1 setLayerPosition:x :y :0];
@@ -80,6 +92,6 @@ int main(int argc, const char * argv[])
         }
         [YAPI FreeAPI];
     }
-    
+
     return 0;
 }

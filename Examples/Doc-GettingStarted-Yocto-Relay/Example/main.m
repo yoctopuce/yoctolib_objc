@@ -14,11 +14,11 @@ static void usage(void)
 int main(int argc, const char * argv[])
 {
     NSError *error;
-    
+
     if (argc < 3) {
         usage();
     }
-    
+
     @autoreleasepool {
         // Setup the API to use local USB devices
         if([YAPI RegisterHub:@"usb": &error] != YAPI_SUCCESS) {
@@ -28,24 +28,25 @@ int main(int argc, const char * argv[])
         NSString *target = [NSString stringWithUTF8String:argv[1]];
         NSString *state  = [NSString stringWithUTF8String:argv[2]];
         YRelay   *relay;
-        
+
         if ([target isEqualToString:@"any"]) {
-            relay =  [YRelay FirstRelay];        
+            relay =  [YRelay FirstRelay];
             if (relay==NULL) {
                 NSLog(@"No module connected (check USB cable)");
                 return 1;
             }
-        }else{
+        } else {
             relay =  [YRelay FindRelay:[target stringByAppendingString:@".relay1"]];
-        }        
+        }
         if ([relay isOnline]) {
             if ([state isEqualToString:@"A"])
                 [relay set_state:Y_STATE_A];
-            else 
+            else
                 [relay set_state:Y_STATE_B];
         } else {
             NSLog(@"Module not connected (check identification and USB cable)\n");
         }
-    }    
+        [YAPI FreeAPI];
+    }
     return 0;
 }

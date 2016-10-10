@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_wakeupmonitor.h 23242 2016-02-23 14:12:17Z seb $
+ * $Id: yocto_wakeupmonitor.h 25275 2016-08-24 13:42:24Z mvuilleu $
  *
  * Declares yFindWakeUpMonitor(), the high-level API for WakeUpMonitor functions
  *
@@ -231,9 +231,9 @@ typedef enum {
  * Registers the callback function that is invoked on every change of advertised value.
  * The callback is invoked only during the execution of ySleep or yHandleEvents.
  * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
- * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
+ * one of these two functions periodically. To unregister a callback, pass a nil pointer as argument.
  *
- * @param callback : the callback function to call, or a null pointer. The callback function should take two
+ * @param callback : the callback function to call, or a nil pointer. The callback function should take two
  *         arguments: the function object of which the value has changed, and the character string describing
  *         the new advertised value.
  * @noreturn
@@ -300,7 +300,7 @@ typedef enum {
  * Continues the enumeration of monitors started using yFirstWakeUpMonitor().
  *
  * @return a pointer to a YWakeUpMonitor object, corresponding to
- *         a monitor currently online, or a null pointer
+ *         a monitor currently online, or a nil pointer
  *         if there are no more monitors to enumerate.
  */
 -(YWakeUpMonitor*) nextWakeUpMonitor;
@@ -310,7 +310,7 @@ typedef enum {
  * next monitors.
  *
  * @return a pointer to a YWakeUpMonitor object, corresponding to
- *         the first monitor currently online, or a null pointer
+ *         the first monitor currently online, or a nil pointer
  *         if there are none.
  */
 +(YWakeUpMonitor*) FirstWakeUpMonitor;
@@ -349,7 +349,7 @@ YWakeUpMonitor* yFindWakeUpMonitor(NSString* func);
  * next monitors.
  *
  * @return a pointer to a YWakeUpMonitor object, corresponding to
- *         the first monitor currently online, or a null pointer
+ *         the first monitor currently online, or a nil pointer
  *         if there are none.
  */
 YWakeUpMonitor* yFirstWakeUpMonitor(void);

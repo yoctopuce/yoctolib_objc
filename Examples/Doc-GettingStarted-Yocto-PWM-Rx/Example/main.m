@@ -20,7 +20,7 @@ int main(int argc, const char * argv[])
         usage();
     }
 
-    @autoreleasepool{
+    @autoreleasepool {
         // Setup the API to use local USB devices
         if([YAPI RegisterHub:@"usb": &error] != YAPI_SUCCESS) {
             NSLog(@"RegisterHub error: %@", [error localizedDescription]);
@@ -38,17 +38,17 @@ int main(int argc, const char * argv[])
         }
 
         YPwmInput *pwmInput1 = [YPwmInput FindPwmInput:
-            [target stringByAppendingString:@".pwmInput1"]];
+                                [target stringByAppendingString:@".pwmInput1"]];
         YPwmInput *pwmInput2 = [YPwmInput FindPwmInput:
-            [target stringByAppendingString:@".pwmInput2"]];
+                                [target stringByAppendingString:@".pwmInput2"]];
 
         while  ([pwmInput1 isOnline]) {
             NSLog(@"PWM1 : %f Hz %f %% %ld pulses",
-                [pwmInput1 get_frequency], [pwmInput1 get_dutyCycle],
-                [pwmInput1 get_pulseCounter]);
+                  [pwmInput1 get_frequency], [pwmInput1 get_dutyCycle],
+                  [pwmInput1 get_pulseCounter]);
             NSLog(@"PWM2 : %f Hz %f %% %ld pulses",
-                [pwmInput2 get_frequency], [pwmInput2 get_dutyCycle],
-                [pwmInput2 get_pulseCounter]);
+                  [pwmInput2 get_frequency], [pwmInput2 get_dutyCycle],
+                  [pwmInput2 get_pulseCounter]);
             NSLog(@"  (press Ctrl-C to exit)");
             [YAPI Sleep:1000 :&error];
         }

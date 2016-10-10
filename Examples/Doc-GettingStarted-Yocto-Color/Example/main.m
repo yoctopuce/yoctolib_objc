@@ -16,11 +16,11 @@ static void usage(void)
 int main(int argc, const char * argv[])
 {
     NSError * error;
-    
+
     if(argc < 3) {
         usage();
     }
-    
+
     @autoreleasepool {
         // Setup the API to use local USB devices
         if([YAPI RegisterHub:@"usb": &error] != YAPI_SUCCESS) {
@@ -43,20 +43,21 @@ int main(int argc, const char * argv[])
         unsigned color;
         if ([color_str isEqualToString:@"red"])
             color = 0xFF0000;
-        else if ([color_str isEqualToString:@"green"])            
+        else if ([color_str isEqualToString:@"green"])
             color = 0x00FF00;
         else if ([color_str isEqualToString:@"blue"])
             color = 0x0000FF;
-        else 
+        else
             color = (int)strtoul([color_str UTF8String],NULL, 16);
-    
+
         if ([led1 isOnline]) {
             [led1 set_rgbColor:color];  // immediate switch
-            [led2 rgbMove:color:1000];  // smooth transition  
+            [led2 rgbMove:color:1000];  // smooth transition
         } else {
             NSLog(@"Module not connected (check identification and USB cable)\n");
         }
+        [YAPI FreeAPI];
     }
-    
+
     return 0;
 }

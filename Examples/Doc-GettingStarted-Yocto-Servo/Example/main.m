@@ -15,19 +15,19 @@ static void usage(void)
 int main(int argc, const char * argv[])
 {
     NSError *error;
-    
+
     if (argc < 3) {
         usage();
     }
-    
-    @autoreleasepool{
+
+    @autoreleasepool {
         // Setup the API to use local USB devices
         if([YAPI RegisterHub:@"usb": &error] != YAPI_SUCCESS) {
             NSLog(@"RegisterHub error: %@", [error localizedDescription]);
             return 1;
         }
         NSString *target = [NSString stringWithUTF8String:argv[1]];
-        
+
         if ([target isEqualToString:@"any"]) {
             YServo *servo = [YServo FirstServo];
             if (servo==NULL) {
@@ -35,18 +35,19 @@ int main(int argc, const char * argv[])
                 return 1;
             }
             target = [[servo module] serialNumber];
-        }   
+        }
         YServo   *servo1 =  [YServo FindServo:[target stringByAppendingString:@".servo1"]];
         YServo   *servo5 =  [YServo FindServo:[target stringByAppendingString:@".servo5"]];
-                
+
         int pos = (int) atol(argv[2]);
-        
+
         if ([servo1 isOnline]) {
             [servo1 set_position:pos];  // immediate switch
-            [servo5 move:pos:3000];     // smooth transition  
+            [servo5 move:pos:3000];     // smooth transition
         } else {
             NSLog(@"Module not connected (check identification and USB cable)\n");
         }
-    } 
+        [YAPI FreeAPI];
+    }
     return 0;
 }

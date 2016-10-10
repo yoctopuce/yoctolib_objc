@@ -6,15 +6,15 @@
 int main(int argc, const char * argv[])
 {
     NSError *error;
-    char cmd[50] = {0}; 
-        
+    char cmd[50] = {0};
+
     @autoreleasepool {
         // Setup the API to use local USB devices
         if([YAPI RegisterHub:@"usb": &error] != YAPI_SUCCESS) {
             NSLog(@"RegisterHub error: %@", [error localizedDescription]);
             return 1;
         }
-        
+
         YSerialPort *serialPort;
         if (argc > 1) {
             NSString     *target = [NSString stringWithUTF8String:argv[1]];
@@ -26,8 +26,8 @@ int main(int argc, const char * argv[])
                 return 1;
             }
         }
-        
-              
+
+
         int slave, reg, val;
         do {
             NSLog(@"Please enter the MODBUS slave address (1...255)");

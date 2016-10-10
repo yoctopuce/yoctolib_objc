@@ -13,7 +13,7 @@ static void usage(void)
 int main(int argc, const char * argv[])
 {
     NSError *error;
-    
+
     if (argc < 2) {
         usage();
     }
@@ -39,11 +39,12 @@ int main(int argc, const char * argv[])
                 NSLog(@"Module not connected (check identification and USB cable)\n");
                 break;
             }
-            
+
             NSLog(@"Current ambient light: %f lx\n", [sensor get_currentValue]);
             NSLog(@"  (press Ctrl-C to exit)\n");
             [YAPI Sleep:1000:NULL];
         }
+        [YAPI FreeAPI];
     }
     return 0;
 }

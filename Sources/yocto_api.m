@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.m 24628 2016-05-27 15:01:14Z mvuilleu $
+ * $Id: yocto_api.m 25352 2016-09-15 16:09:18Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -836,7 +836,7 @@ static const char* hexArray = "0123456789ABCDEF";
  * Registers a log callback function. This callback will be called each time
  * the API have something to say. Quite useful to debug the API.
  *
- * @param logfun : a procedure taking a string parameter, or null
+ * @param logfun : a procedure taking a string parameter, or nil
  *         to unregister a previously registered  callback.
  */
 +(void)    RegisterLogFunction:(yLogCallback) logfun
@@ -850,7 +850,7 @@ static const char* hexArray = "0123456789ABCDEF";
  * a device is plugged. This callback will be invoked while yUpdateDeviceList
  * is running. You will have to call this function on a regular basis.
  *
- * @param arrivalCallback : a procedure taking a YModule parameter, or null
+ * @param arrivalCallback : a procedure taking a YModule parameter, or nil
  *         to unregister a previously registered  callback.
  */
 +(void)    RegisterDeviceArrivalCallback:(yDeviceUpdateCallback) arrivalCallback
@@ -875,7 +875,7 @@ static const char* hexArray = "0123456789ABCDEF";
  * a device is unplugged. This callback will be invoked while yUpdateDeviceList
  * is running. You will have to call this function on a regular basis.
  *
- * @param removalCallback : a procedure taking a YModule parameter, or null
+ * @param removalCallback : a procedure taking a YModule parameter, or nil
  *         to unregister a previously registered  callback.
  */
 +(void)    RegisterDeviceRemovalCallback:(yDeviceUpdateCallback) removalCallback
@@ -897,7 +897,7 @@ static const char* hexArray = "0123456789ABCDEF";
  * network hub (this URL can be passed to RegisterHub). This callback will be invoked
  * while yUpdateDeviceList is running. You will have to call this function on a regular basis.
  *
- * @param hubDiscoveryCallback : a procedure taking two string parameter, or null
+ * @param hubDiscoveryCallback : a procedure taking two string parameter, or nil
  *         to unregister a previously registered  callback.
  */
 +(void)        RegisterHubDiscoveryCallback:(YHubDiscoveryCallback) hubDiscoveryCallback
@@ -2502,9 +2502,9 @@ static const char* hexArray = "0123456789ABCDEF";
  * Registers the callback function that is invoked on every change of advertised value.
  * The callback is invoked only during the execution of ySleep or yHandleEvents.
  * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
- * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
+ * one of these two functions periodically. To unregister a callback, pass a nil pointer as argument.
  *
- * @param callback : the callback function to call, or a null pointer. The callback function should take two
+ * @param callback : the callback function to call, or a nil pointer. The callback function should take two
  *         arguments: the function object of which the value has changed, and the character string describing
  *         the new advertised value.
  * @noreturn
@@ -3608,9 +3608,9 @@ static const char* hexArray = "0123456789ABCDEF";
  * Registers the callback function that is invoked on every change of advertised value.
  * The callback is invoked only during the execution of ySleep or yHandleEvents.
  * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
- * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
+ * one of these two functions periodically. To unregister a callback, pass a nil pointer as argument.
  *
- * @param callback : the callback function to call, or a null pointer. The callback function should take two
+ * @param callback : the callback function to call, or a nil pointer. The callback function should take two
  *         arguments: the function object of which the value has changed, and the character string describing
  *         the new advertised value.
  * @noreturn
@@ -3866,9 +3866,9 @@ static const char* hexArray = "0123456789ABCDEF";
  * Registers the callback function that is invoked on every periodic timed notification.
  * The callback is invoked only during the execution of ySleep or yHandleEvents.
  * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
- * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
+ * one of these two functions periodically. To unregister a callback, pass a nil pointer as argument.
  *
- * @param callback : the callback function to call, or a null pointer. The callback function should take two
+ * @param callback : the callback function to call, or a nil pointer. The callback function should take two
  *         arguments: the function object of which the value has changed, and an YMeasure object describing
  *         the new advertised value.
  * @noreturn
@@ -4389,7 +4389,7 @@ static const char* hexArray = "0123456789ABCDEF";
  * Registers a device log callback function. This callback will be called each time
  * that a module sends a new log message. Mostly useful to debug a Yoctopuce module.
  *
- * @param callback : the callback function to call, or a null pointer. The callback function should take two
+ * @param callback : the callback function to call, or a nil pointer. The callback function should take two
  *         arguments: the module object that emitted the log message, and the character string containing the log.
  * @noreturn
  */
@@ -4792,9 +4792,9 @@ static const char* hexArray = "0123456789ABCDEF";
  * Registers the callback function that is invoked on every change of advertised value.
  * The callback is invoked only during the execution of ySleep or yHandleEvents.
  * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
- * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
+ * one of these two functions periodically. To unregister a callback, pass a nil pointer as argument.
  *
- * @param callback : the callback function to call, or a null pointer. The callback function should take two
+ * @param callback : the callback function to call, or a nil pointer. The callback function should take two
  *         arguments: the function object of which the value has changed, and the character string describing
  *         the new advertised value.
  * @noreturn
@@ -4924,7 +4924,7 @@ static const char* hexArray = "0123456789ABCDEF";
  * @param path : the path of the .byn file to use.
  * @param force : true to force the firmware update even if some prerequisites appear not to be met
  *
- * @return a YFirmwareUpdate object or NULL on error.
+ * @return a YFirmwareUpdate object or nil on error.
  */
 -(YFirmwareUpdate*) updateFirmwareEx:(NSString*)path :(bool)force
 {
@@ -4946,7 +4946,7 @@ static const char* hexArray = "0123456789ABCDEF";
  *
  * @param path : the path of the .byn file to use.
  *
- * @return a YFirmwareUpdate object or NULL on error.
+ * @return a YFirmwareUpdate object or nil on error.
  */
 -(YFirmwareUpdate*) updateFirmware:(NSString*)path
 {
@@ -5639,7 +5639,7 @@ static const char* hexArray = "0123456789ABCDEF";
             j = 0;
             found = NO;
             while ((j < (int)[old_jpath count]) && !(found)) {
-                if (([new_jpath_len objectAtIndex:i] == [old_jpath_len objectAtIndex:j]) && ([[new_jpath objectAtIndex:i] isEqualToString:[old_jpath objectAtIndex:j]])) {
+                if (([[new_jpath_len objectAtIndex:i] intValue] == [[old_jpath_len objectAtIndex:j] intValue]) && ([[new_jpath objectAtIndex:i] isEqualToString:[old_jpath objectAtIndex:j]])) {
                     found = YES;
                     oldval = [old_val_arr objectAtIndex:j];
                     if (!([newval isEqualToString:oldval])) {
@@ -5658,7 +5658,7 @@ static const char* hexArray = "0123456789ABCDEF";
                 j = 0;
                 found = NO;
                 while ((j < (int)[old_jpath count]) && !(found)) {
-                    if (([new_jpath_len objectAtIndex:i] == [old_jpath_len objectAtIndex:j]) && ([[new_jpath objectAtIndex:i] isEqualToString:[old_jpath objectAtIndex:j]])) {
+                    if (([[new_jpath_len objectAtIndex:i] intValue] == [[old_jpath_len objectAtIndex:j] intValue]) && ([[new_jpath objectAtIndex:i] isEqualToString:[old_jpath objectAtIndex:j]])) {
                         found = YES;
                         old_calib = [old_val_arr objectAtIndex:j];
                     }
@@ -7685,7 +7685,7 @@ BOOL yCheckLogicalName(NSString * name){  return [YAPI  CheckLogicalName:name]; 
  * a device is plugged. This callback will be invoked while yUpdateDeviceList
  * is running. You will have to call this function on a regular basis.
  *
- * @param arrivalCallback : a procedure taking a YModule parameter, or null
+ * @param arrivalCallback : a procedure taking a YModule parameter, or nil
  *         to unregister a previously registered  callback.
  */
 void    yRegisterDeviceArrivalCallback(yDeviceUpdateCallback arrivalCallback)
@@ -7696,7 +7696,7 @@ void    yRegisterDeviceArrivalCallback(yDeviceUpdateCallback arrivalCallback)
  * a device is unplugged. This callback will be invoked while yUpdateDeviceList
  * is running. You will have to call this function on a regular basis.
  *
- * @param removalCallback : a procedure taking a YModule parameter, or null
+ * @param removalCallback : a procedure taking a YModule parameter, or nil
  *         to unregister a previously registered  callback.
  */
 void    yRegisterDeviceRemovalCallback(yDeviceUpdateCallback removalCallback)
@@ -7708,7 +7708,7 @@ void    yRegisterDeviceChangeCallback(yDeviceUpdateCallback changeCallback)
  * Registers a log callback function. This callback will be called each time
  * the API have something to say. Quite useful to debug the API.
  *
- * @param logfun : a procedure taking a string parameter, or null
+ * @param logfun : a procedure taking a string parameter, or nil
  *         to unregister a previously registered  callback.
  */
 void    yRegisterLogFunction(yLogCallback logfun)

@@ -21,11 +21,11 @@ int main(int argc, const char * argv[])
 {
     NSError *error;
     YMotor  *motor;
-    
+
     if (argc < 3) {
         usage();
     }
-    
+
     @autoreleasepool {
         // Setup the API to use local USB devices
         if([YAPI RegisterHub:@"usb": &error] != YAPI_SUCCESS) {
@@ -44,13 +44,13 @@ int main(int argc, const char * argv[])
             }
             target = [[motor get_module] get_serialNumber];
         }
-        
+
         // retreive motor, current, voltage and temperature features from the device
         YMotor *motor = [YMotor FindMotor:[target stringByAppendingString:@".motor"]];
         YCurrent *current = [YCurrent FindCurrent:[target stringByAppendingString:@".current"]];
         YVoltage *voltage = [YVoltage FindVoltage:[target stringByAppendingString:@".voltage"]];
-        YTemperature *temperature = [YTemperature 
-            FindTemperature:[target stringByAppendingString:@".temperature"]];
+        YTemperature *temperature = [YTemperature
+                                     FindTemperature:[target stringByAppendingString:@".temperature"]];
 
         // we need to retreive both DC and AC current from the device.
         if ([motor isOnline])  {
@@ -62,14 +62,15 @@ int main(int argc, const char * argv[])
             while (1) {
                 // display motor status
                 NSLog(@"Status=%@  Voltage=%fV  Current=%f  Temp=%f",
-                    [motor get_advertisedValue], [voltage get_currentValue],
-                    [current get_currentValue] /1000, [temperature get_currentValue]);
+                      [motor get_advertisedValue], [voltage get_currentValue],
+                      [current get_currentValue] /1000, [temperature get_currentValue]);
                 [YAPI Sleep:1000 :NULL]; // wait for one second
             }
         } else {
             NSLog(@"No module connected (check USB cable)");
             return 1;
         }
-    }    
+        [YAPI FreeAPI];
+    }
     return 0;
 }

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.h 24628 2016-05-27 15:01:14Z mvuilleu $
+ * $Id: yocto_api.h 25275 2016-08-24 13:42:24Z mvuilleu $
  *
  * High-level programming interface, common to all modules
  *
@@ -62,7 +62,7 @@
 
 extern NSMutableDictionary* YAPI_YFunctions;
 
-#define YOCTO_API_REVISION          "25250"
+#define YOCTO_API_REVISION          "25534"
 
 // yInitAPI argument
 #define Y_DETECT_NONE           0
@@ -338,7 +338,7 @@ int _ystrpos(NSString* haystack, NSString* needle);
  * Registers a log callback function. This callback will be called each time
  * the API have something to say. Quite useful to debug the API.
  *
- * @param logfun : a procedure taking a string parameter, or null
+ * @param logfun : a procedure taking a string parameter, or nil
  *         to unregister a previously registered  callback.
  */
  +(void)        RegisterLogFunction:(yLogCallback) logfun;
@@ -348,7 +348,7 @@ int _ystrpos(NSString* haystack, NSString* needle);
  * a device is plugged. This callback will be invoked while yUpdateDeviceList
  * is running. You will have to call this function on a regular basis.
  *
- * @param arrivalCallback : a procedure taking a YModule parameter, or null
+ * @param arrivalCallback : a procedure taking a YModule parameter, or nil
  *         to unregister a previously registered  callback.
  */
  +(void)        RegisterDeviceArrivalCallback:(yDeviceUpdateCallback) arrivalCallback;
@@ -369,7 +369,7 @@ int _ystrpos(NSString* haystack, NSString* needle);
  * a device is unplugged. This callback will be invoked while yUpdateDeviceList
  * is running. You will have to call this function on a regular basis.
  *
- * @param removalCallback : a procedure taking a YModule parameter, or null
+ * @param removalCallback : a procedure taking a YModule parameter, or nil
  *         to unregister a previously registered  callback.
  */
  +(void)        RegisterDeviceRemovalCallback:(yDeviceUpdateCallback) removalCallback;
@@ -383,7 +383,7 @@ int _ystrpos(NSString* haystack, NSString* needle);
  * network hub (this URL can be passed to RegisterHub). This callback will be invoked
  * while yUpdateDeviceList is running. You will have to call this function on a regular basis.
  *
- * @param hubDiscoveryCallback : a procedure taking two string parameter, or null
+ * @param hubDiscoveryCallback : a procedure taking two string parameter, or nil
  *         to unregister a previously registered  callback.
  */
  +(void)        RegisterHubDiscoveryCallback:(YHubDiscoveryCallback) hubDiscoveryCallback;
@@ -791,9 +791,9 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
  * Registers the callback function that is invoked on every change of advertised value.
  * The callback is invoked only during the execution of ySleep or yHandleEvents.
  * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
- * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
+ * one of these two functions periodically. To unregister a callback, pass a nil pointer as argument.
  *
- * @param callback : the callback function to call, or a null pointer. The callback function should take two
+ * @param callback : the callback function to call, or a nil pointer. The callback function should take two
  *         arguments: the function object of which the value has changed, and the character string describing
  *         the new advertised value.
  * @noreturn
@@ -1106,7 +1106,7 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
  * Registers a device log callback function. This callback will be called each time
  * that a module sends a new log message. Mostly useful to debug a Yoctopuce module.
  *
- * @param callback : the callback function to call, or a null pointer. The callback function should take two
+ * @param callback : the callback function to call, or a nil pointer. The callback function should take two
  *         arguments: the module object that emitted the log message, and the character string containing the log.
  * @noreturn
  */
@@ -1323,9 +1323,9 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
  * Registers the callback function that is invoked on every change of advertised value.
  * The callback is invoked only during the execution of ySleep or yHandleEvents.
  * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
- * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
+ * one of these two functions periodically. To unregister a callback, pass a nil pointer as argument.
  *
- * @param callback : the callback function to call, or a null pointer. The callback function should take two
+ * @param callback : the callback function to call, or a nil pointer. The callback function should take two
  *         arguments: the function object of which the value has changed, and the character string describing
  *         the new advertised value.
  * @noreturn
@@ -1401,7 +1401,7 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
  * @param path : the path of the .byn file to use.
  * @param force : true to force the firmware update even if some prerequisites appear not to be met
  *
- * @return a YFirmwareUpdate object or NULL on error.
+ * @return a YFirmwareUpdate object or nil on error.
  */
 -(YFirmwareUpdate*)     updateFirmwareEx:(NSString*)path :(bool)force;
 
@@ -1411,7 +1411,7 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
  *
  * @param path : the path of the .byn file to use.
  *
- * @return a YFirmwareUpdate object or NULL on error.
+ * @return a YFirmwareUpdate object or nil on error.
  */
 -(YFirmwareUpdate*)     updateFirmware:(NSString*)path;
 
@@ -1559,7 +1559,7 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
  * Continues the module enumeration started using yFirstModule().
  *
  * @return a pointer to a YModule object, corresponding to
- *         the next module found, or a null pointer
+ *         the next module found, or a nil pointer
  *         if there are no more modules to enumerate.
  */
 -(YModule*) nextModule;
@@ -1569,7 +1569,7 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
  * next modules.
  *
  * @return a pointer to a YModule object, corresponding to
- *         the first module currently online, or a null pointer
+ *         the first module currently online, or a nil pointer
  *         if there are none.
  */
 +(YModule*) FirstModule;
@@ -1858,9 +1858,9 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
  * Registers the callback function that is invoked on every change of advertised value.
  * The callback is invoked only during the execution of ySleep or yHandleEvents.
  * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
- * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
+ * one of these two functions periodically. To unregister a callback, pass a nil pointer as argument.
  *
- * @param callback : the callback function to call, or a null pointer. The callback function should take two
+ * @param callback : the callback function to call, or a nil pointer. The callback function should take two
  *         arguments: the function object of which the value has changed, and the character string describing
  *         the new advertised value.
  * @noreturn
@@ -1929,9 +1929,9 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
  * Registers the callback function that is invoked on every periodic timed notification.
  * The callback is invoked only during the execution of ySleep or yHandleEvents.
  * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
- * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
+ * one of these two functions periodically. To unregister a callback, pass a nil pointer as argument.
  *
- * @param callback : the callback function to call, or a null pointer. The callback function should take two
+ * @param callback : the callback function to call, or a nil pointer. The callback function should take two
  *         arguments: the function object of which the value has changed, and an YMeasure object describing
  *         the new advertised value.
  * @noreturn
@@ -1993,7 +1993,7 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
  * Continues the enumeration of sensors started using yFirstSensor().
  *
  * @return a pointer to a YSensor object, corresponding to
- *         a sensor currently online, or a null pointer
+ *         a sensor currently online, or a nil pointer
  *         if there are no more sensors to enumerate.
  */
 -(YSensor*) nextSensor;
@@ -2003,7 +2003,7 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
  * next sensors.
  *
  * @return a pointer to a YSensor object, corresponding to
- *         the first sensor currently online, or a null pointer
+ *         the first sensor currently online, or a nil pointer
  *         if there are none.
  */
 +(YSensor*) FirstSensor;
@@ -2895,7 +2895,7 @@ BOOL yCheckLogicalName(NSString * name);
  * a device is plugged. This callback will be invoked while yUpdateDeviceList
  * is running. You will have to call this function on a regular basis.
  *
- * @param arrivalCallback : a procedure taking a YModule parameter, or null
+ * @param arrivalCallback : a procedure taking a YModule parameter, or nil
  *         to unregister a previously registered  callback.
  */
 void    yRegisterDeviceArrivalCallback(yDeviceUpdateCallback arrivalCallback);
@@ -2905,7 +2905,7 @@ void    yRegisterDeviceArrivalCallback(yDeviceUpdateCallback arrivalCallback);
  * a device is unplugged. This callback will be invoked while yUpdateDeviceList
  * is running. You will have to call this function on a regular basis.
  *
- * @param removalCallback : a procedure taking a YModule parameter, or null
+ * @param removalCallback : a procedure taking a YModule parameter, or nil
  *         to unregister a previously registered  callback.
  */
 void    yRegisterDeviceRemovalCallback(yDeviceUpdateCallback removalCallback);
@@ -2916,7 +2916,7 @@ void    yRegisterDeviceChangeCallback(yDeviceUpdateCallback removalCallback);
  * Registers a log callback function. This callback will be called each time
  * the API have something to say. Quite useful to debug the API.
  *
- * @param logfun : a procedure taking a string parameter, or null
+ * @param logfun : a procedure taking a string parameter, or nil
  *         to unregister a previously registered  callback.
  */
 void    yRegisterLogFunction(yLogCallback logfun);
@@ -2978,7 +2978,7 @@ YModule* yFindModule(NSString* func);
  * next modules.
  *
  * @return a pointer to a YModule object, corresponding to
- *         the first module currently online, or a null pointer
+ *         the first module currently online, or a nil pointer
  *         if there are none.
  */
 YModule* yFirstModule(void);
@@ -3016,7 +3016,7 @@ YSensor* yFindSensor(NSString* func);
  * next sensors.
  *
  * @return a pointer to a YSensor object, corresponding to
- *         the first sensor currently online, or a null pointer
+ *         the first sensor currently online, or a nil pointer
  *         if there are none.
  */
 YSensor* yFirstSensor(void);

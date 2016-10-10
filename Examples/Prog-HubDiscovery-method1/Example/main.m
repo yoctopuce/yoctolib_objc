@@ -13,7 +13,7 @@ static void HubDiscovered(NSString *serial, NSString *url)
     // So we use a dictionnary to avoid duplicates
     if ([KnownHubs containsObject:serial])
         return;
-     
+
     NSLog(@"hub found: %@ (%@)", serial, url);
     [YAPI RegisterHub:url :&error];
 
@@ -47,12 +47,12 @@ int main (int argc, const char * argv[])
         KnownHubs = [[NSMutableArray alloc] init];
         NSLog(@"Waiting for hubs to signal themselves...");
         [YAPI RegisterHubDiscoveryCallback:HubDiscovered];
-    
+
         // wait for 30 seconds, doing nothing.
         for (int i = 0; i < 30; i++) {
             [YAPI UpdateDeviceList:NULL]; // traps plug/unplug events
             [YAPI Sleep:1000: NULL];   // traps others events
-        } 
+        }
     }
     return 0;
 }

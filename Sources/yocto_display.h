@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_display.h 19608 2015-03-05 10:37:24Z seb $
+ * $Id: yocto_display.h 25275 2016-08-24 13:42:24Z mvuilleu $
  *
  * Declares yFindDisplay(), the high-level API for Display functions
  *
@@ -594,7 +594,7 @@ typedef enum {
  *
  * @return an YDisplayLayer object
  *
- * On failure, throws an exception or returns null.
+ * On failure, throws an exception or returns nil.
  */
 -(YDisplayLayer*) get_displayLayer:(unsigned)layerId;
     
@@ -808,9 +808,9 @@ typedef enum {
  * Registers the callback function that is invoked on every change of advertised value.
  * The callback is invoked only during the execution of ySleep or yHandleEvents.
  * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
- * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
+ * one of these two functions periodically. To unregister a callback, pass a nil pointer as argument.
  *
- * @param callback : the callback function to call, or a null pointer. The callback function should take two
+ * @param callback : the callback function to call, or a nil pointer. The callback function should take two
  *         arguments: the function object of which the value has changed, and the character string describing
  *         the new advertised value.
  * @noreturn
@@ -957,7 +957,7 @@ typedef enum {
  * Continues the enumeration of displays started using yFirstDisplay().
  *
  * @return a pointer to a YDisplay object, corresponding to
- *         a display currently online, or a null pointer
+ *         a display currently online, or a nil pointer
  *         if there are no more displays to enumerate.
  */
 -(YDisplay*) nextDisplay;
@@ -967,7 +967,7 @@ typedef enum {
  * next displays.
  *
  * @return a pointer to a YDisplay object, corresponding to
- *         the first display currently online, or a null pointer
+ *         the first display currently online, or a nil pointer
  *         if there are none.
  */
 +(YDisplay*) FirstDisplay;
@@ -1008,7 +1008,7 @@ YDisplay* yFindDisplay(NSString* func);
  * next displays.
  *
  * @return a pointer to a YDisplay object, corresponding to
- *         the first display currently online, or a null pointer
+ *         the first display currently online, or a nil pointer
  *         if there are none.
  */
 YDisplay* yFirstDisplay(void);

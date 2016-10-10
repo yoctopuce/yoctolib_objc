@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_genericsensor.m 23527 2016-03-18 21:49:19Z mvuilleu $
+ * $Id: yocto_genericsensor.m 25275 2016-08-24 13:42:24Z mvuilleu $
  *
  * Implements the high-level API for GenericSensor functions
  *
@@ -376,7 +376,7 @@
     return [self _setAttr:@"signalSampling" :rest_val];
 }
 /**
- * Retrieves $AFUNCTION$ for a given identifier.
+ * Retrieves a generic sensor for a given identifier.
  * The identifier can be specified using several formats:
  * <ul>
  * <li>FunctionLogicalName</li>
@@ -386,17 +386,17 @@
  * <li>ModuleLogicalName.FunctionLogicalName</li>
  * </ul>
  *
- * This function does not require that $THEFUNCTION$ is online at the time
+ * This function does not require that the generic sensor is online at the time
  * it is invoked. The returned object is nevertheless valid.
- * Use the method YGenericSensor.isOnline() to test if $THEFUNCTION$ is
+ * Use the method YGenericSensor.isOnline() to test if the generic sensor is
  * indeed online at a given time. In case of ambiguity when looking for
- * $AFUNCTION$ by logical name, no error is notified: the first instance
+ * a generic sensor by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
  *
- * @param func : a string that uniquely characterizes $THEFUNCTION$
+ * @param func : a string that uniquely characterizes the generic sensor
  *
- * @return a YGenericSensor object allowing you to drive $THEFUNCTION$.
+ * @return a YGenericSensor object allowing you to drive the generic sensor.
  */
 +(YGenericSensor*) FindGenericSensor:(NSString*)func
 {
@@ -413,9 +413,9 @@
  * Registers the callback function that is invoked on every change of advertised value.
  * The callback is invoked only during the execution of ySleep or yHandleEvents.
  * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
- * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
+ * one of these two functions periodically. To unregister a callback, pass a nil pointer as argument.
  *
- * @param callback : the callback function to call, or a null pointer. The callback function should take two
+ * @param callback : the callback function to call, or a nil pointer. The callback function should take two
  *         arguments: the function object of which the value has changed, and the character string describing
  *         the new advertised value.
  * @noreturn
@@ -453,9 +453,9 @@
  * Registers the callback function that is invoked on every periodic timed notification.
  * The callback is invoked only during the execution of ySleep or yHandleEvents.
  * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
- * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
+ * one of these two functions periodically. To unregister a callback, pass a nil pointer as argument.
  *
- * @param callback : the callback function to call, or a null pointer. The callback function should take two
+ * @param callback : the callback function to call, or a nil pointer. The callback function should take two
  *         arguments: the function object of which the value has changed, and an YMeasure object describing
  *         the new advertised value.
  * @noreturn

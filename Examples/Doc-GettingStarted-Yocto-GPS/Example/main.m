@@ -14,11 +14,11 @@ static void usage(void)
 int main(int argc, const char * argv[])
 {
     NSError *error;
-    
+
     if (argc < 2) {
         usage();
     }
-    
+
     @autoreleasepool {
         // Setup the API to use local USB devices
         if([YAPI RegisterHub:@"usb": &error] != YAPI_SUCCESS) {
@@ -36,7 +36,7 @@ int main(int argc, const char * argv[])
         } else {
             gps = [YGps FindGps:[target stringByAppendingString:@".gps"]];
         }
-        
+
         while(1) {
             if(![gps isOnline]) {
                 NSLog(@"Module not connected (check identification and USB cable)\n");
@@ -44,13 +44,14 @@ int main(int argc, const char * argv[])
             }
             if([gps get_isFixed] != Y_ISFIXED_TRUE) {
                 NSLog(@"fixing");
-            } else{
+            } else {
                 NSLog(@"%@ %@ \n", [gps get_latitude],[gps get_longitude]);
             }
-            
+
             NSLog(@"  (press Ctrl-C to exit)\n");
             [YAPI Sleep:1000:NULL];
         }
+        [YAPI FreeAPI];
     }
     return 0;
 }

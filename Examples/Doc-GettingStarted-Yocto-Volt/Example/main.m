@@ -21,7 +21,7 @@ int main(int argc, const char * argv[])
     if (argc < 2) {
         usage();
     }
-    
+
     @autoreleasepool {
         NSString *target = [NSString stringWithUTF8String:argv[1]];
 
@@ -37,11 +37,11 @@ int main(int argc, const char * argv[])
             if (sensor==NULL) {
                 NSLog(@"No module connected (check USB cable)");
                 return 1;
-            }       
+            }
         } else {
             sensor = [YVoltage FindVoltage:[target stringByAppendingString:@".voltage1"]];
         }
-    
+
         // we need to retreive both DC and AC voltage from the device.
         if ([sensor isOnline])  {
             m = [sensor module];
@@ -61,6 +61,7 @@ int main(int argc, const char * argv[])
             NSLog(@"  (press Ctrl-C to exit)");
             [YAPI Sleep:1000:NULL];
         }
+        [YAPI FreeAPI];
     }
     return 0;
 }

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_wireless.h 19608 2015-03-05 10:37:24Z seb $
+ * $Id: yocto_wireless.h 25275 2016-08-24 13:42:24Z mvuilleu $
  *
  * Declares yFindWireless(), the high-level API for Wireless functions
  *
@@ -229,9 +229,9 @@ typedef enum {
  * Registers the callback function that is invoked on every change of advertised value.
  * The callback is invoked only during the execution of ySleep or yHandleEvents.
  * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
- * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
+ * one of these two functions periodically. To unregister a callback, pass a nil pointer as argument.
  *
- * @param callback : the callback function to call, or a null pointer. The callback function should take two
+ * @param callback : the callback function to call, or a nil pointer. The callback function should take two
  *         arguments: the function object of which the value has changed, and the character string describing
  *         the new advertised value.
  * @noreturn
@@ -314,7 +314,7 @@ typedef enum {
  * Continues the enumeration of wireless lan interfaces started using yFirstWireless().
  *
  * @return a pointer to a YWireless object, corresponding to
- *         a wireless lan interface currently online, or a null pointer
+ *         a wireless lan interface currently online, or a nil pointer
  *         if there are no more wireless lan interfaces to enumerate.
  */
 -(YWireless*) nextWireless;
@@ -324,7 +324,7 @@ typedef enum {
  * next wireless lan interfaces.
  *
  * @return a pointer to a YWireless object, corresponding to
- *         the first wireless lan interface currently online, or a null pointer
+ *         the first wireless lan interface currently online, or a nil pointer
  *         if there are none.
  */
 +(YWireless*) FirstWireless;
@@ -363,7 +363,7 @@ YWireless* yFindWireless(NSString* func);
  * next wireless lan interfaces.
  *
  * @return a pointer to a YWireless object, corresponding to
- *         the first wireless lan interface currently online, or a null pointer
+ *         the first wireless lan interface currently online, or a nil pointer
  *         if there are none.
  */
 YWireless* yFirstWireless(void);

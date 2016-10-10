@@ -12,7 +12,7 @@
 
 -(id)           initWithSerial:(NSString*)serial
 {
-     if(!(self = [super init]))
+    if(!(self = [super init]))
         return nil;
     _serial    = serial;
     _subDevices = [[NSMutableArray alloc]init];
@@ -26,8 +26,8 @@
 
 -(bool)         addSubDevice:(NSString*) serial
 {
-      for (int i = 1; i <= 4; i++) {
-          YHubPort* p = [YHubPort FindHubPort:[NSString stringWithFormat:@"%@.hubPort%d",_serial,i]];
+    for (int i = 1; i <= 4; i++) {
+        YHubPort* p = [YHubPort FindHubPort:[NSString stringWithFormat:@"%@.hubPort%d",_serial,i]];
         if ([p get_logicalName] == serial) {
             [_subDevices addObject:serial];
             return true;
@@ -55,7 +55,7 @@
 
 -(id)           initWithSerial:(NSString*)serial :(NSString*)url
 {
-  if(!(self = [super init]))
+    if(!(self = [super init]))
         return nil;
     _serial    = serial;
     _url    = url;
@@ -71,8 +71,8 @@
 
 -(void)         addSubDevice:(NSString*) serial
 {
-  if ([[serial substringToIndex:7] isEqual:@"YHUBSHL"]) {
-      [_shields addObject:[[YoctoShield alloc] initWithSerial:serial]];
+    if ([[serial substringToIndex:7] isEqual:@"YHUBSHL"]) {
+        [_shields addObject:[[YoctoShield alloc] initWithSerial:serial]];
     } else {
         // Device to plug look if the device is plugged on a shield
         for (YoctoShield*  shield in _shields) {
@@ -98,7 +98,7 @@
 }
 -(void)         describe
 {
-     NSLog(@"%@ (%@)",_serial, _url);
+    NSLog(@"%@ (%@)",_serial, _url);
     for (NSString* serial in _subDevices) {
         NSLog(@"  %@",serial);
     }
@@ -119,7 +119,7 @@ NSMutableArray* __rootDevices;
 static RootDevice* getYoctoHub(NSString* serial)
 {
     for (RootDevice* rootdev in __rootDevices) {
-        if ([[rootdev getSerial] isEqual:serial]){
+        if ([[rootdev getSerial] isEqual:serial]) {
             return rootdev;
         }
     }
@@ -129,7 +129,7 @@ static RootDevice* getYoctoHub(NSString* serial)
 static RootDevice* addRootDevice(NSString* serial, NSString* url)
 {
     for (RootDevice* rootdev in __rootDevices) {
-        if ([[rootdev getSerial] isEqual:serial]){
+        if ([[rootdev getSerial] isEqual:serial]) {
             return rootdev;
         }
     }
@@ -197,15 +197,15 @@ int main (int argc, const char * argv[])
 
         [YAPI RegisterDeviceArrivalCallback:deviceArrival];
         [YAPI RegisterDeviceRemovalCallback:deviceRemoval];
-    
+
 
         NSLog(@"Waiting for hubs to signal themselves...");
-        
+
         while (true) {
             [YAPI UpdateDeviceList:NULL]; // traps plug/unplug events
             [YAPI Sleep:500: NULL];   // traps others events
             showNetwork();
-        } 
+        }
     }
     return 0;
 }

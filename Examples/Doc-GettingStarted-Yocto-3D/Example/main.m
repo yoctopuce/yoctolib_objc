@@ -19,26 +19,26 @@ static void usage(void)
 int main(int argc, const char * argv[])
 {
     NSError *error;
-    
-    
+
+
     if (argc < 2) {
         usage();
     }
-    
+
     @autoreleasepool {
         // Setup the API to use local USB devices
         if([YAPI RegisterHub:@"usb": &error] != YAPI_SUCCESS) {
             NSLog(@"RegisterHub error: %@", [error localizedDescription]);
             return 1;
         }
-        
+
         NSString *target = [NSString stringWithUTF8String:argv[1]];
         YTilt *anytilt,*tilt1, *tilt2;
         YCompass *compass;
         YAccelerometer *accelerometer;
-        YGyro *gyro;             
+        YGyro *gyro;
 
-        if([target isEqualToString:@"any"]){
+        if([target isEqualToString:@"any"]) {
             anytilt = [YTilt FirstTilt];
             if (anytilt==NULL) {
                 NSLog(@"No module connected (check USB cable)");
@@ -52,33 +52,33 @@ int main(int argc, const char * argv[])
             }
         }
         NSString *serial = [[anytilt get_module] get_serialNumber];
-        // retrieve all sensors on the device matching the serial 
+        // retrieve all sensors on the device matching the serial
         tilt1 = [YTilt FindTilt:[serial stringByAppendingString:@".tilt1"]];
         tilt2 = [YTilt FindTilt:[serial stringByAppendingString:@".tilt2"]];
         compass = [YCompass FindCompass:[serial stringByAppendingString:@".compass"]];
         accelerometer = [YAccelerometer FindAccelerometer:[serial stringByAppendingString:@".accelerometer"]];
         gyro = [YGyro FindGyro:[serial stringByAppendingString:@".gyro"]];
         int count = 0;
-  
+
         while(1) {
             if(![tilt1 isOnline]) {
                 NSLog(@"device disconnected");
                 break;
             }
-            if ((count % 10) == 0) 
+            if ((count % 10) == 0)
                 NSLog(@"tilt1\ntilt2\ncompass\tacc\tgyro");
             NSLog(@"%f\n%f\n%f\t%f\t%f",
-                [tilt1 get_currentValue],
-                [tilt2 get_currentValue],
-                [compass get_currentValue],
-                [accelerometer get_currentValue],
-                [gyro get_currentValue]);
-            count++;       
+                  [tilt1 get_currentValue],
+                  [tilt2 get_currentValue],
+                  [compass get_currentValue],
+                  [accelerometer get_currentValue],
+                  [gyro get_currentValue]);
+            count++;
 
             [YAPI Sleep:250:NULL];
         }
         [YAPI FreeAPI];
     }
-    
+
     return 0;
 }

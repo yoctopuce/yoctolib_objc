@@ -13,9 +13,9 @@ static void dumpSensor(YSensor *sensor)
     NSDate *start = [summary get_startTimeUTC_asNSDate];
     NSDate *end   = [summary get_endTimeUTC_asNSDate];
     NSLog(@"from %@ to %@ : min=%.3f%@ avg=%.3f%@  max=%.3f%@\n",
-           [dateFormatter stringFromDate:start],[dateFormatter stringFromDate:end],[summary get_minValue],[sensor get_unit],
-           [summary get_averageValue],[sensor get_unit],
-           [summary get_maxValue],[sensor get_unit]);
+          [dateFormatter stringFromDate:start],[dateFormatter stringFromDate:end],[summary get_minValue],[sensor get_unit],
+          [summary get_averageValue],[sensor get_unit],
+          [summary get_maxValue],[sensor get_unit]);
     NSLog(@"Loading details :   0%%");
     int progress=0;
     do {
@@ -27,9 +27,9 @@ static void dumpSensor(YSensor *sensor)
         start = [m get_startTimeUTC_asNSDate];
         end   = [m get_endTimeUTC_asNSDate];
         NSLog(@"from %@ to %@ : min=%.3f%@ avg=%.3f%@  max=%.3f%@\n",
-               [dateFormatter stringFromDate:start],[dateFormatter stringFromDate:end],[m get_minValue],[sensor get_unit],
-               [m get_averageValue],[sensor get_unit],
-               [m get_maxValue],[sensor get_unit]);
+              [dateFormatter stringFromDate:start],[dateFormatter stringFromDate:end],[m get_minValue],[sensor get_unit],
+              [m get_averageValue],[sensor get_unit],
+              [m get_maxValue],[sensor get_unit]);
     }
 }
 
@@ -40,7 +40,7 @@ int main (int argc, const char * argv[])
 
 
     @autoreleasepool {
-      
+
         // Setup the API to use local USB devices
         if([YAPI RegisterHub:@"usb" :&error] != YAPI_SUCCESS) {
             NSLog(@"RegisterHub error: %@", [error localizedDescription]);
@@ -53,11 +53,11 @@ int main (int argc, const char * argv[])
                 NSLog(@"No data sensor found");
                 return 0;
             }
-        } else {            
+        } else {
             sensor = [YSensor FindSensor:[NSString stringWithUTF8String:argv[1]]];
             if (![sensor isOnline]) {
                 NSLog(@"Sensor %@ is not connected (check USB cable)",[sensor get_hardwareId]);
-                return 0;                
+                return 0;
             }
         }
         dumpSensor(sensor);

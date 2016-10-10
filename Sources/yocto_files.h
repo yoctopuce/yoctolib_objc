@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_files.h 22697 2016-01-12 23:14:40Z seb $
+ * $Id: yocto_files.h 25275 2016-08-24 13:42:24Z mvuilleu $
  *
  * Declares yFindFiles(), the high-level API for Files functions
  *
@@ -170,9 +170,9 @@ typedef void (*YFilesValueCallback)(YFiles *func, NSString *functionValue);
  * Registers the callback function that is invoked on every change of advertised value.
  * The callback is invoked only during the execution of ySleep or yHandleEvents.
  * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
- * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
+ * one of these two functions periodically. To unregister a callback, pass a nil pointer as argument.
  *
- * @param callback : the callback function to call, or a null pointer. The callback function should take two
+ * @param callback : the callback function to call, or a nil pointer. The callback function should take two
  *         arguments: the function object of which the value has changed, and the character string describing
  *         the new advertised value.
  * @noreturn
@@ -264,7 +264,7 @@ typedef void (*YFilesValueCallback)(YFiles *func, NSString *functionValue);
  * Continues the enumeration of filesystems started using yFirstFiles().
  *
  * @return a pointer to a YFiles object, corresponding to
- *         a filesystem currently online, or a null pointer
+ *         a filesystem currently online, or a nil pointer
  *         if there are no more filesystems to enumerate.
  */
 -(YFiles*) nextFiles;
@@ -274,7 +274,7 @@ typedef void (*YFilesValueCallback)(YFiles *func, NSString *functionValue);
  * next filesystems.
  *
  * @return a pointer to a YFiles object, corresponding to
- *         the first filesystem currently online, or a null pointer
+ *         the first filesystem currently online, or a nil pointer
  *         if there are none.
  */
 +(YFiles*) FirstFiles;
@@ -313,7 +313,7 @@ YFiles* yFindFiles(NSString* func);
  * next filesystems.
  *
  * @return a pointer to a YFiles object, corresponding to
- *         the first filesystem currently online, or a null pointer
+ *         the first filesystem currently online, or a nil pointer
  *         if there are none.
  */
 YFiles* yFirstFiles(void);

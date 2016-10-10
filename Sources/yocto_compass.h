@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_compass.h 24934 2016-06-30 22:32:01Z mvuilleu $
+ * $Id: yocto_compass.h 25275 2016-08-24 13:42:24Z mvuilleu $
  *
  * Declares yFindCompass(), the high-level API for Compass functions
  *
@@ -161,9 +161,9 @@ typedef enum {
  * Registers the callback function that is invoked on every change of advertised value.
  * The callback is invoked only during the execution of ySleep or yHandleEvents.
  * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
- * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
+ * one of these two functions periodically. To unregister a callback, pass a nil pointer as argument.
  *
- * @param callback : the callback function to call, or a null pointer. The callback function should take two
+ * @param callback : the callback function to call, or a nil pointer. The callback function should take two
  *         arguments: the function object of which the value has changed, and the character string describing
  *         the new advertised value.
  * @noreturn
@@ -176,9 +176,9 @@ typedef enum {
  * Registers the callback function that is invoked on every periodic timed notification.
  * The callback is invoked only during the execution of ySleep or yHandleEvents.
  * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
- * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
+ * one of these two functions periodically. To unregister a callback, pass a nil pointer as argument.
  *
- * @param callback : the callback function to call, or a null pointer. The callback function should take two
+ * @param callback : the callback function to call, or a nil pointer. The callback function should take two
  *         arguments: the function object of which the value has changed, and an YMeasure object describing
  *         the new advertised value.
  * @noreturn
@@ -192,7 +192,7 @@ typedef enum {
  * Continues the enumeration of compasses started using yFirstCompass().
  *
  * @return a pointer to a YCompass object, corresponding to
- *         a compass currently online, or a null pointer
+ *         a compass currently online, or a nil pointer
  *         if there are no more compasses to enumerate.
  */
 -(YCompass*) nextCompass;
@@ -202,7 +202,7 @@ typedef enum {
  * next compasses.
  *
  * @return a pointer to a YCompass object, corresponding to
- *         the first compass currently online, or a null pointer
+ *         the first compass currently online, or a nil pointer
  *         if there are none.
  */
 +(YCompass*) FirstCompass;
@@ -241,7 +241,7 @@ YCompass* yFindCompass(NSString* func);
  * next compasses.
  *
  * @return a pointer to a YCompass object, corresponding to
- *         the first compass currently online, or a null pointer
+ *         the first compass currently online, or a nil pointer
  *         if there are none.
  */
 YCompass* yFirstCompass(void);

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_messagebox.h 24648 2016-05-31 09:34:32Z mvuilleu $
+ * $Id: yocto_messagebox.h 25275 2016-08-24 13:42:24Z mvuilleu $
  *
  * Declares yFindMessageBox(), the high-level API for MessageBox functions
  *
@@ -349,9 +349,9 @@ typedef void (*YMessageBoxValueCallback)(YMessageBox *func, NSString *functionVa
  * Registers the callback function that is invoked on every change of advertised value.
  * The callback is invoked only during the execution of ySleep or yHandleEvents.
  * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
- * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
+ * one of these two functions periodically. To unregister a callback, pass a nil pointer as argument.
  *
- * @param callback : the callback function to call, or a null pointer. The callback function should take two
+ * @param callback : the callback function to call, or a nil pointer. The callback function should take two
  *         arguments: the function object of which the value has changed, and the character string describing
  *         the new advertised value.
  * @noreturn
@@ -449,7 +449,7 @@ typedef void (*YMessageBoxValueCallback)(YMessageBox *func, NSString *functionVa
  * Continues the enumeration of MessageBox interfaces started using yFirstMessageBox().
  *
  * @return a pointer to a YMessageBox object, corresponding to
- *         a MessageBox interface currently online, or a null pointer
+ *         a MessageBox interface currently online, or a nil pointer
  *         if there are no more MessageBox interfaces to enumerate.
  */
 -(YMessageBox*) nextMessageBox;
@@ -459,7 +459,7 @@ typedef void (*YMessageBoxValueCallback)(YMessageBox *func, NSString *functionVa
  * next MessageBox interfaces.
  *
  * @return a pointer to a YMessageBox object, corresponding to
- *         the first MessageBox interface currently online, or a null pointer
+ *         the first MessageBox interface currently online, or a nil pointer
  *         if there are none.
  */
 +(YMessageBox*) FirstMessageBox;
@@ -498,7 +498,7 @@ YMessageBox* yFindMessageBox(NSString* func);
  * next MessageBox interfaces.
  *
  * @return a pointer to a YMessageBox object, corresponding to
- *         the first MessageBox interface currently online, or a null pointer
+ *         the first MessageBox interface currently online, or a nil pointer
  *         if there are none.
  */
 YMessageBox* yFirstMessageBox(void);

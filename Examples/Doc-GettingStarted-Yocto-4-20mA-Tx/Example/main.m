@@ -18,11 +18,11 @@ int main(int argc, const char * argv[])
 {
     NSError     *error;
     YCurrentLoopOutput    *loop;
-    
+
     if (argc < 3) {
         usage();
     }
-    
+
     @autoreleasepool {
         NSString *target = [NSString stringWithUTF8String:argv[1]];
 
@@ -33,20 +33,20 @@ int main(int argc, const char * argv[])
         }
 
         if ([target isEqualToString:@"any"]) {
-            // retreive any generic sensor 
+            // retreive any generic sensor
             loop = [YCurrentLoopOutput FirstCurrentLoopOutput];
             if (loop==NULL) {
                 NSLog(@"No module connected (check USB cable)");
                 return 1;
-            } 
-                 
+            }
+
         } else {
             loop = [YCurrentLoopOutput FindCurrentLoopOutput:[target stringByAppendingString:@".currentLoopOutput"]];
         }
-    
+
         double value = atof(argv[2]);
         // we need to retreive both DC and AC current from the device.
-        if ([loop isOnline])  {    
+        if ([loop isOnline])  {
             [loop set_current:value];
             Y_LOOPPOWER_enum loopPower =[loop get_loopPower];
             if (loopPower == Y_LOOPPOWER_NOPWR) {
@@ -61,6 +61,7 @@ int main(int argc, const char * argv[])
         } else {
             NSLog(@"Module not connected (check identification and USB cable)");
         }
+        [YAPI FreeAPI];
     }
     return 0;
 }

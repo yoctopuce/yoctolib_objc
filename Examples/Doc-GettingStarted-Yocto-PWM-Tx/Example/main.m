@@ -17,19 +17,19 @@ static void usage(void)
 int main(int argc, const char * argv[])
 {
     NSError *error;
-    
+
     if (argc < 4) {
         usage();
     }
-    
-    @autoreleasepool{
+
+    @autoreleasepool {
         // Setup the API to use local USB devices
         if([YAPI RegisterHub:@"usb": &error] != YAPI_SUCCESS) {
             NSLog(@"RegisterHub error: %@", [error localizedDescription]);
             return 1;
         }
         NSString *target = [NSString stringWithUTF8String:argv[1]];
-        
+
         if ([target isEqualToString:@"any"]) {
             YPwmOutput *pwmoutput = [YPwmOutput FirstPwmOutput];
             if (pwmoutput==NULL) {
@@ -37,16 +37,16 @@ int main(int argc, const char * argv[])
                 return 1;
             }
             target = [[pwmoutput module] serialNumber];
-        }   
+        }
 
         YPwmOutput *pwmoutput1 = [YPwmOutput FindPwmOutput:
-            [target stringByAppendingString:@".pwmOutput1"]];
+                                  [target stringByAppendingString:@".pwmOutput1"]];
         YPwmOutput *pwmoutput2 = [YPwmOutput FindPwmOutput:
-            [target stringByAppendingString:@".pwmOutput2"]];
-                
+                                  [target stringByAppendingString:@".pwmOutput2"]];
+
         int frequency = (int) atol(argv[2]);
         int dutyCycle =  atof(argv[3]);
-        
+
         if ([pwmoutput1 isOnline]) {
             // output 1 : immediate change
             [pwmoutput1 set_frequency:frequency];
@@ -59,6 +59,7 @@ int main(int argc, const char * argv[])
         } else {
             NSLog(@"Module not connected (check identification and USB cable)\n");
         }
-    } 
+        [YAPI FreeAPI];
+    }
     return 0;
 }

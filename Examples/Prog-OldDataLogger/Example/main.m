@@ -11,7 +11,7 @@ int main (int argc, const char * argv[])
 
 
     @autoreleasepool {
-      
+
         // Setup the API to use local USB devices
         if([YAPI RegisterHub:@"usb" :&error] != YAPI_SUCCESS) {
             NSLog(@"RegisterHub error: %@", [error localizedDescription]);
@@ -35,9 +35,9 @@ int main (int argc, const char * argv[])
         for(i = 0; i < [dataStreams count]; i++) {
             YDataStream *s = [dataStreams objectAtIndex:i];
             int         nrows, r;
-            
+
             NSLog(@"Data stream %d:",i);
-            NSLog(@"- Run #%d, time=%u / UTC %ld\n", 
+            NSLog(@"- Run #%d, time=%u / UTC %ld\n",
                   [s get_runIndex],[s get_startTime], [s get_startTimeUTC]);
             nrows = [s get_rowCount ];
             if(nrows > 0) {
@@ -58,7 +58,7 @@ int main (int argc, const char * argv[])
                     }
                     NSLog(@"%@",line);
                 }
-            }        
+            }
         }
     }
     return 0;

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_quadraturedecoder.h 23242 2016-02-23 14:12:17Z seb $
+ * $Id: yocto_quadraturedecoder.h 25275 2016-08-24 13:42:24Z mvuilleu $
  *
  * Declares yFindQuadratureDecoder(), the high-level API for QuadratureDecoder functions
  *
@@ -162,9 +162,9 @@ typedef enum {
  * Registers the callback function that is invoked on every change of advertised value.
  * The callback is invoked only during the execution of ySleep or yHandleEvents.
  * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
- * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
+ * one of these two functions periodically. To unregister a callback, pass a nil pointer as argument.
  *
- * @param callback : the callback function to call, or a null pointer. The callback function should take two
+ * @param callback : the callback function to call, or a nil pointer. The callback function should take two
  *         arguments: the function object of which the value has changed, and the character string describing
  *         the new advertised value.
  * @noreturn
@@ -177,9 +177,9 @@ typedef enum {
  * Registers the callback function that is invoked on every periodic timed notification.
  * The callback is invoked only during the execution of ySleep or yHandleEvents.
  * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
- * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
+ * one of these two functions periodically. To unregister a callback, pass a nil pointer as argument.
  *
- * @param callback : the callback function to call, or a null pointer. The callback function should take two
+ * @param callback : the callback function to call, or a nil pointer. The callback function should take two
  *         arguments: the function object of which the value has changed, and an YMeasure object describing
  *         the new advertised value.
  * @noreturn
@@ -193,7 +193,7 @@ typedef enum {
  * Continues the enumeration of quadrature decoders started using yFirstQuadratureDecoder().
  *
  * @return a pointer to a YQuadratureDecoder object, corresponding to
- *         a quadrature decoder currently online, or a null pointer
+ *         a quadrature decoder currently online, or a nil pointer
  *         if there are no more quadrature decoders to enumerate.
  */
 -(YQuadratureDecoder*) nextQuadratureDecoder;
@@ -203,7 +203,7 @@ typedef enum {
  * next quadrature decoders.
  *
  * @return a pointer to a YQuadratureDecoder object, corresponding to
- *         the first quadrature decoder currently online, or a null pointer
+ *         the first quadrature decoder currently online, or a nil pointer
  *         if there are none.
  */
 +(YQuadratureDecoder*) FirstQuadratureDecoder;
@@ -242,7 +242,7 @@ YQuadratureDecoder* yFindQuadratureDecoder(NSString* func);
  * next quadrature decoders.
  *
  * @return a pointer to a YQuadratureDecoder object, corresponding to
- *         the first quadrature decoder currently online, or a null pointer
+ *         the first quadrature decoder currently online, or a nil pointer
  *         if there are none.
  */
 YQuadratureDecoder* yFirstQuadratureDecoder(void);

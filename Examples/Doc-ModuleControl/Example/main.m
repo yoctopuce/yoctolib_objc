@@ -11,7 +11,7 @@ static void usage(const char *exe)
 int main (int argc, const char * argv[])
 {
     NSError *error;
-    
+
     @autoreleasepool {
         // Setup the API to use local USB devices
         if([YAPI RegisterHub:@"usb": &error] != YAPI_SUCCESS) {
@@ -22,29 +22,30 @@ int main (int argc, const char * argv[])
             usage(argv[0]);
         NSString *serial_or_name =[NSString stringWithUTF8String:argv[1]];
         // use serial or logical name
-        YModule *module = [YModule FindModule:serial_or_name];  
+        YModule *module = [YModule FindModule:serial_or_name];
         if ([module isOnline]) {
             if (argc > 2) {
-                if (strcmp(argv[2], "ON")==0) 
+                if (strcmp(argv[2], "ON")==0)
                     [module setBeacon:Y_BEACON_ON];
-                else  
+                else
                     [module setBeacon:Y_BEACON_OFF];
-            }        
+            }
             NSLog(@"serial:       %@\n", [module serialNumber]);
             NSLog(@"logical name: %@\n", [module logicalName]);
             NSLog(@"luminosity:   %d\n", [module luminosity]);
             NSLog(@"beacon:       ");
             if ([module beacon] == Y_BEACON_ON)
-               NSLog(@"ON\n");
-            else   
-               NSLog(@"OFF\n");
+                NSLog(@"ON\n");
+            else
+                NSLog(@"OFF\n");
             NSLog(@"upTime:       %ld sec\n", [module upTime]/1000);
             NSLog(@"USB current:  %d mA\n",  [module usbCurrent]);
             NSLog(@"logs:  %@\n",  [module get_lastLogs]);
         } else {
             NSLog(@"%@ not connected (check identification and USB cable)\n",
-                serial_or_name);
+                  serial_or_name);
         }
+        [YAPI FreeAPI];
     }
     return 0;
 }

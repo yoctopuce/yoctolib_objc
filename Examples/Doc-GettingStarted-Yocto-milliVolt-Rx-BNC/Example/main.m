@@ -14,11 +14,11 @@ int main(int argc, const char * argv[])
 {
     NSError     *error;
     YGenericSensor    *sensor,*sensor1;
-    
+
     if (argc < 2) {
         usage();
     }
-    
+
     @autoreleasepool {
         NSString *target = [NSString stringWithUTF8String:argv[1]];
 
@@ -29,19 +29,19 @@ int main(int argc, const char * argv[])
         }
 
         if ([target isEqualToString:@"any"]) {
-            // retreive any generic sensor 
+            // retreive any generic sensor
             sensor = [YGenericSensor FirstGenericSensor];
             if (sensor==NULL) {
                 NSLog(@"No module connected (check USB cable)");
                 return 1;
-            } 
-                 
+            }
+
         } else {
             sensor = [YGenericSensor FindGenericSensor:target];
         }
-    
+
         // we need to retreive both DC and AC current from the device.
-        if (![sensor isOnline])  {            
+        if (![sensor isOnline])  {
             NSLog(@"No module connected (check USB cable)");
             return 1;
         }
@@ -54,6 +54,7 @@ int main(int argc, const char * argv[])
             [YAPI Sleep:1000:NULL];
         }
         NSLog(@"Module not connected (check identification and USB cable)");
+        [YAPI FreeAPI];
     }
     return 0;
 }

@@ -5,7 +5,7 @@
 
 static int upgradeSerialList(NSMutableArray *allserials)
 {
-     NSError *error;
+    NSError *error;
 
     for (NSString * serial in allserials) {
         YModule *module = [YModule FindModule:serial];
@@ -29,11 +29,11 @@ static int upgradeSerialList(NSMutableArray *allserials)
                 [YAPI Sleep:500 :&error];
                 status = newstatus;
             } while (status < 100 && status >= 0);
-            if (status < 0){
+            if (status < 0) {
                 NSLog(@"    %d%% Firmware Update failed: %@",status, [update get_progressMessage]);
                 exit(1);
-            } else{
-                if ([module isOnline]){
+            } else {
+                if ([module isOnline]) {
                     NSLog(@"    %d%% Firmware Updated Successfully!",status);
                 } else {
                     NSLog(@"    %d%% Firmware Update failed: module %@ is not online",status, serial);
@@ -69,7 +69,7 @@ int main(int argc, const char * argv[])
         NSMutableArray *shield = [NSMutableArray array];
         NSMutableArray *devices = [NSMutableArray array];
         YModule *module = [YModule FirstModule];
-        while (module){
+        while (module) {
             NSString *product = [module get_productName];
             NSString *serial  = [module get_serialNumber];
             NSData * settings = [module get_allSettings];
@@ -78,7 +78,7 @@ int main(int argc, const char * argv[])
                 [shield addObject:serial];
             } else if ([product hasPrefix:@"YoctoHub-"]) {
                 [hubs addObject:serial];
-            } else if (![product isEqualToString:@"VirtualHub"]){
+            } else if (![product isEqualToString:@"VirtualHub"]) {
                 [devices addObject:serial];
             }
             module = [module nextModule];

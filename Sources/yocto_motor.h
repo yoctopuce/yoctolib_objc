@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_motor.h 23242 2016-02-23 14:12:17Z seb $
+ * $Id: yocto_motor.h 25275 2016-08-24 13:42:24Z mvuilleu $
  *
  * Declares yFindMotor(), the high-level API for Motor functions
  *
@@ -372,9 +372,9 @@ typedef enum {
  * Registers the callback function that is invoked on every change of advertised value.
  * The callback is invoked only during the execution of ySleep or yHandleEvents.
  * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
- * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
+ * one of these two functions periodically. To unregister a callback, pass a nil pointer as argument.
  *
- * @param callback : the callback function to call, or a null pointer. The callback function should take two
+ * @param callback : the callback function to call, or a nil pointer. The callback function should take two
  *         arguments: the function object of which the value has changed, and the character string describing
  *         the new advertised value.
  * @noreturn
@@ -426,7 +426,7 @@ typedef enum {
  * Continues the enumeration of motors started using yFirstMotor().
  *
  * @return a pointer to a YMotor object, corresponding to
- *         a motor currently online, or a null pointer
+ *         a motor currently online, or a nil pointer
  *         if there are no more motors to enumerate.
  */
 -(YMotor*) nextMotor;
@@ -436,7 +436,7 @@ typedef enum {
  * next motors.
  *
  * @return a pointer to a YMotor object, corresponding to
- *         the first motor currently online, or a null pointer
+ *         the first motor currently online, or a nil pointer
  *         if there are none.
  */
 +(YMotor*) FirstMotor;
@@ -475,7 +475,7 @@ YMotor* yFindMotor(NSString* func);
  * next motors.
  *
  * @return a pointer to a YMotor object, corresponding to
- *         the first motor currently online, or a null pointer
+ *         the first motor currently online, or a nil pointer
  *         if there are none.
  */
 YMotor* yFirstMotor(void);

@@ -37,7 +37,7 @@ int main(int argc, const char * argv[])
                 NSLog(@"No module connected (check USB cable)");
                 return 1;
             }
-        }else{
+        } else {
             buz = [YBuzzer FindBuzzer:target];
         }
         if (![buz isOnline]) {
@@ -68,14 +68,15 @@ int main(int argc, const char * argv[])
                 [led set_blinking:Y_BLINKING_PANIC];
                 for (int i = 0; i < 5; i++) {
                     // this can be done using sequence as well
-                   [buz set_frequency:frequency];
-                   [buz freqMove:2 * frequency :250];
-                   [YAPI Sleep:250  :&error];
+                    [buz set_frequency:frequency];
+                    [buz freqMove:2 * frequency :250];
+                    [YAPI Sleep:250  :&error];
                 }
                 [buz set_frequency:0];
                 [led set_power:Y_POWER_OFF];
             }
         }
+        [YAPI FreeAPI];
     }
     return 0;
 }

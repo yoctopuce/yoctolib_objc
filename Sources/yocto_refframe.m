@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_refframe.m 24943 2016-07-01 14:02:25Z seb $
+ * $Id: yocto_refframe.m 25275 2016-08-24 13:42:24Z mvuilleu $
  *
  * Implements the high-level API for RefFrame functions
  *
@@ -221,7 +221,7 @@
     return [self _setAttr:@"calibrationParam" :rest_val];
 }
 /**
- * Retrieves $AFUNCTION$ for a given identifier.
+ * Retrieves a reference frame for a given identifier.
  * The identifier can be specified using several formats:
  * <ul>
  * <li>FunctionLogicalName</li>
@@ -231,17 +231,17 @@
  * <li>ModuleLogicalName.FunctionLogicalName</li>
  * </ul>
  *
- * This function does not require that $THEFUNCTION$ is online at the time
+ * This function does not require that the reference frame is online at the time
  * it is invoked. The returned object is nevertheless valid.
- * Use the method YRefFrame.isOnline() to test if $THEFUNCTION$ is
+ * Use the method YRefFrame.isOnline() to test if the reference frame is
  * indeed online at a given time. In case of ambiguity when looking for
- * $AFUNCTION$ by logical name, no error is notified: the first instance
+ * a reference frame by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
  *
- * @param func : a string that uniquely characterizes $THEFUNCTION$
+ * @param func : a string that uniquely characterizes the reference frame
  *
- * @return a YRefFrame object allowing you to drive $THEFUNCTION$.
+ * @return a YRefFrame object allowing you to drive the reference frame.
  */
 +(YRefFrame*) FindRefFrame:(NSString*)func
 {
@@ -258,9 +258,9 @@
  * Registers the callback function that is invoked on every change of advertised value.
  * The callback is invoked only during the execution of ySleep or yHandleEvents.
  * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
- * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
+ * one of these two functions periodically. To unregister a callback, pass a nil pointer as argument.
  *
- * @param callback : the callback function to call, or a null pointer. The callback function should take two
+ * @param callback : the callback function to call, or a nil pointer. The callback function should take two
  *         arguments: the function object of which the value has changed, and the character string describing
  *         the new advertised value.
  * @noreturn
@@ -305,12 +305,15 @@
  *         Y_MOUNTPOSITION_REAR,     Y_MOUNTPOSITION_LEFT),
  *         corresponding to the installation in a box, on one of the six faces.
  *
- * On failure, throws an exception or returns a negative error code.
+ * On failure, throws an exception or returns Y_MOUNTPOSITION_INVALID.
  */
 -(Y_MOUNTPOSITION) get_mountPosition
 {
     int position;
     position = [self get_mountPos];
+    if (position < 0) {
+        return Y_MOUNTPOSITION_INVALID;
+    }
     return (Y_MOUNTPOSITION) ((position) >> (2));
 }
 
@@ -327,12 +330,15 @@
  *         On the bottom face, the 12H orientation points to the front, while
  *         on the top face, the 12H orientation points to the rear.
  *
- * On failure, throws an exception or returns a negative error code.
+ * On failure, throws an exception or returns Y_MOUNTORIENTATION_INVALID.
  */
 -(Y_MOUNTORIENTATION) get_mountOrientation
 {
     int position;
     position = [self get_mountPos];
+    if (position < 0) {
+        return Y_MOUNTORIENTATION_INVALID;
+    }
     return (Y_MOUNTORIENTATION) ((position) & (3));
 }
 

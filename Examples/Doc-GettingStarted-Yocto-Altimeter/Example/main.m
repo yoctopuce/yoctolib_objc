@@ -18,25 +18,25 @@ static void usage(void)
 int main(int argc, const char * argv[])
 {
     NSError *error;
-    
-    
+
+
     if (argc < 2) {
         usage();
     }
-    
+
     @autoreleasepool {
         // Setup the API to use local USB devices
         if([YAPI RegisterHub:@"usb": &error] != YAPI_SUCCESS) {
             NSLog(@"RegisterHub error: %@", [error localizedDescription]);
             return 1;
         }
-        
+
         NSString *target = [NSString stringWithUTF8String:argv[1]];
         YAltitude    *asensor;
         YTemperature *tsensor;
         YPressure    *psensor;
-        
-        if([target isEqualToString:@"any"]){
+
+        if([target isEqualToString:@"any"]) {
             asensor = [YAltitude FirstAltitude];
             tsensor = [YTemperature FirstTemperature];
             psensor = [YPressure FirstPressure];
@@ -60,7 +60,8 @@ int main(int argc, const char * argv[])
             NSLog(@"  (press Ctrl-C to exit)\n");
             [YAPI Sleep:1000:NULL];
         }
+        [YAPI FreeAPI];
     }
-    
+
     return 0;
 }

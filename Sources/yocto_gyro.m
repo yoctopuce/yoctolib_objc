@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_gyro.m 24948 2016-07-01 20:57:28Z mvuilleu $
+ * $Id: yocto_gyro.m 25275 2016-08-24 13:42:24Z mvuilleu $
  *
  * Implements the high-level API for Gyro functions
  *
@@ -111,9 +111,9 @@
  * Registers the callback function that is invoked on every change of advertised value.
  * The callback is invoked only during the execution of ySleep or yHandleEvents.
  * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
- * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
+ * one of these two functions periodically. To unregister a callback, pass a nil pointer as argument.
  *
- * @param callback : the callback function to call, or a null pointer. The callback function should take two
+ * @param callback : the callback function to call, or a nil pointer. The callback function should take two
  *         arguments: the function object of which the value has changed, and the character string describing
  *         the new advertised value.
  * @noreturn
@@ -151,9 +151,9 @@
  * Registers the callback function that is invoked on every periodic timed notification.
  * The callback is invoked only during the execution of ySleep or yHandleEvents.
  * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
- * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
+ * one of these two functions periodically. To unregister a callback, pass a nil pointer as argument.
  *
- * @param callback : the callback function to call, or a null pointer. The callback function should take two
+ * @param callback : the callback function to call, or a nil pointer. The callback function should take two
  *         arguments: the function object of which the value has changed, and an YMeasure object describing
  *         the new advertised value.
  * @noreturn
@@ -452,9 +452,9 @@ static void yInternalGyroCallback(YQt *obj, NSString *value)
  * Registers the callback function that is invoked on every change of advertised value.
  * The callback is invoked only during the execution of ySleep or yHandleEvents.
  * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
- * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
+ * one of these two functions periodically. To unregister a callback, pass a nil pointer as argument.
  *
- * @param callback : the callback function to call, or a null pointer. The callback function should take two
+ * @param callback : the callback function to call, or a nil pointer. The callback function should take two
  *         arguments: the function object of which the value has changed, and the character string describing
  *         the new advertised value.
  * @noreturn
@@ -492,9 +492,9 @@ static void yInternalGyroCallback(YQt *obj, NSString *value)
  * Registers the callback function that is invoked on every periodic timed notification.
  * The callback is invoked only during the execution of ySleep or yHandleEvents.
  * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
- * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
+ * one of these two functions periodically. To unregister a callback, pass a nil pointer as argument.
  *
- * @param callback : the callback function to call, or a null pointer. The callback function should take two
+ * @param callback : the callback function to call, or a nil pointer. The callback function should take two
  *         arguments: the function object of which the value has changed, and an YMeasure object describing
  *         the new advertised value.
  * @noreturn
@@ -716,9 +716,9 @@ static void yInternalGyroCallback(YQt *obj, NSString *value)
  * The callback is invoked only during the execution of ySleep or yHandleEvents.
  * This provides control over the time when the callback is triggered.
  * For good responsiveness, remember to call one of these two functions periodically.
- * To unregister a callback, pass a null pointer as argument.
+ * To unregister a callback, pass a nil pointer as argument.
  *
- * @param callback : the callback function to invoke, or a null pointer.
+ * @param callback : the callback function to invoke, or a nil pointer.
  *         The callback function should take five arguments:
  *         the YGyro object of the turning device, and the floating
  *         point values of the four components w, x, y and z
@@ -757,9 +757,9 @@ static void yInternalGyroCallback(YQt *obj, NSString *value)
  * The callback is invoked only during the execution of ySleep or yHandleEvents.
  * This provides control over the time when the callback is triggered.
  * For good responsiveness, remember to call one of these two functions periodically.
- * To unregister a callback, pass a null pointer as argument.
+ * To unregister a callback, pass a nil pointer as argument.
  *
- * @param callback : the callback function to invoke, or a null pointer.
+ * @param callback : the callback function to invoke, or a nil pointer.
  *         The callback function should take four arguments:
  *         the YGyro object of the turning device, and the floating
  *         point values of the three angles roll, pitch and heading

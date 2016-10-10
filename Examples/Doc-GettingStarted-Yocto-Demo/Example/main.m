@@ -18,19 +18,19 @@ int main(int argc, const char * argv[])
     if(argc < 3) {
         usage();
     }
-    
+
     @autoreleasepool {
-        NSString *target = [NSString stringWithUTF8String:argv[1]];        
-        NSString *on_off = [NSString stringWithUTF8String:argv[2]];        
+        NSString *target = [NSString stringWithUTF8String:argv[1]];
+        NSString *on_off = [NSString stringWithUTF8String:argv[2]];
         YLed     *led;
-        
+
         if([YAPI RegisterHub:@"usb": &error] != YAPI_SUCCESS) {
             NSLog(@"RegisterHub error: %@", [error localizedDescription]);
             return 1;
         }
-        if([target isEqualToString:@"any"]){
+        if([target isEqualToString:@"any"]) {
             led =  [YLed FirstLed];
-        }else{
+        } else {
             led =  [YLed FindLed:[target stringByAppendingString:@".led"]];
         }
         if ([led isOnline]) {
@@ -41,6 +41,7 @@ int main(int argc, const char * argv[])
         } else {
             NSLog(@"Module not connected (check identification and USB cable)\n");
         }
-    }    
+        [YAPI FreeAPI];
+    }
     return 0;
 }

@@ -12,7 +12,7 @@ static void arrivalCallback(YModule *dev)
     int fctCount =  [dev functionCount];
     for (int i = 0; i < fctCount; i++) {
         // retreive the hardware name of the ith function
-        NSString *fctHwdName = [dev functionId:i];        
+        NSString *fctHwdName = [dev functionId:i];
         if ([fctHwdName length] > 7 && [[fctHwdName substringToIndex:7] isEqualToString:@"hubPort"]) {
             // the device contains a  hubPortx function, so it's a hub
             if (!isAHub) {
@@ -31,7 +31,7 @@ int main (int argc, const char * argv[])
     NSError    *error;
     @autoreleasepool {
         NSLog(@"Waiting for hubs to signal themselves...");
-        
+
         // Setup the API to use local USB devices])
         if ([YAPI RegisterHub:@"net" :&error] != YAPI_SUCCESS) {
             NSLog(@"RegisterHub error: %@", [error localizedDescription]);
@@ -45,7 +45,7 @@ int main (int argc, const char * argv[])
         for (int i = 0; i < 30; i++) {
             [YAPI UpdateDeviceList:NULL]; // traps plug/unplug events
             [YAPI Sleep:1000: NULL];   // traps others events
-        } 
+        }
     }
     return 0;
 }

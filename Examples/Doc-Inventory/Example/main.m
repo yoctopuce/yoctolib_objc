@@ -4,7 +4,7 @@
 int main (int argc, const char * argv[])
 {
     NSError *error;
-    
+
     @autoreleasepool {
         // Setup the API to use local USB devices
         if([YAPI RegisterHub:@"usb" :&error] != YAPI_SUCCESS) {
@@ -17,8 +17,9 @@ int main (int argc, const char * argv[])
         YModule *module = [YModule FirstModule];
         while (module != nil) {
             NSLog(@"%@ %@",module.serialNumber, module.productName);
-            module = [module nextModule]; 
+            module = [module nextModule];
         }
+        [YAPI FreeAPI];
     }
     return 0;
 }

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_hubport.h 23242 2016-02-23 14:12:17Z seb $
+ * $Id: yocto_hubport.h 25275 2016-08-24 13:42:24Z mvuilleu $
  *
  * Declares yFindHubPort(), the high-level API for HubPort functions
  *
@@ -174,9 +174,9 @@ typedef enum {
  * Registers the callback function that is invoked on every change of advertised value.
  * The callback is invoked only during the execution of ySleep or yHandleEvents.
  * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
- * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
+ * one of these two functions periodically. To unregister a callback, pass a nil pointer as argument.
  *
- * @param callback : the callback function to call, or a null pointer. The callback function should take two
+ * @param callback : the callback function to call, or a nil pointer. The callback function should take two
  *         arguments: the function object of which the value has changed, and the character string describing
  *         the new advertised value.
  * @noreturn
@@ -190,7 +190,7 @@ typedef enum {
  * Continues the enumeration of Yocto-hub ports started using yFirstHubPort().
  *
  * @return a pointer to a YHubPort object, corresponding to
- *         a Yocto-hub port currently online, or a null pointer
+ *         a Yocto-hub port currently online, or a nil pointer
  *         if there are no more Yocto-hub ports to enumerate.
  */
 -(YHubPort*) nextHubPort;
@@ -200,7 +200,7 @@ typedef enum {
  * next Yocto-hub ports.
  *
  * @return a pointer to a YHubPort object, corresponding to
- *         the first Yocto-hub port currently online, or a null pointer
+ *         the first Yocto-hub port currently online, or a nil pointer
  *         if there are none.
  */
 +(YHubPort*) FirstHubPort;
@@ -239,7 +239,7 @@ YHubPort* yFindHubPort(NSString* func);
  * next Yocto-hub ports.
  *
  * @return a pointer to a YHubPort object, corresponding to
- *         the first Yocto-hub port currently online, or a null pointer
+ *         the first Yocto-hub port currently online, or a nil pointer
  *         if there are none.
  */
 YHubPort* yFirstHubPort(void);

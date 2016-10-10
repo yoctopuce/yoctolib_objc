@@ -28,18 +28,18 @@ int main(int argc, const char * argv[])
             usage();
             return 1;
         }
-        if(argc < 2){
+        if(argc < 2) {
             disp = [YDisplay FirstDisplay];
-            if(disp == nil){
+            if(disp == nil) {
                 NSLog(@"No module connected (check USB cable)");
                 usage();
                 return 1;
             }
         } else {
             NSString *target = [NSString stringWithUTF8String:argv[1]];
-            
+
             disp = [YDisplay FindDisplay:target];
-            if(![disp isOnline]){
+            if(![disp isOnline]) {
                 NSLog(@"Module not connected (check identification and USB cable)");
                 usage();
                 return 1;
@@ -66,7 +66,7 @@ int main(int argc, const char * argv[])
         double x, y, x0, y0;
         double zoom = 1;
         double distance = 1;
- 
+
         while (true) {
             for (int i = 0; i < [nsdata length]; i++)
                 data[i] = 0;
@@ -96,6 +96,6 @@ int main(int argc, const char * argv[])
         }
         [YAPI FreeAPI];
     }
-    
+
     return 0;
 }

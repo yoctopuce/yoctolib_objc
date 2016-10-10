@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_dualpower.m 23242 2016-02-23 14:12:17Z seb $
+ * $Id: yocto_dualpower.m 25275 2016-08-24 13:42:24Z mvuilleu $
  *
  * Implements the high-level API for DualPower functions
  *
@@ -181,7 +181,7 @@
     return [self get_extVoltage];
 }
 /**
- * Retrieves $AFUNCTION$ for a given identifier.
+ * Retrieves a dual power control for a given identifier.
  * The identifier can be specified using several formats:
  * <ul>
  * <li>FunctionLogicalName</li>
@@ -191,17 +191,17 @@
  * <li>ModuleLogicalName.FunctionLogicalName</li>
  * </ul>
  *
- * This function does not require that $THEFUNCTION$ is online at the time
+ * This function does not require that the power control is online at the time
  * it is invoked. The returned object is nevertheless valid.
- * Use the method YDualPower.isOnline() to test if $THEFUNCTION$ is
+ * Use the method YDualPower.isOnline() to test if the power control is
  * indeed online at a given time. In case of ambiguity when looking for
- * $AFUNCTION$ by logical name, no error is notified: the first instance
+ * a dual power control by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
  *
- * @param func : a string that uniquely characterizes $THEFUNCTION$
+ * @param func : a string that uniquely characterizes the power control
  *
- * @return a YDualPower object allowing you to drive $THEFUNCTION$.
+ * @return a YDualPower object allowing you to drive the power control.
  */
 +(YDualPower*) FindDualPower:(NSString*)func
 {
@@ -218,9 +218,9 @@
  * Registers the callback function that is invoked on every change of advertised value.
  * The callback is invoked only during the execution of ySleep or yHandleEvents.
  * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
- * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
+ * one of these two functions periodically. To unregister a callback, pass a nil pointer as argument.
  *
- * @param callback : the callback function to call, or a null pointer. The callback function should take two
+ * @param callback : the callback function to call, or a nil pointer. The callback function should take two
  *         arguments: the function object of which the value has changed, and the character string describing
  *         the new advertised value.
  * @noreturn

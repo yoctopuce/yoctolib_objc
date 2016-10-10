@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_refframe.h 24925 2016-06-29 15:26:26Z mvuilleu $
+ * $Id: yocto_refframe.h 25275 2016-08-24 13:42:24Z mvuilleu $
  *
  * Declares yFindRefFrame(), the high-level API for RefFrame functions
  *
@@ -52,7 +52,8 @@ typedef enum {
     Y_MOUNTPOSITION_FRONT = 2 ,
     Y_MOUNTPOSITION_REAR = 3 ,
     Y_MOUNTPOSITION_RIGHT = 4 ,
-    Y_MOUNTPOSITION_LEFT = 5
+    Y_MOUNTPOSITION_LEFT = 5 ,
+    Y_MOUNTPOSITION_INVALID = 6
 } Y_MOUNTPOSITION;
 
 #endif
@@ -62,7 +63,8 @@ typedef enum {
     Y_MOUNTORIENTATION_TWELVE = 0 ,
     Y_MOUNTORIENTATION_THREE = 1 ,
     Y_MOUNTORIENTATION_SIX = 2 ,
-    Y_MOUNTORIENTATION_NINE = 3
+    Y_MOUNTORIENTATION_NINE = 3 ,
+    Y_MOUNTORIENTATION_INVALID = 4
 } Y_MOUNTORIENTATION;
 
 #endif
@@ -203,9 +205,9 @@ typedef enum {
  * Registers the callback function that is invoked on every change of advertised value.
  * The callback is invoked only during the execution of ySleep or yHandleEvents.
  * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
- * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
+ * one of these two functions periodically. To unregister a callback, pass a nil pointer as argument.
  *
- * @param callback : the callback function to call, or a null pointer. The callback function should take two
+ * @param callback : the callback function to call, or a nil pointer. The callback function should take two
  *         arguments: the function object of which the value has changed, and the character string describing
  *         the new advertised value.
  * @noreturn
@@ -225,7 +227,7 @@ typedef enum {
  *         Y_MOUNTPOSITION_REAR,     Y_MOUNTPOSITION_LEFT),
  *         corresponding to the installation in a box, on one of the six faces.
  *
- * On failure, throws an exception or returns a negative error code.
+ * On failure, throws an exception or returns Y_MOUNTPOSITION_INVALID.
  */
 -(Y_MOUNTPOSITION)     get_mountPosition;
 
@@ -242,7 +244,7 @@ typedef enum {
  *         On the bottom face, the 12H orientation points to the front, while
  *         on the top face, the 12H orientation points to the rear.
  *
- * On failure, throws an exception or returns a negative error code.
+ * On failure, throws an exception or returns Y_MOUNTORIENTATION_INVALID.
  */
 -(Y_MOUNTORIENTATION)     get_mountOrientation;
 
@@ -405,7 +407,7 @@ typedef enum {
  * Continues the enumeration of reference frames started using yFirstRefFrame().
  *
  * @return a pointer to a YRefFrame object, corresponding to
- *         a reference frame currently online, or a null pointer
+ *         a reference frame currently online, or a nil pointer
  *         if there are no more reference frames to enumerate.
  */
 -(YRefFrame*) nextRefFrame;
@@ -415,7 +417,7 @@ typedef enum {
  * next reference frames.
  *
  * @return a pointer to a YRefFrame object, corresponding to
- *         the first reference frame currently online, or a null pointer
+ *         the first reference frame currently online, or a nil pointer
  *         if there are none.
  */
 +(YRefFrame*) FirstRefFrame;
@@ -454,7 +456,7 @@ YRefFrame* yFindRefFrame(NSString* func);
  * next reference frames.
  *
  * @return a pointer to a YRefFrame object, corresponding to
- *         the first reference frame currently online, or a null pointer
+ *         the first reference frame currently online, or a nil pointer
  *         if there are none.
  */
 YRefFrame* yFirstRefFrame(void);

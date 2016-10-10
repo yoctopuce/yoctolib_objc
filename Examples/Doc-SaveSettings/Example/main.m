@@ -25,11 +25,11 @@ int main (int argc, const char * argv[])
         NSString *serial_or_name =[NSString stringWithUTF8String:argv[1]];
         // use serial or logical name
         YModule *module = [YModule FindModule:serial_or_name];
-      
+
         if (module.isOnline) {
-            if (argc >= 3){
+            if (argc >= 3) {
                 NSString *newname =  [NSString stringWithUTF8String:argv[2]];
-                if (![YAPI CheckLogicalName:newname]){
+                if (![YAPI CheckLogicalName:newname]) {
                     NSLog(@"Invalid name (%@)\n", newname);
                     usage(argv[0]);
                 }
@@ -39,8 +39,9 @@ int main (int argc, const char * argv[])
             NSLog(@"Current name: %@\n", module.logicalName);
         } else {
             NSLog(@"%@ not connected (check identification and USB cable)\n",
-                serial_or_name);
+                  serial_or_name);
         }
+        [YAPI FreeAPI];
     }
     return 0;
 }

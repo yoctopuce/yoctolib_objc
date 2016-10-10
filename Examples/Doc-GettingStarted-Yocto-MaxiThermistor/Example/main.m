@@ -47,6 +47,7 @@ int main(int argc, const char * argv[])
             NSLog(@"  (press Ctrl-C to exit)\n");
             [YAPI Sleep:1000:NULL];
         }
+        [YAPI FreeAPI];
     }
     return 0;
 }

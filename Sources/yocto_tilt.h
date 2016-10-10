@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_tilt.h 24934 2016-06-30 22:32:01Z mvuilleu $
+ * $Id: yocto_tilt.h 25275 2016-08-24 13:42:24Z mvuilleu $
  *
  * Declares yFindTilt(), the high-level API for Tilt functions
  *
@@ -148,9 +148,9 @@ typedef enum {
  * Registers the callback function that is invoked on every change of advertised value.
  * The callback is invoked only during the execution of ySleep or yHandleEvents.
  * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
- * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
+ * one of these two functions periodically. To unregister a callback, pass a nil pointer as argument.
  *
- * @param callback : the callback function to call, or a null pointer. The callback function should take two
+ * @param callback : the callback function to call, or a nil pointer. The callback function should take two
  *         arguments: the function object of which the value has changed, and the character string describing
  *         the new advertised value.
  * @noreturn
@@ -163,9 +163,9 @@ typedef enum {
  * Registers the callback function that is invoked on every periodic timed notification.
  * The callback is invoked only during the execution of ySleep or yHandleEvents.
  * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
- * one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
+ * one of these two functions periodically. To unregister a callback, pass a nil pointer as argument.
  *
- * @param callback : the callback function to call, or a null pointer. The callback function should take two
+ * @param callback : the callback function to call, or a nil pointer. The callback function should take two
  *         arguments: the function object of which the value has changed, and an YMeasure object describing
  *         the new advertised value.
  * @noreturn
@@ -179,7 +179,7 @@ typedef enum {
  * Continues the enumeration of tilt sensors started using yFirstTilt().
  *
  * @return a pointer to a YTilt object, corresponding to
- *         a tilt sensor currently online, or a null pointer
+ *         a tilt sensor currently online, or a nil pointer
  *         if there are no more tilt sensors to enumerate.
  */
 -(YTilt*) nextTilt;
@@ -189,7 +189,7 @@ typedef enum {
  * next tilt sensors.
  *
  * @return a pointer to a YTilt object, corresponding to
- *         the first tilt sensor currently online, or a null pointer
+ *         the first tilt sensor currently online, or a nil pointer
  *         if there are none.
  */
 +(YTilt*) FirstTilt;
@@ -228,7 +228,7 @@ YTilt* yFindTilt(NSString* func);
  * next tilt sensors.
  *
  * @return a pointer to a YTilt object, corresponding to
- *         the first tilt sensor currently online, or a null pointer
+ *         the first tilt sensor currently online, or a nil pointer
  *         if there are none.
  */
 YTilt* yFirstTilt(void);
