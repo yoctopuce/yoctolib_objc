@@ -43,7 +43,7 @@ int main(int argc, const char * argv[])
         int value = (int) atol(argv[2]);
 
         if ([spiPort isOnline]) {
-            [spiPort set_spiMode:@"250000,2,msb"];
+            [spiPort set_spiMode:@"250000,3,msb"];
             [spiPort set_ssPolarity:Y_SSPOLARITY_ACTIVE_LOW];
             [spiPort set_protocol:@"Frame:5ms"];
             [spiPort reset];

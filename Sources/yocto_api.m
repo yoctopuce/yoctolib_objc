@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.m 25352 2016-09-15 16:09:18Z seb $
+ * $Id: yocto_api.m 25651 2016-10-20 13:36:46Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -6533,7 +6533,9 @@ static const char* hexArray = "0123456789ABCDEF";
         }
     }
     if (_caltyp != 0) {
-        val = [_calhdl yCalibrationHandler: val:_caltyp: _calpar: _calraw:_calref];
+        if (_calhdl != NULL) {
+            val = [_calhdl yCalibrationHandler: val:_caltyp: _calpar: _calraw:_calref];
+        }
     }
     return val;
 }
@@ -6552,7 +6554,9 @@ static const char* hexArray = "0123456789ABCDEF";
         }
     }
     if (_caltyp != 0) {
-        val = [_calhdl yCalibrationHandler: val: _caltyp: _calpar: _calraw:_calref];
+        if (_calhdl != NULL) {
+            val = [_calhdl yCalibrationHandler: val: _caltyp: _calpar: _calraw:_calref];
+        }
     }
     return val;
 }

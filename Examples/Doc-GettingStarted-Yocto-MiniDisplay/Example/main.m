@@ -82,7 +82,7 @@ int main(int argc, const char * argv[])
         y = 0;
         vx = 1;
         vy = 1;
-        while (true) {
+        while ([disp isOnline]) {
             x += vx;
             y += vy;
             if ((x < 0) || (x > w - (h / 4))) vx = -vx;

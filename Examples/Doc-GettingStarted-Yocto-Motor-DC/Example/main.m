@@ -59,7 +59,7 @@ int main(int argc, const char * argv[])
                 [motor resetStatus];
             }
             [motor drivingForceMove:power :2000];  // ramp up to power in 2 seconds
-            while (1) {
+            while ([motor isOnline]) {
                 // display motor status
                 NSLog(@"Status=%@  Voltage=%fV  Current=%f  Temp=%f",
                       [motor get_advertisedValue], [voltage get_currentValue],

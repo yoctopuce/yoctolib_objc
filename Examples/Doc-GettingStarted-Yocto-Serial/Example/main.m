@@ -50,7 +50,7 @@ int main(int argc, const char * argv[])
             fgets(input,sizeof(input), stdin);
             line = [NSString stringWithUTF8String:input];
             [serialPort writeLine:line];
-        } while(![line isEqualToString:@""]);
+        } while(![line isEqualToString:@"\n"]);
 
         [YAPI FreeAPI];
     }
