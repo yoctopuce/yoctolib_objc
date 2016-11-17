@@ -6,7 +6,7 @@
 
 
 xcode4:
-	xcodebuild
+	echo xcodebuild
 
 clean:
 	@rm -rf  build

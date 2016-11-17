@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_digitalio.m 25275 2016-08-24 13:42:24Z mvuilleu $
+ * $Id: yocto_digitalio.m 25871 2016-11-15 14:32:56Z seb $
  *
  * Implements the high-level API for DigitalIO functions
  *
@@ -277,11 +277,13 @@
 }
 
 /**
- * Changes the polarity of all the bits of the port: 0 makes a bit an input, 1 makes it an output.
+ * Changes the polarity of all the bits of the port: For each bit set to 0, the matching I/O works the regular,
+ * intuitive way; for each bit set to 1, the I/O works in reverse mode.
  * Remember to call the saveToFlash() method  to make sure the setting will be kept after a reboot.
  *
- * @param newval : an integer corresponding to the polarity of all the bits of the port: 0 makes a bit
- * an input, 1 makes it an output
+ * @param newval : an integer corresponding to the polarity of all the bits of the port: For each bit
+ * set to 0, the matching I/O works the regular,
+ *         intuitive way; for each bit set to 1, the I/O works in reverse mode
  *
  * @return YAPI_SUCCESS if the call succeeds.
  *

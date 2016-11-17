@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_carbondioxide.h 25275 2016-08-24 13:42:24Z mvuilleu $
+ * $Id: yocto_carbondioxide.h 25831 2016-11-08 11:12:15Z seb $
  *
  * Declares yFindCarbonDioxide(), the high-level API for CarbonDioxide functions
  *
@@ -182,6 +182,8 @@ typedef void (*YCarbonDioxideTimedReportCallback)(YCarbonDioxide *func, YMeasure
  *
  * On failure, throws an exception or returns a negative error code.
  */
+-(int)     triggerBaselineCalibration;
+
 -(int)     triggetBaselineCalibration;
 
 /**
@@ -200,6 +202,8 @@ typedef void (*YCarbonDioxideTimedReportCallback)(YCarbonDioxide *func, YMeasure
  *
  * On failure, throws an exception or returns a negative error code.
  */
+-(int)     triggerZeroCalibration;
+
 -(int)     triggetZeroCalibration;
 
 

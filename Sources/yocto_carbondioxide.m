@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_carbondioxide.m 25275 2016-08-24 13:42:24Z mvuilleu $
+ * $Id: yocto_carbondioxide.m 25831 2016-11-08 11:12:15Z seb $
  *
  * Implements the high-level API for CarbonDioxide functions
  *
@@ -284,9 +284,14 @@
  *
  * On failure, throws an exception or returns a negative error code.
  */
--(int) triggetBaselineCalibration
+-(int) triggerBaselineCalibration
 {
     return [self set_command:@"BC"];
+}
+
+-(int) triggetBaselineCalibration
+{
+    return [self triggerBaselineCalibration];
 }
 
 /**
@@ -305,9 +310,14 @@
  *
  * On failure, throws an exception or returns a negative error code.
  */
--(int) triggetZeroCalibration
+-(int) triggerZeroCalibration
 {
     return [self set_command:@"ZC"];
+}
+
+-(int) triggetZeroCalibration
+{
+    return [self triggerZeroCalibration];
 }
 
 
