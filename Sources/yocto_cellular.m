@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_cellular.m 25609 2016-10-19 12:37:17Z seb $
+ * $Id: yocto_cellular.m 26132 2016-12-01 17:02:38Z seb $
  *
  * Implements the high-level API for Cellular functions
  *
@@ -1161,7 +1161,6 @@
                 }
             }
         }
-        ;;
     }
     return res;
 }

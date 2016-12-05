@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.m 25651 2016-10-20 13:36:46Z seb $
+ * $Id: yocto_api.m 26132 2016-12-01 17:02:38Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -5000,7 +5000,7 @@ static const char* hexArray = "0123456789ABCDEF";
                 ext_settings = [NSString stringWithFormat:@"%@%@", ext_settings, item];
                 sep = @",";
             }
-        };
+        }
     }
     ext_settings = [NSString stringWithFormat:@"%@%@", ext_settings, @"],\n\"files\":["];
     if ([self hasFunction:@"files"]) {
@@ -5018,7 +5018,7 @@ static const char* hexArray = "0123456789ABCDEF";
                 item = [NSString stringWithFormat:@"%@{\"name\":\"%@\", \"data\":\"%@\"}\n", sep, name,file_data];
                 ext_settings = [NSString stringWithFormat:@"%@%@", ext_settings, item];
                 sep = @",";
-            };
+            }
         }
     }
     res = [NSMutableData dataWithData:[[NSString stringWithFormat:@"%@%@%@%@", @"{ \"api\":", ARC_sendAutorelease([[NSString alloc] initWithData:settings encoding:NSISOLatin1StringEncoding]), ext_settings, @"]}"] dataUsingEncoding:NSISOLatin1StringEncoding]];
@@ -5062,7 +5062,7 @@ static const char* hexArray = "0123456789ABCDEF";
         data = [self _get_json_path:_each :@"json"];
         if ([self hasFunction:functionId]) {
             [self loadThermistorExtra:functionId :data];
-        };
+        }
     }
     return YAPI_SUCCESS;
 }
@@ -5113,7 +5113,7 @@ static const char* hexArray = "0123456789ABCDEF";
             name = [self _decode_json_string:name];
             data = [self _get_json_path:_each :@"data"];
             data = [self _decode_json_string:data];
-            [self _upload:name :[YAPI _hexStr2Bin:data]];;
+            [self _upload:name :[YAPI _hexStr2Bin:data]];
         }
     }
     return YAPI_SUCCESS;
@@ -5489,7 +5489,7 @@ static const char* hexArray = "0123456789ABCDEF";
         value = [each_str substringWithRange:NSMakeRange( eqpos, leng - eqpos)];
         [old_jpath addObject:jpath];
         [old_jpath_len addObject:[NSNumber numberWithLong:(int)[(jpath) length]]];
-        [old_val_arr addObject:value];;
+        [old_val_arr addObject:value];
     }
     // may throw an exception
     actualSettings = [self _download:@"api.json"];
@@ -5508,7 +5508,7 @@ static const char* hexArray = "0123456789ABCDEF";
         value = [each_str substringWithRange:NSMakeRange( eqpos, leng - eqpos)];
         [new_jpath addObject:jpath];
         [new_jpath_len addObject:[NSNumber numberWithLong:(int)[(jpath) length]]];
-        [new_val_arr addObject:value];;
+        [new_val_arr addObject:value];
     }
     i = 0;
     while (i < (int)[new_jpath count]) {
@@ -5699,7 +5699,7 @@ static const char* hexArray = "0123456789ABCDEF";
         i = i + 1;
     }
     for (NSString* _each  in restoreLast) {
-        [self _download:_each];;
+        [self _download:_each];
     }
     return YAPI_SUCCESS;
 }
@@ -7159,8 +7159,8 @@ static const char* hexArray = "0123456789ABCDEF";
             [_measures addObject:ARC_sendAutorelease([[YMeasure alloc] initWith:tim - itv :tim :[[_each objectAtIndex:minCol] doubleValue] :[[_each objectAtIndex:avgCol] doubleValue] :[[_each objectAtIndex:maxCol] doubleValue]])];
         }
         tim = tim + itv;
+        tim = floor(tim * 1000+0.5) / 1000.0;
     }
-    
     return [self get_progress];
 }
 
@@ -7367,7 +7367,6 @@ static const char* hexArray = "0123456789ABCDEF";
         if ([_each get_startTimeUTC] == startUtc) {
             stream = _each;
         }
-        ;;
     }
     if (stream == nil) {
         return measures;
@@ -7398,7 +7397,7 @@ static const char* hexArray = "0123456789ABCDEF";
         if ((tim >= _startTime) && ((_endTime == 0) || (tim <= _endTime))) {
             [measures addObject:ARC_sendAutorelease([[YMeasure alloc] initWith:tim - itv :tim :[[_each objectAtIndex:minCol] doubleValue] :[[_each objectAtIndex:avgCol] doubleValue] :[[_each objectAtIndex:maxCol] doubleValue]])];
         }
-        tim = tim + itv;;
+        tim = tim + itv;
     }
     return measures;
 }

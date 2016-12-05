@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_datalogger.m 25275 2016-08-24 13:42:24Z mvuilleu $
+ * $Id: yocto_datalogger.m 26132 2016-12-01 17:02:38Z seb $
  *
  * Implements yFindDataLogger(), the high-level API for DataLogger functions
  *
@@ -895,7 +895,7 @@
     for (NSString* _each  in dslist) {
         dataset = ARC_sendAutorelease([[YDataSet alloc] initWith:self]);
         [dataset _parse:_each];
-        [res addObject:dataset];;
+        [res addObject:dataset];
     }
     return res;
 }
