@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.m 26132 2016-12-01 17:02:38Z seb $
+ * $Id: yocto_api.m 26329 2017-01-11 14:04:39Z mvuilleu $
  *
  * High-level programming interface, common to all modules
  *
@@ -2566,6 +2566,25 @@ static const char* hexArray = "0123456789ABCDEF";
 -(int) unmuteValueCallbacks
 {
     return [self set_advertisedValue:@""];
+}
+
+/**
+ * Returns the current value of a single function attribute, as a text string, as quickly as
+ * possible but without using the cached value.
+ *
+ * @param attrName : le nom de l'attribut désiré
+ *
+ * @return une chaîne de caractères représentant la valeur actuelle de l'attribut.
+ *
+ * On failure, throws an exception or returns an empty string.
+ */
+-(NSString*) loadAttribute:(NSString*)attrName
+{
+    NSString* url;
+    NSMutableData* attrVal;
+    url = [NSString stringWithFormat:@"api/%@/%@", [self get_functionId],attrName];
+    attrVal = [self _download:url];
+    return ARC_sendAutorelease([[NSString alloc] initWithData:attrVal encoding:NSISOLatin1StringEncoding]);
 }
 
 -(int) _parserHelper

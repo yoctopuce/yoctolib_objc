@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_current.m 25275 2016-08-24 13:42:24Z mvuilleu $
+ * $Id: yocto_current.m 26183 2016-12-15 00:14:02Z mvuilleu $
  *
  * Implements the high-level API for Current functions
  *
@@ -53,6 +53,7 @@
           return nil;
     _className = @"Current";
 //--- (YCurrent attributes initialization)
+    _enabled = Y_ENABLED_INVALID;
     _valueCallbackCurrent = NULL;
     _timedReportCallbackCurrent = NULL;
 //--- (end of YCurrent attributes initialization)
@@ -69,10 +70,41 @@
 
 -(int) _parseAttr:(yJsonStateMachine*) j
 {
+    if(!strcmp(j->token, "enabled")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _enabled =  (Y_ENABLED_enum)atoi(j->token);
+        return 1;
+    }
     return [super _parseAttr:j];
 }
 //--- (end of YCurrent private methods implementation)
 //--- (YCurrent public methods implementation)
+-(Y_ENABLED_enum) get_enabled
+{
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_ENABLED_INVALID;
+        }
+    }
+    return _enabled;
+}
+
+
+-(Y_ENABLED_enum) enabled
+{
+    return [self get_enabled];
+}
+
+-(int) set_enabled:(Y_ENABLED_enum) newval
+{
+    return [self setEnabled:newval];
+}
+-(int) setEnabled:(Y_ENABLED_enum) newval
+{
+    NSString* rest_val;
+    rest_val = (newval ? @"1" : @"0");
+    return [self _setAttr:@"enabled" :rest_val];
+}
 /**
  * Retrieves a current sensor for a given identifier.
  * The identifier can be specified using several formats:

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: pic24config.php 25964 2016-11-21 15:30:59Z mvuilleu $
+ * $Id: yocto_steppermotor.h 26253 2017-01-03 17:41:07Z seb $
  *
  * Declares yFindStepperMotor(), the high-level API for StepperMotor functions
  *
@@ -73,11 +73,12 @@ typedef enum {
 #define Y_PULLINSPEED_INVALID           YAPI_INVALID_DOUBLE
 #define Y_MAXACCEL_INVALID              YAPI_INVALID_DOUBLE
 #define Y_MAXSPEED_INVALID              YAPI_INVALID_DOUBLE
-#define Y_USTEPMAXSPEED_INVALID         YAPI_INVALID_DOUBLE
 #define Y_OVERCURRENT_INVALID           YAPI_INVALID_UINT
 #define Y_TCURRSTOP_INVALID             YAPI_INVALID_UINT
 #define Y_TCURRRUN_INVALID              YAPI_INVALID_UINT
 #define Y_ALERTMODE_INVALID             YAPI_INVALID_STRING
+#define Y_AUXMODE_INVALID               YAPI_INVALID_STRING
+#define Y_AUXSIGNAL_INVALID             YAPI_INVALID_INT
 #define Y_COMMAND_INVALID               YAPI_INVALID_STRING
 //--- (end of YStepperMotor globals)
 
@@ -100,11 +101,12 @@ typedef enum {
     double          _maxAccel;
     double          _maxSpeed;
     Y_STEPPING_enum _stepping;
-    double          _ustepMaxSpeed;
     int             _overcurrent;
     int             _tCurrStop;
     int             _tCurrRun;
     NSString*       _alertMode;
+    NSString*       _auxMode;
+    int             _auxSignal;
     NSString*       _command;
     YStepperMotorValueCallback _valueCallbackStepperMotor;
 //--- (end of YStepperMotor attributes declaration)
@@ -280,31 +282,6 @@ typedef enum {
 -(int)     setStepping:(Y_STEPPING_enum) newval;
 
 /**
- * Changes the maximal motor speed for micro-stepping, measured in steps per second.
- *
- * @param newval : a floating point number corresponding to the maximal motor speed for
- * micro-stepping, measured in steps per second
- *
- * @return YAPI_SUCCESS if the call succeeds.
- *
- * On failure, throws an exception or returns a negative error code.
- */
--(int)     set_ustepMaxSpeed:(double) newval;
--(int)     setUstepMaxSpeed:(double) newval;
-
-/**
- * Returns the maximal motor speed for micro-stepping, measured in steps per second.
- *
- * @return a floating point number corresponding to the maximal motor speed for micro-stepping,
- * measured in steps per second
- *
- * On failure, throws an exception or returns Y_USTEPMAXSPEED_INVALID.
- */
--(double)     get_ustepMaxSpeed;
-
-
--(double) ustepMaxSpeed;
-/**
  * Returns the overcurrent alert and emergency stop threshold, measured in mA.
  *
  * @return an integer corresponding to the overcurrent alert and emergency stop threshold, measured in mA
@@ -381,6 +358,37 @@ typedef enum {
 -(NSString*) alertMode;
 -(int)     set_alertMode:(NSString*) newval;
 -(int)     setAlertMode:(NSString*) newval;
+
+-(NSString*)     get_auxMode;
+
+
+-(NSString*) auxMode;
+-(int)     set_auxMode:(NSString*) newval;
+-(int)     setAuxMode:(NSString*) newval;
+
+/**
+ * Returns the current value of the signal generated on the auxiliary output.
+ *
+ * @return an integer corresponding to the current value of the signal generated on the auxiliary output
+ *
+ * On failure, throws an exception or returns Y_AUXSIGNAL_INVALID.
+ */
+-(int)     get_auxSignal;
+
+
+-(int) auxSignal;
+/**
+ * Changes the value of the signal generated on the auxiliary output.
+ * Acceptable values depend on the auxiliary output signal type configured.
+ *
+ * @param newval : an integer corresponding to the value of the signal generated on the auxiliary output
+ *
+ * @return YAPI_SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     set_auxSignal:(int) newval;
+-(int)     setAuxSignal:(int) newval;
 
 -(NSString*)     get_command;
 
@@ -474,17 +482,26 @@ typedef enum {
 -(int)     moveTo:(double)absPos;
 
 /**
- * Starts the motor to reach a given absolute position. The time needed to reach the requested
+ * Starts the motor to reach a given relative position. The time needed to reach the requested
  * position will depend on the acceleration and max speed parameters configured for
  * the motor.
  *
  * @param relPos : relative position, measured in steps from the current position.
  *
  * @return YAPI_SUCCESS if the call succeeds.
- *
- * On failure, throws an exception or returns a negative error code.
+ *         On failure, throws an exception or returns a negative error code.
  */
 -(int)     moveRel:(double)relPos;
+
+/**
+ * Keep the motor in the same state for the specified amount of time, before processing next command.
+ *
+ * @param waitMs : wait time, specified in milliseconds.
+ *
+ * @return YAPI_SUCCESS if the call succeeds.
+ *         On failure, throws an exception or returns a negative error code.
+ */
+-(int)     pause:(int)waitMs;
 
 /**
  * Stops the motor with an emergency alert, without taking any additional precaution.

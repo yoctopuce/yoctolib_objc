@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: pic24config.php 25964 2016-11-21 15:30:59Z mvuilleu $
+ * $Id: yocto_steppermotor.m 26277 2017-01-04 15:35:59Z seb $
  *
  * Implements the high-level API for StepperMotor functions
  *
@@ -61,11 +61,12 @@
     _maxAccel = Y_MAXACCEL_INVALID;
     _maxSpeed = Y_MAXSPEED_INVALID;
     _stepping = Y_STEPPING_INVALID;
-    _ustepMaxSpeed = Y_USTEPMAXSPEED_INVALID;
     _overcurrent = Y_OVERCURRENT_INVALID;
     _tCurrStop = Y_TCURRSTOP_INVALID;
     _tCurrRun = Y_TCURRRUN_INVALID;
     _alertMode = Y_ALERTMODE_INVALID;
+    _auxMode = Y_AUXMODE_INVALID;
+    _auxSignal = Y_AUXSIGNAL_INVALID;
     _command = Y_COMMAND_INVALID;
     _valueCallbackStepperMotor = NULL;
 //--- (end of YStepperMotor attributes initialization)
@@ -77,6 +78,8 @@
 //--- (YStepperMotor cleanup)
     ARC_release(_alertMode);
     _alertMode = nil;
+    ARC_release(_auxMode);
+    _auxMode = nil;
     ARC_release(_command);
     _command = nil;
     ARC_dealloc(super);
@@ -126,11 +129,6 @@
         _stepping =  atoi(j->token);
         return 1;
     }
-    if(!strcmp(j->token, "ustepMaxSpeed")) {
-        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-        _ustepMaxSpeed =  floor(atof(j->token) * 1000.0 / 65536.0 + 0.5) / 1000.0;
-        return 1;
-    }
     if(!strcmp(j->token, "overcurrent")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
         _overcurrent =  atoi(j->token);
@@ -151,6 +149,18 @@
        ARC_release(_alertMode);
         _alertMode =  [self _parseString:j];
         ARC_retain(_alertMode);
+        return 1;
+    }
+    if(!strcmp(j->token, "auxMode")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+       ARC_release(_auxMode);
+        _auxMode =  [self _parseString:j];
+        ARC_retain(_auxMode);
+        return 1;
+    }
+    if(!strcmp(j->token, "auxSignal")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _auxSignal =  atoi(j->token);
         return 1;
     }
     if(!strcmp(j->token, "command")) {
@@ -453,50 +463,6 @@
     rest_val = [NSString stringWithFormat:@"%d", newval];
     return [self _setAttr:@"stepping" :rest_val];
 }
-
-/**
- * Changes the maximal motor speed for micro-stepping, measured in steps per second.
- *
- * @param newval : a floating point number corresponding to the maximal motor speed for
- * micro-stepping, measured in steps per second
- *
- * @return YAPI_SUCCESS if the call succeeds.
- *
- * On failure, throws an exception or returns a negative error code.
- */
--(int) set_ustepMaxSpeed:(double) newval
-{
-    return [self setUstepMaxSpeed:newval];
-}
--(int) setUstepMaxSpeed:(double) newval
-{
-    NSString* rest_val;
-    rest_val = [NSString stringWithFormat:@"%d",(int)floor(newval * 65536.0 + 0.5)];
-    return [self _setAttr:@"ustepMaxSpeed" :rest_val];
-}
-/**
- * Returns the maximal motor speed for micro-stepping, measured in steps per second.
- *
- * @return a floating point number corresponding to the maximal motor speed for micro-stepping,
- * measured in steps per second
- *
- * On failure, throws an exception or returns Y_USTEPMAXSPEED_INVALID.
- */
--(double) get_ustepMaxSpeed
-{
-    if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
-            return Y_USTEPMAXSPEED_INVALID;
-        }
-    }
-    return _ustepMaxSpeed;
-}
-
-
--(double) ustepMaxSpeed
-{
-    return [self get_ustepMaxSpeed];
-}
 /**
  * Returns the overcurrent alert and emergency stop threshold, measured in mA.
  *
@@ -651,6 +617,75 @@
     rest_val = newval;
     return [self _setAttr:@"alertMode" :rest_val];
 }
+-(NSString*) get_auxMode
+{
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_AUXMODE_INVALID;
+        }
+    }
+    return _auxMode;
+}
+
+
+-(NSString*) auxMode
+{
+    return [self get_auxMode];
+}
+
+-(int) set_auxMode:(NSString*) newval
+{
+    return [self setAuxMode:newval];
+}
+-(int) setAuxMode:(NSString*) newval
+{
+    NSString* rest_val;
+    rest_val = newval;
+    return [self _setAttr:@"auxMode" :rest_val];
+}
+/**
+ * Returns the current value of the signal generated on the auxiliary output.
+ *
+ * @return an integer corresponding to the current value of the signal generated on the auxiliary output
+ *
+ * On failure, throws an exception or returns Y_AUXSIGNAL_INVALID.
+ */
+-(int) get_auxSignal
+{
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_AUXSIGNAL_INVALID;
+        }
+    }
+    return _auxSignal;
+}
+
+
+-(int) auxSignal
+{
+    return [self get_auxSignal];
+}
+
+/**
+ * Changes the value of the signal generated on the auxiliary output.
+ * Acceptable values depend on the auxiliary output signal type configured.
+ *
+ * @param newval : an integer corresponding to the value of the signal generated on the auxiliary output
+ *
+ * @return YAPI_SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) set_auxSignal:(int) newval
+{
+    return [self setAuxSignal:newval];
+}
+-(int) setAuxSignal:(int) newval
+{
+    NSString* rest_val;
+    rest_val = [NSString stringWithFormat:@"%d", newval];
+    return [self _setAttr:@"auxSignal" :rest_val];
+}
 -(NSString*) get_command
 {
     if (_cacheExpiration <= [YAPI GetTickCount]) {
@@ -777,7 +812,7 @@
  */
 -(int) findHomePosition:(double)speed
 {
-    return [self sendCommand:@"H"];
+    return [self sendCommand:[NSString stringWithFormat:@"H%d",(int) floor(1000*speed+0.5)]];
 }
 
 /**
@@ -792,7 +827,7 @@
  */
 -(int) changeSpeed:(double)speed
 {
-    return [self sendCommand:[NSString stringWithFormat:@"R%d",floor(1000*speed+0.5)]];
+    return [self sendCommand:[NSString stringWithFormat:@"R%d",(int) floor(1000*speed+0.5)]];
 }
 
 /**
@@ -807,23 +842,35 @@
  */
 -(int) moveTo:(double)absPos
 {
-    return [self sendCommand:[NSString stringWithFormat:@"M%d",floor(16*absPos+0.5)]];
+    return [self sendCommand:[NSString stringWithFormat:@"M%d",(int) floor(16*absPos+0.5)]];
 }
 
 /**
- * Starts the motor to reach a given absolute position. The time needed to reach the requested
+ * Starts the motor to reach a given relative position. The time needed to reach the requested
  * position will depend on the acceleration and max speed parameters configured for
  * the motor.
  *
  * @param relPos : relative position, measured in steps from the current position.
  *
  * @return YAPI_SUCCESS if the call succeeds.
- *
- * On failure, throws an exception or returns a negative error code.
+ *         On failure, throws an exception or returns a negative error code.
  */
 -(int) moveRel:(double)relPos
 {
-    return [self sendCommand:[NSString stringWithFormat:@"m%d",floor(16*relPos+0.5)]];
+    return [self sendCommand:[NSString stringWithFormat:@"m%d",(int) floor(16*relPos+0.5)]];
+}
+
+/**
+ * Keep the motor in the same state for the specified amount of time, before processing next command.
+ *
+ * @param waitMs : wait time, specified in milliseconds.
+ *
+ * @return YAPI_SUCCESS if the call succeeds.
+ *         On failure, throws an exception or returns a negative error code.
+ */
+-(int) pause:(int)waitMs
+{
+    return [self sendCommand:[NSString stringWithFormat:@"_%d",waitMs]];
 }
 
 /**

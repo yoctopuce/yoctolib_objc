@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_voltage.h 25275 2016-08-24 13:42:24Z mvuilleu $
+ * $Id: yocto_voltage.h 26183 2016-12-15 00:14:02Z mvuilleu $
  *
  * Declares yFindVoltage(), the high-level API for Voltage functions
  *
@@ -45,6 +45,14 @@ CF_EXTERN_C_BEGIN
 //--- (YVoltage globals)
 typedef void (*YVoltageValueCallback)(YVoltage *func, NSString *functionValue);
 typedef void (*YVoltageTimedReportCallback)(YVoltage *func, YMeasure *measure);
+#ifndef _Y_ENABLED_ENUM
+#define _Y_ENABLED_ENUM
+typedef enum {
+    Y_ENABLED_FALSE = 0,
+    Y_ENABLED_TRUE = 1,
+    Y_ENABLED_INVALID = -1,
+} Y_ENABLED_enum;
+#endif
 //--- (end of YVoltage globals)
 
 //--- (YVoltage class start)
@@ -60,6 +68,7 @@ typedef void (*YVoltageTimedReportCallback)(YVoltage *func, YMeasure *measure);
 {
 @protected
 //--- (YVoltage attributes declaration)
+    Y_ENABLED_enum  _enabled;
     YVoltageValueCallback _valueCallbackVoltage;
     YVoltageTimedReportCallback _timedReportCallbackVoltage;
 //--- (end of YVoltage attributes declaration)
@@ -73,6 +82,13 @@ typedef void (*YVoltageTimedReportCallback)(YVoltage *func, YMeasure *measure);
 
 //--- (end of YVoltage private methods declaration)
 //--- (YVoltage public methods declaration)
+-(Y_ENABLED_enum)     get_enabled;
+
+
+-(Y_ENABLED_enum) enabled;
+-(int)     set_enabled:(Y_ENABLED_enum) newval;
+-(int)     setEnabled:(Y_ENABLED_enum) newval;
+
 /**
  * Retrieves a voltage sensor for a given identifier.
  * The identifier can be specified using several formats:

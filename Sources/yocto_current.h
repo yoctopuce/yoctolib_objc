@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_current.h 25275 2016-08-24 13:42:24Z mvuilleu $
+ * $Id: yocto_current.h 26183 2016-12-15 00:14:02Z mvuilleu $
  *
  * Declares yFindCurrent(), the high-level API for Current functions
  *
@@ -45,6 +45,14 @@ CF_EXTERN_C_BEGIN
 //--- (YCurrent globals)
 typedef void (*YCurrentValueCallback)(YCurrent *func, NSString *functionValue);
 typedef void (*YCurrentTimedReportCallback)(YCurrent *func, YMeasure *measure);
+#ifndef _Y_ENABLED_ENUM
+#define _Y_ENABLED_ENUM
+typedef enum {
+    Y_ENABLED_FALSE = 0,
+    Y_ENABLED_TRUE = 1,
+    Y_ENABLED_INVALID = -1,
+} Y_ENABLED_enum;
+#endif
 //--- (end of YCurrent globals)
 
 //--- (YCurrent class start)
@@ -60,6 +68,7 @@ typedef void (*YCurrentTimedReportCallback)(YCurrent *func, YMeasure *measure);
 {
 @protected
 //--- (YCurrent attributes declaration)
+    Y_ENABLED_enum  _enabled;
     YCurrentValueCallback _valueCallbackCurrent;
     YCurrentTimedReportCallback _timedReportCallbackCurrent;
 //--- (end of YCurrent attributes declaration)
@@ -73,6 +82,13 @@ typedef void (*YCurrentTimedReportCallback)(YCurrent *func, YMeasure *measure);
 
 //--- (end of YCurrent private methods declaration)
 //--- (YCurrent public methods declaration)
+-(Y_ENABLED_enum)     get_enabled;
+
+
+-(Y_ENABLED_enum) enabled;
+-(int)     set_enabled:(Y_ENABLED_enum) newval;
+-(int)     setEnabled:(Y_ENABLED_enum) newval;
+
 /**
  * Retrieves a current sensor for a given identifier.
  * The identifier can be specified using several formats:

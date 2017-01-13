@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.h 25275 2016-08-24 13:42:24Z mvuilleu $
+ * $Id: yocto_api.h 26322 2017-01-11 08:49:28Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -62,7 +62,7 @@
 
 extern NSMutableDictionary* YAPI_YFunctions;
 
-#define YOCTO_API_REVISION          "26144"
+#define YOCTO_API_REVISION          "26380"
 
 // yInitAPI argument
 #define Y_DETECT_NONE           0
@@ -826,6 +826,18 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
  * On failure, throws an exception or returns a negative error code.
  */
 -(int)     unmuteValueCallbacks;
+
+/**
+ * Returns the current value of a single function attribute, as a text string, as quickly as
+ * possible but without using the cached value.
+ *
+ * @param attrName : le nom de l'attribut désiré
+ *
+ * @return une chaîne de caractères représentant la valeur actuelle de l'attribut.
+ *
+ * On failure, throws an exception or returns an empty string.
+ */
+-(NSString*)     loadAttribute:(NSString*)attrName;
 
 -(int)     _parserHelper;
 
