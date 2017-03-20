@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_motor.m 25275 2016-08-24 13:42:24Z mvuilleu $
+ * $Id: yocto_motor.m 26672 2017-02-28 13:43:38Z seb $
  *
  * Implements the high-level API for Motor functions
  *
@@ -151,12 +151,14 @@
  */
 -(Y_MOTORSTATUS_enum) get_motorStatus
 {
+    Y_MOTORSTATUS_enum res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_MOTORSTATUS_INVALID;
         }
     }
-    return _motorStatus;
+    res = _motorStatus;
+    return res;
 }
 
 
@@ -209,12 +211,14 @@
  */
 -(double) get_drivingForce
 {
+    double res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_DRIVINGFORCE_INVALID;
         }
     }
-    return _drivingForce;
+    res = _drivingForce;
+    return res;
 }
 
 
@@ -255,12 +259,14 @@
  */
 -(double) get_brakingForce
 {
+    double res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_BRAKINGFORCE_INVALID;
         }
     }
-    return _brakingForce;
+    res = _brakingForce;
+    return res;
 }
 
 
@@ -307,12 +313,14 @@
  */
 -(double) get_cutOffVoltage
 {
+    double res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_CUTOFFVOLTAGE_INVALID;
         }
     }
-    return _cutOffVoltage;
+    res = _cutOffVoltage;
+    return res;
 }
 
 
@@ -331,12 +339,14 @@
  */
 -(int) get_overCurrentLimit
 {
+    int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_OVERCURRENTLIMIT_INVALID;
         }
     }
-    return _overCurrentLimit;
+    res = _overCurrentLimit;
+    return res;
 }
 
 
@@ -401,12 +411,14 @@
  */
 -(double) get_frequency
 {
+    double res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_FREQUENCY_INVALID;
         }
     }
-    return _frequency;
+    res = _frequency;
+    return res;
 }
 
 
@@ -426,12 +438,14 @@
  */
 -(int) get_starterTime
 {
+    int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_STARTERTIME_INVALID;
         }
     }
-    return _starterTime;
+    res = _starterTime;
+    return res;
 }
 
 
@@ -476,12 +490,14 @@
  */
 -(int) get_failSafeTimeout
 {
+    int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_FAILSAFETIMEOUT_INVALID;
         }
     }
-    return _failSafeTimeout;
+    res = _failSafeTimeout;
+    return res;
 }
 
 
@@ -516,12 +532,14 @@
 }
 -(NSString*) get_command
 {
+    NSString* res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_COMMAND_INVALID;
         }
     }
-    return _command;
+    res = _command;
+    return res;
 }
 
 

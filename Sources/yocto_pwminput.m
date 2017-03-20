@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_pwminput.m 25275 2016-08-24 13:42:24Z mvuilleu $
+ * $Id: yocto_pwminput.m 26672 2017-02-28 13:43:38Z seb $
  *
  * Implements the high-level API for PwmInput functions
  *
@@ -124,12 +124,14 @@
  */
 -(double) get_dutyCycle
 {
+    double res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_DUTYCYCLE_INVALID;
         }
     }
-    return _dutyCycle;
+    res = _dutyCycle;
+    return res;
 }
 
 
@@ -147,12 +149,14 @@
  */
 -(double) get_pulseDuration
 {
+    double res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_PULSEDURATION_INVALID;
         }
     }
-    return _pulseDuration;
+    res = _pulseDuration;
+    return res;
 }
 
 
@@ -169,12 +173,14 @@
  */
 -(double) get_frequency
 {
+    double res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_FREQUENCY_INVALID;
         }
     }
-    return _frequency;
+    res = _frequency;
+    return res;
 }
 
 
@@ -191,12 +197,14 @@
  */
 -(double) get_period
 {
+    double res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_PERIOD_INVALID;
         }
     }
-    return _period;
+    res = _period;
+    return res;
 }
 
 
@@ -215,12 +223,14 @@
  */
 -(s64) get_pulseCounter
 {
+    s64 res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_PULSECOUNTER_INVALID;
         }
     }
-    return _pulseCounter;
+    res = _pulseCounter;
+    return res;
 }
 
 
@@ -248,12 +258,14 @@
  */
 -(s64) get_pulseTimer
 {
+    s64 res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_PULSETIMER_INVALID;
         }
     }
-    return _pulseTimer;
+    res = _pulseTimer;
+    return res;
 }
 
 
@@ -273,12 +285,14 @@
  */
 -(Y_PWMREPORTMODE_enum) get_pwmReportMode
 {
+    Y_PWMREPORTMODE_enum res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_PWMREPORTMODE_INVALID;
         }
     }
-    return _pwmReportMode;
+    res = _pwmReportMode;
+    return res;
 }
 
 

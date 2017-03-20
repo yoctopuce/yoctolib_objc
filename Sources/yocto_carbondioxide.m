@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_carbondioxide.m 25831 2016-11-08 11:12:15Z seb $
+ * $Id: yocto_carbondioxide.m 26672 2017-02-28 13:43:38Z seb $
  *
  * Implements the high-level API for CarbonDioxide functions
  *
@@ -99,12 +99,14 @@
  */
 -(int) get_abcPeriod
 {
+    int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_ABCPERIOD_INVALID;
         }
     }
-    return _abcPeriod;
+    res = _abcPeriod;
+    return res;
 }
 
 
@@ -138,12 +140,14 @@
 }
 -(NSString*) get_command
 {
+    NSString* res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_COMMAND_INVALID;
         }
     }
-    return _command;
+    res = _command;
+    return res;
 }
 
 

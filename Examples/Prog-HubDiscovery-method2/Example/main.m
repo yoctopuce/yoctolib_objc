@@ -13,7 +13,8 @@ static void arrivalCallback(YModule *dev)
   for (int i = 0; i < fctCount; i++) {
     // retreive the hardware name of the ith function
     NSString *fctHwdName = [dev functionId:i];
-    if ([fctHwdName length] > 7 && [[fctHwdName substringToIndex:7] isEqualToString:@"hubPort"]) {
+    if ([fctHwdName length] > 7
+        && [[fctHwdName substringToIndex:7] isEqualToString:@"hubPort"]) {
       // the device contains a  hubPortx function, so it's a hub
       if (!isAHub) {
         NSLog(@"hub found : %@", [dev get_friendlyName]);

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_buzzer.m 25275 2016-08-24 13:42:24Z mvuilleu $
+ * $Id: yocto_buzzer.m 26672 2017-02-28 13:43:38Z seb $
  *
  * Implements the high-level API for Buzzer functions
  *
@@ -141,12 +141,14 @@
  */
 -(double) get_frequency
 {
+    double res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_FREQUENCY_INVALID;
         }
     }
-    return _frequency;
+    res = _frequency;
+    return res;
 }
 
 
@@ -163,12 +165,14 @@
  */
 -(int) get_volume
 {
+    int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_VOLUME_INVALID;
         }
     }
-    return _volume;
+    res = _volume;
+    return res;
 }
 
 
@@ -205,12 +209,14 @@
  */
 -(int) get_playSeqSize
 {
+    int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_PLAYSEQSIZE_INVALID;
         }
     }
-    return _playSeqSize;
+    res = _playSeqSize;
+    return res;
 }
 
 
@@ -227,12 +233,14 @@
  */
 -(int) get_playSeqMaxSize
 {
+    int res;
     if (_cacheExpiration == 0) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_PLAYSEQMAXSIZE_INVALID;
         }
     }
-    return _playSeqMaxSize;
+    res = _playSeqMaxSize;
+    return res;
 }
 
 
@@ -252,12 +260,14 @@
  */
 -(int) get_playSeqSignature
 {
+    int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_PLAYSEQSIGNATURE_INVALID;
         }
     }
-    return _playSeqSignature;
+    res = _playSeqSignature;
+    return res;
 }
 
 
@@ -267,12 +277,14 @@
 }
 -(NSString*) get_command
 {
+    NSString* res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_COMMAND_INVALID;
         }
     }
-    return _command;
+    res = _command;
+    return res;
 }
 
 

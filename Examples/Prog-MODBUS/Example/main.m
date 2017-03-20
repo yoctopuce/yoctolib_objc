@@ -44,11 +44,14 @@ int main(int argc, const char * argv[])
     } while(reg < 1 || reg >= 50000 || (reg % 10000) == 0);
     while(true) {
       if(reg >= 40001) {
-        val = (int)[[[serialPort modbusReadInputRegisters:slave :reg - 40001 :1] objectAtIndex:0] integerValue];
+        val = (int)[[[serialPort modbusReadInputRegisters:slave :reg - 40001 :1] objectAtIndex:0]
+                    integerValue];
       } else if(reg >= 30001) {
-        val = (int)[[[serialPort modbusReadRegisters:slave :reg - 30001 :1] objectAtIndex:0] integerValue];
+        val = (int)[[[serialPort modbusReadRegisters:slave :reg - 30001 :1] objectAtIndex:0]
+                    integerValue];
       } else if(reg >= 10001) {
-        val = (int)[[[serialPort modbusReadInputBits:slave :reg - 10001 :1] objectAtIndex:0] integerValue];
+        val = (int)[[[serialPort modbusReadInputBits:slave :reg - 10001 :1] objectAtIndex:0]
+                    integerValue];
       } else {
         val = (int)[[[serialPort modbusReadBits:slave :reg - 1 :1] objectAtIndex:0] integerValue];
       }

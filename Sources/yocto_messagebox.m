@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_messagebox.m 25275 2016-08-24 13:42:24Z mvuilleu $
+ * $Id: yocto_messagebox.m 26672 2017-02-28 13:43:38Z seb $
  *
  * Implements the high-level API for MessageBox functions
  *
@@ -1339,12 +1339,14 @@
  */
 -(int) get_slotsInUse
 {
+    int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_SLOTSINUSE_INVALID;
         }
     }
-    return _slotsInUse;
+    res = _slotsInUse;
+    return res;
 }
 
 
@@ -1361,12 +1363,14 @@
  */
 -(int) get_slotsCount
 {
+    int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_SLOTSCOUNT_INVALID;
         }
     }
-    return _slotsCount;
+    res = _slotsCount;
+    return res;
 }
 
 
@@ -1376,12 +1380,14 @@
 }
 -(NSString*) get_slotsBitmap
 {
+    NSString* res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_SLOTSBITMAP_INVALID;
         }
     }
-    return _slotsBitmap;
+    res = _slotsBitmap;
+    return res;
 }
 
 
@@ -1398,12 +1404,14 @@
  */
 -(int) get_pduSent
 {
+    int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_PDUSENT_INVALID;
         }
     }
-    return _pduSent;
+    res = _pduSent;
+    return res;
 }
 
 
@@ -1440,12 +1448,14 @@
  */
 -(int) get_pduReceived
 {
+    int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_PDURECEIVED_INVALID;
         }
     }
-    return _pduReceived;
+    res = _pduReceived;
+    return res;
 }
 
 
@@ -1475,12 +1485,14 @@
 }
 -(NSString*) get_command
 {
+    NSString* res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_COMMAND_INVALID;
         }
     }
-    return _command;
+    res = _command;
+    return res;
 }
 
 

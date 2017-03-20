@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_voltage.m 26183 2016-12-15 00:14:02Z mvuilleu $
+ * $Id: yocto_voltage.m 26672 2017-02-28 13:43:38Z seb $
  *
  * Implements the high-level API for Voltage functions
  *
@@ -81,12 +81,14 @@
 //--- (YVoltage public methods implementation)
 -(Y_ENABLED_enum) get_enabled
 {
+    Y_ENABLED_enum res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_ENABLED_INVALID;
         }
     }
-    return _enabled;
+    res = _enabled;
+    return res;
 }
 
 

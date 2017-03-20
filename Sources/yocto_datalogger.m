@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_datalogger.m 26132 2016-12-01 17:02:38Z seb $
+ * $Id: yocto_datalogger.m 26826 2017-03-17 11:20:57Z mvuilleu $
  *
  * Implements yFindDataLogger(), the high-level API for DataLogger functions
  *
@@ -564,12 +564,14 @@
  */
 -(int) get_currentRunIndex
 {
+    int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_CURRENTRUNINDEX_INVALID;
         }
     }
-    return _currentRunIndex;
+    res = _currentRunIndex;
+    return res;
 }
 
 
@@ -586,12 +588,14 @@
  */
 -(s64) get_timeUTC
 {
+    s64 res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_TIMEUTC_INVALID;
         }
     }
-    return _timeUTC;
+    res = _timeUTC;
+    return res;
 }
 
 
@@ -629,12 +633,14 @@
  */
 -(Y_RECORDING_enum) get_recording
 {
+    Y_RECORDING_enum res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_RECORDING_INVALID;
         }
     }
-    return _recording;
+    res = _recording;
+    return res;
 }
 
 
@@ -673,12 +679,14 @@
  */
 -(Y_AUTOSTART_enum) get_autoStart
 {
+    Y_AUTOSTART_enum res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_AUTOSTART_INVALID;
         }
     }
-    return _autoStart;
+    res = _autoStart;
+    return res;
 }
 
 
@@ -710,20 +718,23 @@
     return [self _setAttr:@"autoStart" :rest_val];
 }
 /**
- * Return true if the data logger is synchronised with the localization beacon.
+ * Returns true if the data logger is synchronised with the localization beacon.
  *
- * @return either Y_BEACONDRIVEN_OFF or Y_BEACONDRIVEN_ON
+ * @return either Y_BEACONDRIVEN_OFF or Y_BEACONDRIVEN_ON, according to true if the data logger is
+ * synchronised with the localization beacon
  *
  * On failure, throws an exception or returns Y_BEACONDRIVEN_INVALID.
  */
 -(Y_BEACONDRIVEN_enum) get_beaconDriven
 {
+    Y_BEACONDRIVEN_enum res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_BEACONDRIVEN_INVALID;
         }
     }
-    return _beaconDriven;
+    res = _beaconDriven;
+    return res;
 }
 
 
@@ -756,12 +767,14 @@
 }
 -(Y_CLEARHISTORY_enum) get_clearHistory
 {
+    Y_CLEARHISTORY_enum res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_CLEARHISTORY_INVALID;
         }
     }
-    return _clearHistory;
+    res = _clearHistory;
+    return res;
 }
 
 

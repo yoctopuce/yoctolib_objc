@@ -25,9 +25,9 @@
 		B8DD8BDB14A9360E008A9E8F /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B8DD8BDA14A9360E008A9E8F /* Foundation.framework */; };
 		B8F48A9314A93A3E008FBD0C /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B8F48A9214A93A3E008FBD0C /* IOKit.framework */; };
 
-		B8A727A817E0CD3A00570119 /* yocto_anbutton.m in Sources */ = {isa = PBXBuildFile; fileRef = B8A727A817E0CD3A00570117 /* yocto_anbutton.m */; };
-		B8A727A817E0CD3A0057011c /* yocto_display.m in Sources */ = {isa = PBXBuildFile; fileRef = B8A727A817E0CD3A0057011a /* yocto_display.m */; };
-		B8A727A817E0CD3A0057011f /* yocto_files.m in Sources */ = {isa = PBXBuildFile; fileRef = B8A727A817E0CD3A0057011d /* yocto_files.m */; };
+		B8A727A817E0CD3A00572b0ad650 /* yocto_anbutton.m in Sources */ = {isa = PBXBuildFile; fileRef = B8A727A817E0CD3A00572b6075a3 /* yocto_anbutton.m */; };
+		B8A727A817E0CD3A00575080036d /* yocto_display.m in Sources */ = {isa = PBXBuildFile; fileRef = B8A727A817E0CD3A00573a23f06d /* yocto_display.m */; };
+		B8A727A817E0CD3A00571a2b723e /* yocto_files.m in Sources */ = {isa = PBXBuildFile; fileRef = B8A727A817E0CD3A0057a5413526 /* yocto_files.m */; };
 
 /* End PBXBuildFile section */
 
@@ -77,12 +77,12 @@
 		B8DD8C2814A9370B008A9E8F /* yversion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yversion.h; path = ../../../Sources/yapi/yversion.h; sourceTree = "<group>"; };
 		B8F48A9214A93A3E008FBD0C /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 
-		B8A727A817E0CD3A00570117 /* yocto_anbutton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = yocto_anbutton.m; path = ../../../Sources/yocto_anbutton.m; sourceTree = "<group>"; };
-		B8A727A817E0CD3A00570118 /* yocto_anbutton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yocto_anbutton.h; path = ../../../Sources/yocto_anbutton.h; sourceTree = "<group>"; };
-		B8A727A817E0CD3A0057011a /* yocto_display.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = yocto_display.m; path = ../../../Sources/yocto_display.m; sourceTree = "<group>"; };
-		B8A727A817E0CD3A0057011b /* yocto_display.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yocto_display.h; path = ../../../Sources/yocto_display.h; sourceTree = "<group>"; };
-		B8A727A817E0CD3A0057011d /* yocto_files.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = yocto_files.m; path = ../../../Sources/yocto_files.m; sourceTree = "<group>"; };
-		B8A727A817E0CD3A0057011e /* yocto_files.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yocto_files.h; path = ../../../Sources/yocto_files.h; sourceTree = "<group>"; };
+		B8A727A817E0CD3A00572b6075a3 /* yocto_anbutton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = yocto_anbutton.m; path = ../../../Sources/yocto_anbutton.m; sourceTree = "<group>"; };
+		B8A727A817E0CD3A00575b0a812c /* yocto_anbutton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yocto_anbutton.h; path = ../../../Sources/yocto_anbutton.h; sourceTree = "<group>"; };
+		B8A727A817E0CD3A00573a23f06d /* yocto_display.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = yocto_display.m; path = ../../../Sources/yocto_display.m; sourceTree = "<group>"; };
+		B8A727A817E0CD3A00574a4904e2 /* yocto_display.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yocto_display.h; path = ../../../Sources/yocto_display.h; sourceTree = "<group>"; };
+		B8A727A817E0CD3A0057a5413526 /* yocto_files.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = yocto_files.m; path = ../../../Sources/yocto_files.m; sourceTree = "<group>"; };
+		B8A727A817E0CD3A0057d52bc1a9 /* yocto_files.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yocto_files.h; path = ../../../Sources/yocto_files.h; sourceTree = "<group>"; };
 
 /* End PBXFileReference section */
 
@@ -150,12 +150,12 @@
 				B8DD8BEB14A936EF008A9E8F /* yocto_api.h */,
 				B8DD8BEC14A936EF008A9E8F /* yocto_api.m */,
 
-				B8A727A817E0CD3A00570117 /* yocto_anbutton.m */,
-				B8A727A817E0CD3A00570118 /* yocto_anbutton.h */,
-				B8A727A817E0CD3A0057011a /* yocto_display.m */,
-				B8A727A817E0CD3A0057011b /* yocto_display.h */,
-				B8A727A817E0CD3A0057011d /* yocto_files.m */,
-				B8A727A817E0CD3A0057011e /* yocto_files.h */,
+				B8A727A817E0CD3A00572b6075a3 /* yocto_anbutton.m */,
+				B8A727A817E0CD3A00575b0a812c /* yocto_anbutton.h */,
+				B8A727A817E0CD3A00573a23f06d /* yocto_display.m */,
+				B8A727A817E0CD3A00574a4904e2 /* yocto_display.h */,
+				B8A727A817E0CD3A0057a5413526 /* yocto_files.m */,
+				B8A727A817E0CD3A0057d52bc1a9 /* yocto_files.h */,
 
 			);
 			name = Yocto;
@@ -259,9 +259,9 @@
 				B8DD8C3314A9370B008A9E8F /* ytcp.c in Sources */,
 				B845588F14DC315D00425F49 /* ythread.c in Sources */,
 
-				B8A727A817E0CD3A00570119 /* yocto_anbutton.m in Sources */,
-				B8A727A817E0CD3A0057011c /* yocto_display.m in Sources */,
-				B8A727A817E0CD3A0057011f /* yocto_files.m in Sources */,
+				B8A727A817E0CD3A00572b0ad650 /* yocto_anbutton.m in Sources */,
+				B8A727A817E0CD3A00575080036d /* yocto_display.m in Sources */,
+				B8A727A817E0CD3A00571a2b723e /* yocto_files.m in Sources */,
 
 				B853FE21161B49CA0086F1F5 /* ykey.c in Sources */,
 			);

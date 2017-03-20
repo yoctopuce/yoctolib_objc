@@ -14,7 +14,6 @@ int main(int argc, const char * argv[])
 {
   NSError *error;
 
-
   @autoreleasepool {
 
     YDigitalIO   *io;

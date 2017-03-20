@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_humidity.m 25275 2016-08-24 13:42:24Z mvuilleu $
+ * $Id: yocto_humidity.m 26672 2017-02-28 13:43:38Z seb $
  *
  * Implements the high-level API for Humidity functions
  *
@@ -120,12 +120,14 @@
  */
 -(double) get_relHum
 {
+    double res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_RELHUM_INVALID;
         }
     }
-    return _relHum;
+    res = _relHum;
+    return res;
 }
 
 
@@ -142,12 +144,14 @@
  */
 -(double) get_absHum
 {
+    double res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_ABSHUM_INVALID;
         }
     }
-    return _absHum;
+    res = _absHum;
+    return res;
 }
 
 

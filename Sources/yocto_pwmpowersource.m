@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_pwmpowersource.m 25275 2016-08-24 13:42:24Z mvuilleu $
+ * $Id: yocto_pwmpowersource.m 26672 2017-02-28 13:43:38Z seb $
  *
  * Implements the high-level API for PwmPowerSource functions
  *
@@ -88,12 +88,14 @@
  */
 -(Y_POWERMODE_enum) get_powerMode
 {
+    Y_POWERMODE_enum res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_POWERMODE_INVALID;
         }
     }
-    return _powerMode;
+    res = _powerMode;
+    return res;
 }
 
 

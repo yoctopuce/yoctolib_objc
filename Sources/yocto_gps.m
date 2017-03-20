@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_gps.m 25275 2016-08-24 13:42:24Z mvuilleu $
+ * $Id: yocto_gps.m 26672 2017-02-28 13:43:38Z seb $
  *
  * Implements the high-level API for Gps functions
  *
@@ -176,12 +176,14 @@
  */
 -(Y_ISFIXED_enum) get_isFixed
 {
+    Y_ISFIXED_enum res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_ISFIXED_INVALID;
         }
     }
-    return _isFixed;
+    res = _isFixed;
+    return res;
 }
 
 
@@ -198,12 +200,14 @@
  */
 -(s64) get_satCount
 {
+    s64 res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_SATCOUNT_INVALID;
         }
     }
-    return _satCount;
+    res = _satCount;
+    return res;
 }
 
 
@@ -221,12 +225,14 @@
  */
 -(Y_COORDSYSTEM_enum) get_coordSystem
 {
+    Y_COORDSYSTEM_enum res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_COORDSYSTEM_INVALID;
         }
     }
-    return _coordSystem;
+    res = _coordSystem;
+    return res;
 }
 
 
@@ -264,12 +270,14 @@
  */
 -(NSString*) get_latitude
 {
+    NSString* res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_LATITUDE_INVALID;
         }
     }
-    return _latitude;
+    res = _latitude;
+    return res;
 }
 
 
@@ -286,12 +294,14 @@
  */
 -(NSString*) get_longitude
 {
+    NSString* res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_LONGITUDE_INVALID;
         }
     }
-    return _longitude;
+    res = _longitude;
+    return res;
 }
 
 
@@ -310,12 +320,14 @@
  */
 -(double) get_dilution
 {
+    double res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_DILUTION_INVALID;
         }
     }
-    return _dilution;
+    res = _dilution;
+    return res;
 }
 
 
@@ -333,12 +345,14 @@
  */
 -(double) get_altitude
 {
+    double res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_ALTITUDE_INVALID;
         }
     }
-    return _altitude;
+    res = _altitude;
+    return res;
 }
 
 
@@ -355,12 +369,14 @@
  */
 -(double) get_groundSpeed
 {
+    double res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_GROUNDSPEED_INVALID;
         }
     }
-    return _groundSpeed;
+    res = _groundSpeed;
+    return res;
 }
 
 
@@ -379,12 +395,14 @@
  */
 -(double) get_direction
 {
+    double res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_DIRECTION_INVALID;
         }
     }
-    return _direction;
+    res = _direction;
+    return res;
 }
 
 
@@ -403,12 +421,14 @@
  */
 -(s64) get_unixTime
 {
+    s64 res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_UNIXTIME_INVALID;
         }
     }
-    return _unixTime;
+    res = _unixTime;
+    return res;
 }
 
 
@@ -425,12 +445,14 @@
  */
 -(NSString*) get_dateTime
 {
+    NSString* res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_DATETIME_INVALID;
         }
     }
-    return _dateTime;
+    res = _dateTime;
+    return res;
 }
 
 
@@ -447,12 +469,14 @@
  */
 -(int) get_utcOffset
 {
+    int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_UTCOFFSET_INVALID;
         }
     }
-    return _utcOffset;
+    res = _utcOffset;
+    return res;
 }
 
 
@@ -484,12 +508,14 @@
 }
 -(NSString*) get_command
 {
+    NSString* res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_COMMAND_INVALID;
         }
     }
-    return _command;
+    res = _command;
+    return res;
 }
 
 

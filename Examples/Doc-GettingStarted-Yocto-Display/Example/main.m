@@ -2,8 +2,6 @@
 #import "yocto_api.h"
 #import "yocto_display.h"
 
-
-
 static void usage(void)
 {
   NSLog(@"usage: demo <serial_number> ");
@@ -11,8 +9,6 @@ static void usage(void)
   NSLog(@"       demo any                 (use any discovered device)");
   exit(1);
 }
-
-
 
 int main(int argc, const char * argv[])
 {

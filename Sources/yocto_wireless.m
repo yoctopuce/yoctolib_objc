@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_wireless.m 25275 2016-08-24 13:42:24Z mvuilleu $
+ * $Id: yocto_wireless.m 26672 2017-02-28 13:43:38Z seb $
  *
  * Implements yFindWireless(), the high-level API for Wireless functions
  *
@@ -232,12 +232,14 @@
  */
 -(int) get_linkQuality
 {
+    int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_LINKQUALITY_INVALID;
         }
     }
-    return _linkQuality;
+    res = _linkQuality;
+    return res;
 }
 
 
@@ -254,12 +256,14 @@
  */
 -(NSString*) get_ssid
 {
+    NSString* res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_SSID_INVALID;
         }
     }
-    return _ssid;
+    res = _ssid;
+    return res;
 }
 
 
@@ -277,12 +281,14 @@
  */
 -(int) get_channel
 {
+    int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_CHANNEL_INVALID;
         }
     }
-    return _channel;
+    res = _channel;
+    return res;
 }
 
 
@@ -300,12 +306,14 @@
  */
 -(Y_SECURITY_enum) get_security
 {
+    Y_SECURITY_enum res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_SECURITY_INVALID;
         }
     }
-    return _security;
+    res = _security;
+    return res;
 }
 
 
@@ -322,12 +330,14 @@
  */
 -(NSString*) get_message
 {
+    NSString* res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_MESSAGE_INVALID;
         }
     }
-    return _message;
+    res = _message;
+    return res;
 }
 
 
@@ -337,12 +347,14 @@
 }
 -(NSString*) get_wlanConfig
 {
+    NSString* res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_WLANCONFIG_INVALID;
         }
     }
-    return _wlanConfig;
+    res = _wlanConfig;
+    return res;
 }
 
 

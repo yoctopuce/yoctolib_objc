@@ -5,8 +5,6 @@
 #import "yocto_gyro.h"
 #import "yocto_accelerometer.h"
 
-
-
 static void usage(void)
 {
   NSLog(@"usage: demo <serial_number> ");
@@ -15,11 +13,9 @@ static void usage(void)
   exit(1);
 }
 
-
 int main(int argc, const char * argv[])
 {
   NSError *error;
-
 
   if (argc < 2) {
     usage();
@@ -56,7 +52,8 @@ int main(int argc, const char * argv[])
     tilt1 = [YTilt FindTilt:[serial stringByAppendingString:@".tilt1"]];
     tilt2 = [YTilt FindTilt:[serial stringByAppendingString:@".tilt2"]];
     compass = [YCompass FindCompass:[serial stringByAppendingString:@".compass"]];
-    accelerometer = [YAccelerometer FindAccelerometer:[serial stringByAppendingString:@".accelerometer"]];
+    accelerometer = [YAccelerometer FindAccelerometer:[serial stringByAppendingString:
+                     @".accelerometer"]];
     gyro = [YGyro FindGyro:[serial stringByAppendingString:@".gyro"]];
     int count = 0;
 

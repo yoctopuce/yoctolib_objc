@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_hubport.m 25275 2016-08-24 13:42:24Z mvuilleu $
+ * $Id: yocto_hubport.m 26672 2017-02-28 13:43:38Z seb $
  *
  * Implements the high-level API for HubPort functions
  *
@@ -100,12 +100,14 @@
  */
 -(Y_ENABLED_enum) get_enabled
 {
+    Y_ENABLED_enum res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_ENABLED_INVALID;
         }
     }
-    return _enabled;
+    res = _enabled;
+    return res;
 }
 
 
@@ -144,12 +146,14 @@
  */
 -(Y_PORTSTATE_enum) get_portState
 {
+    Y_PORTSTATE_enum res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_PORTSTATE_INVALID;
         }
     }
-    return _portState;
+    res = _portState;
+    return res;
 }
 
 
@@ -168,12 +172,14 @@
  */
 -(int) get_baudRate
 {
+    int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_BAUDRATE_INVALID;
         }
     }
-    return _baudRate;
+    res = _baudRate;
+    return res;
 }
 
 

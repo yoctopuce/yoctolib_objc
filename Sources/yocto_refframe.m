@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_refframe.m 25275 2016-08-24 13:42:24Z mvuilleu $
+ * $Id: yocto_refframe.m 26672 2017-02-28 13:43:38Z seb $
  *
  * Implements the high-level API for RefFrame functions
  *
@@ -113,12 +113,14 @@
 //--- (YRefFrame public methods implementation)
 -(int) get_mountPos
 {
+    int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_MOUNTPOS_INVALID;
         }
     }
-    return _mountPos;
+    res = _mountPos;
+    return res;
 }
 
 
@@ -181,12 +183,14 @@
  */
 -(double) get_bearing
 {
+    double res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_BEARING_INVALID;
         }
     }
-    return _bearing;
+    res = _bearing;
+    return res;
 }
 
 
@@ -196,12 +200,14 @@
 }
 -(NSString*) get_calibrationParam
 {
+    NSString* res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_CALIBRATIONPARAM_INVALID;
         }
     }
-    return _calibrationParam;
+    res = _calibrationParam;
+    return res;
 }
 
 

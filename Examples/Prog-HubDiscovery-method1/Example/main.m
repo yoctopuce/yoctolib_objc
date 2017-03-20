@@ -25,7 +25,8 @@ static void HubDiscovered(NSString *serial, NSString *url)
   for (int i = 0; i < fctCount; i++) {
     // retreive the hardware name of the ith function
     NSString *fctHwdName = [hub functionId:i];
-    if ([fctHwdName length] > 7 && [[fctHwdName substringToIndex:7] isEqualToString:@"hubPort"]) {
+    if ([fctHwdName length] > 7
+        && [[fctHwdName substringToIndex:7] isEqualToString:@"hubPort"]) {
       // The port logical name is always the serial#
       // of the connected device
       NSString *deviceid = [hub functionName:i];

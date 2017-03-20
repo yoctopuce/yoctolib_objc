@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_gyro.m 25275 2016-08-24 13:42:24Z mvuilleu $
+ * $Id: yocto_gyro.m 26672 2017-02-28 13:43:38Z seb $
  *
  * Implements the high-level API for Gyro functions
  *
@@ -311,12 +311,14 @@ static void yInternalGyroCallback(YQt *obj, NSString *value)
  */
 -(int) get_bandwidth
 {
+    int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_BANDWIDTH_INVALID;
         }
     }
-    return _bandwidth;
+    res = _bandwidth;
+    return res;
 }
 
 
@@ -355,12 +357,14 @@ static void yInternalGyroCallback(YQt *obj, NSString *value)
  */
 -(double) get_xValue
 {
+    double res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_XVALUE_INVALID;
         }
     }
-    return _xValue;
+    res = _xValue;
+    return res;
 }
 
 
@@ -378,12 +382,14 @@ static void yInternalGyroCallback(YQt *obj, NSString *value)
  */
 -(double) get_yValue
 {
+    double res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_YVALUE_INVALID;
         }
     }
-    return _yValue;
+    res = _yValue;
+    return res;
 }
 
 
@@ -401,12 +407,14 @@ static void yInternalGyroCallback(YQt *obj, NSString *value)
  */
 -(double) get_zValue
 {
+    double res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_ZVALUE_INVALID;
         }
     }
-    return _zValue;
+    res = _zValue;
+    return res;
 }
 
 

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_wakeupschedule.m 25275 2016-08-24 13:42:24Z mvuilleu $
+ * $Id: yocto_wakeupschedule.m 26672 2017-02-28 13:43:38Z seb $
  *
  * Implements the high-level API for WakeUpSchedule functions
  *
@@ -123,12 +123,14 @@
  */
 -(int) get_minutesA
 {
+    int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_MINUTESA_INVALID;
         }
     }
-    return _minutesA;
+    res = _minutesA;
+    return res;
 }
 
 
@@ -165,12 +167,14 @@
  */
 -(int) get_minutesB
 {
+    int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_MINUTESB_INVALID;
         }
     }
-    return _minutesB;
+    res = _minutesB;
+    return res;
 }
 
 
@@ -207,12 +211,14 @@
  */
 -(int) get_hours
 {
+    int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_HOURS_INVALID;
         }
     }
-    return _hours;
+    res = _hours;
+    return res;
 }
 
 
@@ -249,12 +255,14 @@
  */
 -(int) get_weekDays
 {
+    int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_WEEKDAYS_INVALID;
         }
     }
-    return _weekDays;
+    res = _weekDays;
+    return res;
 }
 
 
@@ -291,12 +299,14 @@
  */
 -(int) get_monthDays
 {
+    int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_MONTHDAYS_INVALID;
         }
     }
-    return _monthDays;
+    res = _monthDays;
+    return res;
 }
 
 
@@ -333,12 +343,14 @@
  */
 -(int) get_months
 {
+    int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_MONTHS_INVALID;
         }
     }
-    return _months;
+    res = _months;
+    return res;
 }
 
 
@@ -375,12 +387,14 @@
  */
 -(s64) get_nextOccurence
 {
+    s64 res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_NEXTOCCURENCE_INVALID;
         }
     }
-    return _nextOccurence;
+    res = _nextOccurence;
+    return res;
 }
 
 

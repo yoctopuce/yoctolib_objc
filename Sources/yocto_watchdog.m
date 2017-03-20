@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_watchdog.m 25275 2016-08-24 13:42:24Z mvuilleu $
+ * $Id: yocto_watchdog.m 26672 2017-02-28 13:43:38Z seb $
  *
  * Implements the high-level API for Watchdog functions
  *
@@ -167,12 +167,14 @@
  */
 -(Y_STATE_enum) get_state
 {
+    Y_STATE_enum res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_STATE_INVALID;
         }
     }
-    return _state;
+    res = _state;
+    return res;
 }
 
 
@@ -213,12 +215,14 @@
  */
 -(Y_STATEATPOWERON_enum) get_stateAtPowerOn
 {
+    Y_STATEATPOWERON_enum res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_STATEATPOWERON_INVALID;
         }
     }
-    return _stateAtPowerOn;
+    res = _stateAtPowerOn;
+    return res;
 }
 
 
@@ -258,12 +262,14 @@
  */
 -(s64) get_maxTimeOnStateA
 {
+    s64 res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_MAXTIMEONSTATEA_INVALID;
         }
     }
-    return _maxTimeOnStateA;
+    res = _maxTimeOnStateA;
+    return res;
 }
 
 
@@ -302,12 +308,14 @@
  */
 -(s64) get_maxTimeOnStateB
 {
+    s64 res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_MAXTIMEONSTATEB_INVALID;
         }
     }
-    return _maxTimeOnStateB;
+    res = _maxTimeOnStateB;
+    return res;
 }
 
 
@@ -346,12 +354,14 @@
  */
 -(Y_OUTPUT_enum) get_output
 {
+    Y_OUTPUT_enum res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_OUTPUT_INVALID;
         }
     }
-    return _output;
+    res = _output;
+    return res;
 }
 
 
@@ -392,12 +402,14 @@
  */
 -(s64) get_pulseTimer
 {
+    s64 res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_PULSETIMER_INVALID;
         }
     }
-    return _pulseTimer;
+    res = _pulseTimer;
+    return res;
 }
 
 
@@ -435,12 +447,14 @@
 }
 -(YDelayedPulse) get_delayedPulseTimer
 {
+    YDelayedPulse res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_DELAYEDPULSETIMER_INVALID;
         }
     }
-    return _delayedPulseTimer;
+    res = _delayedPulseTimer;
+    return res;
 }
 
 
@@ -487,12 +501,14 @@
  */
 -(s64) get_countdown
 {
+    s64 res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_COUNTDOWN_INVALID;
         }
     }
-    return _countdown;
+    res = _countdown;
+    return res;
 }
 
 
@@ -509,12 +525,14 @@
  */
 -(Y_AUTOSTART_enum) get_autoStart
 {
+    Y_AUTOSTART_enum res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_AUTOSTART_INVALID;
         }
     }
-    return _autoStart;
+    res = _autoStart;
+    return res;
 }
 
 
@@ -553,12 +571,14 @@
  */
 -(Y_RUNNING_enum) get_running
 {
+    Y_RUNNING_enum res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_RUNNING_INVALID;
         }
     }
-    return _running;
+    res = _running;
+    return res;
 }
 
 
@@ -612,12 +632,14 @@
  */
 -(s64) get_triggerDelay
 {
+    s64 res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_TRIGGERDELAY_INVALID;
         }
     }
-    return _triggerDelay;
+    res = _triggerDelay;
+    return res;
 }
 
 
@@ -655,12 +677,14 @@
  */
 -(s64) get_triggerDuration
 {
+    s64 res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_TRIGGERDURATION_INVALID;
         }
     }
-    return _triggerDuration;
+    res = _triggerDuration;
+    return res;
 }
 
 

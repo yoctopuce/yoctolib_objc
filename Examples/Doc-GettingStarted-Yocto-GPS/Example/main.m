@@ -2,7 +2,6 @@
 #import "yocto_api.h"
 #import "yocto_gps.h"
 
-
 static void usage(void)
 {
   NSLog(@"usage: demo <serial_number> ");

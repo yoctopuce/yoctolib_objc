@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_audioin.m 25275 2016-08-24 13:42:24Z mvuilleu $
+ * $Id: yocto_audioin.m 26672 2017-02-28 13:43:38Z seb $
  *
  * Implements the high-level API for AudioIn functions
  *
@@ -115,12 +115,14 @@
  */
 -(int) get_volume
 {
+    int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_VOLUME_INVALID;
         }
     }
-    return _volume;
+    res = _volume;
+    return res;
 }
 
 
@@ -157,12 +159,14 @@
  */
 -(Y_MUTE_enum) get_mute
 {
+    Y_MUTE_enum res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_MUTE_INVALID;
         }
     }
-    return _mute;
+    res = _mute;
+    return res;
 }
 
 
@@ -203,12 +207,14 @@
  */
 -(NSString*) get_volumeRange
 {
+    NSString* res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_VOLUMERANGE_INVALID;
         }
     }
-    return _volumeRange;
+    res = _volumeRange;
+    return res;
 }
 
 
@@ -225,12 +231,14 @@
  */
 -(int) get_signal
 {
+    int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_SIGNAL_INVALID;
         }
     }
-    return _signal;
+    res = _signal;
+    return res;
 }
 
 
@@ -247,12 +255,14 @@
  */
 -(int) get_noSignalFor
 {
+    int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_NOSIGNALFOR_INVALID;
         }
     }
-    return _noSignalFor;
+    res = _noSignalFor;
+    return res;
 }
 
 

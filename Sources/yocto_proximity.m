@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: pic24config.php 26169 2016-12-12 01:36:34Z mvuilleu $
+ * $Id: pic24config.php 26780 2017-03-16 14:02:09Z mvuilleu $
  *
  * Implements the high-level API for Proximity functions
  *
@@ -53,12 +53,14 @@
           return nil;
     _className = @"Proximity";
 //--- (YProximity attributes initialization)
+    _signalValue = Y_SIGNALVALUE_INVALID;
     _detectionThreshold = Y_DETECTIONTHRESHOLD_INVALID;
     _isPresent = Y_ISPRESENT_INVALID;
     _lastTimeApproached = Y_LASTTIMEAPPROACHED_INVALID;
     _lastTimeRemoved = Y_LASTTIMEREMOVED_INVALID;
     _pulseCounter = Y_PULSECOUNTER_INVALID;
     _pulseTimer = Y_PULSETIMER_INVALID;
+    _proximityReportMode = Y_PROXIMITYREPORTMODE_INVALID;
     _valueCallbackProximity = NULL;
     _timedReportCallbackProximity = NULL;
 //--- (end of YProximity attributes initialization)
@@ -75,6 +77,11 @@
 
 -(int) _parseAttr:(yJsonStateMachine*) j
 {
+    if(!strcmp(j->token, "signalValue")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _signalValue =  floor(atof(j->token) * 1000.0 / 65536.0 + 0.5) / 1000.0;
+        return 1;
+    }
     if(!strcmp(j->token, "detectionThreshold")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
         _detectionThreshold =  atoi(j->token);
@@ -105,10 +112,39 @@
         _pulseTimer =  atol(j->token);
         return 1;
     }
+    if(!strcmp(j->token, "proximityReportMode")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _proximityReportMode =  atoi(j->token);
+        return 1;
+    }
     return [super _parseAttr:j];
 }
 //--- (end of YProximity private methods implementation)
 //--- (YProximity public methods implementation)
+/**
+ * Returns the current value of signal measured by the proximity sensor.
+ *
+ * @return a floating point number corresponding to the current value of signal measured by the proximity sensor
+ *
+ * On failure, throws an exception or returns Y_SIGNALVALUE_INVALID.
+ */
+-(double) get_signalValue
+{
+    double res;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_SIGNALVALUE_INVALID;
+        }
+    }
+    res = floor(_signalValue * 1000+0.5) / 1000;
+    return res;
+}
+
+
+-(double) signalValue
+{
+    return [self get_signalValue];
+}
 /**
  * Returns the threshold used to determine the logical state of the proximity sensor, when considered
  * as a binary input (on/off).
@@ -121,12 +157,14 @@
  */
 -(int) get_detectionThreshold
 {
+    int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_DETECTIONTHRESHOLD_INVALID;
         }
     }
-    return _detectionThreshold;
+    res = _detectionThreshold;
+    return res;
 }
 
 
@@ -168,12 +206,14 @@
  */
 -(Y_ISPRESENT_enum) get_isPresent
 {
+    Y_ISPRESENT_enum res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_ISPRESENT_INVALID;
         }
     }
-    return _isPresent;
+    res = _isPresent;
+    return res;
 }
 
 
@@ -193,12 +233,14 @@
  */
 -(s64) get_lastTimeApproached
 {
+    s64 res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_LASTTIMEAPPROACHED_INVALID;
         }
     }
-    return _lastTimeApproached;
+    res = _lastTimeApproached;
+    return res;
 }
 
 
@@ -218,12 +260,14 @@
  */
 -(s64) get_lastTimeRemoved
 {
+    s64 res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_LASTTIMEREMOVED_INVALID;
         }
     }
-    return _lastTimeRemoved;
+    res = _lastTimeRemoved;
+    return res;
 }
 
 
@@ -242,12 +286,14 @@
  */
 -(s64) get_pulseCounter
 {
+    s64 res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_PULSECOUNTER_INVALID;
         }
     }
-    return _pulseCounter;
+    res = _pulseCounter;
+    return res;
 }
 
 
@@ -267,26 +313,79 @@
     return [self _setAttr:@"pulseCounter" :rest_val];
 }
 /**
- * Returns the timer of the pulses counter (ms).
+ * Returns the timer of the pulse counter (ms).
  *
- * @return an integer corresponding to the timer of the pulses counter (ms)
+ * @return an integer corresponding to the timer of the pulse counter (ms)
  *
  * On failure, throws an exception or returns Y_PULSETIMER_INVALID.
  */
 -(s64) get_pulseTimer
 {
+    s64 res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_PULSETIMER_INVALID;
         }
     }
-    return _pulseTimer;
+    res = _pulseTimer;
+    return res;
 }
 
 
 -(s64) pulseTimer
 {
     return [self get_pulseTimer];
+}
+/**
+ * Returns the parameter (sensor value, presence or pulse count) returned by the get_currentValue
+ * function and callbacks.
+ *
+ * @return a value among Y_PROXIMITYREPORTMODE_NUMERIC, Y_PROXIMITYREPORTMODE_PRESENCE and
+ * Y_PROXIMITYREPORTMODE_PULSECOUNT corresponding to the parameter (sensor value, presence or pulse
+ * count) returned by the get_currentValue function and callbacks
+ *
+ * On failure, throws an exception or returns Y_PROXIMITYREPORTMODE_INVALID.
+ */
+-(Y_PROXIMITYREPORTMODE_enum) get_proximityReportMode
+{
+    Y_PROXIMITYREPORTMODE_enum res;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_PROXIMITYREPORTMODE_INVALID;
+        }
+    }
+    res = _proximityReportMode;
+    return res;
+}
+
+
+-(Y_PROXIMITYREPORTMODE_enum) proximityReportMode
+{
+    return [self get_proximityReportMode];
+}
+
+/**
+ * Modifies the  parameter  type (sensor value, presence or pulse count) returned by the
+ * get_currentValue function and callbacks.
+ * The edge count value is limited to the 6 lowest digits. For values greater than one million, use
+ * get_pulseCounter().
+ *
+ * @param newval : a value among Y_PROXIMITYREPORTMODE_NUMERIC, Y_PROXIMITYREPORTMODE_PRESENCE and
+ * Y_PROXIMITYREPORTMODE_PULSECOUNT
+ *
+ * @return YAPI_SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) set_proximityReportMode:(Y_PROXIMITYREPORTMODE_enum) newval
+{
+    return [self setProximityReportMode:newval];
+}
+-(int) setProximityReportMode:(Y_PROXIMITYREPORTMODE_enum) newval
+{
+    NSString* rest_val;
+    rest_val = [NSString stringWithFormat:@"%d", newval];
+    return [self _setAttr:@"proximityReportMode" :rest_val];
 }
 /**
  * Retrieves a proximity sensor for a given identifier.
@@ -397,7 +496,7 @@
 }
 
 /**
- * Returns the pulse counter value as well as its timer.
+ * Resets the pulse counter value as well as its timer.
  *
  * @return YAPI_SUCCESS if the call succeeds.
  *

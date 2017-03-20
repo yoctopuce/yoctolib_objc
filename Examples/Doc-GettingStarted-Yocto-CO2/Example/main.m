@@ -2,7 +2,6 @@
 #import "yocto_api.h"
 #import "yocto_carbondioxide.h"
 
-
 static void usage(void)
 {
   NSLog(@"usage: demo <serial_number> ");
@@ -34,7 +33,8 @@ int main(int argc, const char * argv[])
         return 1;
       }
     } else {
-      co2sensor = [YCarbonDioxide FindCarbonDioxide:[target stringByAppendingString:@".carbonDioxide"]];
+      co2sensor = [YCarbonDioxide FindCarbonDioxide:[target stringByAppendingString:
+                   @".carbonDioxide"]];
     }
 
     while(1) {

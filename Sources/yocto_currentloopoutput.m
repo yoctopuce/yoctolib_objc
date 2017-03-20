@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_currentloopoutput.m 25275 2016-08-24 13:42:24Z mvuilleu $
+ * $Id: yocto_currentloopoutput.m 26672 2017-02-28 13:43:38Z seb $
  *
  * Implements the high-level API for CurrentLoopOutput functions
  *
@@ -131,12 +131,14 @@
  */
 -(double) get_current
 {
+    double res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_CURRENT_INVALID;
         }
     }
-    return _current;
+    res = _current;
+    return res;
 }
 
 
@@ -146,12 +148,14 @@
 }
 -(NSString*) get_currentTransition
 {
+    NSString* res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_CURRENTTRANSITION_INVALID;
         }
     }
-    return _currentTransition;
+    res = _currentTransition;
+    return res;
 }
 
 
@@ -200,12 +204,14 @@
  */
 -(double) get_currentAtStartUp
 {
+    double res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_CURRENTATSTARTUP_INVALID;
         }
     }
-    return _currentAtStartUp;
+    res = _currentAtStartUp;
+    return res;
 }
 
 
@@ -225,12 +231,14 @@
  */
 -(Y_LOOPPOWER_enum) get_loopPower
 {
+    Y_LOOPPOWER_enum res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_LOOPPOWER_INVALID;
         }
     }
-    return _loopPower;
+    res = _loopPower;
+    return res;
 }
 
 

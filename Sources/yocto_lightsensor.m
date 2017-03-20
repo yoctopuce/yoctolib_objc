@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_lightsensor.m 25275 2016-08-24 13:42:24Z mvuilleu $
+ * $Id: yocto_lightsensor.m 26826 2017-03-17 11:20:57Z mvuilleu $
  *
  * Implements the high-level API for LightSensor functions
  *
@@ -120,12 +120,14 @@
  */
 -(Y_MEASURETYPE_enum) get_measureType
 {
+    Y_MEASURETYPE_enum res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_MEASURETYPE_INVALID;
         }
     }
-    return _measureType;
+    res = _measureType;
+    return res;
 }
 
 
@@ -135,7 +137,7 @@
 }
 
 /**
- * Modify the light sensor type used in the device. The measure can either
+ * Modifies the light sensor type used in the device. The measure can either
  * approximate the response of the human eye, focus on a specific light
  * spectrum, depending on the capabilities of the light-sensitive cell.
  * Remember to call the saveToFlash() method of the module if the

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_genericsensor.h 25275 2016-08-24 13:42:24Z mvuilleu $
+ * $Id: yocto_genericsensor.h 26826 2017-03-17 11:20:57Z mvuilleu $
  *
  * Declares yFindGenericSensor(), the high-level API for GenericSensor functions
  *
@@ -68,7 +68,7 @@ typedef enum {
  *
  * The YGenericSensor class allows you to read and configure Yoctopuce signal
  * transducers. It inherits from YSensor class the core functions to read measurements,
- * register callback functions, access to the autonomous datalogger.
+ * to register callback functions, to access the autonomous datalogger.
  * This class adds the ability to configure the automatic conversion between the
  * measured signal and the corresponding engineering unit.
  */
@@ -145,7 +145,7 @@ typedef enum {
 
 -(NSString*) signalRange;
 /**
- * Changes the electric signal range used by the sensor.
+ * Changes the electric signal range used by the sensor. Default value is "-999999.999...999999.999".
  *
  * @param newval : a string corresponding to the electric signal range used by the sensor
  *
@@ -169,7 +169,7 @@ typedef enum {
 -(NSString*) valueRange;
 /**
  * Changes the physical value range measured by the sensor. As a side effect, the range modification may
- * automatically modify the display resolution.
+ * automatically modify the display resolution. Default value is "-999999.999...999999.999".
  *
  * @param newval : a string corresponding to the physical value range measured by the sensor
  *

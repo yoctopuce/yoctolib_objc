@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_rangefinder.m 26329 2017-01-11 14:04:39Z mvuilleu $
+ * $Id: yocto_rangefinder.m 26826 2017-03-17 11:20:57Z mvuilleu $
  *
  * Implements the high-level API for RangeFinder functions
  *
@@ -54,6 +54,8 @@
     _className = @"RangeFinder";
 //--- (YRangeFinder attributes initialization)
     _rangeFinderMode = Y_RANGEFINDERMODE_INVALID;
+    _hardwareCalibration = Y_HARDWARECALIBRATION_INVALID;
+    _currentTemperature = Y_CURRENTTEMPERATURE_INVALID;
     _command = Y_COMMAND_INVALID;
     _valueCallbackRangeFinder = NULL;
     _timedReportCallbackRangeFinder = NULL;
@@ -64,6 +66,8 @@
 -(void)  dealloc
 {
 //--- (YRangeFinder cleanup)
+    ARC_release(_hardwareCalibration);
+    _hardwareCalibration = nil;
     ARC_release(_command);
     _command = nil;
     ARC_dealloc(super);
@@ -76,6 +80,18 @@
     if(!strcmp(j->token, "rangeFinderMode")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
         _rangeFinderMode =  atoi(j->token);
+        return 1;
+    }
+    if(!strcmp(j->token, "hardwareCalibration")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+       ARC_release(_hardwareCalibration);
+        _hardwareCalibration =  [self _parseString:j];
+        ARC_retain(_hardwareCalibration);
+        return 1;
+    }
+    if(!strcmp(j->token, "currentTemperature")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _currentTemperature =  floor(atof(j->token) * 1000.0 / 65536.0 + 0.5) / 1000.0;
         return 1;
     }
     if(!strcmp(j->token, "command")) {
@@ -91,13 +107,13 @@
 //--- (YRangeFinder public methods implementation)
 
 /**
- * Changes the measuring unit for the measured temperature. That unit is a string.
- * String value can be " or mm. Any other value will be ignored.
+ * Changes the measuring unit for the measured range. That unit is a string.
+ * String value can be " or mm. Any other value is ignored.
  * Remember to call the saveToFlash() method of the module if the modification must be kept.
  * WARNING: if a specific calibration is defined for the rangeFinder function, a
  * unit system change will probably break it.
  *
- * @param newval : a string corresponding to the measuring unit for the measured temperature
+ * @param newval : a string corresponding to the measuring unit for the measured range
  *
  * @return YAPI_SUCCESS if the call succeeds.
  *
@@ -114,22 +130,24 @@
     return [self _setAttr:@"unit" :rest_val];
 }
 /**
- * Returns the rangefinder running mode. The rangefinder running mode
- * allows to put priority on precision, speed or maximum range.
+ * Returns the range finder running mode. The rangefinder running mode
+ * allows you to put priority on precision, speed or maximum range.
  *
  * @return a value among Y_RANGEFINDERMODE_DEFAULT, Y_RANGEFINDERMODE_LONG_RANGE,
- * Y_RANGEFINDERMODE_HIGH_ACCURACY and Y_RANGEFINDERMODE_HIGH_SPEED corresponding to the rangefinder running mode
+ * Y_RANGEFINDERMODE_HIGH_ACCURACY and Y_RANGEFINDERMODE_HIGH_SPEED corresponding to the range finder running mode
  *
  * On failure, throws an exception or returns Y_RANGEFINDERMODE_INVALID.
  */
 -(Y_RANGEFINDERMODE_enum) get_rangeFinderMode
 {
+    Y_RANGEFINDERMODE_enum res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_RANGEFINDERMODE_INVALID;
         }
     }
-    return _rangeFinderMode;
+    res = _rangeFinderMode;
+    return res;
 }
 
 
@@ -139,12 +157,12 @@
 }
 
 /**
- * Changes the rangefinder running mode, allowing to put priority on
+ * Changes the rangefinder running mode, allowing you to put priority on
  * precision, speed or maximum range.
  *
  * @param newval : a value among Y_RANGEFINDERMODE_DEFAULT, Y_RANGEFINDERMODE_LONG_RANGE,
  * Y_RANGEFINDERMODE_HIGH_ACCURACY and Y_RANGEFINDERMODE_HIGH_SPEED corresponding to the rangefinder
- * running mode, allowing to put priority on
+ * running mode, allowing you to put priority on
  *         precision, speed or maximum range
  *
  * @return YAPI_SUCCESS if the call succeeds.
@@ -161,14 +179,68 @@
     rest_val = [NSString stringWithFormat:@"%d", newval];
     return [self _setAttr:@"rangeFinderMode" :rest_val];
 }
+-(NSString*) get_hardwareCalibration
+{
+    NSString* res;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_HARDWARECALIBRATION_INVALID;
+        }
+    }
+    res = _hardwareCalibration;
+    return res;
+}
+
+
+-(NSString*) hardwareCalibration
+{
+    return [self get_hardwareCalibration];
+}
+
+-(int) set_hardwareCalibration:(NSString*) newval
+{
+    return [self setHardwareCalibration:newval];
+}
+-(int) setHardwareCalibration:(NSString*) newval
+{
+    NSString* rest_val;
+    rest_val = newval;
+    return [self _setAttr:@"hardwareCalibration" :rest_val];
+}
+/**
+ * Returns the current sensor temperature, as a floating point number.
+ *
+ * @return a floating point number corresponding to the current sensor temperature, as a floating point number
+ *
+ * On failure, throws an exception or returns Y_CURRENTTEMPERATURE_INVALID.
+ */
+-(double) get_currentTemperature
+{
+    double res;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_CURRENTTEMPERATURE_INVALID;
+        }
+    }
+    res = _currentTemperature;
+    return res;
+}
+
+
+-(double) currentTemperature
+{
+    return [self get_currentTemperature];
+}
 -(NSString*) get_command
 {
+    NSString* res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_COMMAND_INVALID;
         }
     }
-    return _command;
+    res = _command;
+    return res;
 }
 
 
@@ -296,17 +368,111 @@
 }
 
 /**
+ * Returns the temperature at the time when the latest calibration was performed.
+ * This function can be used to determine if a new calibration for ambient temperature
+ * is required.
+ *
+ * @return a temperature, as a floating point number.
+ *         On failure, throws an exception or return YAPI_INVALID_DOUBLE.
+ */
+-(double) get_hardwareCalibrationTemperature
+{
+    NSString* hwcal;
+    
+    hwcal = [self get_hardwareCalibration];
+    if (!([[hwcal substringWithRange:NSMakeRange(0, 1)] isEqualToString:@"@"])) {
+        return YAPI_INVALID_DOUBLE;
+    }
+    return [[hwcal substringWithRange:NSMakeRange(1, (int)[(hwcal) length])] intValue];
+}
+
+/**
  * Triggers a sensor calibration according to the current ambient temperature. That
  * calibration process needs no physical interaction with the sensor. It is performed
  * automatically at device startup, but it is recommended to start it again when the
- * temperature delta since last calibration exceeds 8°C.
+ * temperature delta since the latest calibration exceeds 8°C.
  *
  * @return YAPI_SUCCESS if the call succeeds.
  *         On failure, throws an exception or returns a negative error code.
  */
--(int) triggerTempCalibration
+-(int) triggerTemperatureCalibration
 {
     return [self set_command:@"T"];
+}
+
+/**
+ * Triggers the photon detector hardware calibration.
+ * This function is part of the calibration procedure to compensate for the the effect
+ * of a cover glass. Make sure to read the chapter about hardware calibration for details
+ * on the calibration procedure for proper results.
+ *
+ * @return YAPI_SUCCESS if the call succeeds.
+ *         On failure, throws an exception or returns a negative error code.
+ */
+-(int) triggerSpadCalibration
+{
+    return [self set_command:@"S"];
+}
+
+/**
+ * Triggers the hardware offset calibration of the distance sensor.
+ * This function is part of the calibration procedure to compensate for the the effect
+ * of a cover glass. Make sure to read the chapter about hardware calibration for details
+ * on the calibration procedure for proper results.
+ *
+ * @param targetDist : true distance of the calibration target, in mm or inches, depending
+ *         on the unit selected in the device
+ *
+ * @return YAPI_SUCCESS if the call succeeds.
+ *         On failure, throws an exception or returns a negative error code.
+ */
+-(int) triggerOffsetCalibration:(double)targetDist
+{
+    int distmm;
+    
+    if ([[self get_unit] isEqualToString:@"\""]) {
+        distmm = (int) floor(targetDist * 25.4+0.5);
+    } else {
+        distmm = (int) floor(targetDist+0.5);
+    }
+    return [self set_command:[NSString stringWithFormat:@"O%d",distmm]];
+}
+
+/**
+ * Triggers the hardware cross-talk calibration of the distance sensor.
+ * This function is part of the calibration procedure to compensate for the the effect
+ * of a cover glass. Make sure to read the chapter about hardware calibration for details
+ * on the calibration procedure for proper results.
+ *
+ * @param targetDist : true distance of the calibration target, in mm or inches, depending
+ *         on the unit selected in the device
+ *
+ * @return YAPI_SUCCESS if the call succeeds.
+ *         On failure, throws an exception or returns a negative error code.
+ */
+-(int) triggerXTalkCalibration:(double)targetDist
+{
+    int distmm;
+    
+    if ([[self get_unit] isEqualToString:@"\""]) {
+        distmm = (int) floor(targetDist * 25.4+0.5);
+    } else {
+        distmm = (int) floor(targetDist+0.5);
+    }
+    return [self set_command:[NSString stringWithFormat:@"X%d",distmm]];
+}
+
+/**
+ * Cancels the effect of previous hardware calibration procedures to compensate
+ * for cover glass, and restores factory settings.
+ * Remember to call the saveToFlash() method of the module if the modification must be kept.
+ *
+ * @return YAPI_SUCCESS if the call succeeds.
+ *         On failure, throws an exception or returns a negative error code.
+ */
+-(int) cancelCoverGlassCalibrations
+{
+    return [self set_hardwareCalibration:@""];
 }
 
 

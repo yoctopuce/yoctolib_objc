@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_colorled.m 25275 2016-08-24 13:42:24Z mvuilleu $
+ * $Id: yocto_colorled.m 26672 2017-02-28 13:43:38Z seb $
  *
  * Implements the high-level API for ColorLed functions
  *
@@ -165,12 +165,14 @@
  */
 -(int) get_rgbColor
 {
+    int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_RGBCOLOR_INVALID;
         }
     }
-    return _rgbColor;
+    res = _rgbColor;
+    return res;
 }
 
 
@@ -207,12 +209,14 @@
  */
 -(int) get_hslColor
 {
+    int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_HSLCOLOR_INVALID;
         }
     }
-    return _hslColor;
+    res = _hslColor;
+    return res;
 }
 
 
@@ -242,12 +246,14 @@
 }
 -(YMove) get_rgbMove
 {
+    YMove res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_RGBMOVE_INVALID;
         }
     }
-    return _rgbMove;
+    res = _rgbMove;
+    return res;
 }
 
 
@@ -285,12 +291,14 @@
 }
 -(YMove) get_hslMove
 {
+    YMove res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_HSLMOVE_INVALID;
         }
     }
-    return _hslMove;
+    res = _hslMove;
+    return res;
 }
 
 
@@ -335,12 +343,14 @@
  */
 -(int) get_rgbColorAtPowerOn
 {
+    int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_RGBCOLORATPOWERON_INVALID;
         }
     }
-    return _rgbColorAtPowerOn;
+    res = _rgbColorAtPowerOn;
+    return res;
 }
 
 
@@ -378,12 +388,14 @@
  */
 -(int) get_blinkSeqSize
 {
+    int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_BLINKSEQSIZE_INVALID;
         }
     }
-    return _blinkSeqSize;
+    res = _blinkSeqSize;
+    return res;
 }
 
 
@@ -400,12 +412,14 @@
  */
 -(int) get_blinkSeqMaxSize
 {
+    int res;
     if (_cacheExpiration == 0) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_BLINKSEQMAXSIZE_INVALID;
         }
     }
-    return _blinkSeqMaxSize;
+    res = _blinkSeqMaxSize;
+    return res;
 }
 
 
@@ -425,12 +439,14 @@
  */
 -(int) get_blinkSeqSignature
 {
+    int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_BLINKSEQSIGNATURE_INVALID;
         }
     }
-    return _blinkSeqSignature;
+    res = _blinkSeqSignature;
+    return res;
 }
 
 
@@ -440,12 +456,14 @@
 }
 -(NSString*) get_command
 {
+    NSString* res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_COMMAND_INVALID;
         }
     }
-    return _command;
+    res = _command;
+    return res;
 }
 
 

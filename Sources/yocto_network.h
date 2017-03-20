@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_network.h 25275 2016-08-24 13:42:24Z mvuilleu $
+ * $Id: yocto_network.h 26663 2017-02-28 09:49:36Z seb $
  *
  * Declares yFindNetwork(), the high-level API for Network functions
  *
@@ -104,6 +104,7 @@ typedef enum {
 #define Y_CALLBACKURL_INVALID           YAPI_INVALID_STRING
 #define Y_CALLBACKCREDENTIALS_INVALID   YAPI_INVALID_STRING
 #define Y_CALLBACKINITIALDELAY_INVALID  YAPI_INVALID_UINT
+#define Y_CALLBACKSCHEDULE_INVALID      YAPI_INVALID_STRING
 #define Y_CALLBACKMINDELAY_INVALID      YAPI_INVALID_UINT
 #define Y_CALLBACKMAXDELAY_INVALID      YAPI_INVALID_UINT
 #define Y_POECURRENT_INVALID            YAPI_INVALID_UINT
@@ -141,6 +142,7 @@ typedef enum {
     Y_CALLBACKENCODING_enum _callbackEncoding;
     NSString*       _callbackCredentials;
     int             _callbackInitialDelay;
+    NSString*       _callbackSchedule;
     int             _callbackMinDelay;
     int             _callbackMaxDelay;
     int             _poeCurrent;
@@ -227,6 +229,25 @@ typedef enum {
 
 
 -(NSString*) router;
+/**
+ * Returns the IP configuration of the network interface.
+ *
+ * If the network interface is setup to use a static IP address, the string starts with "STATIC:" and
+ * is followed by three
+ * parameters, separated by "/". The first is the device IP address, followed by the subnet mask
+ * length, and finally the
+ * router IP address (default gateway). For instance: "STATIC:192.168.1.14/16/192.168.1.1"
+ *
+ * If the network interface is configured to receive its IP from a DHCP server, the string start with
+ * "DHCP:" and is followed by
+ * three parameters separated by "/". The first is the fallback IP address, then the fallback subnet
+ * mask length and finally the
+ * fallback router IP address. These three parameters are used when no DHCP reply is received.
+ *
+ * @return a string corresponding to the IP configuration of the network interface
+ *
+ * On failure, throws an exception or returns Y_IPCONFIG_INVALID.
+ */
 -(NSString*)     get_ipConfig;
 
 
@@ -630,9 +651,32 @@ typedef enum {
 -(int)     setCallbackInitialDelay:(int) newval;
 
 /**
- * Returns the minimum waiting time between two callback notifications, in seconds.
+ * Returns the HTTP callback schedule strategy, as a text string.
  *
- * @return an integer corresponding to the minimum waiting time between two callback notifications, in seconds
+ * @return a string corresponding to the HTTP callback schedule strategy, as a text string
+ *
+ * On failure, throws an exception or returns Y_CALLBACKSCHEDULE_INVALID.
+ */
+-(NSString*)     get_callbackSchedule;
+
+
+-(NSString*) callbackSchedule;
+/**
+ * Changes the HTTP callback schedule strategy, as a text string.
+ *
+ * @param newval : a string corresponding to the HTTP callback schedule strategy, as a text string
+ *
+ * @return YAPI_SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     set_callbackSchedule:(NSString*) newval;
+-(int)     setCallbackSchedule:(NSString*) newval;
+
+/**
+ * Returns the minimum waiting time between two HTTP callbacks, in seconds.
+ *
+ * @return an integer corresponding to the minimum waiting time between two HTTP callbacks, in seconds
  *
  * On failure, throws an exception or returns Y_CALLBACKMINDELAY_INVALID.
  */
@@ -641,10 +685,9 @@ typedef enum {
 
 -(int) callbackMinDelay;
 /**
- * Changes the minimum waiting time between two callback notifications, in seconds.
+ * Changes the minimum waiting time between two HTTP callbacks, in seconds.
  *
- * @param newval : an integer corresponding to the minimum waiting time between two callback
- * notifications, in seconds
+ * @param newval : an integer corresponding to the minimum waiting time between two HTTP callbacks, in seconds
  *
  * @return YAPI_SUCCESS if the call succeeds.
  *
@@ -654,9 +697,9 @@ typedef enum {
 -(int)     setCallbackMinDelay:(int) newval;
 
 /**
- * Returns the maximum waiting time between two callback notifications, in seconds.
+ * Returns the waiting time between two HTTP callbacks when there is nothing new.
  *
- * @return an integer corresponding to the maximum waiting time between two callback notifications, in seconds
+ * @return an integer corresponding to the waiting time between two HTTP callbacks when there is nothing new
  *
  * On failure, throws an exception or returns Y_CALLBACKMAXDELAY_INVALID.
  */
@@ -665,10 +708,10 @@ typedef enum {
 
 -(int) callbackMaxDelay;
 /**
- * Changes the maximum waiting time between two callback notifications, in seconds.
+ * Changes the waiting time between two HTTP callbacks when there is nothing new.
  *
- * @param newval : an integer corresponding to the maximum waiting time between two callback
- * notifications, in seconds
+ * @param newval : an integer corresponding to the waiting time between two HTTP callbacks when there
+ * is nothing new
  *
  * @return YAPI_SUCCESS if the call succeeds.
  *

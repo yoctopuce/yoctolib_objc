@@ -26,7 +26,6 @@ int main(int argc, const char * argv[])
       return 1;
     }
 
-
     if ([target isEqualToString:@"any"]) {
       YAnButton *anbutton = [YAnButton FirstAnButton];
       if (anbutton == NULL) {
@@ -35,8 +34,10 @@ int main(int argc, const char * argv[])
       }
       target = [[anbutton module] serialNumber];
     }
-    YAnButton *input1 = [YAnButton FindAnButton:[target stringByAppendingString:@".anButton1"]];
-    YAnButton *input5 = [YAnButton FindAnButton:[target stringByAppendingString:@".anButton5"]];
+    YAnButton *input1 = [YAnButton FindAnButton:[target stringByAppendingString:
+                         @".anButton1"]];
+    YAnButton *input5 = [YAnButton FindAnButton:[target stringByAppendingString:
+                         @".anButton5"]];
 
     while(1) {
       if(![input1 isOnline]) {

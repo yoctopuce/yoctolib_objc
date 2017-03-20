@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_compass.m 25275 2016-08-24 13:42:24Z mvuilleu $
+ * $Id: yocto_compass.m 26672 2017-02-28 13:43:38Z seb $
  *
  * Implements the high-level API for Compass functions
  *
@@ -100,12 +100,14 @@
  */
 -(int) get_bandwidth
 {
+    int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_BANDWIDTH_INVALID;
         }
     }
-    return _bandwidth;
+    res = _bandwidth;
+    return res;
 }
 
 
@@ -136,12 +138,14 @@
 }
 -(Y_AXIS_enum) get_axis
 {
+    Y_AXIS_enum res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_AXIS_INVALID;
         }
     }
-    return _axis;
+    res = _axis;
+    return res;
 }
 
 
@@ -158,12 +162,14 @@
  */
 -(double) get_magneticHeading
 {
+    double res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_MAGNETICHEADING_INVALID;
         }
     }
-    return _magneticHeading;
+    res = _magneticHeading;
+    return res;
 }
 
 

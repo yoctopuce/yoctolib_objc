@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_altitude.m 25275 2016-08-24 13:42:24Z mvuilleu $
+ * $Id: yocto_altitude.m 26672 2017-02-28 13:43:38Z seb $
  *
  * Implements the high-level API for Altitude functions
  *
@@ -145,12 +145,14 @@
  */
 -(double) get_qnh
 {
+    double res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_QNH_INVALID;
         }
     }
-    return _qnh;
+    res = _qnh;
+    return res;
 }
 
 
@@ -169,12 +171,14 @@
  */
 -(NSString*) get_technology
 {
+    NSString* res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_TECHNOLOGY_INVALID;
         }
     }
-    return _technology;
+    res = _technology;
+    return res;
 }
 
 

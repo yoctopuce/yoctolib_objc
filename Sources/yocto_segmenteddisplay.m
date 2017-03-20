@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_segmenteddisplay.m 25275 2016-08-24 13:42:24Z mvuilleu $
+ * $Id: yocto_segmenteddisplay.m 26672 2017-02-28 13:43:38Z seb $
  *
  * Implements the high-level API for SegmentedDisplay functions
  *
@@ -97,12 +97,14 @@
  */
 -(NSString*) get_displayedText
 {
+    NSString* res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_DISPLAYEDTEXT_INVALID;
         }
     }
-    return _displayedText;
+    res = _displayedText;
+    return res;
 }
 
 
@@ -132,12 +134,14 @@
 }
 -(Y_DISPLAYMODE_enum) get_displayMode
 {
+    Y_DISPLAYMODE_enum res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_DISPLAYMODE_INVALID;
         }
     }
-    return _displayMode;
+    res = _displayMode;
+    return res;
 }
 
 

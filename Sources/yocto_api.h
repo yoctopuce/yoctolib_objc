@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.h 26322 2017-01-11 08:49:28Z seb $
+ * $Id: yocto_api.h 26826 2017-03-17 11:20:57Z mvuilleu $
  *
  * High-level programming interface, common to all modules
  *
@@ -62,7 +62,7 @@
 
 extern NSMutableDictionary* YAPI_YFunctions;
 
-#define YOCTO_API_REVISION          "26380"
+#define YOCTO_API_REVISION          "26849"
 
 // yInitAPI argument
 #define Y_DETECT_NONE           0
@@ -803,7 +803,7 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
 -(int)     _invokeValueCallback:(NSString*)value;
 
 /**
- * Disable the propagation of every new advertised value to the parent hub.
+ * Disables the propagation of every new advertised value to the parent hub.
  * You can use this function to save bandwidth and CPU on computers with limited
  * resources, or to prevent unwanted invocations of the HTTP callback.
  * Remember to call the saveToFlash() method of the module if the
@@ -816,7 +816,7 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
 -(int)     muteValueCallbacks;
 
 /**
- * Re-enable the propagation of every new advertised value to the parent hub.
+ * Re-enables the propagation of every new advertised value to the parent hub.
  * This function reverts the effect of a previous call to muteValueCallbacks().
  * Remember to call the saveToFlash() method of the module if the
  * modification must be kept.
@@ -831,9 +831,9 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
  * Returns the current value of a single function attribute, as a text string, as quickly as
  * possible but without using the cached value.
  *
- * @param attrName : le nom de l'attribut désiré
+ * @param attrName : the name of the requested attribute
  *
- * @return une chaîne de caractères représentant la valeur actuelle de l'attribut.
+ * @return a string with the value of the the attribute
  *
  * On failure, throws an exception or returns an empty string.
  */

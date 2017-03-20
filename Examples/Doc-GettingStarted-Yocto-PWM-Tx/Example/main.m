@@ -2,7 +2,6 @@
 #import "yocto_api.h"
 #import "yocto_pwmoutput.h"
 
-
 static void usage(void)
 {
   NSLog(@"usage: demo <serial_number>  <frequency> <dutyCycle>");
@@ -12,7 +11,6 @@ static void usage(void)
   NSLog(@"       <dutyCycle>: floating point number between 0.0 and 100.0");
   exit(1);
 }
-
 
 int main(int argc, const char * argv[])
 {

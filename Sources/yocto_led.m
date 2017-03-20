@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_led.m 25275 2016-08-24 13:42:24Z mvuilleu $
+ * $Id: yocto_led.m 26672 2017-02-28 13:43:38Z seb $
  *
  * Implements the high-level API for Led functions
  *
@@ -99,12 +99,14 @@
  */
 -(Y_POWER_enum) get_power
 {
+    Y_POWER_enum res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_POWER_INVALID;
         }
     }
-    return _power;
+    res = _power;
+    return res;
 }
 
 
@@ -141,12 +143,14 @@
  */
 -(int) get_luminosity
 {
+    int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_LUMINOSITY_INVALID;
         }
     }
-    return _luminosity;
+    res = _luminosity;
+    return res;
 }
 
 
@@ -184,12 +188,14 @@
  */
 -(Y_BLINKING_enum) get_blinking
 {
+    Y_BLINKING_enum res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_BLINKING_INVALID;
         }
     }
-    return _blinking;
+    res = _blinking;
+    return res;
 }
 
 

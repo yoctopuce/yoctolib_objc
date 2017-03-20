@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_oscontrol.m 25275 2016-08-24 13:42:24Z mvuilleu $
+ * $Id: yocto_oscontrol.m 26672 2017-02-28 13:43:38Z seb $
  *
  * Implements the high-level API for OsControl functions
  *
@@ -89,12 +89,14 @@
  */
 -(int) get_shutdownCountdown
 {
+    int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_SHUTDOWNCOUNTDOWN_INVALID;
         }
     }
-    return _shutdownCountdown;
+    res = _shutdownCountdown;
+    return res;
 }
 
 

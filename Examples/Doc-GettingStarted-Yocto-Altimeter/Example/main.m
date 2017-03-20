@@ -4,8 +4,6 @@
 #import "yocto_temperature.h"
 #import "yocto_pressure.h"
 
-
-
 static void usage(void)
 {
   NSLog(@"usage: demo <serial_number> ");
@@ -14,11 +12,9 @@ static void usage(void)
   exit(1);
 }
 
-
 int main(int argc, const char * argv[])
 {
   NSError *error;
-
 
   if (argc < 2) {
     usage();
@@ -54,7 +50,8 @@ int main(int argc, const char * argv[])
         NSLog(@"Module not connected (check identification and USB cable)\n");
         break;
       }
-      NSLog(@"Current altitude:    %f m (QNH=%f)\n", [asensor get_currentValue], [asensor get_qnh]);
+      NSLog(@"Current altitude:    %f m (QNH=%f)\n", [asensor get_currentValue], [asensor
+            get_qnh]);
       NSLog(@"Current pressure:    %f hPa\n",  [psensor get_currentValue]);
       NSLog(@"Current temperature: %f C\n",    [tsensor get_currentValue]);
       NSLog(@"  (press Ctrl-C to exit)\n");

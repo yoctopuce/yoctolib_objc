@@ -20,7 +20,8 @@ static void sensorValueChangeCallBack(YSensor* fct, NSString* value)
 
 static void sensorTimedReportCallBack(YSensor* fct, YMeasure* measure)
 {
-  NSLog(@"%@ : %.3f %@ (timed report)", [fct get_hardwareId], [measure get_averageValue], [fct get_unit]);
+  NSLog(@"%@ : %.3f %@ (timed report)", [fct get_hardwareId], [measure
+        get_averageValue], [fct get_unit]);
 }
 
 static void deviceArrival(YModule *m)

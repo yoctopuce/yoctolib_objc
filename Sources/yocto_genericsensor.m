@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_genericsensor.m 25275 2016-08-24 13:42:24Z mvuilleu $
+ * $Id: yocto_genericsensor.m 26672 2017-02-28 13:43:38Z seb $
  *
  * Implements the high-level API for GenericSensor functions
  *
@@ -153,12 +153,14 @@
  */
 -(double) get_signalValue
 {
+    double res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_SIGNALVALUE_INVALID;
         }
     }
-    return floor(_signalValue * 1000+0.5) / 1000;
+    res = floor(_signalValue * 1000+0.5) / 1000;
+    return res;
 }
 
 
@@ -175,12 +177,14 @@
  */
 -(NSString*) get_signalUnit
 {
+    NSString* res;
     if (_cacheExpiration == 0) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_SIGNALUNIT_INVALID;
         }
     }
-    return _signalUnit;
+    res = _signalUnit;
+    return res;
 }
 
 
@@ -197,12 +201,14 @@
  */
 -(NSString*) get_signalRange
 {
+    NSString* res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_SIGNALRANGE_INVALID;
         }
     }
-    return _signalRange;
+    res = _signalRange;
+    return res;
 }
 
 
@@ -212,7 +218,7 @@
 }
 
 /**
- * Changes the electric signal range used by the sensor.
+ * Changes the electric signal range used by the sensor. Default value is "-999999.999...999999.999".
  *
  * @param newval : a string corresponding to the electric signal range used by the sensor
  *
@@ -239,12 +245,14 @@
  */
 -(NSString*) get_valueRange
 {
+    NSString* res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_VALUERANGE_INVALID;
         }
     }
-    return _valueRange;
+    res = _valueRange;
+    return res;
 }
 
 
@@ -255,7 +263,7 @@
 
 /**
  * Changes the physical value range measured by the sensor. As a side effect, the range modification may
- * automatically modify the display resolution.
+ * automatically modify the display resolution. Default value is "-999999.999...999999.999".
  *
  * @param newval : a string corresponding to the physical value range measured by the sensor
  *
@@ -306,12 +314,14 @@
  */
 -(double) get_signalBias
 {
+    double res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_SIGNALBIAS_INVALID;
         }
     }
-    return _signalBias;
+    res = _signalBias;
+    return res;
 }
 
 
@@ -335,12 +345,14 @@
  */
 -(Y_SIGNALSAMPLING_enum) get_signalSampling
 {
+    Y_SIGNALSAMPLING_enum res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_SIGNALSAMPLING_INVALID;
         }
     }
-    return _signalSampling;
+    res = _signalSampling;
+    return res;
 }
 
 

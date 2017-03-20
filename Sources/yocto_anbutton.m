@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_anbutton.m 25275 2016-08-24 13:42:24Z mvuilleu $
+ * $Id: yocto_anbutton.m 26672 2017-02-28 13:43:38Z seb $
  *
  * Implements the high-level API for AnButton functions
  *
@@ -147,12 +147,14 @@
  */
 -(int) get_calibratedValue
 {
+    int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_CALIBRATEDVALUE_INVALID;
         }
     }
-    return _calibratedValue;
+    res = _calibratedValue;
+    return res;
 }
 
 
@@ -169,12 +171,14 @@
  */
 -(int) get_rawValue
 {
+    int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_RAWVALUE_INVALID;
         }
     }
-    return _rawValue;
+    res = _rawValue;
+    return res;
 }
 
 
@@ -191,12 +195,14 @@
  */
 -(Y_ANALOGCALIBRATION_enum) get_analogCalibration
 {
+    Y_ANALOGCALIBRATION_enum res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_ANALOGCALIBRATION_INVALID;
         }
     }
-    return _analogCalibration;
+    res = _analogCalibration;
+    return res;
 }
 
 
@@ -235,12 +241,14 @@
  */
 -(int) get_calibrationMax
 {
+    int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_CALIBRATIONMAX_INVALID;
         }
     }
-    return _calibrationMax;
+    res = _calibrationMax;
+    return res;
 }
 
 
@@ -282,12 +290,14 @@
  */
 -(int) get_calibrationMin
 {
+    int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_CALIBRATIONMIN_INVALID;
         }
     }
-    return _calibrationMin;
+    res = _calibrationMin;
+    return res;
 }
 
 
@@ -329,12 +339,14 @@
  */
 -(int) get_sensitivity
 {
+    int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_SENSITIVITY_INVALID;
         }
     }
-    return _sensitivity;
+    res = _sensitivity;
+    return res;
 }
 
 
@@ -378,12 +390,14 @@
  */
 -(Y_ISPRESSED_enum) get_isPressed
 {
+    Y_ISPRESSED_enum res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_ISPRESSED_INVALID;
         }
     }
-    return _isPressed;
+    res = _isPressed;
+    return res;
 }
 
 
@@ -403,12 +417,14 @@
  */
 -(s64) get_lastTimePressed
 {
+    s64 res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_LASTTIMEPRESSED_INVALID;
         }
     }
-    return _lastTimePressed;
+    res = _lastTimePressed;
+    return res;
 }
 
 
@@ -428,12 +444,14 @@
  */
 -(s64) get_lastTimeReleased
 {
+    s64 res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_LASTTIMERELEASED_INVALID;
         }
     }
-    return _lastTimeReleased;
+    res = _lastTimeReleased;
+    return res;
 }
 
 
@@ -452,12 +470,14 @@
  */
 -(s64) get_pulseCounter
 {
+    s64 res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_PULSECOUNTER_INVALID;
         }
     }
-    return _pulseCounter;
+    res = _pulseCounter;
+    return res;
 }
 
 
@@ -485,12 +505,14 @@
  */
 -(s64) get_pulseTimer
 {
+    s64 res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_PULSETIMER_INVALID;
         }
     }
-    return _pulseTimer;
+    res = _pulseTimer;
+    return res;
 }
 
 

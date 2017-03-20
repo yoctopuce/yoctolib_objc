@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_serialport.m 25275 2016-08-24 13:42:24Z mvuilleu $
+ * $Id: yocto_serialport.m 26672 2017-02-28 13:43:38Z seb $
  *
  * Implements the high-level API for SerialPort functions
  *
@@ -179,12 +179,14 @@
  */
 -(int) get_rxCount
 {
+    int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_RXCOUNT_INVALID;
         }
     }
-    return _rxCount;
+    res = _rxCount;
+    return res;
 }
 
 
@@ -201,12 +203,14 @@
  */
 -(int) get_txCount
 {
+    int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_TXCOUNT_INVALID;
         }
     }
-    return _txCount;
+    res = _txCount;
+    return res;
 }
 
 
@@ -223,12 +227,14 @@
  */
 -(int) get_errCount
 {
+    int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_ERRCOUNT_INVALID;
         }
     }
-    return _errCount;
+    res = _errCount;
+    return res;
 }
 
 
@@ -245,12 +251,14 @@
  */
 -(int) get_rxMsgCount
 {
+    int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_RXMSGCOUNT_INVALID;
         }
     }
-    return _rxMsgCount;
+    res = _rxMsgCount;
+    return res;
 }
 
 
@@ -267,12 +275,14 @@
  */
 -(int) get_txMsgCount
 {
+    int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_TXMSGCOUNT_INVALID;
         }
     }
-    return _txMsgCount;
+    res = _txMsgCount;
+    return res;
 }
 
 
@@ -289,12 +299,14 @@
  */
 -(NSString*) get_lastMsg
 {
+    NSString* res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_LASTMSG_INVALID;
         }
     }
-    return _lastMsg;
+    res = _lastMsg;
+    return res;
 }
 
 
@@ -311,12 +323,14 @@
  */
 -(NSString*) get_currentJob
 {
+    NSString* res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_CURRENTJOB_INVALID;
         }
     }
-    return _currentJob;
+    res = _currentJob;
+    return res;
 }
 
 
@@ -355,12 +369,14 @@
  */
 -(NSString*) get_startupJob
 {
+    NSString* res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_STARTUPJOB_INVALID;
         }
     }
-    return _startupJob;
+    res = _startupJob;
+    return res;
 }
 
 
@@ -392,12 +408,14 @@
 }
 -(NSString*) get_command
 {
+    NSString* res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_COMMAND_INVALID;
         }
     }
-    return _command;
+    res = _command;
+    return res;
 }
 
 
@@ -427,12 +445,14 @@
  */
 -(Y_VOLTAGELEVEL_enum) get_voltageLevel
 {
+    Y_VOLTAGELEVEL_enum res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_VOLTAGELEVEL_INVALID;
         }
     }
-    return _voltageLevel;
+    res = _voltageLevel;
+    return res;
 }
 
 
@@ -481,12 +501,14 @@
  */
 -(NSString*) get_protocol
 {
+    NSString* res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_PROTOCOL_INVALID;
         }
     }
-    return _protocol;
+    res = _protocol;
+    return res;
 }
 
 
@@ -537,12 +559,14 @@
  */
 -(NSString*) get_serialMode
 {
+    NSString* res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_SERIALMODE_INVALID;
         }
     }
-    return _serialMode;
+    res = _serialMode;
+    return res;
 }
 
 

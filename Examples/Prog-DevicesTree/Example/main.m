@@ -27,7 +27,8 @@
 -(bool)         addSubDevice:(NSString*) serial
 {
   for (int i = 1; i <= 4; i++) {
-    YHubPort* p = [YHubPort FindHubPort:[NSString stringWithFormat:@"%@.hubPort%d", _serial, i]];
+    YHubPort* p = [YHubPort FindHubPort:[NSString stringWithFormat:@"%@.hubPort%d", _serial,
+                                         i]];
     if ([p get_logicalName] == serial) {
       [_subDevices addObject:serial];
       return true;

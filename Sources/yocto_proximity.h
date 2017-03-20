@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: pic24config.php 26169 2016-12-12 01:36:34Z mvuilleu $
+ * $Id: pic24config.php 26780 2017-03-16 14:02:09Z mvuilleu $
  *
  * Declares yFindProximity(), the high-level API for Proximity functions
  *
@@ -53,6 +53,16 @@ typedef enum {
     Y_ISPRESENT_INVALID = -1,
 } Y_ISPRESENT_enum;
 #endif
+#ifndef _Y_PROXIMITYREPORTMODE_ENUM
+#define _Y_PROXIMITYREPORTMODE_ENUM
+typedef enum {
+    Y_PROXIMITYREPORTMODE_NUMERIC = 0,
+    Y_PROXIMITYREPORTMODE_PRESENCE = 1,
+    Y_PROXIMITYREPORTMODE_PULSECOUNT = 2,
+    Y_PROXIMITYREPORTMODE_INVALID = -1,
+} Y_PROXIMITYREPORTMODE_enum;
+#endif
+#define Y_SIGNALVALUE_INVALID           YAPI_INVALID_DOUBLE
 #define Y_DETECTIONTHRESHOLD_INVALID    YAPI_INVALID_UINT
 #define Y_LASTTIMEAPPROACHED_INVALID    YAPI_INVALID_LONG
 #define Y_LASTTIMEREMOVED_INVALID       YAPI_INVALID_LONG
@@ -65,8 +75,8 @@ typedef enum {
  * YProximity Class: Proximity function interface
  *
  * The Yoctopuce class YProximity allows you to use and configure Yoctopuce proximity
- * sensors. It inherits from YSensor class the core functions to read measurements,
- * register callback functions, access to the autonomous datalogger.
+ * sensors. It inherits from the YSensor class the core functions to read measurements,
+ * to register callback functions, to access the autonomous datalogger.
  * This class adds the ability to easily perform a one-point linear calibration
  * to compensate the effect of a glass or filter placed in front of the sensor.
  */
@@ -75,12 +85,14 @@ typedef enum {
 {
 @protected
 //--- (YProximity attributes declaration)
+    double          _signalValue;
     int             _detectionThreshold;
     Y_ISPRESENT_enum _isPresent;
     s64             _lastTimeApproached;
     s64             _lastTimeRemoved;
     s64             _pulseCounter;
     s64             _pulseTimer;
+    Y_PROXIMITYREPORTMODE_enum _proximityReportMode;
     YProximityValueCallback _valueCallbackProximity;
     YProximityTimedReportCallback _timedReportCallbackProximity;
 //--- (end of YProximity attributes declaration)
@@ -94,6 +106,17 @@ typedef enum {
 
 //--- (end of YProximity private methods declaration)
 //--- (YProximity public methods declaration)
+/**
+ * Returns the current value of signal measured by the proximity sensor.
+ *
+ * @return a floating point number corresponding to the current value of signal measured by the proximity sensor
+ *
+ * On failure, throws an exception or returns Y_SIGNALVALUE_INVALID.
+ */
+-(double)     get_signalValue;
+
+
+-(double) signalValue;
 /**
  * Returns the threshold used to determine the logical state of the proximity sensor, when considered
  * as a binary input (on/off).
@@ -181,9 +204,9 @@ typedef enum {
 -(int)     setPulseCounter:(s64) newval;
 
 /**
- * Returns the timer of the pulses counter (ms).
+ * Returns the timer of the pulse counter (ms).
  *
- * @return an integer corresponding to the timer of the pulses counter (ms)
+ * @return an integer corresponding to the timer of the pulse counter (ms)
  *
  * On failure, throws an exception or returns Y_PULSETIMER_INVALID.
  */
@@ -191,6 +214,36 @@ typedef enum {
 
 
 -(s64) pulseTimer;
+/**
+ * Returns the parameter (sensor value, presence or pulse count) returned by the get_currentValue
+ * function and callbacks.
+ *
+ * @return a value among Y_PROXIMITYREPORTMODE_NUMERIC, Y_PROXIMITYREPORTMODE_PRESENCE and
+ * Y_PROXIMITYREPORTMODE_PULSECOUNT corresponding to the parameter (sensor value, presence or pulse
+ * count) returned by the get_currentValue function and callbacks
+ *
+ * On failure, throws an exception or returns Y_PROXIMITYREPORTMODE_INVALID.
+ */
+-(Y_PROXIMITYREPORTMODE_enum)     get_proximityReportMode;
+
+
+-(Y_PROXIMITYREPORTMODE_enum) proximityReportMode;
+/**
+ * Modifies the  parameter  type (sensor value, presence or pulse count) returned by the
+ * get_currentValue function and callbacks.
+ * The edge count value is limited to the 6 lowest digits. For values greater than one million, use
+ * get_pulseCounter().
+ *
+ * @param newval : a value among Y_PROXIMITYREPORTMODE_NUMERIC, Y_PROXIMITYREPORTMODE_PRESENCE and
+ * Y_PROXIMITYREPORTMODE_PULSECOUNT
+ *
+ * @return YAPI_SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     set_proximityReportMode:(Y_PROXIMITYREPORTMODE_enum) newval;
+-(int)     setProximityReportMode:(Y_PROXIMITYREPORTMODE_enum) newval;
+
 /**
  * Retrieves a proximity sensor for a given identifier.
  * The identifier can be specified using several formats:
@@ -247,7 +300,7 @@ typedef enum {
 -(int)     _invokeTimedReportCallback:(YMeasure*)value;
 
 /**
- * Returns the pulse counter value as well as its timer.
+ * Resets the pulse counter value as well as its timer.
  *
  * @return YAPI_SUCCESS if the call succeeds.
  *

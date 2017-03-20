@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_digitalio.m 25871 2016-11-15 14:32:56Z seb $
+ * $Id: yocto_digitalio.m 26672 2017-02-28 13:43:38Z seb $
  *
  * Implements the high-level API for DigitalIO functions
  *
@@ -127,12 +127,14 @@
  */
 -(int) get_portState
 {
+    int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_PORTSTATE_INVALID;
         }
     }
-    return _portState;
+    res = _portState;
+    return res;
 }
 
 
@@ -171,12 +173,14 @@
  */
 -(int) get_portDirection
 {
+    int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_PORTDIRECTION_INVALID;
         }
     }
-    return _portDirection;
+    res = _portDirection;
+    return res;
 }
 
 
@@ -217,12 +221,14 @@
  */
 -(int) get_portOpenDrain
 {
+    int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_PORTOPENDRAIN_INVALID;
         }
     }
-    return _portOpenDrain;
+    res = _portOpenDrain;
+    return res;
 }
 
 
@@ -262,12 +268,14 @@
  */
 -(int) get_portPolarity
 {
+    int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_PORTPOLARITY_INVALID;
         }
     }
-    return _portPolarity;
+    res = _portPolarity;
+    return res;
 }
 
 
@@ -308,12 +316,14 @@
  */
 -(int) get_portSize
 {
+    int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_PORTSIZE_INVALID;
         }
     }
-    return _portSize;
+    res = _portSize;
+    return res;
 }
 
 
@@ -331,12 +341,14 @@
  */
 -(Y_OUTPUTVOLTAGE_enum) get_outputVoltage
 {
+    Y_OUTPUTVOLTAGE_enum res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_OUTPUTVOLTAGE_INVALID;
         }
     }
-    return _outputVoltage;
+    res = _outputVoltage;
+    return res;
 }
 
 
@@ -368,12 +380,14 @@
 }
 -(NSString*) get_command
 {
+    NSString* res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_COMMAND_INVALID;
         }
     }
-    return _command;
+    res = _command;
+    return res;
 }
 
 

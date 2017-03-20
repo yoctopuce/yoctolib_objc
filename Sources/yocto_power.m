@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_power.m 25275 2016-08-24 13:42:24Z mvuilleu $
+ * $Id: yocto_power.m 26672 2017-02-28 13:43:38Z seb $
  *
  * Implements the high-level API for Power functions
  *
@@ -102,12 +102,14 @@
  */
 -(double) get_cosPhi
 {
+    double res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_COSPHI_INVALID;
         }
     }
-    return _cosPhi;
+    res = _cosPhi;
+    return res;
 }
 
 
@@ -137,12 +139,14 @@
  */
 -(double) get_meter
 {
+    double res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_METER_INVALID;
         }
     }
-    return _meter;
+    res = _meter;
+    return res;
 }
 
 
@@ -159,12 +163,14 @@
  */
 -(int) get_meterTimer
 {
+    int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_METERTIMER_INVALID;
         }
     }
-    return _meterTimer;
+    res = _meterTimer;
+    return res;
 }
 
 

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_network.m 25275 2016-08-24 13:42:24Z mvuilleu $
+ * $Id: yocto_network.m 26672 2017-02-28 13:43:38Z seb $
  *
  * Implements the high-level API for Network functions
  *
@@ -73,6 +73,7 @@
     _callbackEncoding = Y_CALLBACKENCODING_INVALID;
     _callbackCredentials = Y_CALLBACKCREDENTIALS_INVALID;
     _callbackInitialDelay = Y_CALLBACKINITIALDELAY_INVALID;
+    _callbackSchedule = Y_CALLBACKSCHEDULE_INVALID;
     _callbackMinDelay = Y_CALLBACKMINDELAY_INVALID;
     _callbackMaxDelay = Y_CALLBACKMAXDELAY_INVALID;
     _poeCurrent = Y_POECURRENT_INVALID;
@@ -110,6 +111,8 @@
     _callbackUrl = nil;
     ARC_release(_callbackCredentials);
     _callbackCredentials = nil;
+    ARC_release(_callbackSchedule);
+    _callbackSchedule = nil;
     ARC_dealloc(super);
 //--- (end of YNetwork cleanup)
 }
@@ -243,6 +246,13 @@
         _callbackInitialDelay =  atoi(j->token);
         return 1;
     }
+    if(!strcmp(j->token, "callbackSchedule")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+       ARC_release(_callbackSchedule);
+        _callbackSchedule =  [self _parseString:j];
+        ARC_retain(_callbackSchedule);
+        return 1;
+    }
     if(!strcmp(j->token, "callbackMinDelay")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
         _callbackMinDelay =  atoi(j->token);
@@ -285,12 +295,14 @@
  */
 -(Y_READINESS_enum) get_readiness
 {
+    Y_READINESS_enum res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_READINESS_INVALID;
         }
     }
-    return _readiness;
+    res = _readiness;
+    return res;
 }
 
 
@@ -308,12 +320,14 @@
  */
 -(NSString*) get_macAddress
 {
+    NSString* res;
     if (_cacheExpiration == 0) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_MACADDRESS_INVALID;
         }
     }
-    return _macAddress;
+    res = _macAddress;
+    return res;
 }
 
 
@@ -331,12 +345,14 @@
  */
 -(NSString*) get_ipAddress
 {
+    NSString* res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_IPADDRESS_INVALID;
         }
     }
-    return _ipAddress;
+    res = _ipAddress;
+    return res;
 }
 
 
@@ -353,12 +369,14 @@
  */
 -(NSString*) get_subnetMask
 {
+    NSString* res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_SUBNETMASK_INVALID;
         }
     }
-    return _subnetMask;
+    res = _subnetMask;
+    return res;
 }
 
 
@@ -375,12 +393,14 @@
  */
 -(NSString*) get_router
 {
+    NSString* res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_ROUTER_INVALID;
         }
     }
-    return _router;
+    res = _router;
+    return res;
 }
 
 
@@ -388,14 +408,35 @@
 {
     return [self get_router];
 }
+/**
+ * Returns the IP configuration of the network interface.
+ *
+ * If the network interface is setup to use a static IP address, the string starts with "STATIC:" and
+ * is followed by three
+ * parameters, separated by "/". The first is the device IP address, followed by the subnet mask
+ * length, and finally the
+ * router IP address (default gateway). For instance: "STATIC:192.168.1.14/16/192.168.1.1"
+ *
+ * If the network interface is configured to receive its IP from a DHCP server, the string start with
+ * "DHCP:" and is followed by
+ * three parameters separated by "/". The first is the fallback IP address, then the fallback subnet
+ * mask length and finally the
+ * fallback router IP address. These three parameters are used when no DHCP reply is received.
+ *
+ * @return a string corresponding to the IP configuration of the network interface
+ *
+ * On failure, throws an exception or returns Y_IPCONFIG_INVALID.
+ */
 -(NSString*) get_ipConfig
 {
+    NSString* res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_IPCONFIG_INVALID;
         }
     }
-    return _ipConfig;
+    res = _ipConfig;
+    return res;
 }
 
 
@@ -423,12 +464,14 @@
  */
 -(NSString*) get_primaryDNS
 {
+    NSString* res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_PRIMARYDNS_INVALID;
         }
     }
-    return _primaryDNS;
+    res = _primaryDNS;
+    return res;
 }
 
 
@@ -467,12 +510,14 @@
  */
 -(NSString*) get_secondaryDNS
 {
+    NSString* res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_SECONDARYDNS_INVALID;
         }
     }
-    return _secondaryDNS;
+    res = _secondaryDNS;
+    return res;
 }
 
 
@@ -511,12 +556,14 @@
  */
 -(NSString*) get_ntpServer
 {
+    NSString* res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_NTPSERVER_INVALID;
         }
     }
-    return _ntpServer;
+    res = _ntpServer;
+    return res;
 }
 
 
@@ -556,12 +603,14 @@
  */
 -(NSString*) get_userPassword
 {
+    NSString* res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_USERPASSWORD_INVALID;
         }
     }
-    return _userPassword;
+    res = _userPassword;
+    return res;
 }
 
 
@@ -604,12 +653,14 @@
  */
 -(NSString*) get_adminPassword
 {
+    NSString* res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_ADMINPASSWORD_INVALID;
         }
     }
-    return _adminPassword;
+    res = _adminPassword;
+    return res;
 }
 
 
@@ -650,12 +701,14 @@
  */
 -(int) get_httpPort
 {
+    int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_HTTPPORT_INVALID;
         }
     }
-    return _httpPort;
+    res = _httpPort;
+    return res;
 }
 
 
@@ -694,12 +747,14 @@
  */
 -(NSString*) get_defaultPage
 {
+    NSString* res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_DEFAULTPAGE_INVALID;
         }
     }
-    return _defaultPage;
+    res = _defaultPage;
+    return res;
 }
 
 
@@ -741,12 +796,14 @@
  */
 -(Y_DISCOVERABLE_enum) get_discoverable
 {
+    Y_DISCOVERABLE_enum res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_DISCOVERABLE_INVALID;
         }
     }
-    return _discoverable;
+    res = _discoverable;
+    return res;
 }
 
 
@@ -790,12 +847,14 @@
  */
 -(int) get_wwwWatchdogDelay
 {
+    int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_WWWWATCHDOGDELAY_INVALID;
         }
     }
-    return _wwwWatchdogDelay;
+    res = _wwwWatchdogDelay;
+    return res;
 }
 
 
@@ -837,12 +896,14 @@
  */
 -(NSString*) get_callbackUrl
 {
+    NSString* res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_CALLBACKURL_INVALID;
         }
     }
-    return _callbackUrl;
+    res = _callbackUrl;
+    return res;
 }
 
 
@@ -881,12 +942,14 @@
  */
 -(Y_CALLBACKMETHOD_enum) get_callbackMethod
 {
+    Y_CALLBACKMETHOD_enum res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_CALLBACKMETHOD_INVALID;
         }
     }
-    return _callbackMethod;
+    res = _callbackMethod;
+    return res;
 }
 
 
@@ -928,12 +991,14 @@
  */
 -(Y_CALLBACKENCODING_enum) get_callbackEncoding
 {
+    Y_CALLBACKENCODING_enum res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_CALLBACKENCODING_INVALID;
         }
     }
-    return _callbackEncoding;
+    res = _callbackEncoding;
+    return res;
 }
 
 
@@ -976,12 +1041,14 @@
  */
 -(NSString*) get_callbackCredentials
 {
+    NSString* res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_CALLBACKCREDENTIALS_INVALID;
         }
     }
-    return _callbackCredentials;
+    res = _callbackCredentials;
+    return res;
 }
 
 
@@ -1046,12 +1113,14 @@
  */
 -(int) get_callbackInitialDelay
 {
+    int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_CALLBACKINITIALDELAY_INVALID;
         }
     }
-    return _callbackInitialDelay;
+    res = _callbackInitialDelay;
+    return res;
 }
 
 
@@ -1081,20 +1150,66 @@
     return [self _setAttr:@"callbackInitialDelay" :rest_val];
 }
 /**
- * Returns the minimum waiting time between two callback notifications, in seconds.
+ * Returns the HTTP callback schedule strategy, as a text string.
  *
- * @return an integer corresponding to the minimum waiting time between two callback notifications, in seconds
+ * @return a string corresponding to the HTTP callback schedule strategy, as a text string
+ *
+ * On failure, throws an exception or returns Y_CALLBACKSCHEDULE_INVALID.
+ */
+-(NSString*) get_callbackSchedule
+{
+    NSString* res;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_CALLBACKSCHEDULE_INVALID;
+        }
+    }
+    res = _callbackSchedule;
+    return res;
+}
+
+
+-(NSString*) callbackSchedule
+{
+    return [self get_callbackSchedule];
+}
+
+/**
+ * Changes the HTTP callback schedule strategy, as a text string.
+ *
+ * @param newval : a string corresponding to the HTTP callback schedule strategy, as a text string
+ *
+ * @return YAPI_SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) set_callbackSchedule:(NSString*) newval
+{
+    return [self setCallbackSchedule:newval];
+}
+-(int) setCallbackSchedule:(NSString*) newval
+{
+    NSString* rest_val;
+    rest_val = newval;
+    return [self _setAttr:@"callbackSchedule" :rest_val];
+}
+/**
+ * Returns the minimum waiting time between two HTTP callbacks, in seconds.
+ *
+ * @return an integer corresponding to the minimum waiting time between two HTTP callbacks, in seconds
  *
  * On failure, throws an exception or returns Y_CALLBACKMINDELAY_INVALID.
  */
 -(int) get_callbackMinDelay
 {
+    int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_CALLBACKMINDELAY_INVALID;
         }
     }
-    return _callbackMinDelay;
+    res = _callbackMinDelay;
+    return res;
 }
 
 
@@ -1104,10 +1219,9 @@
 }
 
 /**
- * Changes the minimum waiting time between two callback notifications, in seconds.
+ * Changes the minimum waiting time between two HTTP callbacks, in seconds.
  *
- * @param newval : an integer corresponding to the minimum waiting time between two callback
- * notifications, in seconds
+ * @param newval : an integer corresponding to the minimum waiting time between two HTTP callbacks, in seconds
  *
  * @return YAPI_SUCCESS if the call succeeds.
  *
@@ -1124,20 +1238,22 @@
     return [self _setAttr:@"callbackMinDelay" :rest_val];
 }
 /**
- * Returns the maximum waiting time between two callback notifications, in seconds.
+ * Returns the waiting time between two HTTP callbacks when there is nothing new.
  *
- * @return an integer corresponding to the maximum waiting time between two callback notifications, in seconds
+ * @return an integer corresponding to the waiting time between two HTTP callbacks when there is nothing new
  *
  * On failure, throws an exception or returns Y_CALLBACKMAXDELAY_INVALID.
  */
 -(int) get_callbackMaxDelay
 {
+    int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_CALLBACKMAXDELAY_INVALID;
         }
     }
-    return _callbackMaxDelay;
+    res = _callbackMaxDelay;
+    return res;
 }
 
 
@@ -1147,10 +1263,10 @@
 }
 
 /**
- * Changes the maximum waiting time between two callback notifications, in seconds.
+ * Changes the waiting time between two HTTP callbacks when there is nothing new.
  *
- * @param newval : an integer corresponding to the maximum waiting time between two callback
- * notifications, in seconds
+ * @param newval : an integer corresponding to the waiting time between two HTTP callbacks when there
+ * is nothing new
  *
  * @return YAPI_SUCCESS if the call succeeds.
  *
@@ -1178,12 +1294,14 @@
  */
 -(int) get_poeCurrent
 {
+    int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_POECURRENT_INVALID;
         }
     }
-    return _poeCurrent;
+    res = _poeCurrent;
+    return res;
 }
 
 

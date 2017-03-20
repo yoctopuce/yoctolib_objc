@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_temperature.m 25275 2016-08-24 13:42:24Z mvuilleu $
+ * $Id: yocto_temperature.m 26826 2017-03-17 11:20:57Z mvuilleu $
  *
  * Implements the high-level API for Temperature functions
  *
@@ -146,12 +146,14 @@
  */
 -(Y_SENSORTYPE_enum) get_sensorType
 {
+    Y_SENSORTYPE_enum res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_SENSORTYPE_INVALID;
         }
     }
-    return _sensorType;
+    res = _sensorType;
+    return res;
 }
 
 
@@ -196,12 +198,14 @@
  */
 -(double) get_signalValue
 {
+    double res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_SIGNALVALUE_INVALID;
         }
     }
-    return floor(_signalValue * 1000+0.5) / 1000;
+    res = floor(_signalValue * 1000+0.5) / 1000;
+    return res;
 }
 
 
@@ -218,12 +222,14 @@
  */
 -(NSString*) get_signalUnit
 {
+    NSString* res;
     if (_cacheExpiration == 0) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_SIGNALUNIT_INVALID;
         }
     }
-    return _signalUnit;
+    res = _signalUnit;
+    return res;
 }
 
 
@@ -233,12 +239,14 @@
 }
 -(NSString*) get_command
 {
+    NSString* res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_COMMAND_INVALID;
         }
     }
-    return _command;
+    res = _command;
+    return res;
 }
 
 
@@ -366,7 +374,7 @@
 }
 
 /**
- * Configure NTC thermistor parameters in order to properly compute the temperature from
+ * Configures NTC thermistor parameters in order to properly compute the temperature from
  * the measured resistance. For increased precision, you can enter a complete mapping
  * table using set_thermistorResponseTable. This function can only be used with a
  * temperature sensor based on thermistors.

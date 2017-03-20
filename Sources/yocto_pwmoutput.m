@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_pwmoutput.m 25275 2016-08-24 13:42:24Z mvuilleu $
+ * $Id: yocto_pwmoutput.m 26672 2017-02-28 13:43:38Z seb $
  *
  * Implements the high-level API for PwmOutput functions
  *
@@ -133,12 +133,14 @@
  */
 -(Y_ENABLED_enum) get_enabled
 {
+    Y_ENABLED_enum res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_ENABLED_INVALID;
         }
     }
-    return _enabled;
+    res = _enabled;
+    return res;
 }
 
 
@@ -196,12 +198,14 @@
  */
 -(double) get_frequency
 {
+    double res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_FREQUENCY_INVALID;
         }
     }
-    return _frequency;
+    res = _frequency;
+    return res;
 }
 
 
@@ -238,12 +242,14 @@
  */
 -(double) get_period
 {
+    double res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_PERIOD_INVALID;
         }
     }
-    return _period;
+    res = _period;
+    return res;
 }
 
 
@@ -280,12 +286,14 @@
  */
 -(double) get_dutyCycle
 {
+    double res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_DUTYCYCLE_INVALID;
         }
     }
-    return _dutyCycle;
+    res = _dutyCycle;
+    return res;
 }
 
 
@@ -324,12 +332,14 @@
  */
 -(double) get_pulseDuration
 {
+    double res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_PULSEDURATION_INVALID;
         }
     }
-    return _pulseDuration;
+    res = _pulseDuration;
+    return res;
 }
 
 
@@ -339,12 +349,14 @@
 }
 -(NSString*) get_pwmTransition
 {
+    NSString* res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_PWMTRANSITION_INVALID;
         }
     }
-    return _pwmTransition;
+    res = _pwmTransition;
+    return res;
 }
 
 
@@ -373,12 +385,14 @@
  */
 -(Y_ENABLEDATPOWERON_enum) get_enabledAtPowerOn
 {
+    Y_ENABLEDATPOWERON_enum res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_ENABLEDATPOWERON_INVALID;
         }
     }
-    return _enabledAtPowerOn;
+    res = _enabledAtPowerOn;
+    return res;
 }
 
 
@@ -439,12 +453,14 @@
  */
 -(double) get_dutyCycleAtPowerOn
 {
+    double res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_DUTYCYCLEATPOWERON_INVALID;
         }
     }
-    return _dutyCycleAtPowerOn;
+    res = _dutyCycleAtPowerOn;
+    return res;
 }
 
 

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_colorledcluster.m 25275 2016-08-24 13:42:24Z mvuilleu $
+ * $Id: yocto_colorledcluster.m 26672 2017-02-28 13:43:38Z seb $
  *
  * Implements the high-level API for ColorLedCluster functions
  *
@@ -115,12 +115,14 @@
  */
 -(int) get_activeLedCount
 {
+    int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_ACTIVELEDCOUNT_INVALID;
         }
     }
-    return _activeLedCount;
+    res = _activeLedCount;
+    return res;
 }
 
 
@@ -157,12 +159,14 @@
  */
 -(int) get_maxLedCount
 {
+    int res;
     if (_cacheExpiration == 0) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_MAXLEDCOUNT_INVALID;
         }
     }
-    return _maxLedCount;
+    res = _maxLedCount;
+    return res;
 }
 
 
@@ -179,12 +183,14 @@
  */
 -(int) get_blinkSeqMaxCount
 {
+    int res;
     if (_cacheExpiration == 0) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_BLINKSEQMAXCOUNT_INVALID;
         }
     }
-    return _blinkSeqMaxCount;
+    res = _blinkSeqMaxCount;
+    return res;
 }
 
 
@@ -201,12 +207,14 @@
  */
 -(int) get_blinkSeqMaxSize
 {
+    int res;
     if (_cacheExpiration == 0) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_BLINKSEQMAXSIZE_INVALID;
         }
     }
-    return _blinkSeqMaxSize;
+    res = _blinkSeqMaxSize;
+    return res;
 }
 
 
@@ -216,12 +224,14 @@
 }
 -(NSString*) get_command
 {
+    NSString* res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_COMMAND_INVALID;
         }
     }
-    return _command;
+    res = _command;
+    return res;
 }
 
 

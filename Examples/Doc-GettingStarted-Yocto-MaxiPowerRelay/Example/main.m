@@ -2,7 +2,6 @@
 #import "yocto_api.h"
 #import "yocto_relay.h"
 
-
 static void usage(const char* execname)
 {
   NSLog(@"usage:");

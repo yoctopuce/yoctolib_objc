@@ -4,8 +4,6 @@
 #import "yocto_temperature.h"
 #import "yocto_pressure.h"
 
-
-
 static void usage(void)
 {
   NSLog(@"usage: demo <serial_number> ");
@@ -14,11 +12,9 @@ static void usage(void)
   exit(1);
 }
 
-
 int main(int argc, const char * argv[])
 {
   NSError *error;
-
 
   if (argc < 2) {
     usage();

@@ -25,8 +25,8 @@
 		B8DD8BDB14A9360E008A9E8F /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B8DD8BDA14A9360E008A9E8F /* Foundation.framework */; };
 		B8F48A9314A93A3E008FBD0C /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B8F48A9214A93A3E008FBD0C /* IOKit.framework */; };
 
-		B8A727A817E0CD3A005700ec /* yocto_pwmoutput.m in Sources */ = {isa = PBXBuildFile; fileRef = B8A727A817E0CD3A005700ea /* yocto_pwmoutput.m */; };
-		B8A727A817E0CD3A005700ef /* yocto_pwmpowersource.m in Sources */ = {isa = PBXBuildFile; fileRef = B8A727A817E0CD3A005700ed /* yocto_pwmpowersource.m */; };
+		B8A727A817E0CD3A005775e09688 /* yocto_pwmoutput.m in Sources */ = {isa = PBXBuildFile; fileRef = B8A727A817E0CD3A005751545f8d /* yocto_pwmoutput.m */; };
+		B8A727A817E0CD3A0057b6ccd951 /* yocto_pwmpowersource.m in Sources */ = {isa = PBXBuildFile; fileRef = B8A727A817E0CD3A005746d640c7 /* yocto_pwmpowersource.m */; };
 
 /* End PBXBuildFile section */
 
@@ -76,10 +76,10 @@
 		B8DD8C2814A9370B008A9E8F /* yversion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yversion.h; path = ../../../Sources/yapi/yversion.h; sourceTree = "<group>"; };
 		B8F48A9214A93A3E008FBD0C /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 
-		B8A727A817E0CD3A005700ea /* yocto_pwmoutput.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = yocto_pwmoutput.m; path = ../../../Sources/yocto_pwmoutput.m; sourceTree = "<group>"; };
-		B8A727A817E0CD3A005700eb /* yocto_pwmoutput.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yocto_pwmoutput.h; path = ../../../Sources/yocto_pwmoutput.h; sourceTree = "<group>"; };
-		B8A727A817E0CD3A005700ed /* yocto_pwmpowersource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = yocto_pwmpowersource.m; path = ../../../Sources/yocto_pwmpowersource.m; sourceTree = "<group>"; };
-		B8A727A817E0CD3A005700ee /* yocto_pwmpowersource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yocto_pwmpowersource.h; path = ../../../Sources/yocto_pwmpowersource.h; sourceTree = "<group>"; };
+		B8A727A817E0CD3A005751545f8d /* yocto_pwmoutput.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = yocto_pwmoutput.m; path = ../../../Sources/yocto_pwmoutput.m; sourceTree = "<group>"; };
+		B8A727A817E0CD3A0057213eab02 /* yocto_pwmoutput.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yocto_pwmoutput.h; path = ../../../Sources/yocto_pwmoutput.h; sourceTree = "<group>"; };
+		B8A727A817E0CD3A005746d640c7 /* yocto_pwmpowersource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = yocto_pwmpowersource.m; path = ../../../Sources/yocto_pwmpowersource.m; sourceTree = "<group>"; };
+		B8A727A817E0CD3A005736bcb448 /* yocto_pwmpowersource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yocto_pwmpowersource.h; path = ../../../Sources/yocto_pwmpowersource.h; sourceTree = "<group>"; };
 
 /* End PBXFileReference section */
 
@@ -147,10 +147,10 @@
 				B8DD8BEB14A936EF008A9E8F /* yocto_api.h */,
 				B8DD8BEC14A936EF008A9E8F /* yocto_api.m */,
 
-				B8A727A817E0CD3A005700ea /* yocto_pwmoutput.m */,
-				B8A727A817E0CD3A005700eb /* yocto_pwmoutput.h */,
-				B8A727A817E0CD3A005700ed /* yocto_pwmpowersource.m */,
-				B8A727A817E0CD3A005700ee /* yocto_pwmpowersource.h */,
+				B8A727A817E0CD3A005751545f8d /* yocto_pwmoutput.m */,
+				B8A727A817E0CD3A0057213eab02 /* yocto_pwmoutput.h */,
+				B8A727A817E0CD3A005746d640c7 /* yocto_pwmpowersource.m */,
+				B8A727A817E0CD3A005736bcb448 /* yocto_pwmpowersource.h */,
 
 			);
 			name = Yocto;
@@ -254,8 +254,8 @@
 				B8DD8C3314A9370B008A9E8F /* ytcp.c in Sources */,
 				B845588F14DC315D00425F49 /* ythread.c in Sources */,
 
-				B8A727A817E0CD3A005700ec /* yocto_pwmoutput.m in Sources */,
-				B8A727A817E0CD3A005700ef /* yocto_pwmpowersource.m in Sources */,
+				B8A727A817E0CD3A005775e09688 /* yocto_pwmoutput.m in Sources */,
+				B8A727A817E0CD3A0057b6ccd951 /* yocto_pwmpowersource.m in Sources */,
 
 				B853FE21161B49CA0086F1F5 /* ykey.c in Sources */,
 			);

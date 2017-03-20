@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_wakeupmonitor.m 25275 2016-08-24 13:42:24Z mvuilleu $
+ * $Id: yocto_wakeupmonitor.m 26672 2017-02-28 13:43:38Z seb $
  *
  * Implements the high-level API for WakeUpMonitor functions
  *
@@ -118,12 +118,14 @@
  */
 -(int) get_powerDuration
 {
+    int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_POWERDURATION_INVALID;
         }
     }
-    return _powerDuration;
+    res = _powerDuration;
+    return res;
 }
 
 
@@ -161,12 +163,14 @@
  */
 -(int) get_sleepCountdown
 {
+    int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_SLEEPCOUNTDOWN_INVALID;
         }
     }
-    return _sleepCountdown;
+    res = _sleepCountdown;
+    return res;
 }
 
 
@@ -203,12 +207,14 @@
  */
 -(s64) get_nextWakeUp
 {
+    s64 res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_NEXTWAKEUP_INVALID;
         }
     }
-    return _nextWakeUp;
+    res = _nextWakeUp;
+    return res;
 }
 
 
@@ -247,12 +253,14 @@
  */
 -(Y_WAKEUPREASON_enum) get_wakeUpReason
 {
+    Y_WAKEUPREASON_enum res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_WAKEUPREASON_INVALID;
         }
     }
-    return _wakeUpReason;
+    res = _wakeUpReason;
+    return res;
 }
 
 
@@ -269,12 +277,14 @@
  */
 -(Y_WAKEUPSTATE_enum) get_wakeUpState
 {
+    Y_WAKEUPSTATE_enum res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_WAKEUPSTATE_INVALID;
         }
     }
-    return _wakeUpState;
+    res = _wakeUpState;
+    return res;
 }
 
 
@@ -295,12 +305,14 @@
 }
 -(s64) get_rtcTime
 {
+    s64 res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_RTCTIME_INVALID;
         }
     }
-    return _rtcTime;
+    res = _rtcTime;
+    return res;
 }
 
 

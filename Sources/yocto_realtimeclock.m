@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_realtimeclock.m 25275 2016-08-24 13:42:24Z mvuilleu $
+ * $Id: yocto_realtimeclock.m 26672 2017-02-28 13:43:38Z seb $
  *
  * Implements the high-level API for RealTimeClock functions
  *
@@ -110,12 +110,14 @@
  */
 -(s64) get_unixTime
 {
+    s64 res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_UNIXTIME_INVALID;
         }
     }
-    return _unixTime;
+    res = _unixTime;
+    return res;
 }
 
 
@@ -152,12 +154,14 @@
  */
 -(NSString*) get_dateTime
 {
+    NSString* res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_DATETIME_INVALID;
         }
     }
-    return _dateTime;
+    res = _dateTime;
+    return res;
 }
 
 
@@ -174,12 +178,14 @@
  */
 -(int) get_utcOffset
 {
+    int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_UTCOFFSET_INVALID;
         }
     }
-    return _utcOffset;
+    res = _utcOffset;
+    return res;
 }
 
 
@@ -218,12 +224,14 @@
  */
 -(Y_TIMESET_enum) get_timeSet
 {
+    Y_TIMESET_enum res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_TIMESET_INVALID;
         }
     }
-    return _timeSet;
+    res = _timeSet;
+    return res;
 }
 
 

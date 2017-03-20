@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_rangefinder.h 26329 2017-01-11 14:04:39Z mvuilleu $
+ * $Id: yocto_rangefinder.h 26826 2017-03-17 11:20:57Z mvuilleu $
  *
  * Declares yFindRangeFinder(), the high-level API for RangeFinder functions
  *
@@ -55,6 +55,8 @@ typedef enum {
     Y_RANGEFINDERMODE_INVALID = -1,
 } Y_RANGEFINDERMODE_enum;
 #endif
+#define Y_HARDWARECALIBRATION_INVALID   YAPI_INVALID_STRING
+#define Y_CURRENTTEMPERATURE_INVALID    YAPI_INVALID_DOUBLE
 #define Y_COMMAND_INVALID               YAPI_INVALID_STRING
 //--- (end of YRangeFinder globals)
 
@@ -62,9 +64,9 @@ typedef enum {
 /**
  * YRangeFinder Class: RangeFinder function interface
  *
- * The Yoctopuce class YRangeFinder allows you to use and configure Yoctopuce range finders
- * sensors. It inherits from YSensor class the core functions to read measurements,
- * register callback functions, access to the autonomous datalogger.
+ * The Yoctopuce class YRangeFinder allows you to use and configure Yoctopuce range finder
+ * sensors. It inherits from the YSensor class the core functions to read measurements,
+ * register callback functions, access the autonomous datalogger.
  * This class adds the ability to easily perform a one-point linear calibration
  * to compensate the effect of a glass or filter placed in front of the sensor.
  */
@@ -74,6 +76,8 @@ typedef enum {
 @protected
 //--- (YRangeFinder attributes declaration)
     Y_RANGEFINDERMODE_enum _rangeFinderMode;
+    NSString*       _hardwareCalibration;
+    double          _currentTemperature;
     NSString*       _command;
     YRangeFinderValueCallback _valueCallbackRangeFinder;
     YRangeFinderTimedReportCallback _timedReportCallbackRangeFinder;
@@ -89,13 +93,13 @@ typedef enum {
 //--- (end of YRangeFinder private methods declaration)
 //--- (YRangeFinder public methods declaration)
 /**
- * Changes the measuring unit for the measured temperature. That unit is a string.
- * String value can be " or mm. Any other value will be ignored.
+ * Changes the measuring unit for the measured range. That unit is a string.
+ * String value can be " or mm. Any other value is ignored.
  * Remember to call the saveToFlash() method of the module if the modification must be kept.
  * WARNING: if a specific calibration is defined for the rangeFinder function, a
  * unit system change will probably break it.
  *
- * @param newval : a string corresponding to the measuring unit for the measured temperature
+ * @param newval : a string corresponding to the measuring unit for the measured range
  *
  * @return YAPI_SUCCESS if the call succeeds.
  *
@@ -105,11 +109,11 @@ typedef enum {
 -(int)     setUnit:(NSString*) newval;
 
 /**
- * Returns the rangefinder running mode. The rangefinder running mode
- * allows to put priority on precision, speed or maximum range.
+ * Returns the range finder running mode. The rangefinder running mode
+ * allows you to put priority on precision, speed or maximum range.
  *
  * @return a value among Y_RANGEFINDERMODE_DEFAULT, Y_RANGEFINDERMODE_LONG_RANGE,
- * Y_RANGEFINDERMODE_HIGH_ACCURACY and Y_RANGEFINDERMODE_HIGH_SPEED corresponding to the rangefinder running mode
+ * Y_RANGEFINDERMODE_HIGH_ACCURACY and Y_RANGEFINDERMODE_HIGH_SPEED corresponding to the range finder running mode
  *
  * On failure, throws an exception or returns Y_RANGEFINDERMODE_INVALID.
  */
@@ -118,12 +122,12 @@ typedef enum {
 
 -(Y_RANGEFINDERMODE_enum) rangeFinderMode;
 /**
- * Changes the rangefinder running mode, allowing to put priority on
+ * Changes the rangefinder running mode, allowing you to put priority on
  * precision, speed or maximum range.
  *
  * @param newval : a value among Y_RANGEFINDERMODE_DEFAULT, Y_RANGEFINDERMODE_LONG_RANGE,
  * Y_RANGEFINDERMODE_HIGH_ACCURACY and Y_RANGEFINDERMODE_HIGH_SPEED corresponding to the rangefinder
- * running mode, allowing to put priority on
+ * running mode, allowing you to put priority on
  *         precision, speed or maximum range
  *
  * @return YAPI_SUCCESS if the call succeeds.
@@ -133,6 +137,24 @@ typedef enum {
 -(int)     set_rangeFinderMode:(Y_RANGEFINDERMODE_enum) newval;
 -(int)     setRangeFinderMode:(Y_RANGEFINDERMODE_enum) newval;
 
+-(NSString*)     get_hardwareCalibration;
+
+
+-(NSString*) hardwareCalibration;
+-(int)     set_hardwareCalibration:(NSString*) newval;
+-(int)     setHardwareCalibration:(NSString*) newval;
+
+/**
+ * Returns the current sensor temperature, as a floating point number.
+ *
+ * @return a floating point number corresponding to the current sensor temperature, as a floating point number
+ *
+ * On failure, throws an exception or returns Y_CURRENTTEMPERATURE_INVALID.
+ */
+-(double)     get_currentTemperature;
+
+
+-(double) currentTemperature;
 -(NSString*)     get_command;
 
 
@@ -196,15 +218,74 @@ typedef enum {
 -(int)     _invokeTimedReportCallback:(YMeasure*)value;
 
 /**
+ * Returns the temperature at the time when the latest calibration was performed.
+ * This function can be used to determine if a new calibration for ambient temperature
+ * is required.
+ *
+ * @return a temperature, as a floating point number.
+ *         On failure, throws an exception or return YAPI_INVALID_DOUBLE.
+ */
+-(double)     get_hardwareCalibrationTemperature;
+
+/**
  * Triggers a sensor calibration according to the current ambient temperature. That
  * calibration process needs no physical interaction with the sensor. It is performed
  * automatically at device startup, but it is recommended to start it again when the
- * temperature delta since last calibration exceeds 8°C.
+ * temperature delta since the latest calibration exceeds 8°C.
  *
  * @return YAPI_SUCCESS if the call succeeds.
  *         On failure, throws an exception or returns a negative error code.
  */
--(int)     triggerTempCalibration;
+-(int)     triggerTemperatureCalibration;
+
+/**
+ * Triggers the photon detector hardware calibration.
+ * This function is part of the calibration procedure to compensate for the the effect
+ * of a cover glass. Make sure to read the chapter about hardware calibration for details
+ * on the calibration procedure for proper results.
+ *
+ * @return YAPI_SUCCESS if the call succeeds.
+ *         On failure, throws an exception or returns a negative error code.
+ */
+-(int)     triggerSpadCalibration;
+
+/**
+ * Triggers the hardware offset calibration of the distance sensor.
+ * This function is part of the calibration procedure to compensate for the the effect
+ * of a cover glass. Make sure to read the chapter about hardware calibration for details
+ * on the calibration procedure for proper results.
+ *
+ * @param targetDist : true distance of the calibration target, in mm or inches, depending
+ *         on the unit selected in the device
+ *
+ * @return YAPI_SUCCESS if the call succeeds.
+ *         On failure, throws an exception or returns a negative error code.
+ */
+-(int)     triggerOffsetCalibration:(double)targetDist;
+
+/**
+ * Triggers the hardware cross-talk calibration of the distance sensor.
+ * This function is part of the calibration procedure to compensate for the the effect
+ * of a cover glass. Make sure to read the chapter about hardware calibration for details
+ * on the calibration procedure for proper results.
+ *
+ * @param targetDist : true distance of the calibration target, in mm or inches, depending
+ *         on the unit selected in the device
+ *
+ * @return YAPI_SUCCESS if the call succeeds.
+ *         On failure, throws an exception or returns a negative error code.
+ */
+-(int)     triggerXTalkCalibration:(double)targetDist;
+
+/**
+ * Cancels the effect of previous hardware calibration procedures to compensate
+ * for cover glass, and restores factory settings.
+ * Remember to call the saveToFlash() method of the module if the modification must be kept.
+ *
+ * @return YAPI_SUCCESS if the call succeeds.
+ *         On failure, throws an exception or returns a negative error code.
+ */
+-(int)     cancelCoverGlassCalibrations;
 
 
 /**

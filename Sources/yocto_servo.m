@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_servo.m 25275 2016-08-24 13:42:24Z mvuilleu $
+ * $Id: yocto_servo.m 26672 2017-02-28 13:43:38Z seb $
  *
  * Implements the high-level API for Servo functions
  *
@@ -136,12 +136,14 @@
  */
 -(int) get_position
 {
+    int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_POSITION_INVALID;
         }
     }
-    return _position;
+    res = _position;
+    return res;
 }
 
 
@@ -178,12 +180,14 @@
  */
 -(Y_ENABLED_enum) get_enabled
 {
+    Y_ENABLED_enum res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_ENABLED_INVALID;
         }
     }
-    return _enabled;
+    res = _enabled;
+    return res;
 }
 
 
@@ -220,12 +224,14 @@
  */
 -(int) get_range
 {
+    int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_RANGE_INVALID;
         }
     }
-    return _range;
+    res = _range;
+    return res;
 }
 
 
@@ -268,12 +274,14 @@
  */
 -(int) get_neutral
 {
+    int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_NEUTRAL_INVALID;
         }
     }
-    return _neutral;
+    res = _neutral;
+    return res;
 }
 
 
@@ -309,12 +317,14 @@
 }
 -(YMove) get_move
 {
+    YMove res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_MOVE_INVALID;
         }
     }
-    return _move;
+    res = _move;
+    return res;
 }
 
 
@@ -359,12 +369,14 @@
  */
 -(int) get_positionAtPowerOn
 {
+    int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_POSITIONATPOWERON_INVALID;
         }
     }
-    return _positionAtPowerOn;
+    res = _positionAtPowerOn;
+    return res;
 }
 
 
@@ -403,12 +415,14 @@
  */
 -(Y_ENABLEDATPOWERON_enum) get_enabledAtPowerOn
 {
+    Y_ENABLEDATPOWERON_enum res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_ENABLEDATPOWERON_INVALID;
         }
     }
-    return _enabledAtPowerOn;
+    res = _enabledAtPowerOn;
+    return res;
 }
 
 

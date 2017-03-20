@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_files.m 25275 2016-08-24 13:42:24Z mvuilleu $
+ * $Id: yocto_files.m 26672 2017-02-28 13:43:38Z seb $
  *
  * Implements yFindFiles(), the high-level API for Files functions
  *
@@ -181,12 +181,14 @@
  */
 -(int) get_filesCount
 {
+    int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_FILESCOUNT_INVALID;
         }
     }
-    return _filesCount;
+    res = _filesCount;
+    return res;
 }
 
 
@@ -203,12 +205,14 @@
  */
 -(int) get_freeSpace
 {
+    int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_FREESPACE_INVALID;
         }
     }
-    return _freeSpace;
+    res = _freeSpace;
+    return res;
 }
 
 

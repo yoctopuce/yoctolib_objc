@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_cellular.m 26132 2016-12-01 17:02:38Z seb $
+ * $Id: yocto_cellular.m 26672 2017-02-28 13:43:38Z seb $
  *
  * Implements the high-level API for Cellular functions
  *
@@ -289,12 +289,14 @@
  */
 -(int) get_linkQuality
 {
+    int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_LINKQUALITY_INVALID;
         }
     }
-    return _linkQuality;
+    res = _linkQuality;
+    return res;
 }
 
 
@@ -311,12 +313,14 @@
  */
 -(NSString*) get_cellOperator
 {
+    NSString* res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_CELLOPERATOR_INVALID;
         }
     }
-    return _cellOperator;
+    res = _cellOperator;
+    return res;
 }
 
 
@@ -334,12 +338,14 @@
  */
 -(NSString*) get_cellIdentifier
 {
+    NSString* res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_CELLIDENTIFIER_INVALID;
         }
     }
-    return _cellIdentifier;
+    res = _cellIdentifier;
+    return res;
 }
 
 
@@ -357,12 +363,14 @@
  */
 -(Y_CELLTYPE_enum) get_cellType
 {
+    Y_CELLTYPE_enum res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_CELLTYPE_INVALID;
         }
     }
-    return _cellType;
+    res = _cellType;
+    return res;
 }
 
 
@@ -383,12 +391,14 @@
  */
 -(NSString*) get_imsi
 {
+    NSString* res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_IMSI_INVALID;
         }
     }
-    return _imsi;
+    res = _imsi;
+    return res;
 }
 
 
@@ -405,12 +415,14 @@
  */
 -(NSString*) get_message
 {
+    NSString* res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_MESSAGE_INVALID;
         }
     }
-    return _message;
+    res = _message;
+    return res;
 }
 
 
@@ -431,12 +443,14 @@
  */
 -(NSString*) get_pin
 {
+    NSString* res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_PIN_INVALID;
         }
     }
-    return _pin;
+    res = _pin;
+    return res;
 }
 
 
@@ -487,12 +501,14 @@
  */
 -(NSString*) get_lockedOperator
 {
+    NSString* res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_LOCKEDOPERATOR_INVALID;
         }
     }
-    return _lockedOperator;
+    res = _lockedOperator;
+    return res;
 }
 
 
@@ -532,12 +548,14 @@
  */
 -(Y_AIRPLANEMODE_enum) get_airplaneMode
 {
+    Y_AIRPLANEMODE_enum res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_AIRPLANEMODE_INVALID;
         }
     }
-    return _airplaneMode;
+    res = _airplaneMode;
+    return res;
 }
 
 
@@ -577,12 +595,14 @@
  */
 -(Y_ENABLEDATA_enum) get_enableData
 {
+    Y_ENABLEDATA_enum res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_ENABLEDATA_INVALID;
         }
     }
-    return _enableData;
+    res = _enableData;
+    return res;
 }
 
 
@@ -626,12 +646,14 @@
  */
 -(NSString*) get_apn
 {
+    NSString* res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_APN_INVALID;
         }
     }
-    return _apn;
+    res = _apn;
+    return res;
 }
 
 
@@ -672,12 +694,14 @@
  */
 -(NSString*) get_apnSecret
 {
+    NSString* res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_APNSECRET_INVALID;
         }
     }
-    return _apnSecret;
+    res = _apnSecret;
+    return res;
 }
 
 
@@ -705,12 +729,14 @@
  */
 -(int) get_pingInterval
 {
+    int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_PINGINTERVAL_INVALID;
         }
     }
-    return _pingInterval;
+    res = _pingInterval;
+    return res;
 }
 
 
@@ -747,12 +773,14 @@
  */
 -(int) get_dataSent
 {
+    int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_DATASENT_INVALID;
         }
     }
-    return _dataSent;
+    res = _dataSent;
+    return res;
 }
 
 
@@ -789,12 +817,14 @@
  */
 -(int) get_dataReceived
 {
+    int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_DATARECEIVED_INVALID;
         }
     }
-    return _dataReceived;
+    res = _dataReceived;
+    return res;
 }
 
 
@@ -824,12 +854,14 @@
 }
 -(NSString*) get_command
 {
+    NSString* res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_COMMAND_INVALID;
         }
     }
-    return _command;
+    res = _command;
+    return res;
 }
 
 

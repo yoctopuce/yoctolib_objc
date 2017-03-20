@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_poweroutput.m 25275 2016-08-24 13:42:24Z mvuilleu $
+ * $Id: yocto_poweroutput.m 26672 2017-02-28 13:43:38Z seb $
  *
  * Implements the high-level API for PowerOutput functions
  *
@@ -90,12 +90,14 @@
  */
 -(Y_VOLTAGE_enum) get_voltage
 {
+    Y_VOLTAGE_enum res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_VOLTAGE_INVALID;
         }
     }
-    return _voltage;
+    res = _voltage;
+    return res;
 }
 
 

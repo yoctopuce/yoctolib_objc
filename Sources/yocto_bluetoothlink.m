@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_bluetoothlink.m 25275 2016-08-24 13:42:24Z mvuilleu $
+ * $Id: yocto_bluetoothlink.m 26672 2017-02-28 13:43:38Z seb $
  *
  * Implements the high-level API for BluetoothLink functions
  *
@@ -162,12 +162,14 @@
  */
 -(NSString*) get_ownAddress
 {
+    NSString* res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_OWNADDRESS_INVALID;
         }
     }
-    return _ownAddress;
+    res = _ownAddress;
+    return res;
 }
 
 
@@ -188,12 +190,14 @@
  */
 -(NSString*) get_pairingPin
 {
+    NSString* res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_PAIRINGPIN_INVALID;
         }
     }
-    return _pairingPin;
+    res = _pairingPin;
+    return res;
 }
 
 
@@ -232,12 +236,14 @@
  */
 -(NSString*) get_remoteAddress
 {
+    NSString* res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_REMOTEADDRESS_INVALID;
         }
     }
-    return _remoteAddress;
+    res = _remoteAddress;
+    return res;
 }
 
 
@@ -274,12 +280,14 @@
  */
 -(NSString*) get_remoteName
 {
+    NSString* res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_REMOTENAME_INVALID;
         }
     }
-    return _remoteName;
+    res = _remoteName;
+    return res;
 }
 
 
@@ -296,12 +304,14 @@
  */
 -(Y_MUTE_enum) get_mute
 {
+    Y_MUTE_enum res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_MUTE_INVALID;
         }
     }
-    return _mute;
+    res = _mute;
+    return res;
 }
 
 
@@ -339,12 +349,14 @@
  */
 -(int) get_preAmplifier
 {
+    int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_PREAMPLIFIER_INVALID;
         }
     }
-    return _preAmplifier;
+    res = _preAmplifier;
+    return res;
 }
 
 
@@ -381,12 +393,14 @@
  */
 -(int) get_volume
 {
+    int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_VOLUME_INVALID;
         }
     }
-    return _volume;
+    res = _volume;
+    return res;
 }
 
 
@@ -424,12 +438,14 @@
  */
 -(Y_LINKSTATE_enum) get_linkState
 {
+    Y_LINKSTATE_enum res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_LINKSTATE_INVALID;
         }
     }
-    return _linkState;
+    res = _linkState;
+    return res;
 }
 
 
@@ -447,12 +463,14 @@
  */
 -(int) get_linkQuality
 {
+    int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_LINKQUALITY_INVALID;
         }
     }
-    return _linkQuality;
+    res = _linkQuality;
+    return res;
 }
 
 
@@ -462,12 +480,14 @@
 }
 -(NSString*) get_command
 {
+    NSString* res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_COMMAND_INVALID;
         }
     }
-    return _command;
+    res = _command;
+    return res;
 }
 
 

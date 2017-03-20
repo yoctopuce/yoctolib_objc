@@ -37,11 +37,6 @@ int main(int argc, const char * argv[])
       proximity = [YProximity FindProximity:[target stringByAppendingString:@".proximity1"]];
     }
 
-
-
-
-
-
     if (![proximity isOnline]) {
       NSLog(@"Module not connected (check identification and USB cable)");
     }
@@ -51,9 +46,6 @@ int main(int argc, const char * argv[])
                [serial stringByAppendingString:@".lightSensor1"]];
     ir = [YLightSensor FindLightSensor:
           [serial stringByAppendingString:@".lightSensor2"]];
-
-
-
 
     while(1) {
       if(![proximity isOnline]) {

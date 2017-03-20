@@ -13,7 +13,8 @@ static void dumpSensor(YSensor *sensor)
   NSDate *start = [summary get_startTimeUTC_asNSDate];
   NSDate *end   = [summary get_endTimeUTC_asNSDate];
   NSLog(@"from %@ to %@ : min=%.3f%@ avg=%.3f%@  max=%.3f%@\n",
-        [dateFormatter stringFromDate:start], [dateFormatter stringFromDate:end], [summary get_minValue], [sensor get_unit],
+        [dateFormatter stringFromDate:start], [dateFormatter stringFromDate:end], [summary
+            get_minValue], [sensor get_unit],
         [summary get_averageValue], [sensor get_unit],
         [summary get_maxValue], [sensor get_unit]);
   NSLog(@"Loading details :   0%%");
@@ -27,7 +28,8 @@ static void dumpSensor(YSensor *sensor)
     start = [m get_startTimeUTC_asNSDate];
     end   = [m get_endTimeUTC_asNSDate];
     NSLog(@"from %@ to %@ : min=%.3f%@ avg=%.3f%@  max=%.3f%@\n",
-          [dateFormatter stringFromDate:start], [dateFormatter stringFromDate:end], [m get_minValue], [sensor get_unit],
+          [dateFormatter stringFromDate:start], [dateFormatter stringFromDate:end], [m
+              get_minValue], [sensor get_unit],
           [m get_averageValue], [sensor get_unit],
           [m get_maxValue], [sensor get_unit]);
   }

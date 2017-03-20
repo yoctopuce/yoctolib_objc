@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_steppermotor.m 26277 2017-01-04 15:35:59Z seb $
+ * $Id: yocto_steppermotor.m 26672 2017-02-28 13:43:38Z seb $
  *
  * Implements the high-level API for StepperMotor functions
  *
@@ -184,12 +184,14 @@
  */
 -(Y_MOTORSTATE_enum) get_motorState
 {
+    Y_MOTORSTATE_enum res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_MOTORSTATE_INVALID;
         }
     }
-    return _motorState;
+    res = _motorState;
+    return res;
 }
 
 
@@ -206,12 +208,14 @@
  */
 -(int) get_diags
 {
+    int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_DIAGS_INVALID;
         }
     }
-    return _diags;
+    res = _diags;
+    return res;
 }
 
 
@@ -254,12 +258,14 @@
  */
 -(double) get_stepPos
 {
+    double res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_STEPPOS_INVALID;
         }
     }
-    return _stepPos;
+    res = _stepPos;
+    return res;
 }
 
 
@@ -277,12 +283,14 @@
  */
 -(double) get_speed
 {
+    double res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_SPEED_INVALID;
         }
     }
-    return _speed;
+    res = _speed;
+    return res;
 }
 
 
@@ -321,12 +329,14 @@
  */
 -(double) get_pullinSpeed
 {
+    double res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_PULLINSPEED_INVALID;
         }
     }
-    return _pullinSpeed;
+    res = _pullinSpeed;
+    return res;
 }
 
 
@@ -364,12 +374,14 @@
  */
 -(double) get_maxAccel
 {
+    double res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_MAXACCEL_INVALID;
         }
     }
-    return _maxAccel;
+    res = _maxAccel;
+    return res;
 }
 
 
@@ -406,12 +418,14 @@
  */
 -(double) get_maxSpeed
 {
+    double res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_MAXSPEED_INVALID;
         }
     }
-    return _maxSpeed;
+    res = _maxSpeed;
+    return res;
 }
 
 
@@ -429,12 +443,14 @@
  */
 -(Y_STEPPING_enum) get_stepping
 {
+    Y_STEPPING_enum res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_STEPPING_INVALID;
         }
     }
-    return _stepping;
+    res = _stepping;
+    return res;
 }
 
 
@@ -472,12 +488,14 @@
  */
 -(int) get_overcurrent
 {
+    int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_OVERCURRENT_INVALID;
         }
     }
-    return _overcurrent;
+    res = _overcurrent;
+    return res;
 }
 
 
@@ -514,12 +532,14 @@
  */
 -(int) get_tCurrStop
 {
+    int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_TCURRSTOP_INVALID;
         }
     }
-    return _tCurrStop;
+    res = _tCurrStop;
+    return res;
 }
 
 
@@ -557,12 +577,14 @@
  */
 -(int) get_tCurrRun
 {
+    int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_TCURRRUN_INVALID;
         }
     }
-    return _tCurrRun;
+    res = _tCurrRun;
+    return res;
 }
 
 
@@ -593,12 +615,14 @@
 }
 -(NSString*) get_alertMode
 {
+    NSString* res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_ALERTMODE_INVALID;
         }
     }
-    return _alertMode;
+    res = _alertMode;
+    return res;
 }
 
 
@@ -619,12 +643,14 @@
 }
 -(NSString*) get_auxMode
 {
+    NSString* res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_AUXMODE_INVALID;
         }
     }
-    return _auxMode;
+    res = _auxMode;
+    return res;
 }
 
 
@@ -652,12 +678,14 @@
  */
 -(int) get_auxSignal
 {
+    int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_AUXSIGNAL_INVALID;
         }
     }
-    return _auxSignal;
+    res = _auxSignal;
+    return res;
 }
 
 
@@ -688,12 +716,14 @@
 }
 -(NSString*) get_command
 {
+    NSString* res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
             return Y_COMMAND_INVALID;
         }
     }
-    return _command;
+    res = _command;
+    return res;
 }
 
 

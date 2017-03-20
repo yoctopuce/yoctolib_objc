@@ -41,7 +41,8 @@ int main(int argc, const char * argv[])
       }
 
     } else {
-      loop = [YCurrentLoopOutput FindCurrentLoopOutput:[target stringByAppendingString:@".currentLoopOutput"]];
+      loop = [YCurrentLoopOutput FindCurrentLoopOutput:[target stringByAppendingString:
+              @".currentLoopOutput"]];
     }
 
     double value = atof(argv[2]);

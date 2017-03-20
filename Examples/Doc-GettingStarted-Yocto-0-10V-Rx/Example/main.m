@@ -46,8 +46,10 @@ int main(int argc, const char * argv[])
       return 1;
     }
     YModule          *m = [sensor module];
-    sensor1 = [YGenericSensor FindGenericSensor:[m.serialNumber stringByAppendingString:@".genericSensor1"]];
-    sensor2 = [YGenericSensor FindGenericSensor:[m.serialNumber stringByAppendingString:@".genericSensor2"]];
+    sensor1 = [YGenericSensor FindGenericSensor:[m.serialNumber stringByAppendingString:
+               @".genericSensor1"]];
+    sensor2 = [YGenericSensor FindGenericSensor:[m.serialNumber stringByAppendingString:
+               @".genericSensor2"]];
 
     while([m isOnline]) {
       NSLog(@"Channel 1 : %f %@", [sensor1 currentValue], [sensor1 get_unit]);

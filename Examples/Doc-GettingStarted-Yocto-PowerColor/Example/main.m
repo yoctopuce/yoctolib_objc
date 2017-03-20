@@ -38,7 +38,8 @@ int main(int argc, const char * argv[])
       target = [[colorLed module] serialNumber];
     }
 
-    YColorLed *led1 =  [YColorLed FindColorLed:[target stringByAppendingString:@".colorLed1"]];
+    YColorLed *led1 =  [YColorLed FindColorLed:[target stringByAppendingString:
+                        @".colorLed1"]];
 
     unsigned color;
     if ([color_str isEqualToString:@"red"])
