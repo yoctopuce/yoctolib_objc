@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_spiport.m 26672 2017-02-28 13:43:38Z seb $
+ * $Id: yocto_spiport.m 27107 2017-04-06 22:17:56Z seb $
  *
  * Implements the high-level API for SpiPort functions
  *
@@ -784,7 +784,7 @@
     _rxptr = 0;
     _rxbuffptr = 0;
     _rxbuff = [NSMutableData dataWithLength:0];
-    // may throw an exception
+    
     return [self sendCommand:@"Z"];
 }
 
@@ -820,6 +820,7 @@
     buff = [NSMutableData dataWithData:[text dataUsingEncoding:NSISOLatin1StringEncoding]];
     bufflen = (int)[buff length];
     if (bufflen < 100) {
+        // if string is pure text, we can send it as a simple command (faster)
         ch = 0x20;
         idx = 0;
         while ((idx < bufflen) && (ch != 0)) {
@@ -876,7 +877,7 @@
         (((u8*)([buff mutableBytes]))[ idx]) = hexb;
         idx = idx + 1;
     }
-    // may throw an exception
+    
     res = [self _upload:@"txdata" :buff];
     return res;
 }
@@ -909,7 +910,7 @@
         (((u8*)([buff mutableBytes]))[ idx]) = hexb;
         idx = idx + 1;
     }
-    // may throw an exception
+    
     res = [self _upload:@"txdata" :buff];
     return res;
 }
@@ -932,6 +933,7 @@
     buff = [NSMutableData dataWithData:[[NSString stringWithFormat:@"%@\r\n",text] dataUsingEncoding:NSISOLatin1StringEncoding]];
     bufflen = (int)[buff length]-2;
     if (bufflen < 100) {
+        // if string is pure text, we can send it as a simple command (faster)
         ch = 0x20;
         idx = 0;
         while ((idx < bufflen) && (ch != 0)) {
@@ -1004,7 +1006,7 @@
     // still mixed, need to process character by character
     _rxptr = currpos;
     
-    // may throw an exception
+    
     buff = [self _download:[NSString stringWithFormat:@"rxdata.bin?pos=%d&len=1",_rxptr]];
     bufflen = (int)[buff length] - 1;
     endpos = 0;
@@ -1043,7 +1045,7 @@
     if (nChars > 65535) {
         nChars = 65535;
     }
-    // may throw an exception
+    
     buff = [self _download:[NSString stringWithFormat:@"rxdata.bin?pos=%d&len=%d", _rxptr,nChars]];
     bufflen = (int)[buff length] - 1;
     endpos = 0;
@@ -1080,7 +1082,7 @@
     if (nChars > 65535) {
         nChars = 65535;
     }
-    // may throw an exception
+    
     buff = [self _download:[NSString stringWithFormat:@"rxdata.bin?pos=%d&len=%d", _rxptr,nChars]];
     bufflen = (int)[buff length] - 1;
     endpos = 0;
@@ -1123,7 +1125,7 @@
     if (nChars > 65535) {
         nChars = 65535;
     }
-    // may throw an exception
+    
     buff = [self _download:[NSString stringWithFormat:@"rxdata.bin?pos=%d&len=%d", _rxptr,nChars]];
     bufflen = (int)[buff length] - 1;
     endpos = 0;
@@ -1166,7 +1168,7 @@
     if (nBytes > 65535) {
         nBytes = 65535;
     }
-    // may throw an exception
+    
     buff = [self _download:[NSString stringWithFormat:@"rxdata.bin?pos=%d&len=%d", _rxptr,nBytes]];
     bufflen = (int)[buff length] - 1;
     endpos = 0;
@@ -1210,7 +1212,7 @@
     NSMutableArray* msgarr = [NSMutableArray array];
     int msglen;
     NSString* res;
-    // may throw an exception
+    
     url = [NSString stringWithFormat:@"rxmsg.json?pos=%d&len=1&maxw=1",_rxptr];
     msgbin = [self _download:url];
     msgarr = [self _json_get_array:msgbin];
@@ -1257,7 +1259,7 @@
     int msglen;
     NSMutableArray* res = [NSMutableArray array];
     int idx;
-    // may throw an exception
+    
     url = [NSString stringWithFormat:@"rxmsg.json?pos=%d&maxw=%d&pat=%@", _rxptr, maxWait,pattern];
     msgbin = [self _download:url];
     msgarr = [self _json_get_array:msgbin];
@@ -1312,7 +1314,7 @@
     NSMutableData* buff;
     int bufflen;
     int res;
-    // may throw an exception
+    
     buff = [self _download:[NSString stringWithFormat:@"rxcnt.bin?pos=%d",_rxptr]];
     bufflen = (int)[buff length] - 1;
     while ((bufflen > 0) && ((((u8*)([buff bytes]))[bufflen]) != 64)) {
@@ -1341,7 +1343,7 @@
     NSMutableArray* msgarr = [NSMutableArray array];
     int msglen;
     NSString* res;
-    // may throw an exception
+    
     url = [NSString stringWithFormat:@"rxmsg.json?len=1&maxw=%d&cmd=!%@", maxWait,query];
     msgbin = [self _download:url];
     msgarr = [self _json_get_array:msgbin];

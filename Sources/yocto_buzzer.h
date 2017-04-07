@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_buzzer.h 25275 2016-08-24 13:42:24Z mvuilleu $
+ * $Id: yocto_buzzer.h 27090 2017-04-06 20:56:09Z seb $
  *
  * Declares yFindBuzzer(), the high-level API for Buzzer functions
  *
@@ -249,9 +249,24 @@ typedef void (*YBuzzerValueCallback)(YBuzzer *func, NSString *functionValue);
 -(int)     addVolMoveToPlaySeq:(int)volume :(int)msDuration;
 
 /**
+ * Adds notes to the playing sequence. Notes are provided as text words, separated by
+ * spaces. The pitch is specified using the usual letter from A to G. The duration is
+ * specified as the divisor of a whole note: 4 for a fourth, 8 for an eight note, etc.
+ * Some modifiers are supported: # and b to alter a note pitch,
+ * ' and , to move to the upper/lower octave, . to enlarge
+ * the note duration.
+ *
+ * @param notes : notes to be played, as a text string.
+ *
+ * @return YAPI_SUCCESS if the call succeeds.
+ *         On failure, throws an exception or returns a negative error code.
+ */
+-(int)     addNotesToPlaySeq:(NSString*)notes;
+
+/**
  * Starts the preprogrammed playing sequence. The sequence
  * runs in loop until it is stopped by stopPlaySeq or an explicit
- * change.
+ * change. To play the sequence only once, use oncePlaySeq().
  *
  * @return YAPI_SUCCESS if the call succeeds.
  *         On failure, throws an exception or returns a negative error code.
@@ -273,6 +288,14 @@ typedef void (*YBuzzerValueCallback)(YBuzzer *func, NSString *functionValue);
  *         On failure, throws an exception or returns a negative error code.
  */
 -(int)     resetPlaySeq;
+
+/**
+ * Starts the preprogrammed playing sequence and run it once only.
+ *
+ * @return YAPI_SUCCESS if the call succeeds.
+ *         On failure, throws an exception or returns a negative error code.
+ */
+-(int)     oncePlaySeq;
 
 /**
  * Activates the buzzer for a short duration.
@@ -309,6 +332,21 @@ typedef void (*YBuzzerValueCallback)(YBuzzer *func, NSString *functionValue);
  * On failure, throws an exception or returns a negative error code.
  */
 -(int)     volumeMove:(int)volume :(int)duration;
+
+/**
+ * Immediately play a note sequence. Notes are provided as text words, separated by
+ * spaces. The pitch is specified using the usual letter from A to G. The duration is
+ * specified as the divisor of a whole note: 4 for a fourth, 8 for an eight note, etc.
+ * Some modifiers are supported: # and b to alter a note pitch,
+ * ' and , to move to the upper/lower octave, . to enlarge
+ * the note duration.
+ *
+ * @param notes : notes to be played, as a text string.
+ *
+ * @return YAPI_SUCCESS if the call succeeds.
+ *         On failure, throws an exception or returns a negative error code.
+ */
+-(int)     playNotes:(NSString*)notes;
 
 
 /**

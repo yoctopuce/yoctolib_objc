@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.m 26826 2017-03-17 11:20:57Z mvuilleu $
+ * $Id: yocto_api.m 27107 2017-04-06 22:17:56Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -3712,19 +3712,23 @@ static const char* hexArray = "0123456789ABCDEF";
         return 0;
     }
     if (_ystrpos(_calibrationParam, @",") >= 0) {
+        // Plain text format
         iCalib = [YAPI _decodeFloats:_calibrationParam];
         _caltyp = (([[iCalib objectAtIndex:0] intValue]) / (1000));
         if (_caltyp > 0) {
             if (_caltyp < YOCTO_CALIB_TYPE_OFS) {
+                // Unknown calibration type: calibrated value will be provided by the device
                 _caltyp = -1;
                 return 0;
             }
             _calhdl = [YAPI _getCalibrationHandler:_caltyp];
             if (!(_calhdl != NULL)) {
+                // Unknown calibration type: calibrated value will be provided by the device
                 _caltyp = -1;
                 return 0;
             }
         }
+        // New 32bit text format
         _isScal = YES;
         _isScal32 = YES;
         _offset = 0;
@@ -3749,11 +3753,14 @@ static const char* hexArray = "0123456789ABCDEF";
             position = position + 2;
         }
     } else {
+        // Recorder-encoded format, including encoding
         iCalib = [YAPI _decodeWords:_calibrationParam];
+        // In case of unknown format, calibrated value will be provided by the device
         if ((int)[iCalib count] < 2) {
             _caltyp = -1;
             return 0;
         }
+        // Save variable format (scale for scalar, or decimal exponent)
         _isScal = ([[iCalib objectAtIndex:1] intValue] > 0);
         if (_isScal) {
             _offset = [[iCalib objectAtIndex:0] doubleValue];
@@ -3772,12 +3779,14 @@ static const char* hexArray = "0123456789ABCDEF";
                 position = position - 1;
             }
         }
+        // Shortcut when there is no calibration parameter
         if ((int)[iCalib count] == 2) {
             _caltyp = 0;
             return 0;
         }
         _caltyp = [[iCalib objectAtIndex:2] intValue];
         _calhdl = [YAPI _getCalibrationHandler:_caltyp];
+        // parse calibration points
         if (_caltyp <= 10) {
             maxpos = _caltyp;
         } else {
@@ -3846,7 +3855,7 @@ static const char* hexArray = "0123456789ABCDEF";
 -(int) startDataLogger
 {
     NSMutableData* res;
-    // may throw an exception
+    
     res = [self _download:@"api/dataLogger/recording?recording=1"];
     if (!((int)[res length]>0)) {[self _throw: YAPI_IO_ERROR: @"unable to start datalogger"]; return YAPI_IO_ERROR;}
     return YAPI_SUCCESS;
@@ -3860,7 +3869,7 @@ static const char* hexArray = "0123456789ABCDEF";
 -(int) stopDataLogger
 {
     NSMutableData* res;
-    // may throw an exception
+    
     res = [self _download:@"api/dataLogger/recording?recording=0"];
     if (!((int)[res length]>0)) {[self _throw: YAPI_IO_ERROR: @"unable to stop datalogger"]; return YAPI_IO_ERROR;}
     return YAPI_SUCCESS;
@@ -3896,7 +3905,7 @@ static const char* hexArray = "0123456789ABCDEF";
 {
     NSString* funcid;
     NSString* funit;
-    // may throw an exception
+    
     funcid = [self get_functionId];
     funit = [self get_unit];
     return ARC_sendAutorelease([[YDataSet alloc] initWith:self :funcid :funit :startTime :endTime]);
@@ -3959,9 +3968,11 @@ static const char* hexArray = "0123456789ABCDEF";
 -(int) calibrateFromPoints:(NSMutableArray*)rawValues :(NSMutableArray*)refValues
 {
     NSString* rest_val;
-    // may throw an exception
+    int res;
+    
     rest_val = [self _encodeCalibrationPoints:rawValues :refValues];
-    return [self _setAttr:@"calibrationParam" :rest_val];
+    res = [self _setAttr:@"calibrationParam" :rest_val];
+    return res;
 }
 
 /**
@@ -4030,6 +4041,7 @@ static const char* hexArray = "0123456789ABCDEF";
         return @"0";
     }
     if (_isScal32) {
+        // 32-bit fixed-point encoding
         res = [NSString stringWithFormat:@"%d",YOCTO_CALIB_TYPE_OFS];
         idx = 0;
         while (idx < npt) {
@@ -4038,6 +4050,7 @@ static const char* hexArray = "0123456789ABCDEF";
         }
     } else {
         if (_isScal) {
+            // 16-bit fixed-point encoding
             res = [NSString stringWithFormat:@"%d",npt];
             idx = 0;
             while (idx < npt) {
@@ -4047,6 +4060,7 @@ static const char* hexArray = "0123456789ABCDEF";
                 idx = idx + 1;
             }
         } else {
+            // 16-bit floating-point decimal encoding
             res = [NSString stringWithFormat:@"%d",10 + npt];
             idx = 0;
             while (idx < npt) {
@@ -4099,7 +4113,9 @@ static const char* hexArray = "0123456789ABCDEF";
         startTime = endTime;
     }
     if ([[report objectAtIndex:0] intValue] == 2) {
+        // 32bit timed report format
         if ((int)[report count] <= 5) {
+            // sub-second report, 1-4 bytes
             poww = 1;
             avgRaw = 0;
             byteVal = 0;
@@ -4122,6 +4138,7 @@ static const char* hexArray = "0123456789ABCDEF";
             minVal = avgVal;
             maxVal = avgVal;
         } else {
+            // averaged report: avg,avg-min,max-avg
             sublen = 1 + (([[report objectAtIndex:1] intValue]) & (3));
             poww = 1;
             avgRaw = 0;
@@ -4171,7 +4188,9 @@ static const char* hexArray = "0123456789ABCDEF";
             }
         }
     } else {
+        // 16bit timed report format
         if ([[report objectAtIndex:0] intValue] == 0) {
+            // sub-second report, 1-4 bytes
             poww = 1;
             avgRaw = 0;
             byteVal = 0;
@@ -4193,6 +4212,7 @@ static const char* hexArray = "0123456789ABCDEF";
             minVal = avgVal;
             maxVal = avgVal;
         } else {
+            // averaged report 2+4+2 bytes
             minRaw = [[report objectAtIndex:1] intValue] + 0x100 * [[report objectAtIndex:2] intValue];
             maxRaw = [[report objectAtIndex:3] intValue] + 0x100 * [[report objectAtIndex:4] intValue];
             avgRaw = [[report objectAtIndex:5] intValue] + 0x100 * [[report objectAtIndex:6] intValue] + 0x10000 * [[report objectAtIndex:7] intValue];
@@ -4994,7 +5014,7 @@ static const char* hexArray = "0123456789ABCDEF";
 {
     NSString* serial;
     NSMutableData* settings;
-    // may throw an exception
+    
     serial = [self get_serialNumber];
     settings = [self get_allSettings];
     if ((int)[settings length] == 0) {
@@ -5042,7 +5062,7 @@ static const char* hexArray = "0123456789ABCDEF";
     NSString* ext_settings;
     NSMutableArray* filelist = [NSMutableArray array];
     NSMutableArray* templist = [NSMutableArray array];
-    // may throw an exception
+    
     settings = [self _download:@"api.json"];
     if ((int)[settings length] == 0) {
         return settings;
@@ -5098,7 +5118,7 @@ static const char* hexArray = "0123456789ABCDEF";
     int ofs;
     int size;
     url = [NSString stringWithFormat:@"%@%@%@", @"api/", funcId, @".json?command=Z"];
-    // may throw an exception
+    
     [self _download:url];
     // add records in growing resistance value
     values = [self _json_get_array:[NSMutableData dataWithData:[jsonExtra dataUsingEncoding:NSISOLatin1StringEncoding]]];
@@ -5196,7 +5216,7 @@ static const char* hexArray = "0123456789ABCDEF";
     int count;
     int i;
     NSString* fid;
-    // may throw an exception
+    
     count  = [self functionCount];
     i = 0;
     while (i < count) {
@@ -5222,7 +5242,7 @@ static const char* hexArray = "0123456789ABCDEF";
     int i;
     NSString* ftype;
     NSMutableArray* res = [NSMutableArray array];
-    // may throw an exception
+    
     count = [self functionCount];
     i = 0;
     while (i < count) {
@@ -5353,9 +5373,11 @@ static const char* hexArray = "0123456789ABCDEF";
     paramScale = funScale;
     paramOffset = funOffset;
     if (funVer < 3) {
+        // Read the effective device scale if available
         if (funVer == 2) {
             words = [YAPI _decodeWords:currentFuncValue];
             if (([[words objectAtIndex:0] intValue] == 1366) && ([[words objectAtIndex:1] intValue] == 12500)) {
+                // Yocto-3D RefFrame used a special encoding
                 funScale = 1;
                 funOffset = 0;
             } else {
@@ -5373,9 +5395,11 @@ static const char* hexArray = "0123456789ABCDEF";
     [calibData removeAllObjects];
     calibType = 0;
     if (paramVer < 3) {
+        // Handle old 16 bit parameters formats
         if (paramVer == 2) {
             words = [YAPI _decodeWords:param];
             if (([[words objectAtIndex:0] intValue] == 1366) && ([[words objectAtIndex:1] intValue] == 12500)) {
+                // Yocto-3D RefFrame used a special encoding
                 paramScale = 1;
                 paramOffset = 0;
             } else {
@@ -5428,13 +5452,16 @@ static const char* hexArray = "0123456789ABCDEF";
         i = 0;
         while (i < (int)[calibData count]) {
             if (paramScale > 0) {
+                // scalar decoding
                 [calibData replaceObjectAtIndex: i withObject:[NSNumber numberWithDouble:([[calibData objectAtIndex:i] doubleValue] - paramOffset) / paramScale]];
             } else {
+                // floating-point decoding
                 [calibData replaceObjectAtIndex: i withObject:[NSNumber numberWithDouble:[YAPI _decimalToDouble:(int) floor([[calibData objectAtIndex:i] doubleValue]+0.5)]]];
             }
             i = i + 1;
         }
     } else {
+        // Handle latest 32bit parameter format
         iCalib = [YAPI _decodeFloats:param];
         calibType = (int) floor([[iCalib objectAtIndex:0] doubleValue] / 1000.0+0.5);
         if (calibType >= 30) {
@@ -5447,6 +5474,7 @@ static const char* hexArray = "0123456789ABCDEF";
         }
     }
     if (funVer >= 3) {
+        // Encode parameters in new format
         if ((int)[calibData count] == 0) {
             param = @"0,";
         } else {
@@ -5465,6 +5493,7 @@ static const char* hexArray = "0123456789ABCDEF";
         }
     } else {
         if (funVer >= 1) {
+            // Encode parameters for older devices
             nPoints = (((int)[calibData count]) / (2));
             param = [NSString stringWithFormat:@"%d",nPoints];
             i = 0;
@@ -5478,6 +5507,7 @@ static const char* hexArray = "0123456789ABCDEF";
                 i = i + 1;
             }
         } else {
+            // Initial V0 encoding used for old Yocto-Light
             if ((int)[calibData count] == 4) {
                 param = [NSString stringWithFormat:@"%f",floor(1000 * ([[calibData objectAtIndex:3] doubleValue] - [[calibData objectAtIndex:1] doubleValue]) / [[calibData objectAtIndex:2] doubleValue] - [[calibData objectAtIndex:0] doubleValue]+0.5)];
             }
@@ -5542,6 +5572,7 @@ static const char* hexArray = "0123456789ABCDEF";
     old_dslist = [self _json_get_array:old_json_flat];
     for (NSString* _each  in old_dslist) {
         each_str = [self _json_get_string:[NSMutableData dataWithData:[_each dataUsingEncoding:NSISOLatin1StringEncoding]]];
+        // split json path and attr
         leng = (int)[(each_str) length];
         eqpos = _ystrpos(each_str, @"=");
         if ((eqpos < 0) || (leng == 0)) {
@@ -5555,12 +5586,14 @@ static const char* hexArray = "0123456789ABCDEF";
         [old_jpath_len addObject:[NSNumber numberWithLong:(int)[(jpath) length]]];
         [old_val_arr addObject:value];
     }
-    // may throw an exception
+    
     actualSettings = [self _download:@"api.json"];
     actualSettings = [self _flattenJsonStruct:actualSettings];
     new_dslist = [self _json_get_array:actualSettings];
     for (NSString* _each  in new_dslist) {
+        // remove quotes
         each_str = [self _json_get_string:[NSMutableData dataWithData:[_each dataUsingEncoding:NSISOLatin1StringEncoding]]];
+        // split json path and attr
         leng = (int)[(each_str) length];
         eqpos = _ystrpos(each_str, @"=");
         if ((eqpos < 0) || (leng == 0)) {
@@ -5804,7 +5837,7 @@ static const char* hexArray = "0123456789ABCDEF";
 -(NSString*) get_lastLogs
 {
     NSMutableData* content;
-    // may throw an exception
+    
     content = [self _download:@"logs.txt"];
     return ARC_sendAutorelease([[NSString alloc] initWithData:content encoding:NSISOLatin1StringEncoding]);
 }
@@ -5843,7 +5876,7 @@ static const char* hexArray = "0123456789ABCDEF";
     NSString* subdevice_list;
     NSMutableArray* subdevices = [NSMutableArray array];
     NSString* serial;
-    // may throw an exception
+    
     serial = [self get_serialNumber];
     fullsize = 0;
     yapi_res = yapiGetSubdevices(STR_oc2y(serial), smallbuff, 1024, &fullsize, errmsg);
@@ -5884,7 +5917,7 @@ static const char* hexArray = "0123456789ABCDEF";
     int pathsize;
     int yapi_res;
     NSString* serial;
-    // may throw an exception
+    
     serial = [self get_serialNumber];
     // retrieve device object
     pathsize = 0;
@@ -5908,7 +5941,7 @@ static const char* hexArray = "0123456789ABCDEF";
     int pathsize;
     int yapi_res;
     NSString* serial;
-    // may throw an exception
+    
     serial = [self get_serialNumber];
     // retrieve device object
     pathsize = 0;
@@ -6528,7 +6561,7 @@ static const char* hexArray = "0123456789ABCDEF";
         _nRows = 0;
         return YAPI_SUCCESS;
     }
-    // may throw an exception
+    
     udat = [YAPI _decodeWords:[_parent _json_get_string:sdata]];
     [_values removeAllObjects];
     idx = 0;
@@ -7181,7 +7214,7 @@ static const char* hexArray = "0123456789ABCDEF";
     int minCol;
     int avgCol;
     int maxCol;
-    // may throw an exception
+    
     if (progress != _progress) {
         return _progress;
     }
@@ -7424,7 +7457,7 @@ static const char* hexArray = "0123456789ABCDEF";
     int minCol;
     int avgCol;
     int maxCol;
-    // may throw an exception
+    
     startUtc = (s64) floor(measure.get_startTimeUTC+0.5);
     stream = nil;
     for (YDataStream* _each  in _streams) {

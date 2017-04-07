@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_messagebox.m 26672 2017-02-28 13:43:38Z seb $
+ * $Id: yocto_messagebox.m 27107 2017-04-06 22:17:56Z seb $
  *
  * Implements the high-level API for MessageBox functions
  *
@@ -148,9 +148,11 @@
     int i;
     
     if (_alphab == 0) {
+        // using GSM standard 7-bit alphabet
         return [_mbox gsm2str:_udata];
     }
     if (_alphab == 2) {
+        // using UCS-2 alphabet
         isosize = (((int)[_udata length]) >> (1));
         isolatin = [NSMutableData dataWithLength:isosize];
         i = 0;
@@ -173,9 +175,11 @@
     int i;
     
     if (_alphab == 0) {
+        // using GSM standard 7-bit alphabet
         return [_mbox gsm2unicode:_udata];
     }
     if (_alphab == 2) {
+        // using UCS-2 alphabet
         unisize = (((int)[_udata length]) >> (1));
         [res removeAllObjects];
         i = 0;
@@ -185,6 +189,7 @@
             i = i + 1;
         }
     } else {
+        // return straight 8-bit values
         unisize = (int)[_udata length];
         [res removeAllObjects];
         i = 0;
@@ -381,9 +386,11 @@
     }
     
     if (_alphab == 0) {
+        // Try to append using GSM 7-bit alphabet
         newdata = [_mbox str2gsm:val];
         newdatalen = (int)[newdata length];
         if (newdatalen == 0) {
+            // 7-bit not possible, switch to unicode
             [self convertToUnicode];
             newdata = [NSMutableData dataWithData:[val dataUsingEncoding:NSISOLatin1StringEncoding]];
             newdatalen = (int)[newdata length];
@@ -394,6 +401,7 @@
     }
     udatalen = (int)[_udata length];
     if (_alphab == 2) {
+        // Append in unicode directly
         udata = [NSMutableData dataWithLength:udatalen + 2*newdatalen];
         i = 0;
         while (i < udatalen) {
@@ -407,6 +415,7 @@
             i = i + 1;
         }
     } else {
+        // Append binary buffers
         udata = [NSMutableData dataWithLength:udatalen+newdatalen];
         i = 0;
         while (i < udatalen) {
@@ -621,6 +630,7 @@
     res = @"";
     addrType = (((((u8*)([addr bytes]))[ofs])) & (112));
     if (addrType == 80) {
+        // alphanumeric number
         siz = ((4*siz) / (7));
         gsm7 = [NSMutableData dataWithLength:siz];
         rpos = 1;
@@ -643,6 +653,7 @@
         }
         return [_mbox gsm2str:gsm7];
     } else {
+        // standard phone number
         if (addrType == 16) {
             res = @"+";
         }
@@ -653,6 +664,7 @@
             res = [NSString stringWithFormat:@"%@%x%x", res, ((byt) & (15)),((byt) >> (4))];
             i = i + 1;
         }
+        // remove padding digit if needed
         if ((((((u8*)([addr bytes]))[ofs+siz])) >> (4)) == 15) {
             res = [res substringWithRange:NSMakeRange( 0, (int)[(res) length]-1)];
         }
@@ -697,6 +709,7 @@
         return res;
     }
     if ([[exp substringWithRange:NSMakeRange(4, 1)] isEqualToString:@"-"] || [[exp substringWithRange:NSMakeRange(4, 1)] isEqualToString:@"/"]) {
+        // ignore century
         exp = [exp substringWithRange:NSMakeRange( 2, explen-2)];
         explen = (int)[(exp) length];
     }
@@ -723,6 +736,7 @@
         n = n + 1;
     }
     if (i+2 < explen) {
+        // convert for timezone in cleartext ISO format +/-nn:nn
         v1 = (((u8*)([expasc bytes]))[i-3]);
         v2 = (((u8*)([expasc bytes]))[i]);
         if (((v1 == 43) || (v1 == 45)) && (v2 == 58)) {
@@ -851,12 +865,14 @@
     carry = 0;
     // 1. Encode UDL
     if (_alphab == 0) {
+        // 7-bit encoding
         if (udhsize > 0) {
             udhlen = (((8 + 8*udhsize + 6)) / (7));
             nbits = 7*udhlen - 8 - 8*udhsize;
         }
         (((u8*)([res mutableBytes]))[ 0]) = udhlen+udlen;
     } else {
+        // 8-bit encoding
         (((u8*)([res mutableBytes]))[ 0]) = udsize;
     }
     // 2. Encode UDHL and UDL
@@ -873,6 +889,7 @@
     }
     // 3. Encode UD
     if (_alphab == 0) {
+        // 7-bit encoding
         i = 0;
         while (i < udlen) {
             if (nbits == 0) {
@@ -891,6 +908,7 @@
             (((u8*)([res mutableBytes]))[ wpos]) = carry;
         }
     } else {
+        // 8-bit encoding
         i = 0;
         while (i < udlen) {
             (((u8*)([res mutableBytes]))[ wpos]) = (((u8*)([_udata bytes]))[i]);
@@ -926,8 +944,8 @@
     while (wpos < udlen) {
         partno = partno + 1;
         newudh = [NSMutableData dataWithLength:5+udhsize];
-        (((u8*)([newudh mutableBytes]))[ 0]) = 0;
-        (((u8*)([newudh mutableBytes]))[ 1]) = 3;
+        (((u8*)([newudh mutableBytes]))[ 0]) = 0;           // IEI: concatenated message
+        (((u8*)([newudh mutableBytes]))[ 1]) = 3;           // IEDL: 3 bytes
         (((u8*)([newudh mutableBytes]))[ 2]) = _mref;
         (((u8*)([newudh mutableBytes]))[ 3]) = _npdu;
         (((u8*)([newudh mutableBytes]))[ 4]) = partno;
@@ -977,6 +995,7 @@
     // Determine if the message can fit within a single PDU
     [_parts removeAllObjects];
     if ([self udataSize] > 140) {
+        // multiple PDU are needed
         _pdu = [NSMutableData dataWithLength:0];
         return [self generateParts];
     }
@@ -1067,6 +1086,7 @@
         i = i + 2;
         if (i + ielen <= udhlen) {
             if ((iei == 0) && (ielen == 3)) {
+                // concatenated SMS, 8-bit ref
                 sig = [NSString stringWithFormat:@"%@-%@-%02x-%02x", _orig, _dest,
                 _mref,(((u8*)([_udh bytes]))[i])];
                 _aggSig = sig;
@@ -1074,6 +1094,7 @@
                 _aggIdx = (((u8*)([_udh bytes]))[i+2]);
             }
             if ((iei == 8) && (ielen == 4)) {
+                // concatenated SMS, 16-bit ref
                 sig = [NSString stringWithFormat:@"%@-%@-%02x-%02x%02x", _orig, _dest,
                 _mref, (((u8*)([_udh bytes]))[i]),(((u8*)([_udh bytes]))[i+1])];
                 _aggSig = sig;
@@ -1159,6 +1180,7 @@
             i = i + 1;
         }
         if (_alphab == 0) {
+            // 7-bit encoding
             udhlen = (((8 + 8*udhsize + 6)) / (7));
             nbits = 7*udhlen - 8 - 8*udhsize;
             if (nbits > 0) {
@@ -1168,6 +1190,7 @@
                 nbits = 8 - nbits;
             }
         } else {
+            // byte encoding
             udhlen = 1+udhsize;
         }
         udlen = udlen - udhlen;
@@ -1177,6 +1200,7 @@
     }
     _udata = [NSMutableData dataWithLength:udlen];
     if (_alphab == 0) {
+        // 7-bit encoding
         i = 0;
         while (i < udlen) {
             if (nbits == 7) {
@@ -1193,6 +1217,7 @@
             i = i + 1;
         }
     } else {
+        // 8-bit encoding
         i = 0;
         while (i < udlen) {
             (((u8*)([_udata mutableBytes]))[ i]) = (((u8*)([pdu bytes]))[rpos]);
@@ -1210,7 +1235,7 @@
     int i;
     int retcode;
     YSms* pdu;
-    // may throw an exception
+    
     if (_npdu == 0) {
         [self generatePdu];
     }
@@ -1232,7 +1257,7 @@
     int i;
     int retcode;
     YSms* pdu;
-    // may throw an exception
+    
     if (_slot > 0) {
         return [_mbox clearSIMSlot:_slot];
     }
@@ -1604,7 +1629,7 @@
     NSString* hexPdu;
     YSms* sms;
     
-    // may throw an exception
+    
     binPdu = [self _download:[NSString stringWithFormat:@"sms.json?pos=%d&len=1",slot]];
     arrPdu = [self _json_get_array:binPdu];
     hexPdu = [self _decode_json_string:[arrPdu objectAtIndex:0]];
@@ -1689,6 +1714,7 @@
     }
     i = 0;
     while (i < 4) {
+        // mark escape sequences
         (((u8*)([_iso2gsm mutableBytes]))[ 91+i]) = 27;
         (((u8*)([_iso2gsm mutableBytes]))[ 123+i]) = 27;
         i = i + 1;
@@ -1901,6 +1927,7 @@
             extra = extra + 1;
         }
         if (gsm7 == 0) {
+            // cannot use standard GSM encoding
             res = [NSMutableData dataWithLength:0];
             return res;
         }
@@ -1973,7 +2000,7 @@
     NSMutableArray* signatures = [NSMutableArray array];
     YSms* sms;
     
-    // may throw an exception
+    
     bitmapStr = [self get_slotsBitmap];
     if ([bitmapStr isEqualToString:_prevBitmapStr]) {
         return YAPI_SUCCESS;
@@ -2097,7 +2124,7 @@
 -(int) clearPduCounters
 {
     int retcode;
-    // may throw an exception
+    
     retcode = [self set_pduReceived:0];
     if (retcode != YAPI_SUCCESS) {
         return retcode;
@@ -2124,7 +2151,7 @@
 -(int) sendTextMessage:(NSString*)recipient :(NSString*)message
 {
     YSms* sms;
-    // may throw an exception
+    
     sms = ARC_sendAutorelease([[YSms alloc] initWith:self]);
     [sms set_recipient:recipient];
     [sms addText:message];
@@ -2150,7 +2177,7 @@
 -(int) sendFlashMessage:(NSString*)recipient :(NSString*)message
 {
     YSms* sms;
-    // may throw an exception
+    
     sms = ARC_sendAutorelease([[YSms alloc] initWith:self]);
     [sms set_recipient:recipient];
     [sms set_msgClass:0];

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_cellular.m 26672 2017-02-28 13:43:38Z seb $
+ * $Id: yocto_cellular.m 27107 2017-04-06 22:17:56Z seb $
  *
  * Implements the high-level API for Cellular functions
  *
@@ -1005,7 +1005,7 @@
 -(int) clearDataCounters
 {
     int retcode;
-    // may throw an exception
+    
     retcode = [self set_dataReceived:0];
     if (retcode != YAPI_SUCCESS) {
         return retcode;
@@ -1071,11 +1071,13 @@
             idx = idx - 1;
         }
         if ((((u8*)([buff bytes]))[idx]) == 64) {
+            // continuation detected
             suffixlen = bufflen - idx;
             cmd = [NSString stringWithFormat:@"at.txt?cmd=%@",[buffstr substringWithRange:NSMakeRange( buffstrlen - suffixlen, suffixlen)]];
             buffstr = [buffstr substringWithRange:NSMakeRange( 0, buffstrlen - suffixlen)];
             waitMore = waitMore - 1;
         } else {
+            // request complete
             waitMore = 0;
         }
         res = [NSString stringWithFormat:@"%@%@", res,buffstr];
@@ -1098,7 +1100,7 @@
     int idx;
     int slen;
     NSMutableArray* res = [NSMutableArray array];
-    // may throw an exception
+    
     cops = [self _AT:@"+COPS=?"];
     slen = (int)[(cops) length];
     [res removeAllObjects];
@@ -1145,7 +1147,7 @@
     int tad;
     NSString* oper;
     NSMutableArray* res = [NSMutableArray array];
-    // may throw an exception
+    
     moni = [self _AT:@"+CCED=0;#MONI=7;#MONI"];
     mccs = [moni substringWithRange:NSMakeRange(7, 3)];
     if ([[mccs substringWithRange:NSMakeRange(0, 1)] isEqualToString:@"0"]) {

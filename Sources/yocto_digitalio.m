@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_digitalio.m 26672 2017-02-28 13:43:38Z seb $
+ * $Id: yocto_digitalio.m 26949 2017-03-28 15:36:15Z mvuilleu $
  *
  * Implements the high-level API for DigitalIO functions
  *
@@ -57,6 +57,7 @@
     _portDirection = Y_PORTDIRECTION_INVALID;
     _portOpenDrain = Y_PORTOPENDRAIN_INVALID;
     _portPolarity = Y_PORTPOLARITY_INVALID;
+    _portDiags = Y_PORTDIAGS_INVALID;
     _portSize = Y_PORTSIZE_INVALID;
     _outputVoltage = Y_OUTPUTVOLTAGE_INVALID;
     _command = Y_COMMAND_INVALID;
@@ -95,6 +96,11 @@
     if(!strcmp(j->token, "portPolarity")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
         _portPolarity =  atoi(j->token);
+        return 1;
+    }
+    if(!strcmp(j->token, "portDiags")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _portDiags =  atoi(j->token);
         return 1;
     }
     if(!strcmp(j->token, "portSize")) {
@@ -306,6 +312,32 @@
     NSString* rest_val;
     rest_val = [NSString stringWithFormat:@"%d", newval];
     return [self _setAttr:@"portPolarity" :rest_val];
+}
+/**
+ * Returns the port state diagnostics (Yocto-IO and Yocto-MaxiIO-V2 only). Bit 0 indicates a shortcut on
+ * output 0, etc. Bit 8 indicates a power failure, and bit 9 signals overheating (overcurrent).
+ * During normal use, all diagnostic bits should stay clear.
+ *
+ * @return an integer corresponding to the port state diagnostics (Yocto-IO and Yocto-MaxiIO-V2 only)
+ *
+ * On failure, throws an exception or returns Y_PORTDIAGS_INVALID.
+ */
+-(int) get_portDiags
+{
+    int res;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_PORTDIAGS_INVALID;
+        }
+    }
+    res = _portDiags;
+    return res;
+}
+
+
+-(int) portDiags
+{
+    return [self get_portDiags];
 }
 /**
  * Returns the number of bits implemented in the I/O port.

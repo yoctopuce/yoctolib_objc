@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_rangefinder.m 26826 2017-03-17 11:20:57Z mvuilleu $
+ * $Id: yocto_rangefinder.m 26996 2017-03-30 16:18:14Z seb $
  *
  * Implements the high-level API for RangeFinder functions
  *
@@ -378,7 +378,6 @@
 -(double) get_hardwareCalibrationTemperature
 {
     NSString* hwcal;
-    
     hwcal = [self get_hardwareCalibration];
     if (!([[hwcal substringWithRange:NSMakeRange(0, 1)] isEqualToString:@"@"])) {
         return YAPI_INVALID_DOUBLE;
@@ -429,7 +428,6 @@
 -(int) triggerOffsetCalibration:(double)targetDist
 {
     int distmm;
-    
     if ([[self get_unit] isEqualToString:@"\""]) {
         distmm = (int) floor(targetDist * 25.4+0.5);
     } else {
@@ -453,7 +451,6 @@
 -(int) triggerXTalkCalibration:(double)targetDist
 {
     int distmm;
-    
     if ([[self get_unit] isEqualToString:@"\""]) {
         distmm = (int) floor(targetDist * 25.4+0.5);
     } else {

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_datalogger.m 26826 2017-03-17 11:20:57Z mvuilleu $
+ * $Id: yocto_datalogger.m 27107 2017-04-06 22:17:56Z seb $
  *
  * Implements yFindDataLogger(), the high-level API for DataLogger functions
  *
@@ -902,7 +902,7 @@
     NSMutableArray* dslist = [NSMutableArray array];
     YDataSet* dataset;
     NSMutableArray* res = [NSMutableArray array];
-    // may throw an exception
+    
     dslist = [self _json_get_array:json];
     [res removeAllObjects];
     for (NSString* _each  in dslist) {

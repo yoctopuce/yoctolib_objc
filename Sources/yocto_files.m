@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_files.m 26672 2017-02-28 13:43:38Z seb $
+ * $Id: yocto_files.m 27107 2017-04-06 22:17:56Z seb $
  *
  * Implements yFindFiles(), the high-level API for Files functions
  *
@@ -298,7 +298,7 @@
 {
     NSString* url;
     url = [NSString stringWithFormat:@"files.json?a=%@",command];
-    // may throw an exception
+    
     return [self _download:url];
 }
 

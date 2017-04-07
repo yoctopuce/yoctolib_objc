@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: ypkt_lin.c 26607 2017-02-09 13:13:07Z seb $
+ * $Id: ypkt_lin.c 26992 2017-03-30 15:51:01Z seb $
  *
  * OS-specific USB packet layer, Linux version
  *
@@ -414,26 +414,14 @@ exit:
 
 // return 1 if OS hdl are identicals
 //        0 if any of the interface has changed
-int yyyOShdlCompare( yPrivDeviceSt *dev, DevEnum *newdev)
+int yyyOShdlCompare( yPrivDeviceSt *dev, yInterfaceSt *newiface)
 {
-    int i,j, nbifaces;
-    if(dev->infos.nbinbterfaces != newdev->nbifaces){
-        HALLOG("bad number of inteface for %s (%d:%d)\n",dev->infos.serial,dev->infos.nbinbterfaces, newdev->nbifaces);
+    if(dev->infos.nbinbterfaces != 1){
+        HALLOG("bad number of inteface for %s (%d)\n",dev->infos.serial,dev->infos.nbinbterfaces);
         return 0;
     }
-    nbifaces=newdev->nbifaces;
-
-    for (i =0 ; i < nbifaces ;i++) {
-        for (j =0 ; j < nbifaces ;j++) {
-            if(dev->ifaces[i].devref == newdev->ifaces[j]->devref){
-                break;
-            }
-        }
-        if(j==nbifaces)
-            break;
-    }
-    if( i < nbifaces ) {
-        HALLOG("devref %d has changed for %s (%X)\n",i,dev->infos.serial,dev->ifaces[i].devref);
+    if(dev->iface.devref != newiface->devref){
+        HALLOG("devref has changed for %s (%X)\n",dev->infos.serial,dev->iface.devref);
         return 0;
     }
 
@@ -447,22 +435,29 @@ static void read_callback(struct libusb_transfer *transfer)
     int res;
     linRdTr      *lintr = (linRdTr*)transfer->user_data;
     yInterfaceSt *iface = lintr->iface;
+    if (iface == NULL){
+        HALLOG("drop invalid ypkt read_callback (iface is null)\n");
+        return;
+    }
+
     switch(transfer->status){
     case LIBUSB_TRANSFER_COMPLETED:
         //HALLOG("%s:%d pkt_arrived (len=%d)\n",iface->serial,iface->ifaceno,transfer->actual_length);
         yPktQueuePushD2H(iface,&lintr->tmppkt,NULL);
         if (iface->flags.yyySetupDone) {
             res=libusb_submit_transfer(lintr->tr);
-            if(res<0){
+            if(res<0) {
                 HALLOG("%s:%d libusb_submit_transfer errror %X\n",iface->serial,iface->ifaceno,res);
             }
         }
         return;
     case LIBUSB_TRANSFER_ERROR:
         HALLOG("%s:%d pkt error\n",iface->serial,iface->ifaceno);
-        res=libusb_submit_transfer(lintr->tr);
-        if(res<0){
-            HALLOG("%s:%d libusb_submit_transfer errror %X\n",iface->serial,iface->ifaceno,res);
+        if (iface->flags.yyySetupDone) {
+            res = libusb_submit_transfer(lintr->tr);
+            if (res < 0) {
+                HALLOG("%s:%d libusb_submit_transfer errror %X\n", iface->serial, iface->ifaceno, res);
+            }
         }
         break;
     case LIBUSB_TRANSFER_TIMED_OUT :
@@ -470,15 +465,17 @@ static void read_callback(struct libusb_transfer *transfer)
         break;
     case LIBUSB_TRANSFER_CANCELLED:
         HALLOG("%s:%d pkt_cancelled (len=%d) \n",iface->serial,iface->ifaceno,transfer->actual_length);
-        if(transfer->actual_length==64){
-            yPktQueuePushD2H(iface,&lintr->tmppkt,NULL);
+        if (iface->flags.yyySetupDone && transfer->actual_length == 64) {
+            yPktQueuePushD2H(iface, &lintr->tmppkt, NULL);
         }
         break;
     case LIBUSB_TRANSFER_STALL:
         HALLOG("%s:%d pkt stall\n",iface->serial,iface->ifaceno);
-        res=libusb_submit_transfer(lintr->tr);
-        if(res<0){
-            HALLOG("%s:%d libusb_submit_transfer errror %X\n",iface->serial,iface->ifaceno,res);
+        if (iface->flags.yyySetupDone) {
+            res = libusb_submit_transfer(lintr->tr);
+            if (res < 0) {
+                HALLOG("%s:%d libusb_submit_transfer errror %X\n", iface->serial, iface->ifaceno, res);
+            }
         }
         break;
     case LIBUSB_TRANSFER_NO_DEVICE:
@@ -508,6 +505,18 @@ int yyySetup(yInterfaceSt *iface,char *errmsg)
     if(iface->devref==NULL){
         return YERR(YAPI_DEVICE_NOT_FOUND);
     }
+
+    // we need to do this as it is possible that the device was not closed properly in a previous session
+    // if we don't do this and the device wasn't closed properly odd behavior results.
+    // thanks to Rob Krakora who find this solution
+    if((res=libusb_open(iface->devref,&iface->hdl))!=0){
+        return yLinSetErr("libusb_open", res,errmsg);
+    } else {
+        libusb_reset_device(iface->hdl);
+        libusb_close(iface->hdl);
+        usleep(200);
+    }
+
     if((res=libusb_open(iface->devref,&iface->hdl))!=0){
         return yLinSetErr("libusb_open", res,errmsg);
     }
@@ -623,42 +632,48 @@ int yyySignalOutPkt(yInterfaceSt *iface)
 
 void yyyPacketShutdown(yInterfaceSt  *iface)
 {
-    int res,j;
-    iface->flags.yyySetupDone = 0;
-    HALLOG("%s:%d cancel all transfer\n",iface->serial,iface->ifaceno);
-    for(j=0;j< NB_LINUX_USB_TR ; j++){
-        int count=10;
-        int res =libusb_cancel_transfer(iface->rdTr[j].tr);
-        if(res==0){
-            while(count && iface->rdTr[j].tr->status != LIBUSB_TRANSFER_CANCELLED){
-                usleep(1000);
-                count--;
+    if (iface && iface->hdl) {
+        int res,j;
+        iface->flags.yyySetupDone = 0;
+        HALLOG("%s:%d cancel all transfer\n",iface->serial,iface->ifaceno);
+        for(j=0;j< NB_LINUX_USB_TR ; j++){
+            int count=10;
+            if (iface->rdTr[j].tr)
+            {
+                int res =libusb_cancel_transfer(iface->rdTr[j].tr);
+                if(res==0){
+                    while(count && iface->rdTr[j].tr->status != LIBUSB_TRANSFER_CANCELLED){
+                        usleep(1000);
+                        count--;
+                    }
+                }
             }
         }
-    }
 
-    HALLOG("%s:%d libusb relase iface\n",iface->serial,iface->ifaceno);
-    res = libusb_release_interface(iface->hdl,iface->ifaceno);
-    if(res != 0 && res!=LIBUSB_ERROR_NOT_FOUND && res!=LIBUSB_ERROR_NO_DEVICE){
-        HALLOG("%s:%dlibusb_release_interface error\n",iface->serial,iface->ifaceno);
-    }
-
-    res = libusb_attach_kernel_driver(iface->hdl,iface->ifaceno);
-    if(res<0 && res!=LIBUSB_ERROR_NO_DEVICE){
-        HALLOG("%s:%d libusb_attach_kernel_driver error\n",iface->serial,iface->ifaceno);
-    }
-    libusb_close(iface->hdl);
-
-    for (j = 0; j< NB_LINUX_USB_TR; j++) {
-        if (iface->rdTr[j].tr) {
-            HALLOG("%s:%d libusb_TR free %d\n", iface->serial, iface->ifaceno, j);
-            libusb_free_transfer(iface->rdTr[j].tr);
-            iface->rdTr[j].tr = NULL;
+        HALLOG("%s:%d libusb relase iface\n",iface->serial,iface->ifaceno);
+        res = libusb_release_interface(iface->hdl,iface->ifaceno);
+        if(res != 0 && res!=LIBUSB_ERROR_NOT_FOUND && res!=LIBUSB_ERROR_NO_DEVICE){
+            HALLOG("%s:%dlibusb_release_interface error\n",iface->serial,iface->ifaceno);
         }
-    }
 
-    yPktQueueFree(&iface->rxQueue);
-    yPktQueueFree(&iface->txQueue);
+        res = libusb_attach_kernel_driver(iface->hdl,iface->ifaceno);
+        if(res<0 && res!=LIBUSB_ERROR_NO_DEVICE){
+            HALLOG("%s:%d libusb_attach_kernel_driver error\n",iface->serial,iface->ifaceno);
+        }
+        libusb_close(iface->hdl);
+        iface->hdl = NULL;
+
+        for (j = 0; j< NB_LINUX_USB_TR; j++) {
+            if (iface->rdTr[j].tr) {
+                HALLOG("%s:%d libusb_TR free %d\n", iface->serial, iface->ifaceno, j);
+                libusb_free_transfer(iface->rdTr[j].tr);
+                iface->rdTr[j].tr = NULL;
+            }
+        }
+
+        yPktQueueFree(&iface->rxQueue);
+        yPktQueueFree(&iface->txQueue);
+    }
 }
 
 #endif

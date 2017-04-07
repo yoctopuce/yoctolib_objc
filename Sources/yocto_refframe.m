@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_refframe.m 26672 2017-02-28 13:43:38Z seb $
+ * $Id: yocto_refframe.m 27107 2017-04-06 22:17:56Z seb $
  *
  * Implements the high-level API for RefFrame functions
  *
@@ -400,7 +400,7 @@
     NSMutableArray* iCalib = [NSMutableArray array];
     int caltyp;
     int res;
-    // may throw an exception
+    
     calibParam = [self get_calibrationParam];
     iCalib = [YAPI _decodeFloats:calibParam];
     caltyp = (([[iCalib objectAtIndex:0] intValue]) / (1000));
@@ -430,7 +430,7 @@
     NSMutableArray* iCalib = [NSMutableArray array];
     int caltyp;
     int res;
-    // may throw an exception
+    
     calibParam = [self get_calibrationParam];
     iCalib = [YAPI _decodeFloats:calibParam];
     caltyp = (([[iCalib objectAtIndex:0] intValue]) / (1000));
@@ -628,6 +628,7 @@
     }
     // Discard measures that are not in the proper orientation
     if (_calibStageProgress == 0) {
+        // New stage, check that self orientation is not yet done
         idx = 0;
         err = 0;
         while (idx + 1 < _calibStage) {
@@ -642,6 +643,7 @@
         }
         [_calibOrient addObject:[NSNumber numberWithLong:orient]];
     } else {
+        // Make sure device is not turned before stage is completed
         if (orient != [[_calibOrient objectAtIndex:_calibStage-1] intValue]) {
             _calibStageHint = @"Not yet done, please move back to the previous face";
             return YAPI_SUCCESS;
@@ -768,7 +770,7 @@
             return YAPI_SUCCESS;
         }
     }
-    // may throw an exception
+    
     calibParam = [self _download:@"api/refFrame/calibrationParam.txt"];
     iCalib = [YAPI _decodeFloats:ARC_sendAutorelease([[NSString alloc] initWithData:calibParam encoding:NSISOLatin1StringEncoding])];
     cal3 = (([[iCalib objectAtIndex:1] intValue]) / (1000));
@@ -954,7 +956,7 @@
     if (_calibStage == 0) {
         return YAPI_SUCCESS;
     }
-    // may throw an exception
+    
     _calibStage = 0;
     return [self set_calibrationParam:_calibSavedParams];
 }

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_serialport.m 26672 2017-02-28 13:43:38Z seb $
+ * $Id: yocto_serialport.m 27107 2017-04-06 22:17:56Z seb $
  *
  * Implements the high-level API for SerialPort functions
  *
@@ -691,7 +691,7 @@
     _rxptr = 0;
     _rxbuffptr = 0;
     _rxbuff = [NSMutableData dataWithLength:0];
-    // may throw an exception
+    
     return [self sendCommand:@"Z"];
 }
 
@@ -727,6 +727,7 @@
     buff = [NSMutableData dataWithData:[text dataUsingEncoding:NSISOLatin1StringEncoding]];
     bufflen = (int)[buff length];
     if (bufflen < 100) {
+        // if string is pure text, we can send it as a simple command (faster)
         ch = 0x20;
         idx = 0;
         while ((idx < bufflen) && (ch != 0)) {
@@ -783,7 +784,7 @@
         (((u8*)([buff mutableBytes]))[ idx]) = hexb;
         idx = idx + 1;
     }
-    // may throw an exception
+    
     res = [self _upload:@"txdata" :buff];
     return res;
 }
@@ -816,7 +817,7 @@
         (((u8*)([buff mutableBytes]))[ idx]) = hexb;
         idx = idx + 1;
     }
-    // may throw an exception
+    
     res = [self _upload:@"txdata" :buff];
     return res;
 }
@@ -839,6 +840,7 @@
     buff = [NSMutableData dataWithData:[[NSString stringWithFormat:@"%@\r\n",text] dataUsingEncoding:NSISOLatin1StringEncoding]];
     bufflen = (int)[buff length]-2;
     if (bufflen < 100) {
+        // if string is pure text, we can send it as a simple command (faster)
         ch = 0x20;
         idx = 0;
         while ((idx < bufflen) && (ch != 0)) {
@@ -911,7 +913,7 @@
     // still mixed, need to process character by character
     _rxptr = currpos;
     
-    // may throw an exception
+    
     buff = [self _download:[NSString stringWithFormat:@"rxdata.bin?pos=%d&len=1",_rxptr]];
     bufflen = (int)[buff length] - 1;
     endpos = 0;
@@ -950,7 +952,7 @@
     if (nChars > 65535) {
         nChars = 65535;
     }
-    // may throw an exception
+    
     buff = [self _download:[NSString stringWithFormat:@"rxdata.bin?pos=%d&len=%d", _rxptr,nChars]];
     bufflen = (int)[buff length] - 1;
     endpos = 0;
@@ -987,7 +989,7 @@
     if (nChars > 65535) {
         nChars = 65535;
     }
-    // may throw an exception
+    
     buff = [self _download:[NSString stringWithFormat:@"rxdata.bin?pos=%d&len=%d", _rxptr,nChars]];
     bufflen = (int)[buff length] - 1;
     endpos = 0;
@@ -1030,7 +1032,7 @@
     if (nChars > 65535) {
         nChars = 65535;
     }
-    // may throw an exception
+    
     buff = [self _download:[NSString stringWithFormat:@"rxdata.bin?pos=%d&len=%d", _rxptr,nChars]];
     bufflen = (int)[buff length] - 1;
     endpos = 0;
@@ -1073,7 +1075,7 @@
     if (nBytes > 65535) {
         nBytes = 65535;
     }
-    // may throw an exception
+    
     buff = [self _download:[NSString stringWithFormat:@"rxdata.bin?pos=%d&len=%d", _rxptr,nBytes]];
     bufflen = (int)[buff length] - 1;
     endpos = 0;
@@ -1117,7 +1119,7 @@
     NSMutableArray* msgarr = [NSMutableArray array];
     int msglen;
     NSString* res;
-    // may throw an exception
+    
     url = [NSString stringWithFormat:@"rxmsg.json?pos=%d&len=1&maxw=1",_rxptr];
     msgbin = [self _download:url];
     msgarr = [self _json_get_array:msgbin];
@@ -1164,7 +1166,7 @@
     int msglen;
     NSMutableArray* res = [NSMutableArray array];
     int idx;
-    // may throw an exception
+    
     url = [NSString stringWithFormat:@"rxmsg.json?pos=%d&maxw=%d&pat=%@", _rxptr, maxWait,pattern];
     msgbin = [self _download:url];
     msgarr = [self _json_get_array:msgbin];
@@ -1219,7 +1221,7 @@
     NSMutableData* buff;
     int bufflen;
     int res;
-    // may throw an exception
+    
     buff = [self _download:[NSString stringWithFormat:@"rxcnt.bin?pos=%d",_rxptr]];
     bufflen = (int)[buff length] - 1;
     while ((bufflen > 0) && ((((u8*)([buff bytes]))[bufflen]) != 64)) {
@@ -1248,7 +1250,7 @@
     NSMutableArray* msgarr = [NSMutableArray array];
     int msglen;
     NSString* res;
-    // may throw an exception
+    
     url = [NSString stringWithFormat:@"rxmsg.json?len=1&maxw=%d&cmd=!%@", maxWait,query];
     msgbin = [self _download:url];
     msgarr = [self _json_get_array:msgbin];
@@ -1326,7 +1328,7 @@
 {
     NSMutableData* buff;
     int res;
-    // may throw an exception
+    
     buff = [self _download:@"cts.txt"];
     if (!((int)[buff length] == 1)) {[self _throw: YAPI_IO_ERROR: @"invalid CTS reply"]; return YAPI_IO_ERROR;}
     res = (((u8*)([buff bytes]))[0]) - 48;
@@ -1384,7 +1386,7 @@
         cmd = [NSString stringWithFormat:@"%@%02x", cmd,(([[pduBytes objectAtIndex:i] intValue]) & (0xff))];
         i = i + 1;
     }
-    // may throw an exception
+    
     url = [NSString stringWithFormat:@"rxmsg.json?cmd=:%@&pat=:%@", cmd,pat];
     msgs = [self _download:url];
     reps = [self _json_get_array:msgs];
@@ -1435,7 +1437,7 @@
     [pdu addObject:[NSNumber numberWithLong:((pduAddr) & (0xff))]];
     [pdu addObject:[NSNumber numberWithLong:((nBits) >> (8))]];
     [pdu addObject:[NSNumber numberWithLong:((nBits) & (0xff))]];
-    // may throw an exception
+    
     reply = [self queryMODBUS:slaveNo :pdu];
     if ((int)[reply count] == 0) {
         return res;
@@ -1491,7 +1493,7 @@
     [pdu addObject:[NSNumber numberWithLong:((pduAddr) & (0xff))]];
     [pdu addObject:[NSNumber numberWithLong:((nBits) >> (8))]];
     [pdu addObject:[NSNumber numberWithLong:((nBits) & (0xff))]];
-    // may throw an exception
+    
     reply = [self queryMODBUS:slaveNo :pdu];
     if ((int)[reply count] == 0) {
         return res;
@@ -1546,7 +1548,7 @@
     [pdu addObject:[NSNumber numberWithLong:((pduAddr) & (0xff))]];
     [pdu addObject:[NSNumber numberWithLong:((nWords) >> (8))]];
     [pdu addObject:[NSNumber numberWithLong:((nWords) & (0xff))]];
-    // may throw an exception
+    
     reply = [self queryMODBUS:slaveNo :pdu];
     if ((int)[reply count] == 0) {
         return res;
@@ -1592,7 +1594,7 @@
     [pdu addObject:[NSNumber numberWithLong:((pduAddr) & (0xff))]];
     [pdu addObject:[NSNumber numberWithLong:((nWords) >> (8))]];
     [pdu addObject:[NSNumber numberWithLong:((nWords) & (0xff))]];
-    // may throw an exception
+    
     reply = [self queryMODBUS:slaveNo :pdu];
     if ((int)[reply count] == 0) {
         return res;
@@ -1639,7 +1641,7 @@
     [pdu addObject:[NSNumber numberWithLong:((pduAddr) & (0xff))]];
     [pdu addObject:[NSNumber numberWithLong:value]];
     [pdu addObject:[NSNumber numberWithLong:0x00]];
-    // may throw an exception
+    
     reply = [self queryMODBUS:slaveNo :pdu];
     if ((int)[reply count] == 0) {
         return res;
@@ -1701,7 +1703,7 @@
     if (mask != 1) {
         [pdu addObject:[NSNumber numberWithLong:val]];
     }
-    // may throw an exception
+    
     reply = [self queryMODBUS:slaveNo :pdu];
     if ((int)[reply count] == 0) {
         return res;
@@ -1737,7 +1739,7 @@
     [pdu addObject:[NSNumber numberWithLong:((pduAddr) & (0xff))]];
     [pdu addObject:[NSNumber numberWithLong:((value) >> (8))]];
     [pdu addObject:[NSNumber numberWithLong:((value) & (0xff))]];
-    // may throw an exception
+    
     reply = [self queryMODBUS:slaveNo :pdu];
     if ((int)[reply count] == 0) {
         return res;
@@ -1786,7 +1788,7 @@
         [pdu addObject:[NSNumber numberWithLong:((val) & (0xff))]];
         regpos = regpos + 1;
     }
-    // may throw an exception
+    
     reply = [self queryMODBUS:slaveNo :pdu];
     if ((int)[reply count] == 0) {
         return res;
@@ -1843,7 +1845,7 @@
         [pdu addObject:[NSNumber numberWithLong:((val) & (0xff))]];
         regpos = regpos + 1;
     }
-    // may throw an exception
+    
     reply = [self queryMODBUS:slaveNo :pdu];
     if ((int)[reply count] == 0) {
         return res;

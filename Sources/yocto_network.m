@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_network.m 26672 2017-02-28 13:43:38Z seb $
+ * $Id: yocto_network.m 27107 2017-04-06 22:17:56Z seb $
  *
  * Implements the high-level API for Network functions
  *
@@ -1432,7 +1432,7 @@
 -(NSString*) ping:(NSString*)host
 {
     NSMutableData* content;
-    // may throw an exception
+    
     content = [self _download:[NSString stringWithFormat:@"ping.txt?host=%@",host]];
     return ARC_sendAutorelease([[NSString alloc] initWithData:content encoding:NSISOLatin1StringEncoding]);
 }

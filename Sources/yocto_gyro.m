@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_gyro.m 26672 2017-02-28 13:43:38Z seb $
+ * $Id: yocto_gyro.m 27107 2017-04-06 22:17:56Z seb $
  *
  * Implements the high-level API for Gyro functions
  *
@@ -575,7 +575,7 @@ static void yInternalGyroCallback(YQt *obj, NSString *value)
     double sqz;
     double norm;
     double delta;
-    // may throw an exception
+    
     if ([self _loadQuaternion] != YAPI_SUCCESS) {
         return YAPI_DEVICE_NOT_FOUND;
     }
@@ -587,10 +587,12 @@ static void yInternalGyroCallback(YQt *obj, NSString *value)
         norm = sqx + sqy + sqz + sqw;
         delta = _y * _w - _x * _z;
         if (delta > 0.499 * norm) {
+            // singularity at north pole
             _pitch = 90.0;
             _head  = floor(2.0 * 1800.0/3.141592653589793238463 * atan2(_x,-_w)+0.5) / 10.0;
         } else {
             if (delta < -0.499 * norm) {
+                // singularity at south pole
                 _pitch = -90.0;
                 _head  = floor(-2.0 * 1800.0/3.141592653589793238463 * atan2(_x,-_w)+0.5) / 10.0;
             } else {

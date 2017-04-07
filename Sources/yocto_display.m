@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_display.m 26672 2017-02-28 13:43:38Z seb $
+ * $Id: yocto_display.m 27090 2017-04-06 20:56:09Z seb $
  *
  * Implements yFindDisplay(), the high-level API for Display functions
  *
@@ -203,7 +203,7 @@
  * but you can disable it if you prefer. This setting has no effect
  * on monochrome displays.
  *
- * @param mode : <t>true</t> to enable antialiasing, <t>false</t> to
+ * @param mode : true to enable antialiasing, false to
  *         disable it.
  *
  * @return YAPI_SUCCESS if the call succeeds.
