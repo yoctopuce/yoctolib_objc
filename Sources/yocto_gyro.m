@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_gyro.m 27107 2017-04-06 22:17:56Z seb $
+ * $Id: yocto_gyro.m 27278 2017-04-25 15:41:58Z seb $
  *
  * Implements the high-level API for Gyro functions
  *
@@ -575,7 +575,7 @@ static void yInternalGyroCallback(YQt *obj, NSString *value)
     double sqz;
     double norm;
     double delta;
-    
+
     if ([self _loadQuaternion] != YAPI_SUCCESS) {
         return YAPI_DEVICE_NOT_FOUND;
     }

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_messagebox.m 27107 2017-04-06 22:17:56Z seb $
+ * $Id: yocto_messagebox.m 27421 2017-05-11 10:01:14Z seb $
  *
  * Implements the high-level API for MessageBox functions
  *
@@ -146,7 +146,6 @@
     NSMutableData* isolatin;
     int isosize;
     int i;
-    
     if (_alphab == 0) {
         // using GSM standard 7-bit alphabet
         return [_mbox gsm2str:_udata];
@@ -162,7 +161,6 @@
         }
         return ARC_sendAutorelease([[NSString alloc] initWithData:isolatin encoding:NSISOLatin1StringEncoding]);
     }
-    
     // default: convert 8 bit to string as-is
     return ARC_sendAutorelease([[NSString alloc] initWithData:_udata encoding:NSISOLatin1StringEncoding]);
 }
@@ -173,7 +171,6 @@
     int unisize;
     int unival;
     int i;
-    
     if (_alphab == 0) {
         // using GSM standard 7-bit alphabet
         return [_mbox gsm2unicode:_udata];
@@ -350,7 +347,6 @@
     int udatalen;
     int i;
     int uni;
-    
     if (_alphab == 2) {
         return YAPI_SUCCESS;
     }
@@ -369,7 +365,6 @@
     _alphab = 2;
     _udata = [NSMutableData dataWithLength:0];
     [self addUnicodeData:ucs2];
-    
     return YAPI_SUCCESS;
 }
 
@@ -380,11 +375,9 @@
     NSMutableData* newdata;
     int newdatalen;
     int i;
-    
     if ((int)[(val) length] == 0) {
         return YAPI_SUCCESS;
     }
-    
     if (_alphab == 0) {
         // Try to append using GSM 7-bit alphabet
         newdata = [_mbox str2gsm:val];
@@ -429,7 +422,6 @@
             i = i + 1;
         }
     }
-    
     return [self set_userData:udata];
 }
 
@@ -442,7 +434,6 @@
     NSMutableData* udata;
     int udatalen;
     int surrogate;
-    
     if (_alphab != 2) {
         [self convertToUnicode];
     }
@@ -481,7 +472,6 @@
         udatalen = udatalen + 2;
         i = i + 1;
     }
-    
     return [self set_userData:udata];
 }
 
@@ -507,7 +497,6 @@
     if (_npdu == 0) {
         return YAPI_INVALID_ARGUMENT;
     }
-    
     [sorted removeAllObjects];
     partno = 0;
     while (partno < _npdu) {
@@ -1074,7 +1063,6 @@
     int iei;
     int ielen;
     NSString* sig;
-    
     _aggSig = @"";
     _aggIdx = 0;
     _aggCnt = 0;
@@ -1121,10 +1109,8 @@
     int carry;
     int nbits;
     int selfb;
-    
     _pdu = [NSMutableData dataWithData:pdu];
     _npdu = 1;
-    
     // parse meta-data
     _smsc = [self decodeAddress:pdu : 1 :2*((((u8*)([pdu bytes]))[0])-1)];
     rpos = 1+(((u8*)([pdu bytes]))[0]);
@@ -1163,7 +1149,6 @@
     _mclass = ((dcs) & (16+3));
     _stamp = [self decodeTimeStamp:pdu : rpos :tslen];
     rpos = rpos + tslen;
-    
     // parse user data (including udh)
     nbits = 0;
     carry = 0;
@@ -1226,7 +1211,6 @@
         }
     }
     [self parseUserDataHeader];
-    
     return YAPI_SUCCESS;
 }
 
@@ -1235,7 +1219,7 @@
     int i;
     int retcode;
     YSms* pdu;
-    
+
     if (_npdu == 0) {
         [self generatePdu];
     }
@@ -1257,7 +1241,7 @@
     int i;
     int retcode;
     YSms* pdu;
-    
+
     if (_slot > 0) {
         return [_mbox clearSIMSlot:_slot];
     }
@@ -1628,8 +1612,7 @@
     NSMutableArray* arrPdu = [NSMutableArray array];
     NSString* hexPdu;
     YSms* sms;
-    
-    
+
     binPdu = [self _download:[NSString stringWithFormat:@"sms.json?pos=%d&len=1",slot]];
     arrPdu = [self _json_get_array:binPdu];
     hexPdu = [self _decode_json_string:[arrPdu objectAtIndex:0]];
@@ -1643,7 +1626,6 @@
 {
     int i;
     int uni;
-    
     [_gsm2unicode removeAllObjects];
     // 00-07
     [_gsm2unicode addObject:[NSNumber numberWithLong:64]];
@@ -1721,7 +1703,6 @@
     }
     // Done
     _gsm2unicodeReady = YES;
-    
     return YAPI_SUCCESS;
 }
 
@@ -1732,7 +1713,6 @@
     int reslen;
     NSMutableArray* res = [NSMutableArray array];
     int uni;
-    
     if (!(_gsm2unicodeReady)) {
         [self initGsm2Unicode];
     }
@@ -1818,7 +1798,6 @@
     NSMutableData* resbin;
     NSString* resstr;
     int uni;
-    
     if (!(_gsm2unicodeReady)) {
         [self initGsm2Unicode];
     }
@@ -1912,7 +1891,6 @@
     int extra;
     NSMutableData* res;
     int wpos;
-    
     if (!(_gsm2unicodeReady)) {
         [self initGsm2Unicode];
     }
@@ -1999,8 +1977,7 @@
     NSMutableArray* newAgg = [NSMutableArray array];
     NSMutableArray* signatures = [NSMutableArray array];
     YSms* sms;
-    
-    
+
     bitmapStr = [self get_slotsBitmap];
     if ([bitmapStr isEqualToString:_prevBitmapStr]) {
         return YAPI_SUCCESS;
@@ -2104,7 +2081,6 @@
         i = i + 1;
     }
     _messages = newMsg;
-    
     return YAPI_SUCCESS;
 }
 
@@ -2124,7 +2100,7 @@
 -(int) clearPduCounters
 {
     int retcode;
-    
+
     retcode = [self set_pduReceived:0];
     if (retcode != YAPI_SUCCESS) {
         return retcode;
@@ -2151,7 +2127,7 @@
 -(int) sendTextMessage:(NSString*)recipient :(NSString*)message
 {
     YSms* sms;
-    
+
     sms = ARC_sendAutorelease([[YSms alloc] initWith:self]);
     [sms set_recipient:recipient];
     [sms addText:message];
@@ -2177,7 +2153,7 @@
 -(int) sendFlashMessage:(NSString*)recipient :(NSString*)message
 {
     YSms* sms;
-    
+
     sms = ARC_sendAutorelease([[YSms alloc] initWith:self]);
     [sms set_recipient:recipient];
     [sms set_msgClass:0];
@@ -2214,7 +2190,6 @@
 -(NSMutableArray*) get_messages
 {
     [self checkNewMessages];
-    
     return _messages;
 }
 

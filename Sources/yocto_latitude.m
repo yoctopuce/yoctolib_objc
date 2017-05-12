@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_latitude.m 25275 2016-08-24 13:42:24Z mvuilleu $
+ * $Id: yocto_latitude.m 27278 2017-04-25 15:41:58Z seb $
  *
  * Implements the high-level API for Latitude functions
  *

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_audioout.m 26672 2017-02-28 13:43:38Z seb $
+ * $Id: yocto_audioout.m 27278 2017-04-25 15:41:58Z seb $
  *
  * Implements the high-level API for AudioOut functions
  *

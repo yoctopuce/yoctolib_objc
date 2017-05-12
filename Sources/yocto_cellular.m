@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_cellular.m 27107 2017-04-06 22:17:56Z seb $
+ * $Id: yocto_cellular.m 27278 2017-04-25 15:41:58Z seb $
  *
  * Implements the high-level API for Cellular functions
  *
@@ -1005,7 +1005,7 @@
 -(int) clearDataCounters
 {
     int retcode;
-    
+
     retcode = [self set_dataReceived:0];
     if (retcode != YAPI_SUCCESS) {
         return retcode;
@@ -1100,7 +1100,7 @@
     int idx;
     int slen;
     NSMutableArray* res = [NSMutableArray array];
-    
+
     cops = [self _AT:@"+COPS=?"];
     slen = (int)[(cops) length];
     [res removeAllObjects];
@@ -1147,7 +1147,7 @@
     int tad;
     NSString* oper;
     NSMutableArray* res = [NSMutableArray array];
-    
+
     moni = [self _AT:@"+CCED=0;#MONI=7;#MONI"];
     mccs = [moni substringWithRange:NSMakeRange(7, 3)];
     if ([[mccs substringWithRange:NSMakeRange(0, 1)] isEqualToString:@"0"]) {

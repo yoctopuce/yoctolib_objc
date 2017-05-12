@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_bridgecontrol.m 27017 2017-03-31 14:47:59Z seb $
+ * $Id: yocto_bridgecontrol.m 27278 2017-04-25 15:41:58Z seb $
  *
  * Implements the high-level API for BridgeControl functions
  *

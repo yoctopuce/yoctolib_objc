@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.m 27107 2017-04-06 22:17:56Z seb $
+ * $Id: yocto_api.m 27278 2017-04-25 15:41:58Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -3855,7 +3855,7 @@ static const char* hexArray = "0123456789ABCDEF";
 -(int) startDataLogger
 {
     NSMutableData* res;
-    
+
     res = [self _download:@"api/dataLogger/recording?recording=1"];
     if (!((int)[res length]>0)) {[self _throw: YAPI_IO_ERROR: @"unable to start datalogger"]; return YAPI_IO_ERROR;}
     return YAPI_SUCCESS;
@@ -3869,7 +3869,7 @@ static const char* hexArray = "0123456789ABCDEF";
 -(int) stopDataLogger
 {
     NSMutableData* res;
-    
+
     res = [self _download:@"api/dataLogger/recording?recording=0"];
     if (!((int)[res length]>0)) {[self _throw: YAPI_IO_ERROR: @"unable to stop datalogger"]; return YAPI_IO_ERROR;}
     return YAPI_SUCCESS;
@@ -3905,7 +3905,7 @@ static const char* hexArray = "0123456789ABCDEF";
 {
     NSString* funcid;
     NSString* funit;
-    
+
     funcid = [self get_functionId];
     funit = [self get_unit];
     return ARC_sendAutorelease([[YDataSet alloc] initWith:self :funcid :funit :startTime :endTime]);
@@ -3969,7 +3969,7 @@ static const char* hexArray = "0123456789ABCDEF";
 {
     NSString* rest_val;
     int res;
-    
+
     rest_val = [self _encodeCalibrationPoints:rawValues :refValues];
     res = [self _setAttr:@"calibrationParam" :rest_val];
     return res;
@@ -5014,7 +5014,7 @@ static const char* hexArray = "0123456789ABCDEF";
 {
     NSString* serial;
     NSMutableData* settings;
-    
+
     serial = [self get_serialNumber];
     settings = [self get_allSettings];
     if ((int)[settings length] == 0) {
@@ -5062,7 +5062,7 @@ static const char* hexArray = "0123456789ABCDEF";
     NSString* ext_settings;
     NSMutableArray* filelist = [NSMutableArray array];
     NSMutableArray* templist = [NSMutableArray array];
-    
+
     settings = [self _download:@"api.json"];
     if ((int)[settings length] == 0) {
         return settings;
@@ -5118,7 +5118,7 @@ static const char* hexArray = "0123456789ABCDEF";
     int ofs;
     int size;
     url = [NSString stringWithFormat:@"%@%@%@", @"api/", funcId, @".json?command=Z"];
-    
+
     [self _download:url];
     // add records in growing resistance value
     values = [self _json_get_array:[NSMutableData dataWithData:[jsonExtra dataUsingEncoding:NSISOLatin1StringEncoding]]];
@@ -5216,7 +5216,7 @@ static const char* hexArray = "0123456789ABCDEF";
     int count;
     int i;
     NSString* fid;
-    
+
     count  = [self functionCount];
     i = 0;
     while (i < count) {
@@ -5242,7 +5242,7 @@ static const char* hexArray = "0123456789ABCDEF";
     int i;
     NSString* ftype;
     NSMutableArray* res = [NSMutableArray array];
-    
+
     count = [self functionCount];
     i = 0;
     while (i < count) {
@@ -5586,7 +5586,7 @@ static const char* hexArray = "0123456789ABCDEF";
         [old_jpath_len addObject:[NSNumber numberWithLong:(int)[(jpath) length]]];
         [old_val_arr addObject:value];
     }
-    
+
     actualSettings = [self _download:@"api.json"];
     actualSettings = [self _flattenJsonStruct:actualSettings];
     new_dslist = [self _json_get_array:actualSettings];
@@ -5837,7 +5837,7 @@ static const char* hexArray = "0123456789ABCDEF";
 -(NSString*) get_lastLogs
 {
     NSMutableData* content;
-    
+
     content = [self _download:@"logs.txt"];
     return ARC_sendAutorelease([[NSString alloc] initWithData:content encoding:NSISOLatin1StringEncoding]);
 }
@@ -5876,7 +5876,7 @@ static const char* hexArray = "0123456789ABCDEF";
     NSString* subdevice_list;
     NSMutableArray* subdevices = [NSMutableArray array];
     NSString* serial;
-    
+
     serial = [self get_serialNumber];
     fullsize = 0;
     yapi_res = yapiGetSubdevices(STR_oc2y(serial), smallbuff, 1024, &fullsize, errmsg);
@@ -5917,7 +5917,7 @@ static const char* hexArray = "0123456789ABCDEF";
     int pathsize;
     int yapi_res;
     NSString* serial;
-    
+
     serial = [self get_serialNumber];
     // retrieve device object
     pathsize = 0;
@@ -5941,7 +5941,7 @@ static const char* hexArray = "0123456789ABCDEF";
     int pathsize;
     int yapi_res;
     NSString* serial;
-    
+
     serial = [self get_serialNumber];
     // retrieve device object
     pathsize = 0;
@@ -6561,7 +6561,7 @@ static const char* hexArray = "0123456789ABCDEF";
         _nRows = 0;
         return YAPI_SUCCESS;
     }
-    
+
     udat = [YAPI _decodeWords:[_parent _json_get_string:sdata]];
     [_values removeAllObjects];
     idx = 0;
@@ -6598,7 +6598,7 @@ static const char* hexArray = "0123456789ABCDEF";
             }
         }
     }
-    
+
     _nRows = (int)[_values count];
     return YAPI_SUCCESS;
 }
@@ -7214,7 +7214,7 @@ static const char* hexArray = "0123456789ABCDEF";
     int minCol;
     int avgCol;
     int maxCol;
-    
+
     if (progress != _progress) {
         return _progress;
     }
@@ -7250,7 +7250,7 @@ static const char* hexArray = "0123456789ABCDEF";
     } else {
         maxCol = 0;
     }
-    
+
     for (NSMutableArray* _each  in dataRows) {
         if ((tim >= _startTime) && ((_endTime == 0) || (tim <= _endTime))) {
             [_measures addObject:ARC_sendAutorelease([[YMeasure alloc] initWith:tim - itv :tim :[[_each objectAtIndex:minCol] doubleValue] :[[_each objectAtIndex:avgCol] doubleValue] :[[_each objectAtIndex:maxCol] doubleValue]])];
@@ -7457,7 +7457,7 @@ static const char* hexArray = "0123456789ABCDEF";
     int minCol;
     int avgCol;
     int maxCol;
-    
+
     startUtc = (s64) floor(measure.get_startTimeUTC+0.5);
     stream = nil;
     for (YDataStream* _each  in _streams) {
@@ -7489,7 +7489,7 @@ static const char* hexArray = "0123456789ABCDEF";
     } else {
         maxCol = 0;
     }
-    
+
     for (NSMutableArray* _each  in dataRows) {
         if ((tim >= _startTime) && ((_endTime == 0) || (tim <= _endTime))) {
             [measures addObject:ARC_sendAutorelease([[YMeasure alloc] initWith:tim - itv :tim :[[_each objectAtIndex:minCol] doubleValue] :[[_each objectAtIndex:avgCol] doubleValue] :[[_each objectAtIndex:maxCol] doubleValue]])];

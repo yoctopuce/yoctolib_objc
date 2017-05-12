@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_refframe.m 27107 2017-04-06 22:17:56Z seb $
+ * $Id: yocto_refframe.m 27278 2017-04-25 15:41:58Z seb $
  *
  * Implements the high-level API for RefFrame functions
  *
@@ -400,7 +400,7 @@
     NSMutableArray* iCalib = [NSMutableArray array];
     int caltyp;
     int res;
-    
+
     calibParam = [self get_calibrationParam];
     iCalib = [YAPI _decodeFloats:calibParam];
     caltyp = (([[iCalib objectAtIndex:0] intValue]) / (1000));
@@ -430,7 +430,7 @@
     NSMutableArray* iCalib = [NSMutableArray array];
     int caltyp;
     int res;
-    
+
     calibParam = [self get_calibrationParam];
     iCalib = [YAPI _decodeFloats:calibParam];
     caltyp = (([[iCalib objectAtIndex:0] intValue]) / (1000));
@@ -770,7 +770,7 @@
             return YAPI_SUCCESS;
         }
     }
-    
+
     calibParam = [self _download:@"api/refFrame/calibrationParam.txt"];
     iCalib = [YAPI _decodeFloats:ARC_sendAutorelease([[NSString alloc] initWithData:calibParam encoding:NSISOLatin1StringEncoding])];
     cal3 = (([[iCalib objectAtIndex:1] intValue]) / (1000));
@@ -956,7 +956,7 @@
     if (_calibStage == 0) {
         return YAPI_SUCCESS;
     }
-    
+
     _calibStage = 0;
     return [self set_calibrationParam:_calibSavedParams];
 }

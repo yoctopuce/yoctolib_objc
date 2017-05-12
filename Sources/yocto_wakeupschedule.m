@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_wakeupschedule.m 27107 2017-04-06 22:17:56Z seb $
+ * $Id: yocto_wakeupschedule.m 27278 2017-04-25 15:41:58Z seb $
  *
  * Implements the high-level API for WakeUpSchedule functions
  *
@@ -482,7 +482,7 @@
 -(s64) get_minutes
 {
     s64 res;
-    
+
     res = [self get_minutesB];
     res = ((res) << (30));
     res = res + [self get_minutesA];

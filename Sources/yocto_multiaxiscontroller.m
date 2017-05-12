@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_multiaxiscontroller.m 26672 2017-02-28 13:43:38Z seb $
+ * $Id: yocto_multiaxiscontroller.m 27278 2017-04-25 15:41:58Z seb $
  *
  * Implements the high-level API for MultiAxisController functions
  *
@@ -298,7 +298,7 @@
     ndim = (int)[speed count];
     cmd = [NSString stringWithFormat:@"H%d",(int) floor(1000*[[speed objectAtIndex:0] intValue]+0.5)];
     i = 1;
-    while (i + 1 < ndim) {
+    while (i < ndim) {
         cmd = [NSString stringWithFormat:@"%@,%d", cmd,(int) floor(1000*[[speed objectAtIndex:i] intValue]+0.5)];
         i = i + 1;
     }
@@ -324,7 +324,7 @@
     ndim = (int)[absPos count];
     cmd = [NSString stringWithFormat:@"M%d",(int) floor(16*[[absPos objectAtIndex:0] intValue]+0.5)];
     i = 1;
-    while (i + 1 < ndim) {
+    while (i < ndim) {
         cmd = [NSString stringWithFormat:@"%@,%d", cmd,(int) floor(16*[[absPos objectAtIndex:i] intValue]+0.5)];
         i = i + 1;
     }
@@ -350,7 +350,7 @@
     ndim = (int)[relPos count];
     cmd = [NSString stringWithFormat:@"m%d",(int) floor(16*[[relPos objectAtIndex:0] intValue]+0.5)];
     i = 1;
-    while (i + 1 < ndim) {
+    while (i < ndim) {
         cmd = [NSString stringWithFormat:@"%@,%d", cmd,(int) floor(16*[[relPos objectAtIndex:i] intValue]+0.5)];
         i = i + 1;
     }

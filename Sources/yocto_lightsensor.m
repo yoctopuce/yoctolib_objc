@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_lightsensor.m 26826 2017-03-17 11:20:57Z mvuilleu $
+ * $Id: yocto_lightsensor.m 27278 2017-04-25 15:41:58Z seb $
  *
  * Implements the high-level API for LightSensor functions
  *

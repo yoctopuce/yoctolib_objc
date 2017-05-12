@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_colorledcluster.m 27107 2017-04-06 22:17:56Z seb $
+ * $Id: yocto_colorledcluster.m 27278 2017-04-25 15:41:58Z seb $
  *
  * Implements the high-level API for ColorLedCluster functions
  *
@@ -711,7 +711,7 @@
         (((u8*)([buff mutableBytes]))[ 3*idx+2]) = ((rgb) & (255));
         idx = idx + 1;
     }
-    
+
     res = [self _upload:[NSString stringWithFormat:@"rgb:0:%d",ledIndex] :buff];
     return res;
 }
@@ -745,7 +745,7 @@
         (((u8*)([buff mutableBytes]))[ 3*idx+2]) = ((rgb) & (255));
         idx = idx + 1;
     }
-    
+
     res = [self _upload:[NSString stringWithFormat:@"rgb:%d",delay] :buff];
     return res;
 }
@@ -796,7 +796,7 @@
         (((u8*)([buff mutableBytes]))[ 3*idx+2]) = ((hsl) & (255));
         idx = idx + 1;
     }
-    
+
     res = [self _upload:[NSString stringWithFormat:@"hsl:0:%d",ledIndex] :buff];
     return res;
 }
@@ -830,7 +830,7 @@
         (((u8*)([buff mutableBytes]))[ 3*idx+2]) = ((hsl) & (255));
         idx = idx + 1;
     }
-    
+
     res = [self _upload:[NSString stringWithFormat:@"hsl:%d",delay] :buff];
     return res;
 }
@@ -872,7 +872,7 @@
     int r;
     int g;
     int b;
-    
+
     buff = [self _download:[NSString stringWithFormat:@"rgb.bin?typ=0&pos=%d&len=%d",3*ledIndex,3*count]];
     [res removeAllObjects];
     idx = 0;
@@ -906,7 +906,7 @@
     int r;
     int g;
     int b;
-    
+
     buff = [self _download:[NSString stringWithFormat:@"rgb.bin?typ=4&pos=%d&len=%d",3*ledIndex,3*count]];
     [res removeAllObjects];
     idx = 0;
@@ -938,7 +938,7 @@
     NSMutableArray* res = [NSMutableArray array];
     int idx;
     int seq;
-    
+
     buff = [self _download:[NSString stringWithFormat:@"rgb.bin?typ=1&pos=%d&len=%d",ledIndex,count]];
     [res removeAllObjects];
     idx = 0;
@@ -971,7 +971,7 @@
     int hl;
     int lh;
     int ll;
-    
+
     buff = [self _download:[NSString stringWithFormat:@"rgb.bin?typ=2&pos=%d&len=%d",4*seqIndex,4*count]];
     [res removeAllObjects];
     idx = 0;
@@ -1003,7 +1003,7 @@
     int idx;
     int lh;
     int ll;
-    
+
     buff = [self _download:[NSString stringWithFormat:@"rgb.bin?typ=6&pos=%d&len=%d",seqIndex,count]];
     [res removeAllObjects];
     idx = 0;
@@ -1032,7 +1032,7 @@
     NSMutableArray* res = [NSMutableArray array];
     int idx;
     int started;
-    
+
     buff = [self _download:[NSString stringWithFormat:@"rgb.bin?typ=5&pos=%d&len=%d",seqIndex,count]];
     [res removeAllObjects];
     idx = 0;
@@ -1060,7 +1060,7 @@
     NSMutableArray* res = [NSMutableArray array];
     int idx;
     int started;
-    
+
     buff = [self _download:[NSString stringWithFormat:@"rgb.bin?typ=3&pos=%d&len=%d",seqIndex,count]];
     [res removeAllObjects];
     idx = 0;

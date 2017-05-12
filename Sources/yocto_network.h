@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_network.h 26663 2017-02-28 09:49:36Z seb $
+ * $Id: yocto_network.h 27421 2017-05-11 10:01:14Z seb $
  *
  * Declares yFindNetwork(), the high-level API for Network functions
  *
@@ -790,6 +790,18 @@ typedef enum {
  * On failure, throws an exception or returns a negative error code.
  */
 -(int)     useDHCP:(NSString*)fallbackIpAddr :(int)fallbackSubnetMaskLen :(NSString*)fallbackRouter;
+
+/**
+ * Changes the configuration of the network interface to enable the use of an
+ * IP address received from a DHCP server. Until an address is received from a DHCP
+ * server, the module uses an IP of the network 169.254.0.0/16 (APIPA).
+ * Remember to call the saveToFlash() method and then to reboot the module to apply this setting.
+ *
+ * @return YAPI_SUCCESS when the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     useDHCPauto;
 
 /**
  * Changes the configuration of the network interface to use a static IP address.

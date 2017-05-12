@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_network.m 27107 2017-04-06 22:17:56Z seb $
+ * $Id: yocto_network.m 27421 2017-05-11 10:01:14Z seb $
  *
  * Implements the high-level API for Network functions
  *
@@ -1404,6 +1404,21 @@
 }
 
 /**
+ * Changes the configuration of the network interface to enable the use of an
+ * IP address received from a DHCP server. Until an address is received from a DHCP
+ * server, the module uses an IP of the network 169.254.0.0/16 (APIPA).
+ * Remember to call the saveToFlash() method and then to reboot the module to apply this setting.
+ *
+ * @return YAPI_SUCCESS when the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) useDHCPauto
+{
+    return [self set_ipConfig:@"DHCP:"];
+}
+
+/**
  * Changes the configuration of the network interface to use a static IP address.
  * Remember to call the saveToFlash() method and then to reboot the module to apply this setting.
  *
@@ -1432,7 +1447,7 @@
 -(NSString*) ping:(NSString*)host
 {
     NSMutableData* content;
-    
+
     content = [self _download:[NSString stringWithFormat:@"ping.txt?host=%@",host]];
     return ARC_sendAutorelease([[NSString alloc] initWithData:content encoding:NSISOLatin1StringEncoding]);
 }

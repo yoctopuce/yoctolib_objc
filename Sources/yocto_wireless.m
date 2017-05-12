@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_wireless.m 27107 2017-04-06 22:17:56Z seb $
+ * $Id: yocto_wireless.m 27437 2017-05-12 13:13:55Z seb $
  *
  * Implements yFindWireless(), the high-level API for Wireless functions
  *
@@ -159,6 +159,7 @@
     _security = Y_SECURITY_INVALID;
     _message = Y_MESSAGE_INVALID;
     _wlanConfig = Y_WLANCONFIG_INVALID;
+    _wlanState = Y_WLANSTATE_INVALID;
     _valueCallbackWireless = NULL;
 //--- (end of generated code: YWireless attributes initialization)
     return self;
@@ -216,6 +217,11 @@
        ARC_release(_wlanConfig);
         _wlanConfig =  [self _parseString:j];
         ARC_retain(_wlanConfig);
+        return 1;
+    }
+    if(!strcmp(j->token, "wlanState")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _wlanState =  atoi(j->token);
         return 1;
     }
     return [super _parseAttr:j];
@@ -374,6 +380,44 @@
     return [self _setAttr:@"wlanConfig" :rest_val];
 }
 /**
+ * Returns the current state of the wireless interface. The state Y_WLANSTATE_DOWN means that the
+ * network interface is
+ * not connected to a network. The state Y_WLANSTATE_SCANNING means that the network interface is
+ * scanning available
+ * frequencies. During this stage, the device is not reachable, and the network settings are not yet
+ * applied. The state
+ * Y_WLANSTATE_CONNECTED means that the network settings have been successfully applied ant that the
+ * device is reachable
+ * from the wireless network. If the device is configured to use ad-hoc or Soft AP mode, it means that
+ * the wireless network
+ * is up and that other devices can join the network. The state Y_WLANSTATE_REJECTED means that the
+ * network interface has
+ * not been able to join the requested network. The description of the error can be obtain with the
+ * get_message() method.
+ *
+ * @return a value among Y_WLANSTATE_DOWN, Y_WLANSTATE_SCANNING, Y_WLANSTATE_CONNECTED and
+ * Y_WLANSTATE_REJECTED corresponding to the current state of the wireless interface
+ *
+ * On failure, throws an exception or returns Y_WLANSTATE_INVALID.
+ */
+-(Y_WLANSTATE_enum) get_wlanState
+{
+    Y_WLANSTATE_enum res;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_WLANSTATE_INVALID;
+        }
+    }
+    res = _wlanState;
+    return res;
+}
+
+
+-(Y_WLANSTATE_enum) wlanState
+{
+    return [self get_wlanState];
+}
+/**
  * Retrieves a wireless lan interface for a given identifier.
  * The identifier can be specified using several formats:
  * <ul>
@@ -448,6 +492,24 @@
 }
 
 /**
+ * Triggers a scan of the wireless frequency and builds the list of available networks.
+ * The scan forces a disconnection from the current network. At then end of the process, the
+ * the network interface attempts to reconnect to the previous network. During the scan, the wlanState
+ * switches to Y_WLANSTATE_DOWN, then to Y_WLANSTATE_SCANNING. When the scan is completed,
+ * get_wlanState() returns either Y_WLANSTATE_DOWN or Y_WLANSTATE_SCANNING. At this
+ * point, the list of detected network can be retrieved with the get_detectedWlans() method.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) startWlanScan
+{
+    NSString* config;
+    config = [self get_wlanConfig];
+    // a full scan is triggered when a config is applied
+    return [self set_wlanConfig:config];
+}
+
+/**
  * Changes the configuration of the wireless lan interface to connect to an existing
  * access point (infrastructure mode).
  * Remember to call the saveToFlash() method and then to reboot the module to apply this setting.
@@ -515,8 +577,8 @@
 /**
  * Returns a list of YWlanRecord objects that describe detected Wireless networks.
  * This list is not updated when the module is already connected to an acces point (infrastructure mode).
- * To force an update of this list, adhocNetwork() must be called to disconnect
- * the module from the current network. The returned list must be unallocated by the caller.
+ * To force an update of this list, startWlanScan() must be called.
+ * Note that an languages without garbage collections, the returned list must be freed by the caller.
  *
  * @return a list of YWlanRecord objects, containing the SSID, channel,
  *         link quality and the type of security of the wireless network.
@@ -528,7 +590,7 @@
     NSMutableData* json;
     NSMutableArray* wlanlist = [NSMutableArray array];
     NSMutableArray* res = [NSMutableArray array];
-    
+
     json = [self _download:@"wlan.json?by=name"];
     wlanlist = [self _json_get_array:json];
     [res removeAllObjects];

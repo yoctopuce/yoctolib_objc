@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_rangefinder.m 26996 2017-03-30 16:18:14Z seb $
+ * $Id: yocto_rangefinder.m 27278 2017-04-25 15:41:58Z seb $
  *
  * Implements the high-level API for RangeFinder functions
  *

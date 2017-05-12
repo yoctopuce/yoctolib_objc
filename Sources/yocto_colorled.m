@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_colorled.m 27118 2017-04-06 22:38:36Z seb $
+ * $Id: yocto_colorled.m 27278 2017-04-25 15:41:58Z seb $
  *
  * Implements the high-level API for ColorLed functions
  *
