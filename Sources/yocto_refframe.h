@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_refframe.h 25275 2016-08-24 13:42:24Z mvuilleu $
+ * $Id: yocto_refframe.h 27708 2017-06-01 12:36:32Z seb $
  *
  * Declares yFindRefFrame(), the high-level API for RefFrame functions
  *
@@ -194,6 +194,10 @@ typedef enum {
  * a reference frame by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
+ *
+ * If a call to this object's is_online() method returns FALSE although
+ * you are certain that the matching device is plugged, make sure that you did
+ * call registerHub() at application initialization time.
  *
  * @param func : a string that uniquely characterizes the reference frame
  *
@@ -444,6 +448,10 @@ typedef enum {
  * a reference frame by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
+ *
+ * If a call to this object's is_online() method returns FALSE although
+ * you are certain that the matching device is plugged, make sure that you did
+ * call registerHub() at application initialization time.
  *
  * @param func : a string that uniquely characterizes the reference frame
  *

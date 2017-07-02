@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_digitalio.h 26949 2017-03-28 15:36:15Z mvuilleu $
+ * $Id: yocto_digitalio.h 27708 2017-06-01 12:36:32Z seb $
  *
  * Declares yFindDigitalIO(), the high-level API for DigitalIO functions
  *
@@ -277,6 +277,10 @@ typedef enum {
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
  *
+ * If a call to this object's is_online() method returns FALSE although
+ * you are certain that the matching device is plugged, make sure that you did
+ * call registerHub() at application initialization time.
+ *
  * @param func : a string that uniquely characterizes the digital IO port
  *
  * @return a YDigitalIO object allowing you to drive the digital IO port.
@@ -480,6 +484,10 @@ typedef enum {
  * a digital IO port by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
+ *
+ * If a call to this object's is_online() method returns FALSE although
+ * you are certain that the matching device is plugged, make sure that you did
+ * call registerHub() at application initialization time.
  *
  * @param func : a string that uniquely characterizes the digital IO port
  *

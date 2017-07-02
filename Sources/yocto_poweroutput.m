@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_poweroutput.m 27278 2017-04-25 15:41:58Z seb $
+ * $Id: yocto_poweroutput.m 27926 2017-06-27 13:25:52Z seb $
  *
  * Implements the high-level API for PowerOutput functions
  *
@@ -79,12 +79,10 @@
 //--- (end of YPowerOutput private methods implementation)
 //--- (YPowerOutput public methods implementation)
 /**
- * Returns the voltage on the power ouput featured by
- * the module.
+ * Returns the voltage on the power output featured by the module.
  *
  * @return a value among Y_VOLTAGE_OFF, Y_VOLTAGE_OUT3V3 and Y_VOLTAGE_OUT5V corresponding to the
- * voltage on the power ouput featured by
- *         the module
+ * voltage on the power output featured by the module
  *
  * On failure, throws an exception or returns Y_VOLTAGE_INVALID.
  */
@@ -147,6 +145,10 @@
  * a dual power  ouput control by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
+ *
+ * If a call to this object's is_online() method returns FALSE although
+ * you are certain that the matching device is plugged, make sure that you did
+ * call registerHub() at application initialization time.
  *
  * @param func : a string that uniquely characterizes the power ouput control
  *

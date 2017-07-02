@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.m 27278 2017-04-25 15:41:58Z seb $
+ * $Id: yocto_api.m 27708 2017-06-01 12:36:32Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -2487,6 +2487,10 @@ static const char* hexArray = "0123456789ABCDEF";
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
  *
+ * If a call to this object's is_online() method returns FALSE although
+ * you are certain that the matching device is plugged, make sure that you did
+ * call registerHub() at application initialization time.
+ *
  * @param func : a string that uniquely characterizes the function
  *
  * @return a YFunction object allowing you to drive the function.
@@ -3628,6 +3632,10 @@ static const char* hexArray = "0123456789ABCDEF";
  * a sensor by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
+ *
+ * If a call to this object's is_online() method returns FALSE although
+ * you are certain that the matching device is plugged, make sure that you did
+ * call registerHub() at application initialization time.
  *
  * @param func : a string that uniquely characterizes the sensor
  *
@@ -4825,7 +4833,8 @@ static const char* hexArray = "0123456789ABCDEF";
 }
 
 /**
- * Returns the value previously stored in this attribute.
+ * Stores a 32 bit value in the device RAM. This attribute is at programmer disposal,
+ * should he need to store a state variable.
  * On startup and after a device reboot, the value is always reset to zero.
  *
  * @param newval : an integer
@@ -4854,6 +4863,10 @@ static const char* hexArray = "0123456789ABCDEF";
  * a module by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
+ *
+ * If a call to this object's is_online() method returns FALSE although
+ * you are certain that the device is plugged, make sure that you did
+ * call registerHub() at application initialization time.
  *
  * @param func : a string containing either the serial number or
  *         the logical name of the desired module

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_rangefinder.h 26826 2017-03-17 11:20:57Z mvuilleu $
+ * $Id: yocto_rangefinder.h 27708 2017-06-01 12:36:32Z seb $
  *
  * Declares yFindRangeFinder(), the high-level API for RangeFinder functions
  *
@@ -181,6 +181,10 @@ typedef enum {
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
  *
+ * If a call to this object's is_online() method returns FALSE although
+ * you are certain that the matching device is plugged, make sure that you did
+ * call registerHub() at application initialization time.
+ *
  * @param func : a string that uniquely characterizes the range finder
  *
  * @return a YRangeFinder object allowing you to drive the range finder.
@@ -329,6 +333,10 @@ typedef enum {
  * a range finder by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
+ *
+ * If a call to this object's is_online() method returns FALSE although
+ * you are certain that the matching device is plugged, make sure that you did
+ * call registerHub() at application initialization time.
  *
  * @param func : a string that uniquely characterizes the range finder
  *

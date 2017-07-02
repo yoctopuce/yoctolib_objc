@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_hubport.h 25275 2016-08-24 13:42:24Z mvuilleu $
+ * $Id: yocto_hubport.h 27708 2017-06-01 12:36:32Z seb $
  *
  * Declares yFindHubPort(), the high-level API for HubPort functions
  *
@@ -164,6 +164,10 @@ typedef enum {
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
  *
+ * If a call to this object's is_online() method returns FALSE although
+ * you are certain that the matching device is plugged, make sure that you did
+ * call registerHub() at application initialization time.
+ *
  * @param func : a string that uniquely characterizes the Yocto-hub port
  *
  * @return a YHubPort object allowing you to drive the Yocto-hub port.
@@ -227,6 +231,10 @@ typedef enum {
  * a Yocto-hub port by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
+ *
+ * If a call to this object's is_online() method returns FALSE although
+ * you are certain that the matching device is plugged, make sure that you did
+ * call registerHub() at application initialization time.
  *
  * @param func : a string that uniquely characterizes the Yocto-hub port
  *

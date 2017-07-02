@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_magnetometer.m 27278 2017-04-25 15:41:58Z seb $
+ * $Id: yocto_magnetometer.m 27708 2017-06-01 12:36:32Z seb $
  *
  * Implements the high-level API for Magnetometer functions
  *
@@ -235,6 +235,10 @@
  * a magnetometer by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
+ *
+ * If a call to this object's is_online() method returns FALSE although
+ * you are certain that the matching device is plugged, make sure that you did
+ * call registerHub() at application initialization time.
  *
  * @param func : a string that uniquely characterizes the magnetometer
  *

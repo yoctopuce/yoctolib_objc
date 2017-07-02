@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.h 26826 2017-03-17 11:20:57Z mvuilleu $
+ * $Id: yocto_api.h 27708 2017-06-01 12:36:32Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -62,7 +62,7 @@
 
 extern NSMutableDictionary* YAPI_YFunctions;
 
-#define YOCTO_API_REVISION          "27439"
+#define YOCTO_API_REVISION          "27961"
 
 // yInitAPI argument
 #define Y_DETECT_NONE           0
@@ -781,6 +781,10 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
  *
+ * If a call to this object's is_online() method returns FALSE although
+ * you are certain that the matching device is plugged, make sure that you did
+ * call registerHub() at application initialization time.
+ *
  * @param func : a string that uniquely characterizes the function
  *
  * @return a YFunction object allowing you to drive the function.
@@ -1300,7 +1304,8 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
 
 -(int) userVar;
 /**
- * Returns the value previously stored in this attribute.
+ * Stores a 32 bit value in the device RAM. This attribute is at programmer disposal,
+ * should he need to store a state variable.
  * On startup and after a device reboot, the value is always reset to zero.
  *
  * @param newval : an integer
@@ -1322,6 +1327,10 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
  * a module by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
+ *
+ * If a call to this object's is_online() method returns FALSE although
+ * you are certain that the device is plugged, make sure that you did
+ * call registerHub() at application initialization time.
  *
  * @param func : a string containing either the serial number or
  *         the logical name of the desired module
@@ -1859,6 +1868,10 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
  * a sensor by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
+ *
+ * If a call to this object's is_online() method returns FALSE although
+ * you are certain that the matching device is plugged, make sure that you did
+ * call registerHub() at application initialization time.
  *
  * @param func : a string that uniquely characterizes the sensor
  *
@@ -2953,6 +2966,10 @@ void    yRegisterLogFunction(yLogCallback logfun);
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
  *
+ * If a call to this object's is_online() method returns FALSE although
+ * you are certain that the matching device is plugged, make sure that you did
+ * call registerHub() at application initialization time.
+ *
  * @param func : a string that uniquely characterizes the function
  *
  * @return a YFunction object allowing you to drive the function.
@@ -2976,6 +2993,10 @@ YFunction* yFirstFunction(void);
  * a module by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
+ *
+ * If a call to this object's is_online() method returns FALSE although
+ * you are certain that the device is plugged, make sure that you did
+ * call registerHub() at application initialization time.
  *
  * @param func : a string containing either the serial number or
  *         the logical name of the desired module
@@ -3016,6 +3037,10 @@ YModule* yFirstModule(void);
  * a sensor by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
+ *
+ * If a call to this object's is_online() method returns FALSE although
+ * you are certain that the matching device is plugged, make sure that you did
+ * call registerHub() at application initialization time.
  *
  * @param func : a string that uniquely characterizes the sensor
  *

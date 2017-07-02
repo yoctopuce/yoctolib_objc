@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_network.h 27421 2017-05-11 10:01:14Z seb $
+ * $Id: yocto_network.h 27726 2017-06-02 13:18:52Z mvuilleu $
  *
  * Declares yFindNetwork(), the high-level API for Network functions
  *
@@ -85,6 +85,7 @@ typedef enum {
     Y_CALLBACKENCODING_AZURE = 7,
     Y_CALLBACKENCODING_INFLUXDB = 8,
     Y_CALLBACKENCODING_MQTT = 9,
+    Y_CALLBACKENCODING_YOCTO_API_JZON = 10,
     Y_CALLBACKENCODING_INVALID = -1,
 } Y_CALLBACKENCODING_enum;
 #endif
@@ -553,8 +554,8 @@ typedef enum {
  * @return a value among Y_CALLBACKENCODING_FORM, Y_CALLBACKENCODING_JSON,
  * Y_CALLBACKENCODING_JSON_ARRAY, Y_CALLBACKENCODING_CSV, Y_CALLBACKENCODING_YOCTO_API,
  * Y_CALLBACKENCODING_JSON_NUM, Y_CALLBACKENCODING_EMONCMS, Y_CALLBACKENCODING_AZURE,
- * Y_CALLBACKENCODING_INFLUXDB and Y_CALLBACKENCODING_MQTT corresponding to the encoding standard to
- * use for representing notification values
+ * Y_CALLBACKENCODING_INFLUXDB, Y_CALLBACKENCODING_MQTT and Y_CALLBACKENCODING_YOCTO_API_JZON
+ * corresponding to the encoding standard to use for representing notification values
  *
  * On failure, throws an exception or returns Y_CALLBACKENCODING_INVALID.
  */
@@ -568,8 +569,8 @@ typedef enum {
  * @param newval : a value among Y_CALLBACKENCODING_FORM, Y_CALLBACKENCODING_JSON,
  * Y_CALLBACKENCODING_JSON_ARRAY, Y_CALLBACKENCODING_CSV, Y_CALLBACKENCODING_YOCTO_API,
  * Y_CALLBACKENCODING_JSON_NUM, Y_CALLBACKENCODING_EMONCMS, Y_CALLBACKENCODING_AZURE,
- * Y_CALLBACKENCODING_INFLUXDB and Y_CALLBACKENCODING_MQTT corresponding to the encoding standard to
- * use for representing notification values
+ * Y_CALLBACKENCODING_INFLUXDB, Y_CALLBACKENCODING_MQTT and Y_CALLBACKENCODING_YOCTO_API_JZON
+ * corresponding to the encoding standard to use for representing notification values
  *
  * @return YAPI_SUCCESS if the call succeeds.
  *
@@ -753,6 +754,10 @@ typedef enum {
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
  *
+ * If a call to this object's is_online() method returns FALSE although
+ * you are certain that the matching device is plugged, make sure that you did
+ * call registerHub() at application initialization time.
+ *
  * @param func : a string that uniquely characterizes the network interface
  *
  * @return a YNetwork object allowing you to drive the network interface.
@@ -882,6 +887,10 @@ typedef enum {
  * a network interface by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
+ *
+ * If a call to this object's is_online() method returns FALSE although
+ * you are certain that the matching device is plugged, make sure that you did
+ * call registerHub() at application initialization time.
  *
  * @param func : a string that uniquely characterizes the network interface
  *

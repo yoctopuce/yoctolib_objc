@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_currentloopoutput.m 27278 2017-04-25 15:41:58Z seb $
+ * $Id: yocto_currentloopoutput.m 27926 2017-06-27 13:25:52Z seb $
  *
  * Implements the high-level API for CurrentLoopOutput functions
  *
@@ -265,6 +265,10 @@
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
  *
+ * If a call to this object's is_online() method returns FALSE although
+ * you are certain that the matching device is plugged, make sure that you did
+ * call registerHub() at application initialization time.
+ *
  * @param func : a string that uniquely characterizes the 4-20mA output
  *
  * @return a YCurrentLoopOutput object allowing you to drive the 4-20mA output.
@@ -325,7 +329,7 @@
  * change cancels any ongoing transition process.
  *
  * @param mA_target   : new current value at the end of the transition
- *         (floating-point number, representing the transition duration in mA)
+ *         (floating-point number, representing the end current in mA)
  * @param ms_duration : total duration of the transition, in milliseconds
  *
  * @return YAPI_SUCCESS when the call succeeds.

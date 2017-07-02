@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_poweroutput.h 25275 2016-08-24 13:42:24Z mvuilleu $
+ * $Id: yocto_poweroutput.h 27926 2017-06-27 13:25:52Z seb $
  *
  * Declares yFindPowerOutput(), the high-level API for PowerOutput functions
  *
@@ -81,12 +81,10 @@ typedef enum {
 //--- (end of YPowerOutput private methods declaration)
 //--- (YPowerOutput public methods declaration)
 /**
- * Returns the voltage on the power ouput featured by
- * the module.
+ * Returns the voltage on the power output featured by the module.
  *
  * @return a value among Y_VOLTAGE_OFF, Y_VOLTAGE_OUT3V3 and Y_VOLTAGE_OUT5V corresponding to the
- * voltage on the power ouput featured by
- *         the module
+ * voltage on the power output featured by the module
  *
  * On failure, throws an exception or returns Y_VOLTAGE_INVALID.
  */
@@ -128,6 +126,10 @@ typedef enum {
  * a dual power  ouput control by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
+ *
+ * If a call to this object's is_online() method returns FALSE although
+ * you are certain that the matching device is plugged, make sure that you did
+ * call registerHub() at application initialization time.
  *
  * @param func : a string that uniquely characterizes the power ouput control
  *
@@ -192,6 +194,10 @@ typedef enum {
  * a dual power  ouput control by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
+ *
+ * If a call to this object's is_online() method returns FALSE although
+ * you are certain that the matching device is plugged, make sure that you did
+ * call registerHub() at application initialization time.
  *
  * @param func : a string that uniquely characterizes the power ouput control
  *

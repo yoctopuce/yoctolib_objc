@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_serialport.m 27278 2017-04-25 15:41:58Z seb $
+ * $Id: yocto_serialport.m 27948 2017-06-30 14:46:55Z mvuilleu $
  *
  * Implements the high-level API for SerialPort functions
  *
@@ -492,6 +492,8 @@
  * "Frame:[timeout]ms" for binary messages separated by a delay time,
  * "Modbus-ASCII" for MODBUS messages in ASCII mode,
  * "Modbus-RTU" for MODBUS messages in RTU mode,
+ * "Wiegand-ASCII" for Wiegand messages in ASCII mode,
+ * "Wiegand-26","Wiegand-34", etc for Wiegand messages in byte mode,
  * "Char" for a continuous ASCII stream or
  * "Byte" for a continuous binary stream.
  *
@@ -523,6 +525,8 @@
  * "Frame:[timeout]ms" for binary messages separated by a delay time,
  * "Modbus-ASCII" for MODBUS messages in ASCII mode,
  * "Modbus-RTU" for MODBUS messages in RTU mode,
+ * "Wiegand-ASCII" for Wiegand messages in ASCII mode,
+ * "Wiegand-26","Wiegand-34", etc for Wiegand messages in byte mode,
  * "Char" for a continuous ASCII stream or
  * "Byte" for a continuous binary stream.
  * The suffix "/[wait]ms" can be added to reduce the transmit rate so that there
@@ -618,6 +622,10 @@
  * a serial port by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
+ *
+ * If a call to this object's is_online() method returns FALSE although
+ * you are certain that the matching device is plugged, make sure that you did
+ * call registerHub() at application initialization time.
  *
  * @param func : a string that uniquely characterizes the serial port
  *
