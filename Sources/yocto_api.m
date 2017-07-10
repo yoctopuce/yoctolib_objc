@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.m 27708 2017-06-01 12:36:32Z seb $
+ * $Id: yocto_api.m 28024 2017-07-10 08:50:02Z mvuilleu $
  *
  * High-level programming interface, common to all modules
  *
@@ -897,8 +897,8 @@ static const char* hexArray = "0123456789ABCDEF";
  * network hub (this URL can be passed to RegisterHub). This callback will be invoked
  * while yUpdateDeviceList is running. You will have to call this function on a regular basis.
  *
- * @param hubDiscoveryCallback : a procedure taking two string parameter, or nil
- *         to unregister a previously registered  callback.
+ * @param hubDiscoveryCallback : a procedure taking two string parameter, the serial
+ *         number and the hub URL. Use nil to unregister a previously registered  callback.
  */
 +(void)        RegisterHubDiscoveryCallback:(YHubDiscoveryCallback) hubDiscoveryCallback
 {
@@ -1210,7 +1210,7 @@ static const char* hexArray = "0123456789ABCDEF";
 }
 
 /**
- * Force a hub discovery, if a callback as been registered with yRegisterDeviceRemovalCallback it
+ * Force a hub discovery, if a callback as been registered with yRegisterHubDiscoveryCallback it
  * will be called for each net work hub that will respond to the discovery.
  *
  * @param errmsg : a string passed by reference to receive any error message.
@@ -7392,6 +7392,12 @@ static const char* hexArray = "0123456789ABCDEF";
     YDataStream* stream;
     if (_progress < 0) {
         url = [NSString stringWithFormat:@"logger.json?id=%@",_functionId];
+        if (_startTime != 0) {
+            url = [NSString stringWithFormat:@"%@&from=%lu",url,_startTime];
+        }
+        if (_endTime != 0) {
+            url = [NSString stringWithFormat:@"%@&to=%lu",url,_endTime];
+        }
     } else {
         if (_progress >= (int)[_streams count]) {
             return 100;

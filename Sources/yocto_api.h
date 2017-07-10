@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.h 27708 2017-06-01 12:36:32Z seb $
+ * $Id: yocto_api.h 28015 2017-07-07 16:27:06Z mvuilleu $
  *
  * High-level programming interface, common to all modules
  *
@@ -62,7 +62,7 @@
 
 extern NSMutableDictionary* YAPI_YFunctions;
 
-#define YOCTO_API_REVISION          "27961"
+#define YOCTO_API_REVISION          "28028"
 
 // yInitAPI argument
 #define Y_DETECT_NONE           0
@@ -383,8 +383,8 @@ int _ystrpos(NSString* haystack, NSString* needle);
  * network hub (this URL can be passed to RegisterHub). This callback will be invoked
  * while yUpdateDeviceList is running. You will have to call this function on a regular basis.
  *
- * @param hubDiscoveryCallback : a procedure taking two string parameter, or nil
- *         to unregister a previously registered  callback.
+ * @param hubDiscoveryCallback : a procedure taking two string parameter, the serial
+ *         number and the hub URL. Use nil to unregister a previously registered  callback.
  */
  +(void)        RegisterHubDiscoveryCallback:(YHubDiscoveryCallback) hubDiscoveryCallback;
 
@@ -536,7 +536,7 @@ int _ystrpos(NSString* haystack, NSString* needle);
  +(YRETCODE)    Sleep:(unsigned)ms_duration :(NSError**)error;
 
 /**
- * Force a hub discovery, if a callback as been registered with yRegisterDeviceRemovalCallback it
+ * Force a hub discovery, if a callback as been registered with yRegisterHubDiscoveryCallback it
  * will be called for each net work hub that will respond to the discovery.
  *
  * @param errmsg : a string passed by reference to receive any error message.
