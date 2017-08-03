@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_currentloopoutput.m 27926 2017-06-27 13:25:52Z seb $
+ * $Id: yocto_currentloopoutput.m 28293 2017-08-03 09:01:57Z mvuilleu $
  *
  * Implements the high-level API for CurrentLoopOutput functions
  *
@@ -343,7 +343,7 @@
     if (mA_target > 21.0) {
         mA_target = 21.0;
     }
-    newval = [NSString stringWithFormat:@"%d:%d", (int) floor(mA_target*1000+0.5),ms_duration];
+    newval = [NSString stringWithFormat:@"%d:%d", (int) floor(mA_target*65536+0.5),ms_duration];
 
     return [self set_currentTransition:newval];
 }

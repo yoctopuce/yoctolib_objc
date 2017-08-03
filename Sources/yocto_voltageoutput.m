@@ -308,7 +308,7 @@
     if (V_target > 10.0) {
         V_target = 10.0;
     }
-    newval = [NSString stringWithFormat:@"%d:%d", (int) floor(V_target*1000+0.5),ms_duration];
+    newval = [NSString stringWithFormat:@"%d:%d", (int) floor(V_target*65536+0.5),ms_duration];
 
     return [self set_voltageTransition:newval];
 }
