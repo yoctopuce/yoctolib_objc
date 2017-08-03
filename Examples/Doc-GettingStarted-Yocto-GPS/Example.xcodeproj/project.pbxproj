@@ -26,7 +26,6 @@
 		B8F48A9314A93A3E008FBD0C /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B8F48A9214A93A3E008FBD0C /* IOKit.framework */; };
 
 		B8A727A817E0CD3A0057f9627190 /* yocto_altitude.m in Sources */ = {isa = PBXBuildFile; fileRef = B8A727A817E0CD3A0057f908d263 /* yocto_altitude.m */; };
-		B8A727A817E0CD3A0057cba5f4a /* yocto_datalogger.m in Sources */ = {isa = PBXBuildFile; fileRef = B8A727A817E0CD3A00577cf41f0c /* yocto_datalogger.m */; };
 		B8A727A817E0CD3A0057f9cb27d5 /* yocto_gps.m in Sources */ = {isa = PBXBuildFile; fileRef = B8A727A817E0CD3A0057ff31121 /* yocto_gps.m */; };
 		B8A727A817E0CD3A0057879314be /* yocto_groundspeed.m in Sources */ = {isa = PBXBuildFile; fileRef = B8A727A817E0CD3A0057185cbe5b /* yocto_groundspeed.m */; };
 		B8A727A817E0CD3A0057fdd31d77 /* yocto_latitude.m in Sources */ = {isa = PBXBuildFile; fileRef = B8A727A817E0CD3A0057fdb9be84 /* yocto_latitude.m */; };
@@ -82,8 +81,6 @@
 
 		B8A727A817E0CD3A0057f908d263 /* yocto_altitude.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = yocto_altitude.m; path = ../../../Sources/yocto_altitude.m; sourceTree = "<group>"; };
 		B8A727A817E0CD3A0057896226ec /* yocto_altitude.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yocto_altitude.h; path = ../../../Sources/yocto_altitude.h; sourceTree = "<group>"; };
-		B8A727A817E0CD3A00577cf41f0c /* yocto_datalogger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = yocto_datalogger.m; path = ../../../Sources/yocto_datalogger.m; sourceTree = "<group>"; };
-		B8A727A817E0CD3A0057c9eeb83 /* yocto_datalogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yocto_datalogger.h; path = ../../../Sources/yocto_datalogger.h; sourceTree = "<group>"; };
 		B8A727A817E0CD3A0057ff31121 /* yocto_gps.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = yocto_gps.m; path = ../../../Sources/yocto_gps.m; sourceTree = "<group>"; };
 		B8A727A817E0CD3A00577f99e5ae /* yocto_gps.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yocto_gps.h; path = ../../../Sources/yocto_gps.h; sourceTree = "<group>"; };
 		B8A727A817E0CD3A0057185cbe5b /* yocto_groundspeed.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = yocto_groundspeed.m; path = ../../../Sources/yocto_groundspeed.m; sourceTree = "<group>"; };
@@ -161,8 +158,6 @@
 
 				B8A727A817E0CD3A0057f908d263 /* yocto_altitude.m */,
 				B8A727A817E0CD3A0057896226ec /* yocto_altitude.h */,
-				B8A727A817E0CD3A00577cf41f0c /* yocto_datalogger.m */,
-				B8A727A817E0CD3A0057c9eeb83 /* yocto_datalogger.h */,
 				B8A727A817E0CD3A0057ff31121 /* yocto_gps.m */,
 				B8A727A817E0CD3A00577f99e5ae /* yocto_gps.h */,
 				B8A727A817E0CD3A0057185cbe5b /* yocto_groundspeed.m */,
@@ -275,7 +270,6 @@
 				B845588F14DC315D00425F49 /* ythread.c in Sources */,
 
 				B8A727A817E0CD3A0057f9627190 /* yocto_altitude.m in Sources */,
-				B8A727A817E0CD3A0057cba5f4a /* yocto_datalogger.m in Sources */,
 				B8A727A817E0CD3A0057f9cb27d5 /* yocto_gps.m in Sources */,
 				B8A727A817E0CD3A0057879314be /* yocto_groundspeed.m in Sources */,
 				B8A727A817E0CD3A0057fdd31d77 /* yocto_latitude.m in Sources */,

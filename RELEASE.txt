@@ -1,2 +1,2 @@
-- Improve datalogger summary load performance when using limited time range
-- Fix compilation for iOS
+- Add support for Yocto-0-10V-Tx and Yocto-Bridge
+- Add getDataLogger() method to YSensor class

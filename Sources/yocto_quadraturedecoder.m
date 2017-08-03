@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_quadraturedecoder.m 27708 2017-06-01 12:36:32Z seb $
+ * $Id: yocto_quadraturedecoder.m 28159 2017-07-27 09:37:52Z seb $
  *
  * Implements the high-level API for QuadratureDecoder functions
  *
@@ -107,9 +107,9 @@
     return [self _setAttr:@"currentValue" :rest_val];
 }
 /**
- * Returns the PWM frequency in Hz.
+ * Returns the increments frequency, in Hz.
  *
- * @return a floating point number corresponding to the PWM frequency in Hz
+ * @return a floating point number corresponding to the increments frequency, in Hz
  *
  * On failure, throws an exception or returns Y_SPEED_INVALID.
  */

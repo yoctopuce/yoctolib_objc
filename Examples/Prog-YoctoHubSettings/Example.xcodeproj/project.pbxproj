@@ -31,7 +31,6 @@
 		B8A727A817E0CD3A00572cde749f /* yocto_audioin.m in Sources */ = {isa = PBXBuildFile; fileRef = B8A727A817E0CD3A0057467d879f /* yocto_audioin.m */; };
 		B8A727A817E0CD3A005733ba3057 /* yocto_audioout.m in Sources */ = {isa = PBXBuildFile; fileRef = B8A727A817E0CD3A005733d093a4 /* yocto_audioout.m */; };
 		B8A727A817E0CD3A00575e792498 /* yocto_bluetoothlink.m in Sources */ = {isa = PBXBuildFile; fileRef = B8A727A817E0CD3A00574b73f608 /* yocto_bluetoothlink.m */; };
-		B8A727A817E0CD3A0057870d90ef /* yocto_bridgecontrol.m in Sources */ = {isa = PBXBuildFile; fileRef = B8A727A817E0CD3A00579207427f /* yocto_bridgecontrol.m */; };
 		B8A727A817E0CD3A0057f8f11e75 /* yocto_buzzer.m in Sources */ = {isa = PBXBuildFile; fileRef = B8A727A817E0CD3A0057eb22ec64 /* yocto_buzzer.m */; };
 		B8A727A817E0CD3A005766ae4107 /* yocto_carbondioxide.m in Sources */ = {isa = PBXBuildFile; fileRef = B8A727A817E0CD3A005773a49397 /* yocto_carbondioxide.m */; };
 		B8A727A817E0CD3A00572449715e /* yocto_cellular.m in Sources */ = {isa = PBXBuildFile; fileRef = B8A727A817E0CD3A00572423d2ad /* yocto_cellular.m */; };
@@ -41,7 +40,6 @@
 		B8A727A817E0CD3A0057a9e1010b /* yocto_current.m in Sources */ = {isa = PBXBuildFile; fileRef = B8A727A817E0CD3A0057c342f20b /* yocto_current.m */; };
 		B8A727A817E0CD3A00572cc45e6e /* yocto_currentloopoutput.m in Sources */ = {isa = PBXBuildFile; fileRef = B8A727A817E0CD3A005788bb52f5 /* yocto_currentloopoutput.m */; };
 		B8A727A817E0CD3A00578edbc807 /* yocto_daisychain.m in Sources */ = {isa = PBXBuildFile; fileRef = B8A727A817E0CD3A0057fe958841 /* yocto_daisychain.m */; };
-		B8A727A817E0CD3A0057cba5f4a /* yocto_datalogger.m in Sources */ = {isa = PBXBuildFile; fileRef = B8A727A817E0CD3A00577cf41f0c /* yocto_datalogger.m */; };
 		B8A727A817E0CD3A00575b29552a /* yocto_digitalio.m in Sources */ = {isa = PBXBuildFile; fileRef = B8A727A817E0CD3A00577f9d9c2f /* yocto_digitalio.m */; };
 		B8A727A817E0CD3A00575080036d /* yocto_display.m in Sources */ = {isa = PBXBuildFile; fileRef = B8A727A817E0CD3A00573a23f06d /* yocto_display.m */; };
 		B8A727A817E0CD3A0057da1c2fc9 /* yocto_dualpower.m in Sources */ = {isa = PBXBuildFile; fileRef = B8A727A817E0CD3A0057fea8e6cc /* yocto_dualpower.m */; };
@@ -83,9 +81,11 @@
 		B8A727A817E0CD3A00574df66abb /* yocto_tilt.m in Sources */ = {isa = PBXBuildFile; fileRef = B8A727A817E0CD3A0057f7d06488 /* yocto_tilt.m */; };
 		B8A727A817E0CD3A0057b0177d5e /* yocto_voc.m in Sources */ = {isa = PBXBuildFile; fileRef = B8A727A817E0CD3A0057462f4baa /* yocto_voc.m */; };
 		B8A727A817E0CD3A0057d6190f55 /* yocto_voltage.m in Sources */ = {isa = PBXBuildFile; fileRef = B8A727A817E0CD3A0057bcbafc55 /* yocto_voltage.m */; };
+		B8A727A817E0CD3A005724bec588 /* yocto_voltageoutput.m in Sources */ = {isa = PBXBuildFile; fileRef = B8A727A817E0CD3A005731b41718 /* yocto_voltageoutput.m */; };
 		B8A727A817E0CD3A0057c8add713 /* yocto_wakeupmonitor.m in Sources */ = {isa = PBXBuildFile; fileRef = B8A727A817E0CD3A0057dda70583 /* yocto_wakeupmonitor.m */; };
 		B8A727A817E0CD3A00578530ec2e /* yocto_wakeupschedule.m in Sources */ = {isa = PBXBuildFile; fileRef = B8A727A817E0CD3A0057752a75b8 /* yocto_wakeupschedule.m */; };
 		B8A727A817E0CD3A00577bfc179b /* yocto_watchdog.m in Sources */ = {isa = PBXBuildFile; fileRef = B8A727A817E0CD3A00577b96b468 /* yocto_watchdog.m */; };
+		B8A727A817E0CD3A0057322bd59f /* yocto_weighscale.m in Sources */ = {isa = PBXBuildFile; fileRef = B8A727A817E0CD3A0057426595d9 /* yocto_weighscale.m */; };
 		B8A727A817E0CD3A0057c28a0113 /* yocto_wireless.m in Sources */ = {isa = PBXBuildFile; fileRef = B8A727A817E0CD3A0057c2e0a2e0 /* yocto_wireless.m */; };
 
 /* End PBXBuildFile section */
@@ -148,8 +148,6 @@
 		B8A727A817E0CD3A005743ba672b /* yocto_audioout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yocto_audioout.h; path = ../../../Sources/yocto_audioout.h; sourceTree = "<group>"; };
 		B8A727A817E0CD3A00574b73f608 /* yocto_bluetoothlink.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = yocto_bluetoothlink.m; path = ../../../Sources/yocto_bluetoothlink.m; sourceTree = "<group>"; };
 		B8A727A817E0CD3A00573b190287 /* yocto_bluetoothlink.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yocto_bluetoothlink.h; path = ../../../Sources/yocto_bluetoothlink.h; sourceTree = "<group>"; };
-		B8A727A817E0CD3A00579207427f /* yocto_bridgecontrol.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = yocto_bridgecontrol.m; path = ../../../Sources/yocto_bridgecontrol.m; sourceTree = "<group>"; };
-		B8A727A817E0CD3A0057e26db6f0 /* yocto_bridgecontrol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yocto_bridgecontrol.h; path = ../../../Sources/yocto_bridgecontrol.h; sourceTree = "<group>"; };
 		B8A727A817E0CD3A0057eb22ec64 /* yocto_buzzer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = yocto_buzzer.m; path = ../../../Sources/yocto_buzzer.m; sourceTree = "<group>"; };
 		B8A727A817E0CD3A00579b4818eb /* yocto_buzzer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yocto_buzzer.h; path = ../../../Sources/yocto_buzzer.h; sourceTree = "<group>"; };
 		B8A727A817E0CD3A005773a49397 /* yocto_carbondioxide.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = yocto_carbondioxide.m; path = ../../../Sources/yocto_carbondioxide.m; sourceTree = "<group>"; };
@@ -168,8 +166,6 @@
 		B8A727A817E0CD3A0057f8d1a67a /* yocto_currentloopoutput.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yocto_currentloopoutput.h; path = ../../../Sources/yocto_currentloopoutput.h; sourceTree = "<group>"; };
 		B8A727A817E0CD3A0057fe958841 /* yocto_daisychain.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = yocto_daisychain.m; path = ../../../Sources/yocto_daisychain.m; sourceTree = "<group>"; };
 		B8A727A817E0CD3A00578eff7cce /* yocto_daisychain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yocto_daisychain.h; path = ../../../Sources/yocto_daisychain.h; sourceTree = "<group>"; };
-		B8A727A817E0CD3A00577cf41f0c /* yocto_datalogger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = yocto_datalogger.m; path = ../../../Sources/yocto_datalogger.m; sourceTree = "<group>"; };
-		B8A727A817E0CD3A0057c9eeb83 /* yocto_datalogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yocto_datalogger.h; path = ../../../Sources/yocto_datalogger.h; sourceTree = "<group>"; };
 		B8A727A817E0CD3A00577f9d9c2f /* yocto_digitalio.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = yocto_digitalio.m; path = ../../../Sources/yocto_digitalio.m; sourceTree = "<group>"; };
 		B8A727A817E0CD3A0057ff768a0 /* yocto_digitalio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yocto_digitalio.h; path = ../../../Sources/yocto_digitalio.h; sourceTree = "<group>"; };
 		B8A727A817E0CD3A00573a23f06d /* yocto_display.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = yocto_display.m; path = ../../../Sources/yocto_display.m; sourceTree = "<group>"; };
@@ -252,12 +248,16 @@
 		B8A727A817E0CD3A00573645bf25 /* yocto_voc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yocto_voc.h; path = ../../../Sources/yocto_voc.h; sourceTree = "<group>"; };
 		B8A727A817E0CD3A0057bcbafc55 /* yocto_voltage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = yocto_voltage.m; path = ../../../Sources/yocto_voltage.m; sourceTree = "<group>"; };
 		B8A727A817E0CD3A0057ccd008da /* yocto_voltage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yocto_voltage.h; path = ../../../Sources/yocto_voltage.h; sourceTree = "<group>"; };
+		B8A727A817E0CD3A005731b41718 /* yocto_voltageoutput.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = yocto_voltageoutput.m; path = ../../../Sources/yocto_voltageoutput.m; sourceTree = "<group>"; };
+		B8A727A817E0CD3A005741dee397 /* yocto_voltageoutput.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yocto_voltageoutput.h; path = ../../../Sources/yocto_voltageoutput.h; sourceTree = "<group>"; };
 		B8A727A817E0CD3A0057dda70583 /* yocto_wakeupmonitor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = yocto_wakeupmonitor.m; path = ../../../Sources/yocto_wakeupmonitor.m; sourceTree = "<group>"; };
 		B8A727A817E0CD3A0057adcdf10c /* yocto_wakeupmonitor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yocto_wakeupmonitor.h; path = ../../../Sources/yocto_wakeupmonitor.h; sourceTree = "<group>"; };
 		B8A727A817E0CD3A0057752a75b8 /* yocto_wakeupschedule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = yocto_wakeupschedule.m; path = ../../../Sources/yocto_wakeupschedule.m; sourceTree = "<group>"; };
 		B8A727A817E0CD3A00575408137 /* yocto_wakeupschedule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yocto_wakeupschedule.h; path = ../../../Sources/yocto_wakeupschedule.h; sourceTree = "<group>"; };
 		B8A727A817E0CD3A00577b96b468 /* yocto_watchdog.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = yocto_watchdog.m; path = ../../../Sources/yocto_watchdog.m; sourceTree = "<group>"; };
 		B8A727A817E0CD3A0057bfc40e7 /* yocto_watchdog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yocto_watchdog.h; path = ../../../Sources/yocto_watchdog.h; sourceTree = "<group>"; };
+		B8A727A817E0CD3A0057426595d9 /* yocto_weighscale.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = yocto_weighscale.m; path = ../../../Sources/yocto_weighscale.m; sourceTree = "<group>"; };
+		B8A727A817E0CD3A0057320f6156 /* yocto_weighscale.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yocto_weighscale.h; path = ../../../Sources/yocto_weighscale.h; sourceTree = "<group>"; };
 		B8A727A817E0CD3A0057c2e0a2e0 /* yocto_wireless.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = yocto_wireless.m; path = ../../../Sources/yocto_wireless.m; sourceTree = "<group>"; };
 		B8A727A817E0CD3A0057b28a566f /* yocto_wireless.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yocto_wireless.h; path = ../../../Sources/yocto_wireless.h; sourceTree = "<group>"; };
 
@@ -339,8 +339,6 @@
 				B8A727A817E0CD3A005743ba672b /* yocto_audioout.h */,
 				B8A727A817E0CD3A00574b73f608 /* yocto_bluetoothlink.m */,
 				B8A727A817E0CD3A00573b190287 /* yocto_bluetoothlink.h */,
-				B8A727A817E0CD3A00579207427f /* yocto_bridgecontrol.m */,
-				B8A727A817E0CD3A0057e26db6f0 /* yocto_bridgecontrol.h */,
 				B8A727A817E0CD3A0057eb22ec64 /* yocto_buzzer.m */,
 				B8A727A817E0CD3A00579b4818eb /* yocto_buzzer.h */,
 				B8A727A817E0CD3A005773a49397 /* yocto_carbondioxide.m */,
@@ -359,8 +357,6 @@
 				B8A727A817E0CD3A0057f8d1a67a /* yocto_currentloopoutput.h */,
 				B8A727A817E0CD3A0057fe958841 /* yocto_daisychain.m */,
 				B8A727A817E0CD3A00578eff7cce /* yocto_daisychain.h */,
-				B8A727A817E0CD3A00577cf41f0c /* yocto_datalogger.m */,
-				B8A727A817E0CD3A0057c9eeb83 /* yocto_datalogger.h */,
 				B8A727A817E0CD3A00577f9d9c2f /* yocto_digitalio.m */,
 				B8A727A817E0CD3A0057ff768a0 /* yocto_digitalio.h */,
 				B8A727A817E0CD3A00573a23f06d /* yocto_display.m */,
@@ -443,12 +439,16 @@
 				B8A727A817E0CD3A00573645bf25 /* yocto_voc.h */,
 				B8A727A817E0CD3A0057bcbafc55 /* yocto_voltage.m */,
 				B8A727A817E0CD3A0057ccd008da /* yocto_voltage.h */,
+				B8A727A817E0CD3A005731b41718 /* yocto_voltageoutput.m */,
+				B8A727A817E0CD3A005741dee397 /* yocto_voltageoutput.h */,
 				B8A727A817E0CD3A0057dda70583 /* yocto_wakeupmonitor.m */,
 				B8A727A817E0CD3A0057adcdf10c /* yocto_wakeupmonitor.h */,
 				B8A727A817E0CD3A0057752a75b8 /* yocto_wakeupschedule.m */,
 				B8A727A817E0CD3A00575408137 /* yocto_wakeupschedule.h */,
 				B8A727A817E0CD3A00577b96b468 /* yocto_watchdog.m */,
 				B8A727A817E0CD3A0057bfc40e7 /* yocto_watchdog.h */,
+				B8A727A817E0CD3A0057426595d9 /* yocto_weighscale.m */,
+				B8A727A817E0CD3A0057320f6156 /* yocto_weighscale.h */,
 				B8A727A817E0CD3A0057c2e0a2e0 /* yocto_wireless.m */,
 				B8A727A817E0CD3A0057b28a566f /* yocto_wireless.h */,
 
@@ -560,7 +560,6 @@
 				B8A727A817E0CD3A00572cde749f /* yocto_audioin.m in Sources */,
 				B8A727A817E0CD3A005733ba3057 /* yocto_audioout.m in Sources */,
 				B8A727A817E0CD3A00575e792498 /* yocto_bluetoothlink.m in Sources */,
-				B8A727A817E0CD3A0057870d90ef /* yocto_bridgecontrol.m in Sources */,
 				B8A727A817E0CD3A0057f8f11e75 /* yocto_buzzer.m in Sources */,
 				B8A727A817E0CD3A005766ae4107 /* yocto_carbondioxide.m in Sources */,
 				B8A727A817E0CD3A00572449715e /* yocto_cellular.m in Sources */,
@@ -570,7 +569,6 @@
 				B8A727A817E0CD3A0057a9e1010b /* yocto_current.m in Sources */,
 				B8A727A817E0CD3A00572cc45e6e /* yocto_currentloopoutput.m in Sources */,
 				B8A727A817E0CD3A00578edbc807 /* yocto_daisychain.m in Sources */,
-				B8A727A817E0CD3A0057cba5f4a /* yocto_datalogger.m in Sources */,
 				B8A727A817E0CD3A00575b29552a /* yocto_digitalio.m in Sources */,
 				B8A727A817E0CD3A00575080036d /* yocto_display.m in Sources */,
 				B8A727A817E0CD3A0057da1c2fc9 /* yocto_dualpower.m in Sources */,
@@ -612,9 +610,11 @@
 				B8A727A817E0CD3A00574df66abb /* yocto_tilt.m in Sources */,
 				B8A727A817E0CD3A0057b0177d5e /* yocto_voc.m in Sources */,
 				B8A727A817E0CD3A0057d6190f55 /* yocto_voltage.m in Sources */,
+				B8A727A817E0CD3A005724bec588 /* yocto_voltageoutput.m in Sources */,
 				B8A727A817E0CD3A0057c8add713 /* yocto_wakeupmonitor.m in Sources */,
 				B8A727A817E0CD3A00578530ec2e /* yocto_wakeupschedule.m in Sources */,
 				B8A727A817E0CD3A00577bfc179b /* yocto_watchdog.m in Sources */,
+				B8A727A817E0CD3A0057322bd59f /* yocto_weighscale.m in Sources */,
 				B8A727A817E0CD3A0057c28a0113 /* yocto_wireless.m in Sources */,
 
 				B853FE21161B49CA0086F1F5 /* ykey.c in Sources */,

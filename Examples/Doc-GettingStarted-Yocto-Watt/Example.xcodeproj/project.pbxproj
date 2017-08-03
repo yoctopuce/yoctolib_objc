@@ -26,7 +26,6 @@
 		B8F48A9314A93A3E008FBD0C /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B8F48A9214A93A3E008FBD0C /* IOKit.framework */; };
 
 		B8A727A817E0CD3A0057a9e1010b /* yocto_current.m in Sources */ = {isa = PBXBuildFile; fileRef = B8A727A817E0CD3A0057c342f20b /* yocto_current.m */; };
-		B8A727A817E0CD3A0057cba5f4a /* yocto_datalogger.m in Sources */ = {isa = PBXBuildFile; fileRef = B8A727A817E0CD3A00577cf41f0c /* yocto_datalogger.m */; };
 		B8A727A817E0CD3A0057de8ef473 /* yocto_power.m in Sources */ = {isa = PBXBuildFile; fileRef = B8A727A817E0CD3A005761e4b36b /* yocto_power.m */; };
 		B8A727A817E0CD3A0057d6190f55 /* yocto_voltage.m in Sources */ = {isa = PBXBuildFile; fileRef = B8A727A817E0CD3A0057bcbafc55 /* yocto_voltage.m */; };
 
@@ -80,8 +79,6 @@
 
 		B8A727A817E0CD3A0057c342f20b /* yocto_current.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = yocto_current.m; path = ../../../Sources/yocto_current.m; sourceTree = "<group>"; };
 		B8A727A817E0CD3A0057b3280684 /* yocto_current.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yocto_current.h; path = ../../../Sources/yocto_current.h; sourceTree = "<group>"; };
-		B8A727A817E0CD3A00577cf41f0c /* yocto_datalogger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = yocto_datalogger.m; path = ../../../Sources/yocto_datalogger.m; sourceTree = "<group>"; };
-		B8A727A817E0CD3A0057c9eeb83 /* yocto_datalogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yocto_datalogger.h; path = ../../../Sources/yocto_datalogger.h; sourceTree = "<group>"; };
 		B8A727A817E0CD3A005761e4b36b /* yocto_power.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = yocto_power.m; path = ../../../Sources/yocto_power.m; sourceTree = "<group>"; };
 		B8A727A817E0CD3A0057118e47e4 /* yocto_power.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yocto_power.h; path = ../../../Sources/yocto_power.h; sourceTree = "<group>"; };
 		B8A727A817E0CD3A0057bcbafc55 /* yocto_voltage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = yocto_voltage.m; path = ../../../Sources/yocto_voltage.m; sourceTree = "<group>"; };
@@ -155,8 +152,6 @@
 
 				B8A727A817E0CD3A0057c342f20b /* yocto_current.m */,
 				B8A727A817E0CD3A0057b3280684 /* yocto_current.h */,
-				B8A727A817E0CD3A00577cf41f0c /* yocto_datalogger.m */,
-				B8A727A817E0CD3A0057c9eeb83 /* yocto_datalogger.h */,
 				B8A727A817E0CD3A005761e4b36b /* yocto_power.m */,
 				B8A727A817E0CD3A0057118e47e4 /* yocto_power.h */,
 				B8A727A817E0CD3A0057bcbafc55 /* yocto_voltage.m */,
@@ -265,7 +260,6 @@
 				B845588F14DC315D00425F49 /* ythread.c in Sources */,
 
 				B8A727A817E0CD3A0057a9e1010b /* yocto_current.m in Sources */,
-				B8A727A817E0CD3A0057cba5f4a /* yocto_datalogger.m in Sources */,
 				B8A727A817E0CD3A0057de8ef473 /* yocto_power.m in Sources */,
 				B8A727A817E0CD3A0057d6190f55 /* yocto_voltage.m in Sources */,
 
