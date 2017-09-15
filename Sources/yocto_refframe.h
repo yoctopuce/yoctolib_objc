@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_refframe.h 27708 2017-06-01 12:36:32Z seb $
+ * $Id: yocto_refframe.h 28457 2017-09-06 08:34:21Z mvuilleu $
  *
  * Declares yFindRefFrame(), the high-level API for RefFrame functions
  *
@@ -44,6 +44,17 @@ CF_EXTERN_C_BEGIN
 
 //--- (YRefFrame globals)
 typedef void (*YRefFrameValueCallback)(YRefFrame *func, NSString *functionValue);
+#ifndef _Y_FUSIONMODE_ENUM
+#define _Y_FUSIONMODE_ENUM
+typedef enum {
+    Y_FUSIONMODE_NDOF = 0,
+    Y_FUSIONMODE_NDOF_FMC_OFF = 1,
+    Y_FUSIONMODE_M4G = 2,
+    Y_FUSIONMODE_COMPASS = 3,
+    Y_FUSIONMODE_IMU = 4,
+    Y_FUSIONMODE_INVALID = -1,
+} Y_FUSIONMODE_enum;
+#endif
 #ifndef _Y_Y_MOUNTPOSITION
 #define _Y_Y_MOUNTPOSITION
 typedef enum {
@@ -91,6 +102,7 @@ typedef enum {
     int             _mountPos;
     double          _bearing;
     NSString*       _calibrationParam;
+    Y_FUSIONMODE_enum _fusionMode;
     YRefFrameValueCallback _valueCallbackRefFrame;
     bool            _calibV2;
     int             _calibStage;
@@ -175,6 +187,13 @@ typedef enum {
 -(NSString*) calibrationParam;
 -(int)     set_calibrationParam:(NSString*) newval;
 -(int)     setCalibrationParam:(NSString*) newval;
+
+-(Y_FUSIONMODE_enum)     get_fusionMode;
+
+
+-(Y_FUSIONMODE_enum) fusionMode;
+-(int)     set_fusionMode:(Y_FUSIONMODE_enum) newval;
+-(int)     setFusionMode:(Y_FUSIONMODE_enum) newval;
 
 /**
  * Retrieves a reference frame for a given identifier.

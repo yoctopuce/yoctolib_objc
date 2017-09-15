@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_pwminput.m 27708 2017-06-01 12:36:32Z seb $
+ * $Id: yocto_pwminput.m 28559 2017-09-15 15:01:38Z seb $
  *
  * Implements the high-level API for PwmInput functions
  *
@@ -60,6 +60,7 @@
     _pulseCounter = Y_PULSECOUNTER_INVALID;
     _pulseTimer = Y_PULSETIMER_INVALID;
     _pwmReportMode = Y_PWMREPORTMODE_INVALID;
+    _debouncePeriod = Y_DEBOUNCEPERIOD_INVALID;
     _valueCallbackPwmInput = NULL;
     _timedReportCallbackPwmInput = NULL;
 //--- (end of YPwmInput attributes initialization)
@@ -109,6 +110,11 @@
     if(!strcmp(j->token, "pwmReportMode")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
         _pwmReportMode =  atoi(j->token);
+        return 1;
+    }
+    if(!strcmp(j->token, "debouncePeriod")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _debouncePeriod =  atoi(j->token);
         return 1;
     }
     return [super _parseAttr:j];
@@ -302,13 +308,14 @@
 }
 
 /**
- * Modifies the  parameter  type (frequency/duty cycle, pulse width, or edge count) returned by the
+ * Changes the  parameter  type (frequency/duty cycle, pulse width, or edge count) returned by the
  * get_currentValue function and callbacks.
  * The edge count value is limited to the 6 lowest digits. For values greater than one million, use
  * get_pulseCounter().
  *
  * @param newval : a value among Y_PWMREPORTMODE_PWM_DUTYCYCLE, Y_PWMREPORTMODE_PWM_FREQUENCY,
- * Y_PWMREPORTMODE_PWM_PULSEDURATION and Y_PWMREPORTMODE_PWM_EDGECOUNT
+ * Y_PWMREPORTMODE_PWM_PULSEDURATION and Y_PWMREPORTMODE_PWM_EDGECOUNT corresponding to the  parameter
+ *  type (frequency/duty cycle, pulse width, or edge count) returned by the get_currentValue function and callbacks
  *
  * @return YAPI_SUCCESS if the call succeeds.
  *
@@ -323,6 +330,50 @@
     NSString* rest_val;
     rest_val = [NSString stringWithFormat:@"%d", newval];
     return [self _setAttr:@"pwmReportMode" :rest_val];
+}
+/**
+ * Returns the shortest expected pulse duration, in ms. Any shorter pulse will be automatically ignored (debounce).
+ *
+ * @return an integer corresponding to the shortest expected pulse duration, in ms
+ *
+ * On failure, throws an exception or returns Y_DEBOUNCEPERIOD_INVALID.
+ */
+-(int) get_debouncePeriod
+{
+    int res;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_DEBOUNCEPERIOD_INVALID;
+        }
+    }
+    res = _debouncePeriod;
+    return res;
+}
+
+
+-(int) debouncePeriod
+{
+    return [self get_debouncePeriod];
+}
+
+/**
+ * Changes the shortest expected pulse duration, in ms. Any shorter pulse will be automatically ignored (debounce).
+ *
+ * @param newval : an integer corresponding to the shortest expected pulse duration, in ms
+ *
+ * @return YAPI_SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) set_debouncePeriod:(int) newval
+{
+    return [self setDebouncePeriod:newval];
+}
+-(int) setDebouncePeriod:(int) newval
+{
+    NSString* rest_val;
+    rest_val = [NSString stringWithFormat:@"%d", newval];
+    return [self _setAttr:@"debouncePeriod" :rest_val];
 }
 /**
  * Retrieves a PWM input for a given identifier.

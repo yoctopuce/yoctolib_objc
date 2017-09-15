@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_pwminput.h 27708 2017-06-01 12:36:32Z seb $
+ * $Id: yocto_pwminput.h 28559 2017-09-15 15:01:38Z seb $
  *
  * Declares yFindPwmInput(), the high-level API for PwmInput functions
  *
@@ -61,6 +61,7 @@ typedef enum {
 #define Y_PERIOD_INVALID                YAPI_INVALID_DOUBLE
 #define Y_PULSECOUNTER_INVALID          YAPI_INVALID_LONG
 #define Y_PULSETIMER_INVALID            YAPI_INVALID_LONG
+#define Y_DEBOUNCEPERIOD_INVALID        YAPI_INVALID_UINT
 //--- (end of YPwmInput globals)
 
 //--- (YPwmInput class start)
@@ -85,6 +86,7 @@ typedef enum {
     s64             _pulseCounter;
     s64             _pulseTimer;
     Y_PWMREPORTMODE_enum _pwmReportMode;
+    int             _debouncePeriod;
     YPwmInputValueCallback _valueCallbackPwmInput;
     YPwmInputTimedReportCallback _timedReportCallbackPwmInput;
 //--- (end of YPwmInput attributes declaration)
@@ -185,13 +187,14 @@ typedef enum {
 
 -(Y_PWMREPORTMODE_enum) pwmReportMode;
 /**
- * Modifies the  parameter  type (frequency/duty cycle, pulse width, or edge count) returned by the
+ * Changes the  parameter  type (frequency/duty cycle, pulse width, or edge count) returned by the
  * get_currentValue function and callbacks.
  * The edge count value is limited to the 6 lowest digits. For values greater than one million, use
  * get_pulseCounter().
  *
  * @param newval : a value among Y_PWMREPORTMODE_PWM_DUTYCYCLE, Y_PWMREPORTMODE_PWM_FREQUENCY,
- * Y_PWMREPORTMODE_PWM_PULSEDURATION and Y_PWMREPORTMODE_PWM_EDGECOUNT
+ * Y_PWMREPORTMODE_PWM_PULSEDURATION and Y_PWMREPORTMODE_PWM_EDGECOUNT corresponding to the  parameter
+ *  type (frequency/duty cycle, pulse width, or edge count) returned by the get_currentValue function and callbacks
  *
  * @return YAPI_SUCCESS if the call succeeds.
  *
@@ -199,6 +202,29 @@ typedef enum {
  */
 -(int)     set_pwmReportMode:(Y_PWMREPORTMODE_enum) newval;
 -(int)     setPwmReportMode:(Y_PWMREPORTMODE_enum) newval;
+
+/**
+ * Returns the shortest expected pulse duration, in ms. Any shorter pulse will be automatically ignored (debounce).
+ *
+ * @return an integer corresponding to the shortest expected pulse duration, in ms
+ *
+ * On failure, throws an exception or returns Y_DEBOUNCEPERIOD_INVALID.
+ */
+-(int)     get_debouncePeriod;
+
+
+-(int) debouncePeriod;
+/**
+ * Changes the shortest expected pulse duration, in ms. Any shorter pulse will be automatically ignored (debounce).
+ *
+ * @param newval : an integer corresponding to the shortest expected pulse duration, in ms
+ *
+ * @return YAPI_SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     set_debouncePeriod:(int) newval;
+-(int)     setDebouncePeriod:(int) newval;
 
 /**
  * Retrieves a PWM input for a given identifier.

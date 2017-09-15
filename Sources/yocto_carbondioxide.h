@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_carbondioxide.h 27708 2017-06-01 12:36:32Z seb $
+ * $Id: yocto_carbondioxide.h 28559 2017-09-15 15:01:38Z seb $
  *
  * Declares yFindCarbonDioxide(), the high-level API for CarbonDioxide functions
  *
@@ -91,13 +91,13 @@ typedef void (*YCarbonDioxideTimedReportCallback)(YCarbonDioxide *func, YMeasure
 
 -(int) abcPeriod;
 /**
- * Modifies Automatic Baseline Calibration period, in hours. If you need
+ * Changes Automatic Baseline Calibration period, in hours. If you need
  * to disable automatic baseline calibration (for instance when using the
  * sensor in an environment that is constantly above 400ppm CO2), set the
  * period to -1. Remember to call the saveToFlash() method of the
  * module if the modification must be kept.
  *
- * @param newval : an integer
+ * @param newval : an integer corresponding to Automatic Baseline Calibration period, in hours
  *
  * @return YAPI_SUCCESS if the call succeeds.
  *

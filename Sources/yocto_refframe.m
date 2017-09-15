@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_refframe.m 27708 2017-06-01 12:36:32Z seb $
+ * $Id: yocto_refframe.m 28457 2017-09-06 08:34:21Z mvuilleu $
  *
  * Implements the high-level API for RefFrame functions
  *
@@ -56,6 +56,7 @@
     _mountPos = Y_MOUNTPOS_INVALID;
     _bearing = Y_BEARING_INVALID;
     _calibrationParam = Y_CALIBRATIONPARAM_INVALID;
+    _fusionMode = Y_FUSIONMODE_INVALID;
     _valueCallbackRefFrame = NULL;
     _calibStage = 0;
     _calibStageProgress = 0;
@@ -105,6 +106,11 @@
        ARC_release(_calibrationParam);
         _calibrationParam =  [self _parseString:j];
         ARC_retain(_calibrationParam);
+        return 1;
+    }
+    if(!strcmp(j->token, "fusionMode")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _fusionMode =  atoi(j->token);
         return 1;
     }
     return [super _parseAttr:j];
@@ -225,6 +231,34 @@
     NSString* rest_val;
     rest_val = newval;
     return [self _setAttr:@"calibrationParam" :rest_val];
+}
+-(Y_FUSIONMODE_enum) get_fusionMode
+{
+    Y_FUSIONMODE_enum res;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_FUSIONMODE_INVALID;
+        }
+    }
+    res = _fusionMode;
+    return res;
+}
+
+
+-(Y_FUSIONMODE_enum) fusionMode
+{
+    return [self get_fusionMode];
+}
+
+-(int) set_fusionMode:(Y_FUSIONMODE_enum) newval
+{
+    return [self setFusionMode:newval];
+}
+-(int) setFusionMode:(Y_FUSIONMODE_enum) newval
+{
+    NSString* rest_val;
+    rest_val = [NSString stringWithFormat:@"%d", newval];
+    return [self _setAttr:@"fusionMode" :rest_val];
 }
 /**
  * Retrieves a reference frame for a given identifier.

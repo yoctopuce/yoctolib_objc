@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.h 28159 2017-07-27 09:37:52Z seb $
+ * $Id: yocto_api.h 28559 2017-09-15 15:01:38Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -62,7 +62,7 @@
 
 extern NSMutableDictionary* YAPI_YFunctions;
 
-#define YOCTO_API_REVISION          "28296"
+#define YOCTO_API_REVISION          "28564"
 
 // yInitAPI argument
 #define Y_DETECT_NONE           0
@@ -148,6 +148,16 @@ typedef enum {
 //--- (generated code: YSensor globals)
 typedef void (*YSensorValueCallback)(YSensor *func, NSString *functionValue);
 typedef void (*YSensorTimedReportCallback)(YSensor *func, YMeasure *measure);
+#ifndef _Y_ADVMODE_ENUM
+#define _Y_ADVMODE_ENUM
+typedef enum {
+    Y_ADVMODE_IMMEDIATE = 0,
+    Y_ADVMODE_PERIOD_AVG = 1,
+    Y_ADVMODE_PERIOD_MIN = 2,
+    Y_ADVMODE_PERIOD_MAX = 3,
+    Y_ADVMODE_INVALID = -1,
+} Y_ADVMODE_enum;
+#endif
 #define Y_UNIT_INVALID                  YAPI_INVALID_STRING
 #define Y_CURRENTVALUE_INVALID          YAPI_INVALID_DOUBLE
 #define Y_LOWESTVALUE_INVALID           YAPI_INVALID_DOUBLE
@@ -1669,6 +1679,7 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
     double          _currentRawValue;
     NSString*       _logFrequency;
     NSString*       _reportFrequency;
+    Y_ADVMODE_enum  _advMode;
     NSString*       _calibrationParam;
     double          _resolution;
     int             _sensorState;
@@ -1847,6 +1858,31 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
  */
 -(int)     set_reportFrequency:(NSString*) newval;
 -(int)     setReportFrequency:(NSString*) newval;
+
+/**
+ * Returns the measuring mode used for the advertised value pushed to the parent hub.
+ *
+ * @return a value among Y_ADVMODE_IMMEDIATE, Y_ADVMODE_PERIOD_AVG, Y_ADVMODE_PERIOD_MIN and
+ * Y_ADVMODE_PERIOD_MAX corresponding to the measuring mode used for the advertised value pushed to the parent hub
+ *
+ * On failure, throws an exception or returns Y_ADVMODE_INVALID.
+ */
+-(Y_ADVMODE_enum)     get_advMode;
+
+
+-(Y_ADVMODE_enum) advMode;
+/**
+ * Changes the measuring mode used for the advertised value pushed to the parent hub.
+ *
+ * @param newval : a value among Y_ADVMODE_IMMEDIATE, Y_ADVMODE_PERIOD_AVG, Y_ADVMODE_PERIOD_MIN and
+ * Y_ADVMODE_PERIOD_MAX corresponding to the measuring mode used for the advertised value pushed to the parent hub
+ *
+ * @return YAPI_SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     set_advMode:(Y_ADVMODE_enum) newval;
+-(int)     setAdvMode:(Y_ADVMODE_enum) newval;
 
 -(NSString*)     get_calibrationParam;
 

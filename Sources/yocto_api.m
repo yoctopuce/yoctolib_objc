@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.m 28159 2017-07-27 09:37:52Z seb $
+ * $Id: yocto_api.m 28559 2017-09-15 15:01:38Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -3030,6 +3030,7 @@ static const char* hexArray = "0123456789ABCDEF";
     _currentRawValue = Y_CURRENTRAWVALUE_INVALID;
     _logFrequency = Y_LOGFREQUENCY_INVALID;
     _reportFrequency = Y_REPORTFREQUENCY_INVALID;
+    _advMode = Y_ADVMODE_INVALID;
     _calibrationParam = Y_CALIBRATIONPARAM_INVALID;
     _resolution = Y_RESOLUTION_INVALID;
     _sensorState = Y_SENSORSTATE_INVALID;
@@ -3108,6 +3109,11 @@ static const char* hexArray = "0123456789ABCDEF";
        ARC_release(_reportFrequency);
         _reportFrequency =  [self _parseString:j];
         ARC_retain(_reportFrequency);
+        return 1;
+    }
+    if(!strcmp(j->token, "advMode")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _advMode =  atoi(j->token);
         return 1;
     }
     if(!strcmp(j->token, "calibrationParam")) {
@@ -3512,6 +3518,52 @@ static const char* hexArray = "0123456789ABCDEF";
     NSString* rest_val;
     rest_val = newval;
     return [self _setAttr:@"reportFrequency" :rest_val];
+}
+/**
+ * Returns the measuring mode used for the advertised value pushed to the parent hub.
+ *
+ * @return a value among Y_ADVMODE_IMMEDIATE, Y_ADVMODE_PERIOD_AVG, Y_ADVMODE_PERIOD_MIN and
+ * Y_ADVMODE_PERIOD_MAX corresponding to the measuring mode used for the advertised value pushed to the parent hub
+ *
+ * On failure, throws an exception or returns Y_ADVMODE_INVALID.
+ */
+-(Y_ADVMODE_enum) get_advMode
+{
+    Y_ADVMODE_enum res;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_ADVMODE_INVALID;
+        }
+    }
+    res = _advMode;
+    return res;
+}
+
+
+-(Y_ADVMODE_enum) advMode
+{
+    return [self get_advMode];
+}
+
+/**
+ * Changes the measuring mode used for the advertised value pushed to the parent hub.
+ *
+ * @param newval : a value among Y_ADVMODE_IMMEDIATE, Y_ADVMODE_PERIOD_AVG, Y_ADVMODE_PERIOD_MIN and
+ * Y_ADVMODE_PERIOD_MAX corresponding to the measuring mode used for the advertised value pushed to the parent hub
+ *
+ * @return YAPI_SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) set_advMode:(Y_ADVMODE_enum) newval
+{
+    return [self setAdvMode:newval];
+}
+-(int) setAdvMode:(Y_ADVMODE_enum) newval
+{
+    NSString* rest_val;
+    rest_val = [NSString stringWithFormat:@"%d", newval];
+    return [self _setAttr:@"advMode" :rest_val];
 }
 -(NSString*) get_calibrationParam
 {
@@ -6188,7 +6240,7 @@ static const char* hexArray = "0123456789ABCDEF";
     NSString* settings;
     NSString* prod_prefix;
     int force;
-    if (_progress_c < 100) {
+    if (_progress_c < 100 && _progress_c != YAPI_VERSION_MISMATCH) {
         serial = _serial;
         firmwarepath = _firmwarepath;
         settings = ARC_sendAutorelease([[NSString alloc] initWithData:_settings encoding:NSISOLatin1StringEncoding]);
@@ -6198,6 +6250,11 @@ static const char* hexArray = "0123456789ABCDEF";
             force = 0;
         }
         res = yapiUpdateFirmwareEx(STR_oc2y(serial), STR_oc2y(firmwarepath), STR_oc2y(settings), force, newupdate, errmsg);
+        if (res == YAPI_VERSION_MISMATCH && ((int)[_settings length] != 0)) {
+            _progress_c = res;
+            _progress_msg = STR_y2oc(errmsg);
+            return _progress;
+        }
         if (res < 0) {
             _progress = res;
             _progress_msg = STR_y2oc(errmsg);
@@ -6227,8 +6284,13 @@ static const char* hexArray = "0123456789ABCDEF";
                 [m set_allSettingsAndFiles:_settings];
                 [m saveToFlash];
                 _settings = [NSMutableData dataWithLength:0];
-                _progress = 100;
-                _progress_msg = @"success";
+                if (_progress_c == YAPI_VERSION_MISMATCH) {
+                    _progress = YAPI_IO_ERROR;
+                    _progress_msg = @"Unable to update firmware";
+                } else {
+                    _progress =  100;
+                    _progress_msg = @"success";
+                }
             }
         } else {
             _progress =  100;
