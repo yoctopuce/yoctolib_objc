@@ -1,10 +1,10 @@
 /*********************************************************************
  *
- * $Id: yocto_serialport.h 27948 2017-06-30 14:46:55Z mvuilleu $
+ * $Id: yocto_serialport.h 28660 2017-09-26 16:37:13Z seb $
  *
  * Declares yFindSerialPort(), the high-level API for SerialPort functions
  *
- * - - - - - - - - - License information: - - - - - - - - - 
+ * - - - - - - - - - License information: - - - - - - - - -
  *
  *  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
  *
@@ -23,7 +23,7 @@
  *  obligations.
  *
  *  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
- *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
+ *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING
  *  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS
  *  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
  *  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
@@ -42,7 +42,7 @@ CF_EXTERN_C_BEGIN
 
 @class YSerialPort;
 
-//--- (YSerialPort globals)
+//--- (generated code: YSerialPort globals)
 typedef void (*YSerialPortValueCallback)(YSerialPort *func, NSString *functionValue);
 #ifndef _Y_VOLTAGELEVEL_ENUM
 #define _Y_VOLTAGELEVEL_ENUM
@@ -68,9 +68,53 @@ typedef enum {
 #define Y_COMMAND_INVALID               YAPI_INVALID_STRING
 #define Y_PROTOCOL_INVALID              YAPI_INVALID_STRING
 #define Y_SERIALMODE_INVALID            YAPI_INVALID_STRING
-//--- (end of YSerialPort globals)
+//--- (end of generated code: YSerialPort globals)
 
-//--- (YSerialPort class start)
+
+//--- (generated code: YSnoopingRecord globals)
+//--- (end of generated code: YSnoopingRecord globals)
+
+
+
+
+//--- (generated code: YSnoopingRecord class start)
+/**
+ * YSnoopingRecord Class: Description of a message intercepted
+ *
+ *
+ */
+@interface YSnoopingRecord : NSObject
+//--- (end of generated code: YSnoopingRecord class start)
+{
+@protected
+//--- (generated code: YSnoopingRecord attributes declaration)
+    int             _tim;
+    int             _dir;
+    NSString*       _msg;
+//--- (end of generated code: YSnoopingRecord attributes declaration)
+}
+
+-(id)   initWith:(NSString *)json_str;
+
+//--- (generated code: YSnoopingRecord private methods declaration)
+//--- (end of generated code: YSnoopingRecord private methods declaration)
+//--- (generated code: YSnoopingRecord public methods declaration)
+-(int)     get_time;
+
+-(int)     get_direction;
+
+-(NSString*)     get_message;
+
+
+//--- (end of generated code: YSnoopingRecord public methods declaration)
+
+@end
+
+//--- (generated code: SnoopingRecord functions declaration)
+//--- (end of generated code: SnoopingRecord functions declaration)
+
+
+//--- (generated code: YSerialPort class start)
 /**
  * YSerialPort Class: SerialPort function interface
  *
@@ -81,10 +125,10 @@ typedef enum {
  * They are meant to be used in the same way as all Yoctopuce devices.
  */
 @interface YSerialPort : YFunction
-//--- (end of YSerialPort class start)
+//--- (end of generated code: YSerialPort class start)
 {
 @protected
-//--- (YSerialPort attributes declaration)
+//--- (generated code: YSerialPort attributes declaration)
     int             _rxCount;
     int             _txCount;
     int             _errCount;
@@ -101,17 +145,17 @@ typedef enum {
     int             _rxptr;
     NSMutableData*  _rxbuff;
     int             _rxbuffptr;
-//--- (end of YSerialPort attributes declaration)
+//--- (end of generated code: YSerialPort attributes declaration)
 }
 // Constructor is protected, use yFindSerialPort factory function to instantiate
 -(id)    initWith:(NSString*) func;
 
-//--- (YSerialPort private methods declaration)
+//--- (generated code: YSerialPort private methods declaration)
 // Function-specific method for parsing of JSON output and caching result
 -(int)             _parseAttr:(yJsonStateMachine*) j;
 
-//--- (end of YSerialPort private methods declaration)
-//--- (YSerialPort public methods declaration)
+//--- (end of generated code: YSerialPort private methods declaration)
+//--- (generated code: YSerialPort public methods declaration)
 /**
  * Returns the total number of bytes received since last reset.
  *
@@ -653,6 +697,24 @@ typedef enum {
 -(int)     get_CTS;
 
 /**
+ * Retrieves messages (both direction) in the serial port buffer, starting at current position.
+ * This function will only compare and return printable characters in the message strings.
+ * Binary protocols are handled as hexadecimal strings.
+ *
+ * If no message is found, the search waits for one up to the specified maximum timeout
+ * (in milliseconds).
+ *
+ * @param maxWait : the maximum number of milliseconds to wait for a message if none is found
+ *         in the receive buffer.
+ *
+ * @return an array of YSnoopingRecord objects containing the messages found, if any.
+ *         Binary messages are converted to hexadecimal representation.
+ *
+ * On failure, throws an exception or returns an empty array.
+ */
+-(NSMutableArray*)     snoopMessages:(int)maxWait;
+
+/**
  * Sends a MODBUS message (provided as a hexadecimal string) to the serial port.
  * The message must start with the slave address. The MODBUS CRC/LRC is
  * automatically added by the function. This function does not wait for a reply.
@@ -827,11 +889,11 @@ typedef enum {
  *         if there are none.
  */
 +(YSerialPort*) FirstSerialPort;
-//--- (end of YSerialPort public methods declaration)
+//--- (end of generated code: YSerialPort public methods declaration)
 
 @end
 
-//--- (SerialPort functions declaration)
+//--- (generated code: SerialPort functions declaration)
 /**
  * Retrieves a serial port for a given identifier.
  * The identifier can be specified using several formats:
@@ -871,6 +933,6 @@ YSerialPort* yFindSerialPort(NSString* func);
  */
 YSerialPort* yFirstSerialPort(void);
 
-//--- (end of SerialPort functions declaration)
+//--- (end of generated code: SerialPort functions declaration)
 CF_EXTERN_C_END
 

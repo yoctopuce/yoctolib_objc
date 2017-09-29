@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_spiport.m 27708 2017-06-01 12:36:32Z seb $
+ * $Id: yocto_spiport.m 28655 2017-09-26 15:55:10Z seb $
  *
  * Implements the high-level API for SpiPort functions
  *
@@ -974,7 +974,6 @@
     int mult;
     int endpos;
     int res;
-
     // first check if we have the requested character in the look-ahead buffer
     bufflen = (int)[_rxbuff length];
     if ((_rxptr >= _rxbuffptr) && (_rxptr < _rxbuffptr+bufflen)) {
@@ -982,7 +981,6 @@
         _rxptr = _rxptr + 1;
         return res;
     }
-
     // try to preload more than one byte to speed-up byte-per-byte access
     currpos = _rxptr;
     reqlen = 1024;
@@ -1009,7 +1007,6 @@
     }
     // still mixed, need to process character by character
     _rxptr = currpos;
-
 
     buff = [self _download:[NSString stringWithFormat:@"rxdata.bin?pos=%d&len=1",_rxptr]];
     bufflen = (int)[buff length] - 1;

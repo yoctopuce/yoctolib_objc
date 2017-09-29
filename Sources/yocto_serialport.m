@@ -1,10 +1,10 @@
 /*********************************************************************
  *
- * $Id: yocto_serialport.m 27948 2017-06-30 14:46:55Z mvuilleu $
+ * $Id: yocto_serialport.m 28679 2017-09-27 12:49:28Z seb $
  *
  * Implements the high-level API for SerialPort functions
  *
- * - - - - - - - - - License information: - - - - - - - - - 
+ * - - - - - - - - - License information: - - - - - - - - -
  *
  *  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
  *
@@ -23,7 +23,7 @@
  *  obligations.
  *
  *  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
- *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
+ *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING
  *  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS
  *  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
  *  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
@@ -44,6 +44,90 @@
 
 
 
+
+
+@implementation YSnoopingRecord
+
+
+-(id)   initWith:(NSString *)json_str
+{
+    yJsonStateMachine j;
+    if(!(self = [super init]))
+        return nil;
+//--- (generated code: YSnoopingRecord attributes initialization)
+    _tim = 0;
+    _dir = 0;
+//--- (end of generated code: YSnoopingRecord attributes initialization)
+
+    // Parse JSON data
+    j.src = STR_oc2y(json_str);
+    j.end = j.src + strlen(j.src);
+    j.st = YJSON_START;
+    if(yJsonParse(&j) != YJSON_PARSE_AVAIL || j.st != YJSON_PARSE_STRUCT) {
+        return self;
+    }
+    while(yJsonParse(&j) == YJSON_PARSE_AVAIL && j.st == YJSON_PARSE_MEMBNAME) {
+        if (!strcmp(j.token, "m")) {
+            if (yJsonParse(&j) != YJSON_PARSE_AVAIL) {
+                return self;
+            }
+            _dir = (j.token[0] == '<' ? 1 : 0);
+            _msg = STR_y2oc(j.token+1);
+            while(j.next == YJSON_PARSE_STRINGCONT && yJsonParse(&j) == YJSON_PARSE_AVAIL) {
+                _msg =[_msg stringByAppendingString: STR_y2oc(j.token)];
+                ARC_retain(_msg);
+            }
+        } else if(!strcmp(j.token, "t")) {
+            if (yJsonParse(&j) != YJSON_PARSE_AVAIL) {
+                return self;
+            }
+            _tim = atoi(j.token);;
+        } else {
+            yJsonSkip(&j, 1);
+        }
+    }
+    return self;
+}
+
+
+// destructor
+-(void)  dealloc
+{
+//--- (generated code: YSnoopingRecord cleanup)
+    ARC_dealloc(super);
+//--- (end of generated code: YSnoopingRecord cleanup)
+}
+
+//--- (generated code: YSnoopingRecord private methods implementation)
+
+//--- (end of generated code: YSnoopingRecord private methods implementation)
+
+//--- (generated code: YSnoopingRecord public methods implementation)
+-(int) get_time
+{
+    return _tim;
+}
+
+-(int) get_direction
+{
+    return _dir;
+}
+
+-(NSString*) get_message
+{
+    return _msg;
+}
+
+//--- (end of generated code: YSnoopingRecord public methods implementation)
+
+@end
+//--- (generated code: SnoopingRecord functions)
+//--- (end of generated code: SnoopingRecord functions)
+
+
+
+
+
 @implementation YSerialPort
 
 // Constructor is protected, use yFindSerialPort factory function to instantiate
@@ -52,7 +136,7 @@
    if(!(self = [super initWith:func]))
           return nil;
     _className = @"SerialPort";
-//--- (YSerialPort attributes initialization)
+//--- (generated code: YSerialPort attributes initialization)
     _rxCount = Y_RXCOUNT_INVALID;
     _txCount = Y_TXCOUNT_INVALID;
     _errCount = Y_ERRCOUNT_INVALID;
@@ -68,13 +152,13 @@
     _valueCallbackSerialPort = NULL;
     _rxptr = 0;
     _rxbuffptr = 0;
-//--- (end of YSerialPort attributes initialization)
+//--- (end of generated code: YSerialPort attributes initialization)
     return self;
 }
 // destructor
 -(void)  dealloc
 {
-//--- (YSerialPort cleanup)
+//--- (generated code: YSerialPort cleanup)
     ARC_release(_lastMsg);
     _lastMsg = nil;
     ARC_release(_currentJob);
@@ -88,9 +172,9 @@
     ARC_release(_serialMode);
     _serialMode = nil;
     ARC_dealloc(super);
-//--- (end of YSerialPort cleanup)
+//--- (end of generated code: YSerialPort cleanup)
 }
-//--- (YSerialPort private methods implementation)
+//--- (generated code: YSerialPort private methods implementation)
 
 -(int) _parseAttr:(yJsonStateMachine*) j
 {
@@ -168,8 +252,8 @@
     }
     return [super _parseAttr:j];
 }
-//--- (end of YSerialPort private methods implementation)
-//--- (YSerialPort public methods implementation)
+//--- (end of generated code: YSerialPort private methods implementation)
+//--- (generated code: YSerialPort public methods implementation)
 /**
  * Returns the total number of bytes received since last reset.
  *
@@ -885,7 +969,6 @@
     int mult;
     int endpos;
     int res;
-
     // first check if we have the requested character in the look-ahead buffer
     bufflen = (int)[_rxbuff length];
     if ((_rxptr >= _rxbuffptr) && (_rxptr < _rxbuffptr+bufflen)) {
@@ -893,7 +976,6 @@
         _rxptr = _rxptr + 1;
         return res;
     }
-
     // try to preload more than one byte to speed-up byte-per-byte access
     currpos = _rxptr;
     reqlen = 1024;
@@ -920,7 +1002,6 @@
     }
     // still mixed, need to process character by character
     _rxptr = currpos;
-
 
     buff = [self _download:[NSString stringWithFormat:@"rxdata.bin?pos=%d&len=1",_rxptr]];
     bufflen = (int)[buff length] - 1;
@@ -1340,6 +1421,49 @@
     buff = [self _download:@"cts.txt"];
     if (!((int)[buff length] == 1)) {[self _throw: YAPI_IO_ERROR: @"invalid CTS reply"]; return YAPI_IO_ERROR;}
     res = (((u8*)([buff bytes]))[0]) - 48;
+    return res;
+}
+
+/**
+ * Retrieves messages (both direction) in the serial port buffer, starting at current position.
+ * This function will only compare and return printable characters in the message strings.
+ * Binary protocols are handled as hexadecimal strings.
+ *
+ * If no message is found, the search waits for one up to the specified maximum timeout
+ * (in milliseconds).
+ *
+ * @param maxWait : the maximum number of milliseconds to wait for a message if none is found
+ *         in the receive buffer.
+ *
+ * @return an array of YSnoopingRecord objects containing the messages found, if any.
+ *         Binary messages are converted to hexadecimal representation.
+ *
+ * On failure, throws an exception or returns an empty array.
+ */
+-(NSMutableArray*) snoopMessages:(int)maxWait
+{
+    NSString* url;
+    NSMutableData* msgbin;
+    NSMutableArray* msgarr = [NSMutableArray array];
+    int msglen;
+    NSMutableArray* res = [NSMutableArray array];
+    int idx;
+
+    url = [NSString stringWithFormat:@"rxmsg.json?pos=%d&maxw=%d&t=0", _rxptr,maxWait];
+    msgbin = [self _download:url];
+    msgarr = [self _json_get_array:msgbin];
+    msglen = (int)[msgarr count];
+    if (msglen == 0) {
+        return res;
+    }
+    // last element of array is the new position
+    msglen = msglen - 1;
+    _rxptr = [[msgarr objectAtIndex:msglen] intValue];
+    idx = 0;
+    while (idx < msglen) {
+        [res addObject:ARC_sendAutorelease([[YSnoopingRecord alloc] initWith:[msgarr objectAtIndex:idx]])];
+        idx = idx + 1;
+    }
     return res;
 }
 
@@ -1900,10 +2024,10 @@
     return nil;
 }
 
-//--- (end of YSerialPort public methods implementation)
+//--- (end of generated code: YSerialPort public methods implementation)
 
 @end
-//--- (SerialPort functions)
+//--- (generated code: SerialPort functions)
 
 YSerialPort *yFindSerialPort(NSString* func)
 {
@@ -1915,4 +2039,4 @@ YSerialPort *yFirstSerialPort(void)
     return [YSerialPort FirstSerialPort];
 }
 
-//--- (end of SerialPort functions)
+//--- (end of generated code: SerialPort functions)
