@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.m 28559 2017-09-15 15:01:38Z seb $
+ * $Id: yocto_api.m 28799 2017-10-11 16:07:10Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -6240,7 +6240,7 @@ static const char* hexArray = "0123456789ABCDEF";
     NSString* settings;
     NSString* prod_prefix;
     int force;
-    if (_progress_c < 100 && _progress_c != YAPI_VERSION_MISMATCH) {
+    if ((_progress_c < 100) && (_progress_c != YAPI_VERSION_MISMATCH)) {
         serial = _serial;
         firmwarepath = _firmwarepath;
         settings = ARC_sendAutorelease([[NSString alloc] initWithData:_settings encoding:NSISOLatin1StringEncoding]);
@@ -6250,7 +6250,7 @@ static const char* hexArray = "0123456789ABCDEF";
             force = 0;
         }
         res = yapiUpdateFirmwareEx(STR_oc2y(serial), STR_oc2y(firmwarepath), STR_oc2y(settings), force, newupdate, errmsg);
-        if (res == YAPI_VERSION_MISMATCH && ((int)[_settings length] != 0)) {
+        if ((res == YAPI_VERSION_MISMATCH) && ((int)[_settings length] != 0)) {
             _progress_c = res;
             _progress_msg = STR_y2oc(errmsg);
             return _progress;
@@ -8543,7 +8543,7 @@ static const char* hexArray = "0123456789ABCDEF";
 
 @end
 
-//--- (generated code: DataLogger functions)
+//--- (generated code: YDataLogger functions)
 
 YDataLogger *yFindDataLogger(NSString* func)
 {
@@ -8555,7 +8555,7 @@ YDataLogger *yFirstDataLogger(void)
     return [YDataLogger FirstDataLogger];
 }
 
-//--- (end of generated code: DataLogger functions)
+//--- (end of generated code: YDataLogger functions)
 
 
 
@@ -8842,7 +8842,7 @@ void    yRegisterLogFunction(yLogCallback logfun)
 
 
 
-//--- (generated code: Function functions)
+//--- (generated code: YFunction functions)
 
 YFunction *yFindFunction(NSString* func)
 {
@@ -8854,9 +8854,9 @@ YFunction *yFirstFunction(void)
     return [YFunction FirstFunction];
 }
 
-//--- (end of generated code: Function functions)
+//--- (end of generated code: YFunction functions)
 
-//--- (generated code: Sensor functions)
+//--- (generated code: YSensor functions)
 
 YSensor *yFindSensor(NSString* func)
 {
@@ -8868,9 +8868,9 @@ YSensor *yFirstSensor(void)
     return [YSensor FirstSensor];
 }
 
-//--- (end of generated code: Sensor functions)
+//--- (end of generated code: YSensor functions)
 
-//--- (generated code: Module functions)
+//--- (generated code: YModule functions)
 
 YModule *yFindModule(NSString* func)
 {
@@ -8882,13 +8882,13 @@ YModule *yFirstModule(void)
     return [YModule FirstModule];
 }
 
-//--- (end of generated code: Module functions)
+//--- (end of generated code: YModule functions)
 
-//--- (generated code: DataStream functions)
-//--- (end of generated code: DataStream functions)
-//--- (generated code: Measure functions)
-//--- (end of generated code: Measure functions)
+//--- (generated code: YDataStream functions)
+//--- (end of generated code: YDataStream functions)
+//--- (generated code: YMeasure functions)
+//--- (end of generated code: YMeasure functions)
 
-//--- (generated code: DataSet functions)
-//--- (end of generated code: DataSet functions)
+//--- (generated code: YDataSet functions)
+//--- (end of generated code: YDataSet functions)
 

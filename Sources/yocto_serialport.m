@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_serialport.m 28679 2017-09-27 12:49:28Z seb $
+ * $Id: yocto_serialport.m 28744 2017-10-03 08:14:16Z seb $
  *
  * Implements the high-level API for SerialPort functions
  *
@@ -121,8 +121,8 @@
 //--- (end of generated code: YSnoopingRecord public methods implementation)
 
 @end
-//--- (generated code: SnoopingRecord functions)
-//--- (end of generated code: SnoopingRecord functions)
+//--- (generated code: YSnoopingRecord functions)
+//--- (end of generated code: YSnoopingRecord functions)
 
 
 
@@ -2027,7 +2027,7 @@
 //--- (end of generated code: YSerialPort public methods implementation)
 
 @end
-//--- (generated code: SerialPort functions)
+//--- (generated code: YSerialPort functions)
 
 YSerialPort *yFindSerialPort(NSString* func)
 {
@@ -2039,4 +2039,4 @@ YSerialPort *yFirstSerialPort(void)
     return [YSerialPort FirstSerialPort];
 }
 
-//--- (end of generated code: SerialPort functions)
+//--- (end of generated code: YSerialPort functions)

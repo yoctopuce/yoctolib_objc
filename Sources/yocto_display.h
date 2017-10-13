@@ -1,35 +1,35 @@
 /*********************************************************************
  *
- * $Id: yocto_display.h 27708 2017-06-01 12:36:32Z seb $
+ * $Id: yocto_display.h 28744 2017-10-03 08:14:16Z seb $
  *
  * Declares yFindDisplay(), the high-level API for Display functions
  *
- * - - - - - - - - - License information: - - - - - - - - - 
+ * - - - - - - - - - License information: - - - - - - - - -
  *
  *  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
  *
  *  Yoctopuce Sarl (hereafter Licensor) grants to you a perpetual
  *  non-exclusive license to use, modify, copy and integrate this
- *  file into your software for the sole purpose of interfacing 
- *  with Yoctopuce products. 
+ *  file into your software for the sole purpose of interfacing
+ *  with Yoctopuce products.
  *
- *  You may reproduce and distribute copies of this file in 
+ *  You may reproduce and distribute copies of this file in
  *  source or object form, as long as the sole purpose of this
- *  code is to interface with Yoctopuce products. You must retain 
+ *  code is to interface with Yoctopuce products. You must retain
  *  this notice in the distributed source file.
  *
  *  You should refer to Yoctopuce General Terms and Conditions
- *  for additional information regarding your rights and 
+ *  for additional information regarding your rights and
  *  obligations.
  *
  *  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED "AS IS" WITHOUT
- *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
- *  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS 
+ *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING
+ *  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS
  *  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
  *  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
- *  INDIRECT OR CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA, 
- *  COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY OR 
- *  SERVICES, ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT 
+ *  INDIRECT OR CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA,
+ *  COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY OR
+ *  SERVICES, ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT
  *  LIMITED TO ANY DEFENSE THEREOF), ANY CLAIMS FOR INDEMNITY OR
  *  CONTRIBUTION, OR OTHER SIMILAR COSTS, WHETHER ASSERTED ON THE
  *  BASIS OF CONTRACT, TORT (INCLUDING NEGLIGENCE), BREACH OF
@@ -540,8 +540,8 @@ typedef enum {
 
 @end
 
-//--- (generated code: DisplayLayer functions declaration)
-//--- (end of generated code: DisplayLayer functions declaration)
+//--- (generated code: YDisplayLayer functions declaration)
+//--- (end of generated code: YDisplayLayer functions declaration)
 
 
 //--- (generated code: YDisplay class start)
@@ -597,11 +597,11 @@ typedef enum {
  * On failure, throws an exception or returns nil.
  */
 -(YDisplayLayer*) get_displayLayer:(unsigned)layerId;
-    
-      
--(int) flushLayers;    
 
--(void) resetHiddenLayerFlags;    
+
+-(int) flushLayers;
+
+-(void) resetHiddenLayerFlags;
 
 -(int) sendCommand:(NSString*)cmd;
 
@@ -981,7 +981,7 @@ typedef enum {
 
 @end
 
-//--- (generated code: Display functions declaration)
+//--- (generated code: YDisplay functions declaration)
 /**
  * Retrieves a display for a given identifier.
  * The identifier can be specified using several formats:
@@ -1021,6 +1021,6 @@ YDisplay* yFindDisplay(NSString* func);
  */
 YDisplay* yFirstDisplay(void);
 
-//--- (end of generated code: Display functions declaration)
+//--- (end of generated code: YDisplay functions declaration)
 CF_EXTERN_C_END
 

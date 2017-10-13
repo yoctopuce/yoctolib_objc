@@ -1,10 +1,10 @@
 /*********************************************************************
  *
- * $Id: yocto_weighscale.m 28231 2017-07-31 16:37:33Z mvuilleu $
+ * $Id: yocto_weighscale.m 28744 2017-10-03 08:14:16Z seb $
  *
  * Implements the high-level API for WeighScale functions
  *
- * - - - - - - - - - License information: - - - - - - - - - 
+ * - - - - - - - - - License information: - - - - - - - - -
  *
  *  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
  *
@@ -23,7 +23,7 @@
  *  obligations.
  *
  *  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
- *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
+ *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING
  *  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS
  *  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
  *  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
@@ -698,7 +698,7 @@
 //--- (end of YWeighScale public methods implementation)
 
 @end
-//--- (WeighScale functions)
+//--- (YWeighScale functions)
 
 YWeighScale *yFindWeighScale(NSString* func)
 {
@@ -710,4 +710,4 @@ YWeighScale *yFirstWeighScale(void)
     return [YWeighScale FirstWeighScale];
 }
 
-//--- (end of WeighScale functions)
+//--- (end of YWeighScale functions)

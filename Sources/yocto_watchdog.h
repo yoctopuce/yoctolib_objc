@@ -1,10 +1,10 @@
 /*********************************************************************
  *
- * $Id: yocto_watchdog.h 27708 2017-06-01 12:36:32Z seb $
+ * $Id: yocto_watchdog.h 28752 2017-10-03 08:41:02Z seb $
  *
  * Declares yFindWatchdog(), the high-level API for Watchdog functions
  *
- * - - - - - - - - - License information: - - - - - - - - - 
+ * - - - - - - - - - License information: - - - - - - - - -
  *
  *  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
  *
@@ -23,7 +23,7 @@
  *  obligations.
  *
  *  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
- *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
+ *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING
  *  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS
  *  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
  *  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
@@ -505,7 +505,7 @@ typedef enum {
 
 @end
 
-//--- (Watchdog functions declaration)
+//--- (YWatchdog functions declaration)
 /**
  * Retrieves a watchdog for a given identifier.
  * The identifier can be specified using several formats:
@@ -545,6 +545,6 @@ YWatchdog* yFindWatchdog(NSString* func);
  */
 YWatchdog* yFirstWatchdog(void);
 
-//--- (end of Watchdog functions declaration)
+//--- (end of YWatchdog functions declaration)
 CF_EXTERN_C_END
 

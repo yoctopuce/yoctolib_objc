@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.h 28559 2017-09-15 15:01:38Z seb $
+ * $Id: yocto_api.h 28744 2017-10-03 08:14:16Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -62,7 +62,7 @@
 
 extern NSMutableDictionary* YAPI_YFunctions;
 
-#define YOCTO_API_REVISION          "28707"
+#define YOCTO_API_REVISION          "28878"
 
 // yInitAPI argument
 #define Y_DETECT_NONE           0
@@ -3035,7 +3035,7 @@ void    yRegisterDeviceChangeCallback(yDeviceUpdateCallback removalCallback);
  */
 void    yRegisterLogFunction(yLogCallback logfun);
 
-//--- (generated code: Function functions declaration)
+//--- (generated code: YFunction functions declaration)
 /**
  * Retrieves a function for a given identifier.
  * The identifier can be specified using several formats:
@@ -3069,9 +3069,9 @@ YFunction* yFindFunction(NSString* func);
  */
 YFunction* yFirstFunction(void);
 
-//--- (end of generated code: Function functions declaration)
+//--- (end of generated code: YFunction functions declaration)
 
-//--- (generated code: Module functions declaration)
+//--- (generated code: YModule functions declaration)
 /**
  * Allows you to find a module from its serial number or from its logical name.
  *
@@ -3105,9 +3105,9 @@ YModule* yFindModule(NSString* func);
  */
 YModule* yFirstModule(void);
 
-//--- (end of generated code: Module functions declaration)
+//--- (end of generated code: YModule functions declaration)
 
-//--- (generated code: Sensor functions declaration)
+//--- (generated code: YSensor functions declaration)
 /**
  * Retrieves a sensor for a given identifier.
  * The identifier can be specified using several formats:
@@ -3147,7 +3147,7 @@ YSensor* yFindSensor(NSString* func);
  */
 YSensor* yFirstSensor(void);
 
-//--- (end of generated code: Sensor functions declaration)
+//--- (end of generated code: YSensor functions declaration)
 
 
 
@@ -3483,7 +3483,7 @@ YSensor* yFirstSensor(void);
 
 @end
 
-//--- (generated code: DataLogger functions declaration)
+//--- (generated code: YDataLogger functions declaration)
 /**
  * Retrieves a data logger for a given identifier.
  * The identifier can be specified using several formats:
@@ -3523,7 +3523,7 @@ YDataLogger* yFindDataLogger(NSString* func);
  */
 YDataLogger* yFirstDataLogger(void);
 
-//--- (end of generated code: DataLogger functions declaration)
+//--- (end of generated code: YDataLogger functions declaration)
 CF_EXTERN_C_END
 
 

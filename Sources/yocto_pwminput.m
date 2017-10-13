@@ -1,10 +1,10 @@
 /*********************************************************************
  *
- * $Id: yocto_pwminput.m 28559 2017-09-15 15:01:38Z seb $
+ * $Id: yocto_pwminput.m 28807 2017-10-12 09:46:33Z seb $
  *
  * Implements the high-level API for PwmInput functions
  *
- * - - - - - - - - - License information: - - - - - - - - - 
+ * - - - - - - - - - License information: - - - - - - - - -
  *
  *  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
  *
@@ -23,7 +23,7 @@
  *  obligations.
  *
  *  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
- *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
+ *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING
  *  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS
  *  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
  *  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
@@ -221,7 +221,7 @@
 /**
  * Returns the pulse counter value. Actually that
  * counter is incremented twice per period. That counter is
- * limited  to 1 billion
+ * limited  to 1 billion.
  *
  * @return an integer corresponding to the pulse counter value
  *
@@ -284,8 +284,10 @@
  * get_currentValue function and callbacks. Attention
  *
  * @return a value among Y_PWMREPORTMODE_PWM_DUTYCYCLE, Y_PWMREPORTMODE_PWM_FREQUENCY,
- * Y_PWMREPORTMODE_PWM_PULSEDURATION and Y_PWMREPORTMODE_PWM_EDGECOUNT corresponding to the parameter
- * (frequency/duty cycle, pulse width, edges count) returned by the get_currentValue function and callbacks
+ * Y_PWMREPORTMODE_PWM_PULSEDURATION, Y_PWMREPORTMODE_PWM_EDGECOUNT, Y_PWMREPORTMODE_PWM_PULSECOUNT,
+ * Y_PWMREPORTMODE_PWM_CPS, Y_PWMREPORTMODE_PWM_CPM and Y_PWMREPORTMODE_PWM_STATE corresponding to the
+ * parameter (frequency/duty cycle, pulse width, edges count) returned by the get_currentValue
+ * function and callbacks
  *
  * On failure, throws an exception or returns Y_PWMREPORTMODE_INVALID.
  */
@@ -314,8 +316,10 @@
  * get_pulseCounter().
  *
  * @param newval : a value among Y_PWMREPORTMODE_PWM_DUTYCYCLE, Y_PWMREPORTMODE_PWM_FREQUENCY,
- * Y_PWMREPORTMODE_PWM_PULSEDURATION and Y_PWMREPORTMODE_PWM_EDGECOUNT corresponding to the  parameter
- *  type (frequency/duty cycle, pulse width, or edge count) returned by the get_currentValue function and callbacks
+ * Y_PWMREPORTMODE_PWM_PULSEDURATION, Y_PWMREPORTMODE_PWM_EDGECOUNT, Y_PWMREPORTMODE_PWM_PULSECOUNT,
+ * Y_PWMREPORTMODE_PWM_CPS, Y_PWMREPORTMODE_PWM_CPM and Y_PWMREPORTMODE_PWM_STATE corresponding to the
+ *  parameter  type (frequency/duty cycle, pulse width, or edge count) returned by the
+ * get_currentValue function and callbacks
  *
  * @return YAPI_SUCCESS if the call succeeds.
  *
@@ -528,7 +532,7 @@
 //--- (end of YPwmInput public methods implementation)
 
 @end
-//--- (PwmInput functions)
+//--- (YPwmInput functions)
 
 YPwmInput *yFindPwmInput(NSString* func)
 {
@@ -540,4 +544,4 @@ YPwmInput *yFirstPwmInput(void)
     return [YPwmInput FirstPwmInput];
 }
 
-//--- (end of PwmInput functions)
+//--- (end of YPwmInput functions)

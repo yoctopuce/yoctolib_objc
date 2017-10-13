@@ -1,35 +1,35 @@
 /*********************************************************************
  *
- * $Id: yocto_wireless.m 27708 2017-06-01 12:36:32Z seb $
+ * $Id: yocto_wireless.m 28744 2017-10-03 08:14:16Z seb $
  *
  * Implements yFindWireless(), the high-level API for Wireless functions
  *
- * - - - - - - - - - License information: - - - - - - - - - 
+ * - - - - - - - - - License information: - - - - - - - - -
  *
  *  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
  *
  *  Yoctopuce Sarl (hereafter Licensor) grants to you a perpetual
  *  non-exclusive license to use, modify, copy and integrate this
- *  file into your software for the sole purpose of interfacing 
- *  with Yoctopuce products. 
+ *  file into your software for the sole purpose of interfacing
+ *  with Yoctopuce products.
  *
- *  You may reproduce and distribute copies of this file in 
+ *  You may reproduce and distribute copies of this file in
  *  source or object form, as long as the sole purpose of this
- *  code is to interface with Yoctopuce products. You must retain 
+ *  code is to interface with Yoctopuce products. You must retain
  *  this notice in the distributed source file.
  *
  *  You should refer to Yoctopuce General Terms and Conditions
- *  for additional information regarding your rights and 
+ *  for additional information regarding your rights and
  *  obligations.
  *
  *  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED "AS IS" WITHOUT
- *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
- *  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS 
+ *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING
+ *  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS
  *  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
  *  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
- *  INDIRECT OR CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA, 
- *  COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY OR 
- *  SERVICES, ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT 
+ *  INDIRECT OR CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA,
+ *  COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY OR
+ *  SERVICES, ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT
  *  LIMITED TO ANY DEFENSE THEREOF), ANY CLAIMS FOR INDEMNITY OR
  *  CONTRIBUTION, OR OTHER SIMILAR COSTS, WHETHER ASSERTED ON THE
  *  BASIS OF CONTRACT, TORT (INCLUDING NEGLIGENCE), BREACH OF
@@ -56,7 +56,7 @@
     _channel = 0;
     _rssi = 0;
 //--- (end of generated code: YWlanRecord attributes initialization)
-    
+
     // Parse JSON data
     j.src = STR_oc2y(json_str);
     j.end = j.src + strlen(j.src);
@@ -137,8 +137,8 @@
 //--- (end of generated code: YWlanRecord public methods implementation)
 
 @end
-//--- (generated code: WlanRecord functions)
-//--- (end of generated code: WlanRecord functions)
+//--- (generated code: YWlanRecord functions)
+//--- (end of generated code: YWlanRecord functions)
 
 
 
@@ -165,7 +165,7 @@
     return self;
 }
 
-// destructor 
+// destructor
 -(void)  dealloc
 {
 //--- (generated code: YWireless cleanup)
@@ -633,7 +633,7 @@
 //--- (end of generated code: YWireless public methods implementation)
 
 @end
-//--- (generated code: Wireless functions)
+//--- (generated code: YWireless functions)
 
 YWireless *yFindWireless(NSString* func)
 {
@@ -645,4 +645,4 @@ YWireless *yFirstWireless(void)
     return [YWireless FirstWireless];
 }
 
-//--- (end of generated code: Wireless functions)
+//--- (end of generated code: YWireless functions)

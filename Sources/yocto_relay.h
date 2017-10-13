@@ -1,10 +1,10 @@
 /*********************************************************************
  *
- * $Id: yocto_relay.h 27708 2017-06-01 12:36:32Z seb $
+ * $Id: yocto_relay.h 28752 2017-10-03 08:41:02Z seb $
  *
  * Declares yFindRelay(), the high-level API for Relay functions
  *
- * - - - - - - - - - License information: - - - - - - - - - 
+ * - - - - - - - - - License information: - - - - - - - - -
  *
  *  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
  *
@@ -23,7 +23,7 @@
  *  obligations.
  *
  *  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
- *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
+ *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING
  *  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS
  *  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
  *  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
@@ -377,7 +377,7 @@ typedef struct _YDelayedPulse {
 
 @end
 
-//--- (Relay functions declaration)
+//--- (YRelay functions declaration)
 /**
  * Retrieves a relay for a given identifier.
  * The identifier can be specified using several formats:
@@ -417,6 +417,6 @@ YRelay* yFindRelay(NSString* func);
  */
 YRelay* yFirstRelay(void);
 
-//--- (end of Relay functions declaration)
+//--- (end of YRelay functions declaration)
 CF_EXTERN_C_END
 

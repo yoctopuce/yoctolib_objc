@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_cellular.h 27708 2017-06-01 12:36:32Z seb $
+ * $Id: yocto_cellular.h 28744 2017-10-03 08:14:16Z seb $
  *
  * Declares yFindCellular(), the high-level API for Cellular functions
  *
@@ -91,8 +91,8 @@ CF_EXTERN_C_BEGIN
 
 @end
 
-//--- (generated code: CellRecord functions declaration)
-//--- (end of generated code: CellRecord functions declaration)
+//--- (generated code: YCellRecord functions declaration)
+//--- (end of generated code: YCellRecord functions declaration)
 
 //--- (generated code: YCellular globals)
 typedef void (*YCellularValueCallback)(YCellular *func, NSString *functionValue);
@@ -632,7 +632,7 @@ typedef enum {
 
 @end
 
-//--- (generated code: Cellular functions declaration)
+//--- (generated code: YCellular functions declaration)
 /**
  * Retrieves a cellular interface for a given identifier.
  * The identifier can be specified using several formats:
@@ -672,6 +672,6 @@ YCellular* yFindCellular(NSString* func);
  */
 YCellular* yFirstCellular(void);
 
-//--- (end of generated code: Cellular functions declaration)
+//--- (end of generated code: YCellular functions declaration)
 CF_EXTERN_C_END
 

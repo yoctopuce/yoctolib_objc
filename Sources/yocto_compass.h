@@ -1,10 +1,10 @@
 /*********************************************************************
  *
- * $Id: yocto_compass.h 27708 2017-06-01 12:36:32Z seb $
+ * $Id: yocto_compass.h 28752 2017-10-03 08:41:02Z seb $
  *
  * Declares yFindCompass(), the high-level API for Compass functions
  *
- * - - - - - - - - - License information: - - - - - - - - - 
+ * - - - - - - - - - License information: - - - - - - - - -
  *
  *  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
  *
@@ -23,7 +23,7 @@
  *  obligations.
  *
  *  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
- *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
+ *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING
  *  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS
  *  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
  *  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
@@ -214,7 +214,7 @@ typedef enum {
 
 @end
 
-//--- (Compass functions declaration)
+//--- (YCompass functions declaration)
 /**
  * Retrieves a compass for a given identifier.
  * The identifier can be specified using several formats:
@@ -254,6 +254,6 @@ YCompass* yFindCompass(NSString* func);
  */
 YCompass* yFirstCompass(void);
 
-//--- (end of Compass functions declaration)
+//--- (end of YCompass functions declaration)
 CF_EXTERN_C_END
 

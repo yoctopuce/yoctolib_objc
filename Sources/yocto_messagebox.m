@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_messagebox.m 27708 2017-06-01 12:36:32Z seb $
+ * $Id: yocto_messagebox.m 28744 2017-10-03 08:14:16Z seb $
  *
  * Implements the high-level API for MessageBox functions
  *
@@ -843,7 +843,7 @@
     int wpos;
     int carry;
     int nbits;
-    int selfb;
+    int thi_b;
     // nbits = number of bits in carry
     udsize = [self udataSize];
     udhsize = (int)[_udh length];
@@ -885,11 +885,11 @@
                 carry = (((u8*)([_udata bytes]))[i]);
                 nbits = 7;
             } else {
-                selfb = (((u8*)([_udata bytes]))[i]);
-                (((u8*)([res mutableBytes]))[ wpos]) = ((carry) | ((((((selfb) << (nbits)))) & (255))));
+                thi_b = (((u8*)([_udata bytes]))[i]);
+                (((u8*)([res mutableBytes]))[ wpos]) = ((carry) | ((((((thi_b) << (nbits)))) & (255))));
                 wpos = wpos + 1;
                 nbits = nbits - 1;
-                carry = ((selfb) >> ((7 - nbits)));
+                carry = ((thi_b) >> ((7 - nbits)));
             }
             i = i + 1;
         }
@@ -1108,7 +1108,7 @@
     int i;
     int carry;
     int nbits;
-    int selfb;
+    int thi_b;
     _pdu = [NSMutableData dataWithData:pdu];
     _npdu = 1;
     // parse meta-data
@@ -1169,9 +1169,9 @@
             udhlen = (((8 + 8*udhsize + 6)) / (7));
             nbits = 7*udhlen - 8 - 8*udhsize;
             if (nbits > 0) {
-                selfb = (((u8*)([pdu bytes]))[rpos]);
+                thi_b = (((u8*)([pdu bytes]))[rpos]);
                 rpos = rpos + 1;
-                carry = ((selfb) >> (nbits));
+                carry = ((thi_b) >> (nbits));
                 nbits = 8 - nbits;
             }
         } else {
@@ -1193,10 +1193,10 @@
                 carry = 0;
                 nbits = 0;
             } else {
-                selfb = (((u8*)([pdu bytes]))[rpos]);
+                thi_b = (((u8*)([pdu bytes]))[rpos]);
                 rpos = rpos + 1;
-                (((u8*)([_udata mutableBytes]))[ i]) = ((carry) | ((((((selfb) << (nbits)))) & (127))));
-                carry = ((selfb) >> ((7 - nbits)));
+                (((u8*)([_udata mutableBytes]))[ i]) = ((carry) | ((((((thi_b) << (nbits)))) & (127))));
+                carry = ((thi_b) >> ((7 - nbits)));
                 nbits = nbits + 1;
             }
             i = i + 1;
@@ -1258,8 +1258,8 @@
 //--- (end of generated code: YSms public methods implementation)
 
 @end
-//--- (generated code: Sms functions)
-//--- (end of generated code: Sms functions)
+//--- (generated code: YSms functions)
+//--- (end of generated code: YSms functions)
 
 
 
@@ -2226,7 +2226,7 @@
 //--- (end of generated code: YMessageBox public methods implementation)
 
 @end
-//--- (generated code: MessageBox functions)
+//--- (generated code: YMessageBox functions)
 
 YMessageBox *yFindMessageBox(NSString* func)
 {
@@ -2238,4 +2238,4 @@ YMessageBox *yFirstMessageBox(void)
     return [YMessageBox FirstMessageBox];
 }
 
-//--- (end of generated code: MessageBox functions)
+//--- (end of generated code: YMessageBox functions)

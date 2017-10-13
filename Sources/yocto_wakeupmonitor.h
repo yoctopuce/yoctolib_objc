@@ -1,10 +1,10 @@
 /*********************************************************************
  *
- * $Id: yocto_wakeupmonitor.h 27708 2017-06-01 12:36:32Z seb $
+ * $Id: yocto_wakeupmonitor.h 28752 2017-10-03 08:41:02Z seb $
  *
  * Declares yFindWakeUpMonitor(), the high-level API for WakeUpMonitor functions
  *
- * - - - - - - - - - License information: - - - - - - - - - 
+ * - - - - - - - - - License information: - - - - - - - - -
  *
  *  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
  *
@@ -23,7 +23,7 @@
  *  obligations.
  *
  *  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
- *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
+ *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING
  *  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS
  *  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
  *  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
@@ -322,7 +322,7 @@ typedef enum {
 
 @end
 
-//--- (WakeUpMonitor functions declaration)
+//--- (YWakeUpMonitor functions declaration)
 /**
  * Retrieves a monitor for a given identifier.
  * The identifier can be specified using several formats:
@@ -362,6 +362,6 @@ YWakeUpMonitor* yFindWakeUpMonitor(NSString* func);
  */
 YWakeUpMonitor* yFirstWakeUpMonitor(void);
 
-//--- (end of WakeUpMonitor functions declaration)
+//--- (end of YWakeUpMonitor functions declaration)
 CF_EXTERN_C_END
 

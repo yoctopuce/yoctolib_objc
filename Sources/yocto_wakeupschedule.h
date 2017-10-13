@@ -1,10 +1,10 @@
 /*********************************************************************
  *
- * $Id: yocto_wakeupschedule.h 27708 2017-06-01 12:36:32Z seb $
+ * $Id: yocto_wakeupschedule.h 28752 2017-10-03 08:41:02Z seb $
  *
  * Declares yFindWakeUpSchedule(), the high-level API for WakeUpSchedule functions
  *
- * - - - - - - - - - License information: - - - - - - - - - 
+ * - - - - - - - - - License information: - - - - - - - - -
  *
  *  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
  *
@@ -23,7 +23,7 @@
  *  obligations.
  *
  *  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
- *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
+ *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING
  *  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS
  *  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
  *  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
@@ -317,7 +317,7 @@ typedef void (*YWakeUpScheduleValueCallback)(YWakeUpSchedule *func, NSString *fu
 
 @end
 
-//--- (WakeUpSchedule functions declaration)
+//--- (YWakeUpSchedule functions declaration)
 /**
  * Retrieves a wake up schedule for a given identifier.
  * The identifier can be specified using several formats:
@@ -357,6 +357,6 @@ YWakeUpSchedule* yFindWakeUpSchedule(NSString* func);
  */
 YWakeUpSchedule* yFirstWakeUpSchedule(void);
 
-//--- (end of WakeUpSchedule functions declaration)
+//--- (end of YWakeUpSchedule functions declaration)
 CF_EXTERN_C_END
 

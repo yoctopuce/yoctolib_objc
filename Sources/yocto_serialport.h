@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_serialport.h 28660 2017-09-26 16:37:13Z seb $
+ * $Id: yocto_serialport.h 28744 2017-10-03 08:14:16Z seb $
  *
  * Declares yFindSerialPort(), the high-level API for SerialPort functions
  *
@@ -110,8 +110,8 @@ typedef enum {
 
 @end
 
-//--- (generated code: SnoopingRecord functions declaration)
-//--- (end of generated code: SnoopingRecord functions declaration)
+//--- (generated code: YSnoopingRecord functions declaration)
+//--- (end of generated code: YSnoopingRecord functions declaration)
 
 
 //--- (generated code: YSerialPort class start)
@@ -893,7 +893,7 @@ typedef enum {
 
 @end
 
-//--- (generated code: SerialPort functions declaration)
+//--- (generated code: YSerialPort functions declaration)
 /**
  * Retrieves a serial port for a given identifier.
  * The identifier can be specified using several formats:
@@ -933,6 +933,6 @@ YSerialPort* yFindSerialPort(NSString* func);
  */
 YSerialPort* yFirstSerialPort(void);
 
-//--- (end of generated code: SerialPort functions declaration)
+//--- (end of generated code: YSerialPort functions declaration)
 CF_EXTERN_C_END
 

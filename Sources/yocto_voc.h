@@ -1,10 +1,10 @@
 /*********************************************************************
  *
- * $Id: yocto_voc.h 27708 2017-06-01 12:36:32Z seb $
+ * $Id: yocto_voc.h 28752 2017-10-03 08:41:02Z seb $
  *
  * Declares yFindVoc(), the high-level API for Voc functions
  *
- * - - - - - - - - - License information: - - - - - - - - - 
+ * - - - - - - - - - License information: - - - - - - - - -
  *
  *  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
  *
@@ -23,7 +23,7 @@
  *  obligations.
  *
  *  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
- *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
+ *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING
  *  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS
  *  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
  *  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
@@ -155,7 +155,7 @@ typedef void (*YVocTimedReportCallback)(YVoc *func, YMeasure *measure);
 
 @end
 
-//--- (Voc functions declaration)
+//--- (YVoc functions declaration)
 /**
  * Retrieves a Volatile Organic Compound sensor for a given identifier.
  * The identifier can be specified using several formats:
@@ -195,6 +195,6 @@ YVoc* yFindVoc(NSString* func);
  */
 YVoc* yFirstVoc(void);
 
-//--- (end of Voc functions declaration)
+//--- (end of YVoc functions declaration)
 CF_EXTERN_C_END
 

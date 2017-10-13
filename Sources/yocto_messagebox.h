@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_messagebox.h 27708 2017-06-01 12:36:32Z seb $
+ * $Id: yocto_messagebox.h 28744 2017-10-03 08:14:16Z seb $
  *
  * Declares yFindMessageBox(), the high-level API for MessageBox functions
  *
@@ -191,8 +191,8 @@ CF_EXTERN_C_BEGIN
 
 @end
 
-//--- (generated code: Sms functions declaration)
-//--- (end of generated code: Sms functions declaration)
+//--- (generated code: YSms functions declaration)
+//--- (end of generated code: YSms functions declaration)
 
 //--- (generated code: YMessageBox globals)
 typedef void (*YMessageBoxValueCallback)(YMessageBox *func, NSString *functionValue);
@@ -471,7 +471,7 @@ typedef void (*YMessageBoxValueCallback)(YMessageBox *func, NSString *functionVa
 
 @end
 
-//--- (generated code: MessageBox functions declaration)
+//--- (generated code: YMessageBox functions declaration)
 /**
  * Retrieves a MessageBox interface for a given identifier.
  * The identifier can be specified using several formats:
@@ -511,6 +511,6 @@ YMessageBox* yFindMessageBox(NSString* func);
  */
 YMessageBox* yFirstMessageBox(void);
 
-//--- (end of generated code: MessageBox functions declaration)
+//--- (end of generated code: YMessageBox functions declaration)
 CF_EXTERN_C_END
 

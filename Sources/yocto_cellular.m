@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_cellular.m 27708 2017-06-01 12:36:32Z seb $
+ * $Id: yocto_cellular.m 28744 2017-10-03 08:14:16Z seb $
  *
  * Implements the high-level API for Cellular functions
  *
@@ -115,8 +115,8 @@
 //--- (end of generated code: YCellRecord public methods implementation)
 
 @end
-//--- (generated code: CellRecord functions)
-//--- (end of generated code: CellRecord functions)
+//--- (generated code: YCellRecord functions)
+//--- (end of generated code: YCellRecord functions)
 
 
 
@@ -1232,7 +1232,7 @@
 //--- (end of generated code: YCellular public methods implementation)
 
 @end
-//--- (generated code: Cellular functions)
+//--- (generated code: YCellular functions)
 
 YCellular *yFindCellular(NSString* func)
 {
@@ -1244,4 +1244,4 @@ YCellular *yFirstCellular(void)
     return [YCellular FirstCellular];
 }
 
-//--- (end of generated code: Cellular functions)
+//--- (end of generated code: YCellular functions)

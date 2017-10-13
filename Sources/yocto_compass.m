@@ -1,10 +1,10 @@
 /*********************************************************************
  *
- * $Id: yocto_compass.m 27708 2017-06-01 12:36:32Z seb $
+ * $Id: yocto_compass.m 28744 2017-10-03 08:14:16Z seb $
  *
  * Implements the high-level API for Compass functions
  *
- * - - - - - - - - - License information: - - - - - - - - - 
+ * - - - - - - - - - License information: - - - - - - - - -
  *
  *  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
  *
@@ -23,7 +23,7 @@
  *  obligations.
  *
  *  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
- *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
+ *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING
  *  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS
  *  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
  *  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
@@ -318,7 +318,7 @@
 //--- (end of YCompass public methods implementation)
 
 @end
-//--- (Compass functions)
+//--- (YCompass functions)
 
 YCompass *yFindCompass(NSString* func)
 {
@@ -330,4 +330,4 @@ YCompass *yFirstCompass(void)
     return [YCompass FirstCompass];
 }
 
-//--- (end of Compass functions)
+//--- (end of YCompass functions)

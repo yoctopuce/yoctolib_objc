@@ -1,10 +1,10 @@
 /*********************************************************************
  *
- * $Id: yocto_voltageoutput.m 28491 2017-09-12 13:25:28Z seb $
+ * $Id: yocto_voltageoutput.m 28744 2017-10-03 08:14:16Z seb $
  *
  * Implements the high-level API for VoltageOutput functions
  *
- * - - - - - - - - - License information: - - - - - - - - - 
+ * - - - - - - - - - License information: - - - - - - - - -
  *
  *  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
  *
@@ -23,7 +23,7 @@
  *  obligations.
  *
  *  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
- *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
+ *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING
  *  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS
  *  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
  *  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
@@ -342,7 +342,7 @@
 //--- (end of YVoltageOutput public methods implementation)
 
 @end
-//--- (VoltageOutput functions)
+//--- (YVoltageOutput functions)
 
 YVoltageOutput *yFindVoltageOutput(NSString* func)
 {
@@ -354,4 +354,4 @@ YVoltageOutput *yFirstVoltageOutput(void)
     return [YVoltageOutput FirstVoltageOutput];
 }
 
-//--- (end of VoltageOutput functions)
+//--- (end of YVoltageOutput functions)

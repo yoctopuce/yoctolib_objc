@@ -1,10 +1,10 @@
 /*********************************************************************
  *
- * $Id: yocto_weighscale.h 28207 2017-07-28 16:26:38Z mvuilleu $
+ * $Id: yocto_weighscale.h 28752 2017-10-03 08:41:02Z seb $
  *
  * Declares yFindWeighScale(), the high-level API for WeighScale functions
  *
- * - - - - - - - - - License information: - - - - - - - - - 
+ * - - - - - - - - - License information: - - - - - - - - -
  *
  *  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
  *
@@ -23,7 +23,7 @@
  *  obligations.
  *
  *  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
- *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
+ *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING
  *  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS
  *  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
  *  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
@@ -371,7 +371,7 @@ typedef enum {
 
 @end
 
-//--- (WeighScale functions declaration)
+//--- (YWeighScale functions declaration)
 /**
  * Retrieves a weighing scale sensor for a given identifier.
  * The identifier can be specified using several formats:
@@ -411,6 +411,6 @@ YWeighScale* yFindWeighScale(NSString* func);
  */
 YWeighScale* yFirstWeighScale(void);
 
-//--- (end of WeighScale functions declaration)
+//--- (end of YWeighScale functions declaration)
 CF_EXTERN_C_END
 
