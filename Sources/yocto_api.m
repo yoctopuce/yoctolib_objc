@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.m 28799 2017-10-11 16:07:10Z seb $
+ * $Id: yocto_api.m 29240 2017-11-23 13:29:57Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -5887,6 +5887,7 @@ static const char* hexArray = "0123456789ABCDEF";
     for (NSString* _each  in restoreLast) {
         [self _download:_each];
     }
+    [self clearCache];
     return YAPI_SUCCESS;
 }
 

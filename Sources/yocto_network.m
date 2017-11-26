@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_network.m 28744 2017-10-03 08:14:16Z seb $
+ * $Id: yocto_network.m 29076 2017-11-03 11:28:49Z seb $
  *
  * Implements the high-level API for Network functions
  *
@@ -639,6 +639,10 @@
 -(int) setUserPassword:(NSString*) newval
 {
     NSString* rest_val;
+        if ([newval length] > YAPI_HASH_BUF_SIZE) {
+            [self _throw:YAPI_INVALID_ARGUMENT :[@"Password is too long :" stringByAppendingString:newval]];
+            return YAPI_INVALID_ARGUMENT;
+        }
     rest_val = newval;
     return [self _setAttr:@"userPassword" :rest_val];
 }
@@ -689,6 +693,10 @@
 -(int) setAdminPassword:(NSString*) newval
 {
     NSString* rest_val;
+        if ([newval length] > YAPI_HASH_BUF_SIZE) {
+            [self _throw:YAPI_INVALID_ARGUMENT :[@"Password is too long :" stringByAppendingString:newval]];
+            return YAPI_INVALID_ARGUMENT;
+        }
     rest_val = newval;
     return [self _setAttr:@"adminPassword" :rest_val];
 }
