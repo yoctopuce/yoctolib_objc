@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.m 29240 2017-11-23 13:29:57Z seb $
+ * $Id: yocto_api.m 29466 2017-12-20 08:11:49Z mvuilleu $
  *
  * High-level programming interface, common to all modules
  *
@@ -3303,7 +3303,8 @@ static const char* hexArray = "0123456789ABCDEF";
 }
 
 /**
- * Changes the recorded minimal value observed.
+ * Changes the recorded minimal value observed. Can be used to reset the value returned
+ * by get_lowestValue().
  *
  * @param newval : a floating point number corresponding to the recorded minimal value observed
  *
@@ -3323,6 +3324,7 @@ static const char* hexArray = "0123456789ABCDEF";
 }
 /**
  * Returns the minimal value observed for the measure since the device was started.
+ * Can be reset to an arbitrary value thanks to set_lowestValue().
  *
  * @return a floating point number corresponding to the minimal value observed for the measure since
  * the device was started
@@ -3349,7 +3351,8 @@ static const char* hexArray = "0123456789ABCDEF";
 }
 
 /**
- * Changes the recorded maximal value observed.
+ * Changes the recorded maximal value observed. Can be used to reset the value returned
+ * by get_lowestValue().
  *
  * @param newval : a floating point number corresponding to the recorded maximal value observed
  *
@@ -3369,6 +3372,7 @@ static const char* hexArray = "0123456789ABCDEF";
 }
 /**
  * Returns the maximal value observed for the measure since the device was started.
+ * Can be reset to an arbitrary value thanks to set_highestValue().
  *
  * @return a floating point number corresponding to the maximal value observed for the measure since
  * the device was started

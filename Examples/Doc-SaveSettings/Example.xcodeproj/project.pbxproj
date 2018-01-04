@@ -58,6 +58,7 @@
 		B8A727A817E0CD3A0057ec877a8 /* yocto_messagebox.m in Sources */ = {isa = PBXBuildFile; fileRef = B8A727A817E0CD3A00577e8637ee /* yocto_messagebox.m */; };
 		B8A727A817E0CD3A0057f09a93c9 /* yocto_motor.m in Sources */ = {isa = PBXBuildFile; fileRef = B8A727A817E0CD3A00574ff0d4d1 /* yocto_motor.m */; };
 		B8A727A817E0CD3A005718870972 /* yocto_multiaxiscontroller.m in Sources */ = {isa = PBXBuildFile; fileRef = B8A727A817E0CD3A00578384b2f7 /* yocto_multiaxiscontroller.m */; };
+		B8A727A817E0CD3A00578a1d6058 /* yocto_multicellweighscale.m in Sources */ = {isa = PBXBuildFile; fileRef = B8A727A817E0CD3A0057111edbdd /* yocto_multicellweighscale.m */; };
 		B8A727A817E0CD3A0057500d6735 /* yocto_network.m in Sources */ = {isa = PBXBuildFile; fileRef = B8A727A817E0CD3A00573aae9435 /* yocto_network.m */; };
 		B8A727A817E0CD3A0057bb4f030a /* yocto_oscontrol.m in Sources */ = {isa = PBXBuildFile; fileRef = B8A727A817E0CD3A00579ffbca0f /* yocto_oscontrol.m */; };
 		B8A727A817E0CD3A0057de8ef473 /* yocto_power.m in Sources */ = {isa = PBXBuildFile; fileRef = B8A727A817E0CD3A005761e4b36b /* yocto_power.m */; };
@@ -203,6 +204,8 @@
 		B8A727A817E0CD3A00573f9a205e /* yocto_motor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yocto_motor.h; path = ../../../Sources/yocto_motor.h; sourceTree = "<group>"; };
 		B8A727A817E0CD3A00578384b2f7 /* yocto_multiaxiscontroller.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = yocto_multiaxiscontroller.m; path = ../../../Sources/yocto_multiaxiscontroller.m; sourceTree = "<group>"; };
 		B8A727A817E0CD3A0057f3ee4678 /* yocto_multiaxiscontroller.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yocto_multiaxiscontroller.h; path = ../../../Sources/yocto_multiaxiscontroller.h; sourceTree = "<group>"; };
+		B8A727A817E0CD3A0057111edbdd /* yocto_multicellweighscale.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = yocto_multicellweighscale.m; path = ../../../Sources/yocto_multicellweighscale.m; sourceTree = "<group>"; };
+		B8A727A817E0CD3A005761742f52 /* yocto_multicellweighscale.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yocto_multicellweighscale.h; path = ../../../Sources/yocto_multicellweighscale.h; sourceTree = "<group>"; };
 		B8A727A817E0CD3A00573aae9435 /* yocto_network.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = yocto_network.m; path = ../../../Sources/yocto_network.m; sourceTree = "<group>"; };
 		B8A727A817E0CD3A00574ac460ba /* yocto_network.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yocto_network.h; path = ../../../Sources/yocto_network.h; sourceTree = "<group>"; };
 		B8A727A817E0CD3A00579ffbca0f /* yocto_oscontrol.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = yocto_oscontrol.m; path = ../../../Sources/yocto_oscontrol.m; sourceTree = "<group>"; };
@@ -396,6 +399,8 @@
 				B8A727A817E0CD3A00573f9a205e /* yocto_motor.h */,
 				B8A727A817E0CD3A00578384b2f7 /* yocto_multiaxiscontroller.m */,
 				B8A727A817E0CD3A0057f3ee4678 /* yocto_multiaxiscontroller.h */,
+				B8A727A817E0CD3A0057111edbdd /* yocto_multicellweighscale.m */,
+				B8A727A817E0CD3A005761742f52 /* yocto_multicellweighscale.h */,
 				B8A727A817E0CD3A00573aae9435 /* yocto_network.m */,
 				B8A727A817E0CD3A00574ac460ba /* yocto_network.h */,
 				B8A727A817E0CD3A00579ffbca0f /* yocto_oscontrol.m */,
@@ -592,6 +597,7 @@
 				B8A727A817E0CD3A0057ec877a8 /* yocto_messagebox.m in Sources */,
 				B8A727A817E0CD3A0057f09a93c9 /* yocto_motor.m in Sources */,
 				B8A727A817E0CD3A005718870972 /* yocto_multiaxiscontroller.m in Sources */,
+				B8A727A817E0CD3A00578a1d6058 /* yocto_multicellweighscale.m in Sources */,
 				B8A727A817E0CD3A0057500d6735 /* yocto_network.m in Sources */,
 				B8A727A817E0CD3A0057bb4f030a /* yocto_oscontrol.m in Sources */,
 				B8A727A817E0CD3A0057de8ef473 /* yocto_power.m in Sources */,

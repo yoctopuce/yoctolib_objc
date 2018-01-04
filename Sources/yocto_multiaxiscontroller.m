@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_multiaxiscontroller.m 28744 2017-10-03 08:14:16Z seb $
+ * $Id: yocto_multiaxiscontroller.m 29507 2017-12-28 14:14:56Z mvuilleu $
  *
  * Implements the high-level API for MultiAxisController functions
  *
@@ -272,7 +272,19 @@
 
 -(int) sendCommand:(NSString*)command
 {
-    return [self set_command:command];
+    NSString* url;
+    NSMutableData* retBin;
+    int res;
+    url = [NSString stringWithFormat:@"cmd.txt?X=%@",command];
+    //may throw an exception
+    retBin = [self _download:url];
+    res = (((u8*)([retBin bytes]))[0]);
+    if (res == 49) {
+        if (!(res == 48)) {[self _throw: YAPI_DEVICE_BUSY: @"Motor command pipeline is full, try again later"]; return YAPI_DEVICE_BUSY;}
+    } else {
+        if (!(res == 48)) {[self _throw: YAPI_IO_ERROR: @"Motor command failed permanently"]; return YAPI_IO_ERROR;}
+    }
+    return YAPI_SUCCESS;
 }
 
 /**

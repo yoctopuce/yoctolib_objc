@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.h 28744 2017-10-03 08:14:16Z seb $
+ * $Id: yocto_api.h 29466 2017-12-20 08:11:49Z mvuilleu $
  *
  * High-level programming interface, common to all modules
  *
@@ -62,7 +62,7 @@
 
 extern NSMutableDictionary* YAPI_YFunctions;
 
-#define YOCTO_API_REVISION          "29281"
+#define YOCTO_API_REVISION          "29543"
 
 // yInitAPI argument
 #define Y_DETECT_NONE           0
@@ -1741,7 +1741,8 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
 
 -(double) currentValue;
 /**
- * Changes the recorded minimal value observed.
+ * Changes the recorded minimal value observed. Can be used to reset the value returned
+ * by get_lowestValue().
  *
  * @param newval : a floating point number corresponding to the recorded minimal value observed
  *
@@ -1754,6 +1755,7 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
 
 /**
  * Returns the minimal value observed for the measure since the device was started.
+ * Can be reset to an arbitrary value thanks to set_lowestValue().
  *
  * @return a floating point number corresponding to the minimal value observed for the measure since
  * the device was started
@@ -1765,7 +1767,8 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
 
 -(double) lowestValue;
 /**
- * Changes the recorded maximal value observed.
+ * Changes the recorded maximal value observed. Can be used to reset the value returned
+ * by get_lowestValue().
  *
  * @param newval : a floating point number corresponding to the recorded maximal value observed
  *
@@ -1778,6 +1781,7 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
 
 /**
  * Returns the maximal value observed for the measure since the device was started.
+ * Can be reset to an arbitrary value thanks to set_highestValue().
  *
  * @return a floating point number corresponding to the maximal value observed for the measure since
  * the device was started

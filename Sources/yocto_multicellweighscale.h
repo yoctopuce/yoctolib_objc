@@ -1,8 +1,8 @@
 /*********************************************************************
  *
- * $Id: yocto_weighscale.h 29463 2017-12-20 07:40:43Z mvuilleu $
+ * $Id: yocto_multicellweighscale.h 29478 2017-12-21 08:10:05Z seb $
  *
- * Declares yFindWeighScale(), the high-level API for WeighScale functions
+ * Declares yFindMultiCellWeighScale(), the high-level API for MultiCellWeighScale functions
  *
  * - - - - - - - - - License information: - - - - - - - - -
  *
@@ -40,11 +40,11 @@
 #include "yocto_api.h"
 CF_EXTERN_C_BEGIN
 
-@class YWeighScale;
+@class YMultiCellWeighScale;
 
-//--- (YWeighScale globals)
-typedef void (*YWeighScaleValueCallback)(YWeighScale *func, NSString *functionValue);
-typedef void (*YWeighScaleTimedReportCallback)(YWeighScale *func, YMeasure *measure);
+//--- (YMultiCellWeighScale globals)
+typedef void (*YMultiCellWeighScaleValueCallback)(YMultiCellWeighScale *func, NSString *functionValue);
+typedef void (*YMultiCellWeighScaleTimedReportCallback)(YMultiCellWeighScale *func, YMeasure *measure);
 #ifndef _Y_EXCITATION_ENUM
 #define _Y_EXCITATION_ENUM
 typedef enum {
@@ -54,29 +54,31 @@ typedef enum {
     Y_EXCITATION_INVALID = -1,
 } Y_EXCITATION_enum;
 #endif
+#define Y_CELLCOUNT_INVALID             YAPI_INVALID_UINT
 #define Y_COMPTEMPADAPTRATIO_INVALID    YAPI_INVALID_DOUBLE
 #define Y_COMPTEMPAVG_INVALID           YAPI_INVALID_DOUBLE
 #define Y_COMPTEMPCHG_INVALID           YAPI_INVALID_DOUBLE
 #define Y_COMPENSATION_INVALID          YAPI_INVALID_DOUBLE
 #define Y_ZEROTRACKING_INVALID          YAPI_INVALID_DOUBLE
 #define Y_COMMAND_INVALID               YAPI_INVALID_STRING
-//--- (end of YWeighScale globals)
+//--- (end of YMultiCellWeighScale globals)
 
-//--- (YWeighScale class start)
+//--- (YMultiCellWeighScale class start)
 /**
- * YWeighScale Class: WeighScale function interface
+ * YMultiCellWeighScale Class: MultiCellWeighScale function interface
  *
- * The YWeighScale class provides a weight measurement from a ratiometric load cell
+ * The YMultiCellWeighScale class provides a weight measurement from a set of ratiometric load cells
  * sensor. It can be used to control the bridge excitation parameters, in order to avoid
  * measure shifts caused by temperature variation in the electronics, and can also
  * automatically apply an additional correction factor based on temperature to
- * compensate for offsets in the load cell itself.
+ * compensate for offsets in the load cells themselves.
  */
-@interface YWeighScale : YSensor
-//--- (end of YWeighScale class start)
+@interface YMultiCellWeighScale : YSensor
+//--- (end of YMultiCellWeighScale class start)
 {
 @protected
-//--- (YWeighScale attributes declaration)
+//--- (YMultiCellWeighScale attributes declaration)
+    int             _cellCount;
     Y_EXCITATION_enum _excitation;
     double          _compTempAdaptRatio;
     double          _compTempAvg;
@@ -84,19 +86,42 @@ typedef enum {
     double          _compensation;
     double          _zeroTracking;
     NSString*       _command;
-    YWeighScaleValueCallback _valueCallbackWeighScale;
-    YWeighScaleTimedReportCallback _timedReportCallbackWeighScale;
-//--- (end of YWeighScale attributes declaration)
+    YMultiCellWeighScaleValueCallback _valueCallbackMultiCellWeighScale;
+    YMultiCellWeighScaleTimedReportCallback _timedReportCallbackMultiCellWeighScale;
+//--- (end of YMultiCellWeighScale attributes declaration)
 }
-// Constructor is protected, use yFindWeighScale factory function to instantiate
+// Constructor is protected, use yFindMultiCellWeighScale factory function to instantiate
 -(id)    initWith:(NSString*) func;
 
-//--- (YWeighScale private methods declaration)
+//--- (YMultiCellWeighScale private methods declaration)
 // Function-specific method for parsing of JSON output and caching result
 -(int)             _parseAttr:(yJsonStateMachine*) j;
 
-//--- (end of YWeighScale private methods declaration)
-//--- (YWeighScale public methods declaration)
+//--- (end of YMultiCellWeighScale private methods declaration)
+//--- (YMultiCellWeighScale public methods declaration)
+/**
+ * Returns the number of load cells in use.
+ *
+ * @return an integer corresponding to the number of load cells in use
+ *
+ * On failure, throws an exception or returns Y_CELLCOUNT_INVALID.
+ */
+-(int)     get_cellCount;
+
+
+-(int) cellCount;
+/**
+ * Changes the number of load cells in use.
+ *
+ * @param newval : an integer corresponding to the number of load cells in use
+ *
+ * @return YAPI_SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     set_cellCount:(int) newval;
+-(int)     setCellCount:(int) newval;
+
 /**
  * Returns the current load cell bridge excitation method.
  *
@@ -218,7 +243,7 @@ typedef enum {
 -(int)     setCommand:(NSString*) newval;
 
 /**
- * Retrieves a weighing scale sensor for a given identifier.
+ * Retrieves a multi-cell weighing scale sensor for a given identifier.
  * The identifier can be specified using several formats:
  * <ul>
  * <li>FunctionLogicalName</li>
@@ -228,11 +253,11 @@ typedef enum {
  * <li>ModuleLogicalName.FunctionLogicalName</li>
  * </ul>
  *
- * This function does not require that the weighing scale sensor is online at the time
+ * This function does not require that the multi-cell weighing scale sensor is online at the time
  * it is invoked. The returned object is nevertheless valid.
- * Use the method YWeighScale.isOnline() to test if the weighing scale sensor is
+ * Use the method YMultiCellWeighScale.isOnline() to test if the multi-cell weighing scale sensor is
  * indeed online at a given time. In case of ambiguity when looking for
- * a weighing scale sensor by logical name, no error is notified: the first instance
+ * a multi-cell weighing scale sensor by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
  *
@@ -240,11 +265,11 @@ typedef enum {
  * you are certain that the matching device is plugged, make sure that you did
  * call registerHub() at application initialization time.
  *
- * @param func : a string that uniquely characterizes the weighing scale sensor
+ * @param func : a string that uniquely characterizes the multi-cell weighing scale sensor
  *
- * @return a YWeighScale object allowing you to drive the weighing scale sensor.
+ * @return a YMultiCellWeighScale object allowing you to drive the multi-cell weighing scale sensor.
  */
-+(YWeighScale*)     FindWeighScale:(NSString*)func;
++(YMultiCellWeighScale*)     FindMultiCellWeighScale:(NSString*)func;
 
 /**
  * Registers the callback function that is invoked on every change of advertised value.
@@ -257,7 +282,7 @@ typedef enum {
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerValueCallback:(YWeighScaleValueCallback)callback;
+-(int)     registerValueCallback:(YMultiCellWeighScaleValueCallback)callback;
 
 -(int)     _invokeValueCallback:(NSString*)value;
 
@@ -272,12 +297,12 @@ typedef enum {
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerTimedReportCallback:(YWeighScaleTimedReportCallback)callback;
+-(int)     registerTimedReportCallback:(YMultiCellWeighScaleTimedReportCallback)callback;
 
 -(int)     _invokeTimedReportCallback:(YMeasure*)value;
 
 /**
- * Adapts the load cell signal bias (stored in the corresponding genericSensor)
+ * Adapts the load cells signal bias (stored in the corresponding genericSensor)
  * so that the current signal corresponds to a zero weight.
  *
  * @return YAPI_SUCCESS if the call succeeds.
@@ -287,7 +312,7 @@ typedef enum {
 -(int)     tare;
 
 /**
- * Configures the load cell span parameters (stored in the corresponding genericSensor)
+ * Configures the load cells span parameters (stored in the corresponding genericSensors)
  * so that the current signal corresponds to the specified reference weight.
  *
  * @param currWeight : reference weight presently on the load cell.
@@ -299,172 +324,32 @@ typedef enum {
  */
 -(int)     setupSpan:(double)currWeight :(double)maxWeight;
 
--(int)     setCompensationTable:(int)tableIndex :(NSMutableArray*)tempValues :(NSMutableArray*)compValues;
-
--(int)     loadCompensationTable:(int)tableIndex :(NSMutableArray*)tempValues :(NSMutableArray*)compValues;
 
 /**
- * Records a weight offset thermal compensation table, in order to automatically correct the
- * measured weight based on the averaged compensation temperature.
- * The weight correction will be applied by linear interpolation between specified points.
+ * Continues the enumeration of multi-cell weighing scale sensors started using yFirstMultiCellWeighScale().
  *
- * @param tempValues : array of floating point numbers, corresponding to all averaged
- *         temperatures for which an offset correction is specified.
- * @param compValues : array of floating point numbers, corresponding to the offset correction
- *         to apply for each of the temperature included in the first
- *         argument, index by index.
- *
- * @return YAPI_SUCCESS if the call succeeds.
- *
- * On failure, throws an exception or returns a negative error code.
+ * @return a pointer to a YMultiCellWeighScale object, corresponding to
+ *         a multi-cell weighing scale sensor currently online, or a nil pointer
+ *         if there are no more multi-cell weighing scale sensors to enumerate.
  */
--(int)     set_offsetAvgCompensationTable:(NSMutableArray*)tempValues :(NSMutableArray*)compValues;
-
+-(YMultiCellWeighScale*) nextMultiCellWeighScale;
 /**
- * Retrieves the weight offset thermal compensation table previously configured using the
- * set_offsetAvgCompensationTable function.
- * The weight correction is applied by linear interpolation between specified points.
+ * Starts the enumeration of multi-cell weighing scale sensors currently accessible.
+ * Use the method YMultiCellWeighScale.nextMultiCellWeighScale() to iterate on
+ * next multi-cell weighing scale sensors.
  *
- * @param tempValues : array of floating point numbers, that is filled by the function
- *         with all averaged temperatures for which an offset correction is specified.
- * @param compValues : array of floating point numbers, that is filled by the function
- *         with the offset correction applied for each of the temperature
- *         included in the first argument, index by index.
- *
- * @return YAPI_SUCCESS if the call succeeds.
- *
- * On failure, throws an exception or returns a negative error code.
- */
--(int)     loadOffsetAvgCompensationTable:(NSMutableArray*)tempValues :(NSMutableArray*)compValues;
-
-/**
- * Records a weight offset thermal compensation table, in order to automatically correct the
- * measured weight based on the variation of temperature.
- * The weight correction will be applied by linear interpolation between specified points.
- *
- * @param tempValues : array of floating point numbers, corresponding to temperature
- *         variations for which an offset correction is specified.
- * @param compValues : array of floating point numbers, corresponding to the offset correction
- *         to apply for each of the temperature variation included in the first
- *         argument, index by index.
- *
- * @return YAPI_SUCCESS if the call succeeds.
- *
- * On failure, throws an exception or returns a negative error code.
- */
--(int)     set_offsetChgCompensationTable:(NSMutableArray*)tempValues :(NSMutableArray*)compValues;
-
-/**
- * Retrieves the weight offset thermal compensation table previously configured using the
- * set_offsetChgCompensationTable function.
- * The weight correction is applied by linear interpolation between specified points.
- *
- * @param tempValues : array of floating point numbers, that is filled by the function
- *         with all temperature variations for which an offset correction is specified.
- * @param compValues : array of floating point numbers, that is filled by the function
- *         with the offset correction applied for each of the temperature
- *         variation included in the first argument, index by index.
- *
- * @return YAPI_SUCCESS if the call succeeds.
- *
- * On failure, throws an exception or returns a negative error code.
- */
--(int)     loadOffsetChgCompensationTable:(NSMutableArray*)tempValues :(NSMutableArray*)compValues;
-
-/**
- * Records a weight span thermal compensation table, in order to automatically correct the
- * measured weight based on the compensation temperature.
- * The weight correction will be applied by linear interpolation between specified points.
- *
- * @param tempValues : array of floating point numbers, corresponding to all averaged
- *         temperatures for which a span correction is specified.
- * @param compValues : array of floating point numbers, corresponding to the span correction
- *         (in percents) to apply for each of the temperature included in the first
- *         argument, index by index.
- *
- * @return YAPI_SUCCESS if the call succeeds.
- *
- * On failure, throws an exception or returns a negative error code.
- */
--(int)     set_spanAvgCompensationTable:(NSMutableArray*)tempValues :(NSMutableArray*)compValues;
-
-/**
- * Retrieves the weight span thermal compensation table previously configured using the
- * set_spanAvgCompensationTable function.
- * The weight correction is applied by linear interpolation between specified points.
- *
- * @param tempValues : array of floating point numbers, that is filled by the function
- *         with all averaged temperatures for which an span correction is specified.
- * @param compValues : array of floating point numbers, that is filled by the function
- *         with the span correction applied for each of the temperature
- *         included in the first argument, index by index.
- *
- * @return YAPI_SUCCESS if the call succeeds.
- *
- * On failure, throws an exception or returns a negative error code.
- */
--(int)     loadSpanAvgCompensationTable:(NSMutableArray*)tempValues :(NSMutableArray*)compValues;
-
-/**
- * Records a weight span thermal compensation table, in order to automatically correct the
- * measured weight based on the variation of temperature.
- * The weight correction will be applied by linear interpolation between specified points.
- *
- * @param tempValues : array of floating point numbers, corresponding to all variations of
- *         temperatures for which a span correction is specified.
- * @param compValues : array of floating point numbers, corresponding to the span correction
- *         (in percents) to apply for each of the temperature variation included
- *         in the first argument, index by index.
- *
- * @return YAPI_SUCCESS if the call succeeds.
- *
- * On failure, throws an exception or returns a negative error code.
- */
--(int)     set_spanChgCompensationTable:(NSMutableArray*)tempValues :(NSMutableArray*)compValues;
-
-/**
- * Retrieves the weight span thermal compensation table previously configured using the
- * set_spanChgCompensationTable function.
- * The weight correction is applied by linear interpolation between specified points.
- *
- * @param tempValues : array of floating point numbers, that is filled by the function
- *         with all variation of temperature for which an span correction is specified.
- * @param compValues : array of floating point numbers, that is filled by the function
- *         with the span correction applied for each of variation of temperature
- *         included in the first argument, index by index.
- *
- * @return YAPI_SUCCESS if the call succeeds.
- *
- * On failure, throws an exception or returns a negative error code.
- */
--(int)     loadSpanChgCompensationTable:(NSMutableArray*)tempValues :(NSMutableArray*)compValues;
-
-
-/**
- * Continues the enumeration of weighing scale sensors started using yFirstWeighScale().
- *
- * @return a pointer to a YWeighScale object, corresponding to
- *         a weighing scale sensor currently online, or a nil pointer
- *         if there are no more weighing scale sensors to enumerate.
- */
--(YWeighScale*) nextWeighScale;
-/**
- * Starts the enumeration of weighing scale sensors currently accessible.
- * Use the method YWeighScale.nextWeighScale() to iterate on
- * next weighing scale sensors.
- *
- * @return a pointer to a YWeighScale object, corresponding to
- *         the first weighing scale sensor currently online, or a nil pointer
+ * @return a pointer to a YMultiCellWeighScale object, corresponding to
+ *         the first multi-cell weighing scale sensor currently online, or a nil pointer
  *         if there are none.
  */
-+(YWeighScale*) FirstWeighScale;
-//--- (end of YWeighScale public methods declaration)
++(YMultiCellWeighScale*) FirstMultiCellWeighScale;
+//--- (end of YMultiCellWeighScale public methods declaration)
 
 @end
 
-//--- (YWeighScale functions declaration)
+//--- (YMultiCellWeighScale functions declaration)
 /**
- * Retrieves a weighing scale sensor for a given identifier.
+ * Retrieves a multi-cell weighing scale sensor for a given identifier.
  * The identifier can be specified using several formats:
  * <ul>
  * <li>FunctionLogicalName</li>
@@ -474,11 +359,11 @@ typedef enum {
  * <li>ModuleLogicalName.FunctionLogicalName</li>
  * </ul>
  *
- * This function does not require that the weighing scale sensor is online at the time
+ * This function does not require that the multi-cell weighing scale sensor is online at the time
  * it is invoked. The returned object is nevertheless valid.
- * Use the method YWeighScale.isOnline() to test if the weighing scale sensor is
+ * Use the method YMultiCellWeighScale.isOnline() to test if the multi-cell weighing scale sensor is
  * indeed online at a given time. In case of ambiguity when looking for
- * a weighing scale sensor by logical name, no error is notified: the first instance
+ * a multi-cell weighing scale sensor by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
  *
@@ -486,22 +371,22 @@ typedef enum {
  * you are certain that the matching device is plugged, make sure that you did
  * call registerHub() at application initialization time.
  *
- * @param func : a string that uniquely characterizes the weighing scale sensor
+ * @param func : a string that uniquely characterizes the multi-cell weighing scale sensor
  *
- * @return a YWeighScale object allowing you to drive the weighing scale sensor.
+ * @return a YMultiCellWeighScale object allowing you to drive the multi-cell weighing scale sensor.
  */
-YWeighScale* yFindWeighScale(NSString* func);
+YMultiCellWeighScale* yFindMultiCellWeighScale(NSString* func);
 /**
- * Starts the enumeration of weighing scale sensors currently accessible.
- * Use the method YWeighScale.nextWeighScale() to iterate on
- * next weighing scale sensors.
+ * Starts the enumeration of multi-cell weighing scale sensors currently accessible.
+ * Use the method YMultiCellWeighScale.nextMultiCellWeighScale() to iterate on
+ * next multi-cell weighing scale sensors.
  *
- * @return a pointer to a YWeighScale object, corresponding to
- *         the first weighing scale sensor currently online, or a nil pointer
+ * @return a pointer to a YMultiCellWeighScale object, corresponding to
+ *         the first multi-cell weighing scale sensor currently online, or a nil pointer
  *         if there are none.
  */
-YWeighScale* yFirstWeighScale(void);
+YMultiCellWeighScale* yFirstMultiCellWeighScale(void);
 
-//--- (end of YWeighScale functions declaration)
+//--- (end of YMultiCellWeighScale functions declaration)
 CF_EXTERN_C_END
 
