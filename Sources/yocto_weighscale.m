@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_weighscale.m 29472 2017-12-20 11:34:07Z mvuilleu $
+ * $Id: yocto_weighscale.m 29661 2018-01-18 13:32:13Z mvuilleu $
  *
  * Implements the high-level API for WeighScale functions
  *
@@ -119,6 +119,28 @@
 }
 //--- (end of YWeighScale private methods implementation)
 //--- (YWeighScale public methods implementation)
+
+/**
+ * Changes the measuring unit for the weight.
+ * Remember to call the saveToFlash() method of the module if the
+ * modification must be kept.
+ *
+ * @param newval : a string corresponding to the measuring unit for the weight
+ *
+ * @return YAPI_SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) set_unit:(NSString*) newval
+{
+    return [self setUnit:newval];
+}
+-(int) setUnit:(NSString*) newval
+{
+    NSString* rest_val;
+    rest_val = newval;
+    return [self _setAttr:@"unit" :rest_val];
+}
 /**
  * Returns the current load cell bridge excitation method.
  *

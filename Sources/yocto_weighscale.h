@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_weighscale.h 29463 2017-12-20 07:40:43Z mvuilleu $
+ * $Id: yocto_weighscale.h 29661 2018-01-18 13:32:13Z mvuilleu $
  *
  * Declares yFindWeighScale(), the high-level API for WeighScale functions
  *
@@ -97,6 +97,20 @@ typedef enum {
 
 //--- (end of YWeighScale private methods declaration)
 //--- (YWeighScale public methods declaration)
+/**
+ * Changes the measuring unit for the weight.
+ * Remember to call the saveToFlash() method of the module if the
+ * modification must be kept.
+ *
+ * @param newval : a string corresponding to the measuring unit for the weight
+ *
+ * @return YAPI_SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     set_unit:(NSString*) newval;
+-(int)     setUnit:(NSString*) newval;
+
 /**
  * Returns the current load cell bridge excitation method.
  *
