@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_proximity.h 28752 2017-10-03 08:41:02Z seb $
+ * $Id: yocto_proximity.h 29767 2018-01-26 08:53:27Z seb $
  *
  * Declares yFindProximity(), the high-level API for Proximity functions
  *
@@ -64,6 +64,9 @@ typedef enum {
 #endif
 #define Y_SIGNALVALUE_INVALID           YAPI_INVALID_DOUBLE
 #define Y_DETECTIONTHRESHOLD_INVALID    YAPI_INVALID_UINT
+#define Y_DETECTIONHYSTERESIS_INVALID   YAPI_INVALID_UINT
+#define Y_PRESENCEMINTIME_INVALID       YAPI_INVALID_UINT
+#define Y_REMOVALMINTIME_INVALID        YAPI_INVALID_UINT
 #define Y_LASTTIMEAPPROACHED_INVALID    YAPI_INVALID_LONG
 #define Y_LASTTIMEREMOVED_INVALID       YAPI_INVALID_LONG
 #define Y_PULSECOUNTER_INVALID          YAPI_INVALID_LONG
@@ -87,6 +90,9 @@ typedef enum {
 //--- (YProximity attributes declaration)
     double          _signalValue;
     int             _detectionThreshold;
+    int             _detectionHysteresis;
+    int             _presenceMinTime;
+    int             _removalMinTime;
     Y_ISPRESENT_enum _isPresent;
     s64             _lastTimeApproached;
     s64             _lastTimeRemoved;
@@ -145,6 +151,85 @@ typedef enum {
  */
 -(int)     set_detectionThreshold:(int) newval;
 -(int)     setDetectionThreshold:(int) newval;
+
+/**
+ * Returns the hysteresis used to determine the logical state of the proximity sensor, when considered
+ * as a binary input (on/off).
+ *
+ * @return an integer corresponding to the hysteresis used to determine the logical state of the
+ * proximity sensor, when considered
+ *         as a binary input (on/off)
+ *
+ * On failure, throws an exception or returns Y_DETECTIONHYSTERESIS_INVALID.
+ */
+-(int)     get_detectionHysteresis;
+
+
+-(int) detectionHysteresis;
+/**
+ * Changes the hysteresis used to determine the logical state of the proximity sensor, when considered
+ * as a binary input (on/off).
+ *
+ * @param newval : an integer corresponding to the hysteresis used to determine the logical state of
+ * the proximity sensor, when considered
+ *         as a binary input (on/off)
+ *
+ * @return YAPI_SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     set_detectionHysteresis:(int) newval;
+-(int)     setDetectionHysteresis:(int) newval;
+
+/**
+ * Returns the minimal detection duration before signaling a presence event. Any shorter detection is
+ * considered as noise or bounce (false positive) and filtered out.
+ *
+ * @return an integer corresponding to the minimal detection duration before signaling a presence event
+ *
+ * On failure, throws an exception or returns Y_PRESENCEMINTIME_INVALID.
+ */
+-(int)     get_presenceMinTime;
+
+
+-(int) presenceMinTime;
+/**
+ * Changes the minimal detection duration before signaling a presence event. Any shorter detection is
+ * considered as noise or bounce (false positive) and filtered out.
+ *
+ * @param newval : an integer corresponding to the minimal detection duration before signaling a presence event
+ *
+ * @return YAPI_SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     set_presenceMinTime:(int) newval;
+-(int)     setPresenceMinTime:(int) newval;
+
+/**
+ * Returns the minimal detection duration before signaling a removal event. Any shorter detection is
+ * considered as noise or bounce (false positive) and filtered out.
+ *
+ * @return an integer corresponding to the minimal detection duration before signaling a removal event
+ *
+ * On failure, throws an exception or returns Y_REMOVALMINTIME_INVALID.
+ */
+-(int)     get_removalMinTime;
+
+
+-(int) removalMinTime;
+/**
+ * Changes the minimal detection duration before signaling a removal event. Any shorter detection is
+ * considered as noise or bounce (false positive) and filtered out.
+ *
+ * @param newval : an integer corresponding to the minimal detection duration before signaling a removal event
+ *
+ * @return YAPI_SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     set_removalMinTime:(int) newval;
+-(int)     setRemovalMinTime:(int) newval;
 
 /**
  * Returns true if the input (considered as binary) is active (detection value is smaller than the

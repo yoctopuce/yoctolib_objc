@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_proximity.m 28744 2017-10-03 08:14:16Z seb $
+ * $Id: yocto_proximity.m 29767 2018-01-26 08:53:27Z seb $
  *
  * Implements the high-level API for Proximity functions
  *
@@ -55,6 +55,9 @@
 //--- (YProximity attributes initialization)
     _signalValue = Y_SIGNALVALUE_INVALID;
     _detectionThreshold = Y_DETECTIONTHRESHOLD_INVALID;
+    _detectionHysteresis = Y_DETECTIONHYSTERESIS_INVALID;
+    _presenceMinTime = Y_PRESENCEMINTIME_INVALID;
+    _removalMinTime = Y_REMOVALMINTIME_INVALID;
     _isPresent = Y_ISPRESENT_INVALID;
     _lastTimeApproached = Y_LASTTIMEAPPROACHED_INVALID;
     _lastTimeRemoved = Y_LASTTIMEREMOVED_INVALID;
@@ -85,6 +88,21 @@
     if(!strcmp(j->token, "detectionThreshold")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
         _detectionThreshold =  atoi(j->token);
+        return 1;
+    }
+    if(!strcmp(j->token, "detectionHysteresis")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _detectionHysteresis =  atoi(j->token);
+        return 1;
+    }
+    if(!strcmp(j->token, "presenceMinTime")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _presenceMinTime =  atoi(j->token);
+        return 1;
+    }
+    if(!strcmp(j->token, "removalMinTime")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _removalMinTime =  atoi(j->token);
         return 1;
     }
     if(!strcmp(j->token, "isPresent")) {
@@ -194,6 +212,148 @@
     NSString* rest_val;
     rest_val = [NSString stringWithFormat:@"%d", newval];
     return [self _setAttr:@"detectionThreshold" :rest_val];
+}
+/**
+ * Returns the hysteresis used to determine the logical state of the proximity sensor, when considered
+ * as a binary input (on/off).
+ *
+ * @return an integer corresponding to the hysteresis used to determine the logical state of the
+ * proximity sensor, when considered
+ *         as a binary input (on/off)
+ *
+ * On failure, throws an exception or returns Y_DETECTIONHYSTERESIS_INVALID.
+ */
+-(int) get_detectionHysteresis
+{
+    int res;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_DETECTIONHYSTERESIS_INVALID;
+        }
+    }
+    res = _detectionHysteresis;
+    return res;
+}
+
+
+-(int) detectionHysteresis
+{
+    return [self get_detectionHysteresis];
+}
+
+/**
+ * Changes the hysteresis used to determine the logical state of the proximity sensor, when considered
+ * as a binary input (on/off).
+ *
+ * @param newval : an integer corresponding to the hysteresis used to determine the logical state of
+ * the proximity sensor, when considered
+ *         as a binary input (on/off)
+ *
+ * @return YAPI_SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) set_detectionHysteresis:(int) newval
+{
+    return [self setDetectionHysteresis:newval];
+}
+-(int) setDetectionHysteresis:(int) newval
+{
+    NSString* rest_val;
+    rest_val = [NSString stringWithFormat:@"%d", newval];
+    return [self _setAttr:@"detectionHysteresis" :rest_val];
+}
+/**
+ * Returns the minimal detection duration before signaling a presence event. Any shorter detection is
+ * considered as noise or bounce (false positive) and filtered out.
+ *
+ * @return an integer corresponding to the minimal detection duration before signaling a presence event
+ *
+ * On failure, throws an exception or returns Y_PRESENCEMINTIME_INVALID.
+ */
+-(int) get_presenceMinTime
+{
+    int res;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_PRESENCEMINTIME_INVALID;
+        }
+    }
+    res = _presenceMinTime;
+    return res;
+}
+
+
+-(int) presenceMinTime
+{
+    return [self get_presenceMinTime];
+}
+
+/**
+ * Changes the minimal detection duration before signaling a presence event. Any shorter detection is
+ * considered as noise or bounce (false positive) and filtered out.
+ *
+ * @param newval : an integer corresponding to the minimal detection duration before signaling a presence event
+ *
+ * @return YAPI_SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) set_presenceMinTime:(int) newval
+{
+    return [self setPresenceMinTime:newval];
+}
+-(int) setPresenceMinTime:(int) newval
+{
+    NSString* rest_val;
+    rest_val = [NSString stringWithFormat:@"%d", newval];
+    return [self _setAttr:@"presenceMinTime" :rest_val];
+}
+/**
+ * Returns the minimal detection duration before signaling a removal event. Any shorter detection is
+ * considered as noise or bounce (false positive) and filtered out.
+ *
+ * @return an integer corresponding to the minimal detection duration before signaling a removal event
+ *
+ * On failure, throws an exception or returns Y_REMOVALMINTIME_INVALID.
+ */
+-(int) get_removalMinTime
+{
+    int res;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_REMOVALMINTIME_INVALID;
+        }
+    }
+    res = _removalMinTime;
+    return res;
+}
+
+
+-(int) removalMinTime
+{
+    return [self get_removalMinTime];
+}
+
+/**
+ * Changes the minimal detection duration before signaling a removal event. Any shorter detection is
+ * considered as noise or bounce (false positive) and filtered out.
+ *
+ * @param newval : an integer corresponding to the minimal detection duration before signaling a removal event
+ *
+ * @return YAPI_SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) set_removalMinTime:(int) newval
+{
+    return [self setRemovalMinTime:newval];
+}
+-(int) setRemovalMinTime:(int) newval
+{
+    NSString* rest_val;
+    rest_val = [NSString stringWithFormat:@"%d", newval];
+    return [self _setAttr:@"removalMinTime" :rest_val];
 }
 /**
  * Returns true if the input (considered as binary) is active (detection value is smaller than the
