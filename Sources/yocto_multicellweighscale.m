@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_multicellweighscale.m 29661 2018-01-18 13:32:13Z mvuilleu $
+ * $Id: yocto_multicellweighscale.m 29804 2018-01-30 18:05:21Z mvuilleu $
  *
  * Implements the high-level API for MultiCellWeighScale functions
  *
@@ -362,9 +362,11 @@
 }
 
 /**
- * Changes the compensation temperature update rate, in percents.
+ * Changes the zero tracking threshold value. When this threshold is larger than
+ * zero, any measure under the threshold will automatically be ignored and the
+ * zero compensation will be updated.
  *
- * @param newval : a floating point number corresponding to the compensation temperature update rate, in percents
+ * @param newval : a floating point number corresponding to the zero tracking threshold value
  *
  * @return YAPI_SUCCESS if the call succeeds.
  *
@@ -547,7 +549,7 @@
 }
 
 /**
- * Adapts the load cells signal bias (stored in the corresponding genericSensor)
+ * Adapts the load cell signal bias (stored in the corresponding genericSensor)
  * so that the current signal corresponds to a zero weight.
  *
  * @return YAPI_SUCCESS if the call succeeds.
