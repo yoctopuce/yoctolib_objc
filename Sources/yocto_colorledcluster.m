@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_colorledcluster.m 29186 2017-11-16 10:04:13Z seb $
+ * $Id: yocto_colorledcluster.m 30500 2018-04-04 07:53:46Z mvuilleu $
  *
  * Implements the high-level API for ColorLedCluster functions
  *
@@ -54,6 +54,7 @@
     _className = @"ColorLedCluster";
 //--- (YColorLedCluster attributes initialization)
     _activeLedCount = Y_ACTIVELEDCOUNT_INVALID;
+    _ledType = Y_LEDTYPE_INVALID;
     _maxLedCount = Y_MAXLEDCOUNT_INVALID;
     _blinkSeqMaxCount = Y_BLINKSEQMAXCOUNT_INVALID;
     _blinkSeqMaxSize = Y_BLINKSEQMAXSIZE_INVALID;
@@ -78,6 +79,11 @@
     if(!strcmp(j->token, "activeLedCount")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
         _activeLedCount =  atoi(j->token);
+        return 1;
+    }
+    if(!strcmp(j->token, "ledType")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _ledType =  atoi(j->token);
         return 1;
     }
     if(!strcmp(j->token, "maxLedCount")) {
@@ -149,6 +155,51 @@
     NSString* rest_val;
     rest_val = [NSString stringWithFormat:@"%d", newval];
     return [self _setAttr:@"activeLedCount" :rest_val];
+}
+/**
+ * Returns the RGB LED type currently handled by the device.
+ *
+ * @return either Y_LEDTYPE_RGB or Y_LEDTYPE_RGBW, according to the RGB LED type currently handled by the device
+ *
+ * On failure, throws an exception or returns Y_LEDTYPE_INVALID.
+ */
+-(Y_LEDTYPE_enum) get_ledType
+{
+    Y_LEDTYPE_enum res;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_LEDTYPE_INVALID;
+        }
+    }
+    res = _ledType;
+    return res;
+}
+
+
+-(Y_LEDTYPE_enum) ledType
+{
+    return [self get_ledType];
+}
+
+/**
+ * Changes the RGB LED type currently handled by the device.
+ *
+ * @param newval : either Y_LEDTYPE_RGB or Y_LEDTYPE_RGBW, according to the RGB LED type currently
+ * handled by the device
+ *
+ * @return YAPI_SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) set_ledType:(Y_LEDTYPE_enum) newval
+{
+    return [self setLedType:newval];
+}
+-(int) setLedType:(Y_LEDTYPE_enum) newval
+{
+    NSString* rest_val;
+    rest_val = [NSString stringWithFormat:@"%d", newval];
+    return [self _setAttr:@"ledType" :rest_val];
 }
 /**
  * Returns the maximum number of LEDs that the device can handle.

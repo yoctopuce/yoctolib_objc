@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_multiaxiscontroller.m 29507 2017-12-28 14:14:56Z mvuilleu $
+ * $Id: yocto_multiaxiscontroller.m 30483 2018-03-29 07:43:07Z mvuilleu $
  *
  * Implements the high-level API for MultiAxisController functions
  *
@@ -295,7 +295,7 @@
  */
 -(int) reset
 {
-    return [self sendCommand:@"Z"];
+    return [self set_command:@"Z"];
 }
 
 /**
@@ -394,7 +394,7 @@
  */
 -(int) emergencyStop
 {
-    return [self sendCommand:@"!"];
+    return [self set_command:@"!"];
 }
 
 /**
@@ -405,7 +405,7 @@
  */
 -(int) abortAndBrake
 {
-    return [self sendCommand:@"B"];
+    return [self set_command:@"B"];
 }
 
 /**
@@ -416,7 +416,7 @@
  */
 -(int) abortAndHiZ
 {
-    return [self sendCommand:@"z"];
+    return [self set_command:@"z"];
 }
 
 

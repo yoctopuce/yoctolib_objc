@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_pwmoutput.m 28744 2017-10-03 08:14:16Z seb $
+ * $Id: yocto_pwmoutput.m 30595 2018-04-12 21:36:11Z mvuilleu $
  *
  * Implements the high-level API for PwmOutput functions
  *
@@ -547,8 +547,8 @@
 }
 
 /**
- * Performs a smooth transistion of the pulse duration toward a given value. Any period,
- * frequency, duty cycle or pulse width change will cancel any ongoing transition process.
+ * Performs a smooth transistion of the pulse duration toward a given value.
+ * Any period, frequency, duty cycle or pulse width change will cancel any ongoing transition process.
  *
  * @param ms_target   : new pulse duration at the end of the transition
  *         (floating-point number, representing the pulse duration in milliseconds)
@@ -569,10 +569,11 @@
 }
 
 /**
- * Performs a smooth change of the pulse duration toward a given value.
+ * Performs a smooth change of the duty cycle toward a given value.
+ * Any period, frequency, duty cycle or pulse width change will cancel any ongoing transition process.
  *
  * @param target      : new duty cycle at the end of the transition
- *         (floating-point number, between 0 and 1)
+ *         (percentage, floating-point number between 0 and 100)
  * @param ms_duration : total duration of the transition, in milliseconds
  *
  * @return YAPI_SUCCESS when the call succeeds.
@@ -589,6 +590,96 @@
         target = 100.0;
     }
     newval = [NSString stringWithFormat:@"%d:%d", (int) floor(target*65536+0.5),ms_duration];
+    return [self set_pwmTransition:newval];
+}
+
+/**
+ * Performs a smooth frequency change toward a given value.
+ * Any period, frequency, duty cycle or pulse width change will cancel any ongoing transition process.
+ *
+ * @param target      : new freuency at the end of the transition (floating-point number)
+ * @param ms_duration : total duration of the transition, in milliseconds
+ *
+ * @return YAPI_SUCCESS when the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) frequencyMove:(double)target :(int)ms_duration
+{
+    NSString* newval;
+    if (target < 0.001) {
+        target = 0.001;
+    }
+    newval = [NSString stringWithFormat:@"%gHz:%d", target,ms_duration];
+    return [self set_pwmTransition:newval];
+}
+
+/**
+ * Trigger a given number of pulses of specified duration, at current frequency.
+ * At the end of the pulse train, revert to the original state of the PWM generator.
+ *
+ * @param ms_target : desired pulse duration
+ *         (floating-point number, representing the pulse duration in milliseconds)
+ * @param n_pulses  : desired pulse count
+ *
+ * @return YAPI_SUCCESS when the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) triggerPulsesByDuration:(double)ms_target :(int)n_pulses
+{
+    NSString* newval;
+    if (ms_target < 0.0) {
+        ms_target = 0.0;
+    }
+    newval = [NSString stringWithFormat:@"%dms*%d", (int) floor(ms_target*65536+0.5),n_pulses];
+    return [self set_pwmTransition:newval];
+}
+
+/**
+ * Trigger a given number of pulses of specified duration, at current frequency.
+ * At the end of the pulse train, revert to the original state of the PWM generator.
+ *
+ * @param target   : desired duty cycle for the generated pulses
+ *         (percentage, floating-point number between 0 and 100)
+ * @param n_pulses : desired pulse count
+ *
+ * @return YAPI_SUCCESS when the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) triggerPulsesByDutyCycle:(double)target :(int)n_pulses
+{
+    NSString* newval;
+    if (target < 0.0) {
+        target = 0.0;
+    }
+    if (target > 100.0) {
+        target = 100.0;
+    }
+    newval = [NSString stringWithFormat:@"%d*%d", (int) floor(target*65536+0.5),n_pulses];
+    return [self set_pwmTransition:newval];
+}
+
+/**
+ * Trigger a given number of pulses at the specified frequency, using current duty cycle.
+ * At the end of the pulse train, revert to the original state of the PWM generator.
+ *
+ * @param target   : desired frequency for the generated pulses (floating-point number)
+ *         (percentage, floating-point number between 0 and 100)
+ * @param n_pulses : desired pulse count
+ *
+ * @return YAPI_SUCCESS when the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) triggerPulsesByFrequency:(double)target :(int)n_pulses
+{
+    NSString* newval;
+    if (target < 0.001) {
+        target = 0.001;
+    }
+    newval = [NSString stringWithFormat:@"%gHz*%d", target,n_pulses];
     return [self set_pwmTransition:newval];
 }
 

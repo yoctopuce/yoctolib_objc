@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_steppermotor.m 29507 2017-12-28 14:14:56Z mvuilleu $
+ * $Id: yocto_steppermotor.m 30483 2018-03-29 07:43:07Z mvuilleu $
  *
  * Implements the high-level API for StepperMotor functions
  *
@@ -848,7 +848,7 @@
  */
 -(int) reset
 {
-    return [self sendCommand:@"Z"];
+    return [self set_command:@"Z"];
 }
 
 /**
@@ -946,7 +946,7 @@
  */
 -(int) emergencyStop
 {
-    return [self sendCommand:@"!"];
+    return [self set_command:@"!"];
 }
 
 /**
@@ -959,7 +959,7 @@
  */
 -(int) alertStepOut
 {
-    return [self sendCommand:@"."];
+    return [self set_command:@"."];
 }
 
 /**
@@ -976,9 +976,9 @@
 {
     if (!(dir != 0)) {[self _throw: YAPI_INVALID_ARGUMENT: @"direction must be +1 or -1"]; return YAPI_INVALID_ARGUMENT;}
     if (dir > 0) {
-        return [self sendCommand:@".+"];
+        return [self set_command:@".+"];
     }
-    return [self sendCommand:@".-"];
+    return [self set_command:@".-"];
 }
 
 /**
@@ -989,7 +989,7 @@
  */
 -(int) abortAndBrake
 {
-    return [self sendCommand:@"B"];
+    return [self set_command:@"B"];
 }
 
 /**
@@ -1000,7 +1000,7 @@
  */
 -(int) abortAndHiZ
 {
-    return [self sendCommand:@"z"];
+    return [self set_command:@"z"];
 }
 
 
