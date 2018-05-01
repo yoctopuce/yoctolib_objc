@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_pwmoutput.m 30595 2018-04-12 21:36:11Z mvuilleu $
+ * $Id: yocto_pwmoutput.m 30682 2018-04-24 09:37:03Z mvuilleu $
  *
  * Implements the high-level API for PwmOutput functions
  *
@@ -186,7 +186,7 @@
 -(int) setFrequency:(double) newval
 {
     NSString* rest_val;
-    rest_val = [NSString stringWithFormat:@"%d",(int)floor(newval * 65536.0 + 0.5)];
+    rest_val = [NSString stringWithFormat:@"%ld",(s64)floor(newval * 65536.0 + 0.5)];
     return [self _setAttr:@"frequency" :rest_val];
 }
 /**
@@ -230,7 +230,7 @@
 -(int) setPeriod:(double) newval
 {
     NSString* rest_val;
-    rest_val = [NSString stringWithFormat:@"%d",(int)floor(newval * 65536.0 + 0.5)];
+    rest_val = [NSString stringWithFormat:@"%ld",(s64)floor(newval * 65536.0 + 0.5)];
     return [self _setAttr:@"period" :rest_val];
 }
 /**
@@ -274,7 +274,7 @@
 -(int) setDutyCycle:(double) newval
 {
     NSString* rest_val;
-    rest_val = [NSString stringWithFormat:@"%d",(int)floor(newval * 65536.0 + 0.5)];
+    rest_val = [NSString stringWithFormat:@"%ld",(s64)floor(newval * 65536.0 + 0.5)];
     return [self _setAttr:@"dutyCycle" :rest_val];
 }
 /**
@@ -319,7 +319,7 @@
 -(int) setPulseDuration:(double) newval
 {
     NSString* rest_val;
-    rest_val = [NSString stringWithFormat:@"%d",(int)floor(newval * 65536.0 + 0.5)];
+    rest_val = [NSString stringWithFormat:@"%ld",(s64)floor(newval * 65536.0 + 0.5)];
     return [self _setAttr:@"pulseDuration" :rest_val];
 }
 /**
@@ -440,7 +440,7 @@
 -(int) setDutyCycleAtPowerOn:(double) newval
 {
     NSString* rest_val;
-    rest_val = [NSString stringWithFormat:@"%d",(int)floor(newval * 65536.0 + 0.5)];
+    rest_val = [NSString stringWithFormat:@"%ld",(s64)floor(newval * 65536.0 + 0.5)];
     return [self _setAttr:@"dutyCycleAtPowerOn" :rest_val];
 }
 /**
@@ -681,6 +681,16 @@
     }
     newval = [NSString stringWithFormat:@"%gHz*%d", target,n_pulses];
     return [self set_pwmTransition:newval];
+}
+
+-(int) markForRepeat
+{
+    return [self set_pwmTransition:@":"];
+}
+
+-(int) repeatFromMark
+{
+    return [self set_pwmTransition:@"R"];
 }
 
 

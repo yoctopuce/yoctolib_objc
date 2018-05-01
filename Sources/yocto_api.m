@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.m 29466 2017-12-20 08:11:49Z mvuilleu $
+ * $Id: yocto_api.m 30717 2018-04-30 12:32:06Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -3319,7 +3319,7 @@ static const char* hexArray = "0123456789ABCDEF";
 -(int) setLowestValue:(double) newval
 {
     NSString* rest_val;
-    rest_val = [NSString stringWithFormat:@"%d",(int)floor(newval * 65536.0 + 0.5)];
+    rest_val = [NSString stringWithFormat:@"%ld",(s64)floor(newval * 65536.0 + 0.5)];
     return [self _setAttr:@"lowestValue" :rest_val];
 }
 /**
@@ -3367,7 +3367,7 @@ static const char* hexArray = "0123456789ABCDEF";
 -(int) setHighestValue:(double) newval
 {
     NSString* rest_val;
-    rest_val = [NSString stringWithFormat:@"%d",(int)floor(newval * 65536.0 + 0.5)];
+    rest_val = [NSString stringWithFormat:@"%ld",(s64)floor(newval * 65536.0 + 0.5)];
     return [self _setAttr:@"highestValue" :rest_val];
 }
 /**
@@ -3615,7 +3615,7 @@ static const char* hexArray = "0123456789ABCDEF";
 -(int) setResolution:(double) newval
 {
     NSString* rest_val;
-    rest_val = [NSString stringWithFormat:@"%d",(int)floor(newval * 65536.0 + 0.5)];
+    rest_val = [NSString stringWithFormat:@"%ld",(s64)floor(newval * 65536.0 + 0.5)];
     return [self _setAttr:@"resolution" :rest_val];
 }
 /**

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_pwmoutput.h 30595 2018-04-12 21:36:11Z mvuilleu $
+ * $Id: yocto_pwmoutput.h 30682 2018-04-24 09:37:03Z mvuilleu $
  *
  * Declares yFindPwmOutput(), the high-level API for PwmOutput functions
  *
@@ -401,6 +401,10 @@ typedef enum {
  * On failure, throws an exception or returns a negative error code.
  */
 -(int)     triggerPulsesByFrequency:(double)target :(int)n_pulses;
+
+-(int)     markForRepeat;
+
+-(int)     repeatFromMark;
 
 
 /**

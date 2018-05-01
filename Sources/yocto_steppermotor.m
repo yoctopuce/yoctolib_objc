@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_steppermotor.m 30483 2018-03-29 07:43:07Z mvuilleu $
+ * $Id: yocto_steppermotor.m 30678 2018-04-23 15:57:29Z seb $
  *
  * Implements the high-level API for StepperMotor functions
  *
@@ -316,7 +316,7 @@
 -(int) setPullinSpeed:(double) newval
 {
     NSString* rest_val;
-    rest_val = [NSString stringWithFormat:@"%d",(int)floor(newval * 65536.0 + 0.5)];
+    rest_val = [NSString stringWithFormat:@"%ld",(s64)floor(newval * 65536.0 + 0.5)];
     return [self _setAttr:@"pullinSpeed" :rest_val];
 }
 /**
@@ -362,7 +362,7 @@
 -(int) setMaxAccel:(double) newval
 {
     NSString* rest_val;
-    rest_val = [NSString stringWithFormat:@"%d",(int)floor(newval * 65536.0 + 0.5)];
+    rest_val = [NSString stringWithFormat:@"%ld",(s64)floor(newval * 65536.0 + 0.5)];
     return [self _setAttr:@"maxAccel" :rest_val];
 }
 /**
@@ -406,7 +406,7 @@
 -(int) setMaxSpeed:(double) newval
 {
     NSString* rest_val;
-    rest_val = [NSString stringWithFormat:@"%d",(int)floor(newval * 65536.0 + 0.5)];
+    rest_val = [NSString stringWithFormat:@"%ld",(s64)floor(newval * 65536.0 + 0.5)];
     return [self _setAttr:@"maxSpeed" :rest_val];
 }
 /**

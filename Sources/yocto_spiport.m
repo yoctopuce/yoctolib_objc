@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_spiport.m 28744 2017-10-03 08:14:16Z seb $
+ * $Id: yocto_spiport.m 30685 2018-04-24 13:46:18Z seb $
  *
  * Implements the high-level API for SpiPort functions
  *
@@ -803,7 +803,7 @@
  */
 -(int) writeByte:(int)code
 {
-    return [self sendCommand:[NSString stringWithFormat:@"$%02x",code]];
+    return [self sendCommand:[NSString stringWithFormat:@"$%02X",code]];
 }
 
 /**
@@ -1183,11 +1183,11 @@
     res = @"";
     ofs = 0;
     while (ofs + 3 < bufflen) {
-        res = [NSString stringWithFormat:@"%@%02x%02x%02x%02x", res, (((u8*)([buff bytes]))[ofs]), (((u8*)([buff bytes]))[ofs + 1]), (((u8*)([buff bytes]))[ofs + 2]),(((u8*)([buff bytes]))[ofs + 3])];
+        res = [NSString stringWithFormat:@"%@%02X%02X%02X%02X", res, (((u8*)([buff bytes]))[ofs]), (((u8*)([buff bytes]))[ofs + 1]), (((u8*)([buff bytes]))[ofs + 2]),(((u8*)([buff bytes]))[ofs + 3])];
         ofs = ofs + 4;
     }
     while (ofs < bufflen) {
-        res = [NSString stringWithFormat:@"%@%02x", res,(((u8*)([buff bytes]))[ofs])];
+        res = [NSString stringWithFormat:@"%@%02X", res,(((u8*)([buff bytes]))[ofs])];
         ofs = ofs + 1;
     }
     return res;

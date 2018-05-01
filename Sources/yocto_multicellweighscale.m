@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_multicellweighscale.m 29804 2018-01-30 18:05:21Z mvuilleu $
+ * $Id: yocto_multicellweighscale.m 30678 2018-04-23 15:57:29Z seb $
  *
  * Implements the high-level API for MultiCellWeighScale functions
  *
@@ -257,7 +257,7 @@
 -(int) setCompTempAdaptRatio:(double) newval
 {
     NSString* rest_val;
-    rest_val = [NSString stringWithFormat:@"%d",(int)floor(newval * 65536.0 + 0.5)];
+    rest_val = [NSString stringWithFormat:@"%ld",(s64)floor(newval * 65536.0 + 0.5)];
     return [self _setAttr:@"compTempAdaptRatio" :rest_val];
 }
 /**
@@ -379,7 +379,7 @@
 -(int) setZeroTracking:(double) newval
 {
     NSString* rest_val;
-    rest_val = [NSString stringWithFormat:@"%d",(int)floor(newval * 65536.0 + 0.5)];
+    rest_val = [NSString stringWithFormat:@"%ld",(s64)floor(newval * 65536.0 + 0.5)];
     return [self _setAttr:@"zeroTracking" :rest_val];
 }
 /**

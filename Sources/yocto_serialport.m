@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_serialport.m 28744 2017-10-03 08:14:16Z seb $
+ * $Id: yocto_serialport.m 30685 2018-04-24 13:46:18Z seb $
  *
  * Implements the high-level API for SerialPort functions
  *
@@ -798,7 +798,7 @@
  */
 -(int) writeByte:(int)code
 {
-    return [self sendCommand:[NSString stringWithFormat:@"$%02x",code]];
+    return [self sendCommand:[NSString stringWithFormat:@"$%02X",code]];
 }
 
 /**
@@ -1178,11 +1178,11 @@
     res = @"";
     ofs = 0;
     while (ofs + 3 < bufflen) {
-        res = [NSString stringWithFormat:@"%@%02x%02x%02x%02x", res, (((u8*)([buff bytes]))[ofs]), (((u8*)([buff bytes]))[ofs + 1]), (((u8*)([buff bytes]))[ofs + 2]),(((u8*)([buff bytes]))[ofs + 3])];
+        res = [NSString stringWithFormat:@"%@%02X%02X%02X%02X", res, (((u8*)([buff bytes]))[ofs]), (((u8*)([buff bytes]))[ofs + 1]), (((u8*)([buff bytes]))[ofs + 2]),(((u8*)([buff bytes]))[ofs + 3])];
         ofs = ofs + 4;
     }
     while (ofs < bufflen) {
-        res = [NSString stringWithFormat:@"%@%02x", res,(((u8*)([buff bytes]))[ofs])];
+        res = [NSString stringWithFormat:@"%@%02X", res,(((u8*)([buff bytes]))[ofs])];
         ofs = ofs + 1;
     }
     return res;
@@ -1511,11 +1511,11 @@
     int hexb;
     funCode = [[pduBytes objectAtIndex:0] intValue];
     nib = ((funCode) >> (4));
-    pat = [NSString stringWithFormat:@"%02x[%x%x]%x.*", slaveNo, nib, (nib+8),((funCode) & (15))];
-    cmd = [NSString stringWithFormat:@"%02x%02x", slaveNo,funCode];
+    pat = [NSString stringWithFormat:@"%02X[%X%X]%X.*", slaveNo, nib, (nib+8),((funCode) & (15))];
+    cmd = [NSString stringWithFormat:@"%02X%02X", slaveNo,funCode];
     i = 1;
     while (i < (int)[pduBytes count]) {
-        cmd = [NSString stringWithFormat:@"%@%02x", cmd,(([[pduBytes objectAtIndex:i] intValue]) & (0xff))];
+        cmd = [NSString stringWithFormat:@"%@%02X", cmd,(([[pduBytes objectAtIndex:i] intValue]) & (0xff))];
         i = i + 1;
     }
 
