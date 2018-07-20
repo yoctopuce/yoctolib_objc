@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_multicellweighscale.h 29804 2018-01-30 18:05:21Z mvuilleu $
+ * $Id: yocto_multicellweighscale.h 31016 2018-06-04 08:45:40Z mvuilleu $
  *
  * Declares yFindMultiCellWeighScale(), the high-level API for MultiCellWeighScale functions
  *
@@ -55,7 +55,8 @@ typedef enum {
 } Y_EXCITATION_enum;
 #endif
 #define Y_CELLCOUNT_INVALID             YAPI_INVALID_UINT
-#define Y_COMPTEMPADAPTRATIO_INVALID    YAPI_INVALID_DOUBLE
+#define Y_TEMPAVGADAPTRATIO_INVALID     YAPI_INVALID_DOUBLE
+#define Y_TEMPCHGADAPTRATIO_INVALID     YAPI_INVALID_DOUBLE
 #define Y_COMPTEMPAVG_INVALID           YAPI_INVALID_DOUBLE
 #define Y_COMPTEMPCHG_INVALID           YAPI_INVALID_DOUBLE
 #define Y_COMPENSATION_INVALID          YAPI_INVALID_DOUBLE
@@ -80,7 +81,8 @@ typedef enum {
 //--- (YMultiCellWeighScale attributes declaration)
     int             _cellCount;
     Y_EXCITATION_enum _excitation;
-    double          _compTempAdaptRatio;
+    double          _tempAvgAdaptRatio;
+    double          _tempChgAdaptRatio;
     double          _compTempAvg;
     double          _compTempChg;
     double          _compensation;
@@ -162,34 +164,65 @@ typedef enum {
 -(int)     setExcitation:(Y_EXCITATION_enum) newval;
 
 /**
- * Changes the averaged temperature update rate, in percents.
+ * Changes the averaged temperature update rate, in per mille.
+ * The purpose of this adaptation ratio is to model the thermal inertia of the load cell.
  * The averaged temperature is updated every 10 seconds, by applying this adaptation rate
  * to the difference between the measures ambiant temperature and the current compensation
- * temperature. The standard rate is 0.04 percents, and the maximal rate is 65 percents.
+ * temperature. The standard rate is 0.2 per mille, and the maximal rate is 65 per mille.
  *
- * @param newval : a floating point number corresponding to the averaged temperature update rate, in percents
+ * @param newval : a floating point number corresponding to the averaged temperature update rate, in per mille
  *
  * @return YAPI_SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
--(int)     set_compTempAdaptRatio:(double) newval;
--(int)     setCompTempAdaptRatio:(double) newval;
+-(int)     set_tempAvgAdaptRatio:(double) newval;
+-(int)     setTempAvgAdaptRatio:(double) newval;
 
 /**
- * Returns the averaged temperature update rate, in percents.
+ * Returns the averaged temperature update rate, in per mille.
+ * The purpose of this adaptation ratio is to model the thermal inertia of the load cell.
  * The averaged temperature is updated every 10 seconds, by applying this adaptation rate
  * to the difference between the measures ambiant temperature and the current compensation
- * temperature. The standard rate is 0.04 percents, and the maximal rate is 65 percents.
+ * temperature. The standard rate is 0.2 per mille, and the maximal rate is 65 per mille.
  *
- * @return a floating point number corresponding to the averaged temperature update rate, in percents
+ * @return a floating point number corresponding to the averaged temperature update rate, in per mille
  *
- * On failure, throws an exception or returns Y_COMPTEMPADAPTRATIO_INVALID.
+ * On failure, throws an exception or returns Y_TEMPAVGADAPTRATIO_INVALID.
  */
--(double)     get_compTempAdaptRatio;
+-(double)     get_tempAvgAdaptRatio;
 
 
--(double) compTempAdaptRatio;
+-(double) tempAvgAdaptRatio;
+/**
+ * Changes the temperature change update rate, in per mille.
+ * The temperature change is updated every 10 seconds, by applying this adaptation rate
+ * to the difference between the measures ambiant temperature and the current temperature used for
+ * change compensation. The standard rate is 0.6 per mille, and the maximal rate is 65 pour mille.
+ *
+ * @param newval : a floating point number corresponding to the temperature change update rate, in per mille
+ *
+ * @return YAPI_SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     set_tempChgAdaptRatio:(double) newval;
+-(int)     setTempChgAdaptRatio:(double) newval;
+
+/**
+ * Returns the temperature change update rate, in per mille.
+ * The temperature change is updated every 10 seconds, by applying this adaptation rate
+ * to the difference between the measures ambiant temperature and the current temperature used for
+ * change compensation. The standard rate is 0.6 per mille, and the maximal rate is 65 pour mille.
+ *
+ * @return a floating point number corresponding to the temperature change update rate, in per mille
+ *
+ * On failure, throws an exception or returns Y_TEMPCHGADAPTRATIO_INVALID.
+ */
+-(double)     get_tempChgAdaptRatio;
+
+
+-(double) tempChgAdaptRatio;
 /**
  * Returns the current averaged temperature, used for thermal compensation.
  *

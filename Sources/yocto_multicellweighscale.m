@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_multicellweighscale.m 30678 2018-04-23 15:57:29Z seb $
+ * $Id: yocto_multicellweighscale.m 31016 2018-06-04 08:45:40Z mvuilleu $
  *
  * Implements the high-level API for MultiCellWeighScale functions
  *
@@ -55,7 +55,8 @@
 //--- (YMultiCellWeighScale attributes initialization)
     _cellCount = Y_CELLCOUNT_INVALID;
     _excitation = Y_EXCITATION_INVALID;
-    _compTempAdaptRatio = Y_COMPTEMPADAPTRATIO_INVALID;
+    _tempAvgAdaptRatio = Y_TEMPAVGADAPTRATIO_INVALID;
+    _tempChgAdaptRatio = Y_TEMPCHGADAPTRATIO_INVALID;
     _compTempAvg = Y_COMPTEMPAVG_INVALID;
     _compTempChg = Y_COMPTEMPCHG_INVALID;
     _compensation = Y_COMPENSATION_INVALID;
@@ -89,9 +90,14 @@
         _excitation =  atoi(j->token);
         return 1;
     }
-    if(!strcmp(j->token, "compTempAdaptRatio")) {
+    if(!strcmp(j->token, "tempAvgAdaptRatio")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-        _compTempAdaptRatio =  floor(atof(j->token) * 1000.0 / 65536.0 + 0.5) / 1000.0;
+        _tempAvgAdaptRatio =  floor(atof(j->token) * 1000.0 / 65536.0 + 0.5) / 1000.0;
+        return 1;
+    }
+    if(!strcmp(j->token, "tempChgAdaptRatio")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _tempChgAdaptRatio =  floor(atof(j->token) * 1000.0 / 65536.0 + 0.5) / 1000.0;
         return 1;
     }
     if(!strcmp(j->token, "compTempAvg")) {
@@ -239,53 +245,105 @@
 }
 
 /**
- * Changes the averaged temperature update rate, in percents.
+ * Changes the averaged temperature update rate, in per mille.
+ * The purpose of this adaptation ratio is to model the thermal inertia of the load cell.
  * The averaged temperature is updated every 10 seconds, by applying this adaptation rate
  * to the difference between the measures ambiant temperature and the current compensation
- * temperature. The standard rate is 0.04 percents, and the maximal rate is 65 percents.
+ * temperature. The standard rate is 0.2 per mille, and the maximal rate is 65 per mille.
  *
- * @param newval : a floating point number corresponding to the averaged temperature update rate, in percents
+ * @param newval : a floating point number corresponding to the averaged temperature update rate, in per mille
  *
  * @return YAPI_SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
--(int) set_compTempAdaptRatio:(double) newval
+-(int) set_tempAvgAdaptRatio:(double) newval
 {
-    return [self setCompTempAdaptRatio:newval];
+    return [self setTempAvgAdaptRatio:newval];
 }
--(int) setCompTempAdaptRatio:(double) newval
+-(int) setTempAvgAdaptRatio:(double) newval
 {
     NSString* rest_val;
     rest_val = [NSString stringWithFormat:@"%ld",(s64)floor(newval * 65536.0 + 0.5)];
-    return [self _setAttr:@"compTempAdaptRatio" :rest_val];
+    return [self _setAttr:@"tempAvgAdaptRatio" :rest_val];
 }
 /**
- * Returns the averaged temperature update rate, in percents.
+ * Returns the averaged temperature update rate, in per mille.
+ * The purpose of this adaptation ratio is to model the thermal inertia of the load cell.
  * The averaged temperature is updated every 10 seconds, by applying this adaptation rate
  * to the difference between the measures ambiant temperature and the current compensation
- * temperature. The standard rate is 0.04 percents, and the maximal rate is 65 percents.
+ * temperature. The standard rate is 0.2 per mille, and the maximal rate is 65 per mille.
  *
- * @return a floating point number corresponding to the averaged temperature update rate, in percents
+ * @return a floating point number corresponding to the averaged temperature update rate, in per mille
  *
- * On failure, throws an exception or returns Y_COMPTEMPADAPTRATIO_INVALID.
+ * On failure, throws an exception or returns Y_TEMPAVGADAPTRATIO_INVALID.
  */
--(double) get_compTempAdaptRatio
+-(double) get_tempAvgAdaptRatio
 {
     double res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
-            return Y_COMPTEMPADAPTRATIO_INVALID;
+            return Y_TEMPAVGADAPTRATIO_INVALID;
         }
     }
-    res = _compTempAdaptRatio;
+    res = _tempAvgAdaptRatio;
     return res;
 }
 
 
--(double) compTempAdaptRatio
+-(double) tempAvgAdaptRatio
 {
-    return [self get_compTempAdaptRatio];
+    return [self get_tempAvgAdaptRatio];
+}
+
+/**
+ * Changes the temperature change update rate, in per mille.
+ * The temperature change is updated every 10 seconds, by applying this adaptation rate
+ * to the difference between the measures ambiant temperature and the current temperature used for
+ * change compensation. The standard rate is 0.6 per mille, and the maximal rate is 65 pour mille.
+ *
+ * @param newval : a floating point number corresponding to the temperature change update rate, in per mille
+ *
+ * @return YAPI_SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) set_tempChgAdaptRatio:(double) newval
+{
+    return [self setTempChgAdaptRatio:newval];
+}
+-(int) setTempChgAdaptRatio:(double) newval
+{
+    NSString* rest_val;
+    rest_val = [NSString stringWithFormat:@"%ld",(s64)floor(newval * 65536.0 + 0.5)];
+    return [self _setAttr:@"tempChgAdaptRatio" :rest_val];
+}
+/**
+ * Returns the temperature change update rate, in per mille.
+ * The temperature change is updated every 10 seconds, by applying this adaptation rate
+ * to the difference between the measures ambiant temperature and the current temperature used for
+ * change compensation. The standard rate is 0.6 per mille, and the maximal rate is 65 pour mille.
+ *
+ * @return a floating point number corresponding to the temperature change update rate, in per mille
+ *
+ * On failure, throws an exception or returns Y_TEMPCHGADAPTRATIO_INVALID.
+ */
+-(double) get_tempChgAdaptRatio
+{
+    double res;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+            return Y_TEMPCHGADAPTRATIO_INVALID;
+        }
+    }
+    res = _tempChgAdaptRatio;
+    return res;
+}
+
+
+-(double) tempChgAdaptRatio
+{
+    return [self get_tempChgAdaptRatio];
 }
 /**
  * Returns the current averaged temperature, used for thermal compensation.

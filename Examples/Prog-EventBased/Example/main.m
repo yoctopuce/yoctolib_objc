@@ -24,11 +24,17 @@ static void sensorTimedReportCallBack(YSensor* fct, YMeasure* measure)
         get_averageValue], [fct get_unit]);
 }
 
+static void configChangeCallBack(YModule* mod)
+{
+    NSLog(@"%@ : configuration change", [mod get_serialNumber]);
+}
+
 static void deviceArrival(YModule *m)
 {
   NSString *fctName, *serial, *hardwareId;
   serial = [m get_serialNumber];
   NSLog(@"Device arrival          : %@", serial);
+  [m registerConfigChangeCallback:configChangeCallBack];
 
   // First solution: look for a specific type of function (eg. anButton)
   int fctcount = [m functionCount];

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.h 29466 2017-12-20 08:11:49Z mvuilleu $
+ * $Id: yocto_api.h 31238 2018-07-17 11:08:47Z mvuilleu $
  *
  * High-level programming interface, common to all modules
  *
@@ -62,7 +62,7 @@
 
 extern NSMutableDictionary* YAPI_YFunctions;
 
-#define YOCTO_API_REVISION          "30760"
+#define YOCTO_API_REVISION          "31315"
 
 // yInitAPI argument
 #define Y_DETECT_NONE           0
@@ -115,6 +115,7 @@ typedef void (*YFunctionValueCallback)(YFunction *func, NSString *functionValue)
 
 //--- (generated code: YModule globals)
 typedef void (*YModuleLogCallback)(YModule *module, NSString *logline);
+typedef void (*YModuleConfigChangeCallback)(YModule *module);
 typedef void (*YModuleValueCallback)(YModule *func, NSString *functionValue);
 #ifndef _Y_PERSISTENTSETTINGS_ENUM
 #define _Y_PERSISTENTSETTINGS_ENUM
@@ -247,6 +248,7 @@ typedef enum {
     YAPI_FUN_VALUE,
     YAPI_FUN_TIMEDREPORT,
     YAPI_FUN_REFRESH,
+    YAPI_DEV_CONFCHANGE,
     YAPI_HUB_DISCOVERY,
     YAPI_INVALID
 } yapiEventType;
@@ -1113,6 +1115,7 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
     int             _userVar;
     YModuleValueCallback _valueCallbackModule;
     YModuleLogCallback _logCallback;
+    YModuleConfigChangeCallback _confChangeCallback;
 //--- (end of generated code: YModule attributes declaration)
 }
 
@@ -1451,6 +1454,22 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
  * On failure, throws an exception or returns a negative error code.
  */
 -(int)     triggerFirmwareUpdate:(int)secBeforeReboot;
+
+/**
+ * Register a callback function, to be called when a persistent settings in
+ * a device configuration has been changed (e.g. change of unit, etc).
+ *
+ * @param callback : a procedure taking a YModule parameter, or nil
+ *         to unregister a previously registered  callback.
+ */
+-(int)     registerConfigChangeCallback:(YModuleConfigChangeCallback)callback;
+
+-(int)     _invokeConfigChangeCallback;
+
+/**
+ * Triggers a configuration change callback, to check if they are supported or not.
+ */
+-(int)     triggerConfigChangeCallback;
 
 /**
  * Tests whether the byn file is valid for this module. This method is useful to test if the module

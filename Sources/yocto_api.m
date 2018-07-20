@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.m 30717 2018-04-30 12:32:06Z seb $
+ * $Id: yocto_api.m 31238 2018-07-17 11:08:47Z mvuilleu $
  *
  * High-level programming interface, common to all modules
  *
@@ -148,6 +148,9 @@ NSMutableDictionary* YAPI_YFunctions;
             break;
         case YAPI_FUN_REFRESH:
             [_function isOnline];
+            break;
+        case YAPI_DEV_CONFCHANGE:
+            [_module _invokeConfigChangeCallback];
             break;
         default:
             break;
@@ -325,12 +328,25 @@ static void yapiDeviceChangeCallbackFwd(YAPI_DEVICE devdescr)
     yDeviceSt    infos;
     YModule      *module;
     @autoreleasepool {
-
         if(YISERR(yapiGetDeviceInfo(devdescr,&infos,NULL))) return;
-        module = yFindModule(STR_y2oc(infos.serial));
+        module = yFindModule([STR_y2oc(infos.serial) stringByAppendingFormat:@".module"]);
         if(!YAPI_deviceChangeCallback && YAPI_delegate==nil) return;
         ev =[[YapiEvent alloc] initDeviceEvent:YAPI_DEV_CHANGE forModule:module];
         [YAPI_plug_events addObject:ev];
+        ARC_release(ev);
+    }
+}
+
+static void yapiDeviceConfigChangeCallbackFwd(YAPI_DEVICE devdescr)
+{
+    YapiEvent    *ev;
+    yDeviceSt    infos;
+    YModule      *module;
+    @autoreleasepool {
+        if(YISERR(yapiGetDeviceInfo(devdescr,&infos,NULL))) return;
+        module = yFindModule([STR_y2oc(infos.serial) stringByAppendingFormat:@".module"]);
+        ev =[[YapiEvent alloc] initDeviceEvent:YAPI_DEV_CONFCHANGE forModule:module];
+        [YAPI_data_events addObject:ev];
         ARC_release(ev);
     }
 }
@@ -751,6 +767,7 @@ static const char* hexArray = "0123456789ABCDEF";
     YAPI_data_events = [[NSMutableArray alloc ] initWithCapacity:16];
     yapiRegisterFunctionUpdateCallback(yapiFunctionUpdateCallbackFwd);
     yapiRegisterTimedReportCallback(yapiTimedReportCallbackFwd);
+    yapiRegisterDeviceConfigChangeCallback(yapiDeviceConfigChangeCallbackFwd);
     yapiRegisterHubDiscoveryCallback(yapiHubDiscoveryCallbackFwd);
     yInitializeCriticalSection(&YAPI_updateDeviceList_CS);
     yInitializeCriticalSection(&YAPI_handleEvent_CS);
@@ -4406,6 +4423,7 @@ static const char* hexArray = "0123456789ABCDEF";
     _userVar = Y_USERVAR_INVALID;
     _valueCallbackModule = NULL;
     _logCallback = NULL;
+    _confChangeCallback = NULL;
 //--- (end of generated code: YModule attributes initialization)
     return self;
 }
@@ -5058,6 +5076,36 @@ static const char* hexArray = "0123456789ABCDEF";
 -(int) triggerFirmwareUpdate:(int)secBeforeReboot
 {
     return [self set_rebootCountdown:-secBeforeReboot];
+}
+
+/**
+ * Register a callback function, to be called when a persistent settings in
+ * a device configuration has been changed (e.g. change of unit, etc).
+ *
+ * @param callback : a procedure taking a YModule parameter, or nil
+ *         to unregister a previously registered  callback.
+ */
+-(int) registerConfigChangeCallback:(YModuleConfigChangeCallback)callback
+{
+    _confChangeCallback = callback;
+    return 0;
+}
+
+-(int) _invokeConfigChangeCallback
+{
+    if (_confChangeCallback != NULL) {
+        _confChangeCallback(self);
+    }
+    return 0;
+}
+
+/**
+ * Triggers a configuration change callback, to check if they are supported or not.
+ */
+-(int) triggerConfigChangeCallback
+{
+    [self _setAttr:@"persistentSettings" :@"2"];
+    return 0;
 }
 
 /**
