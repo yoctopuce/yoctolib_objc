@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_quadraturedecoder.m 30678 2018-04-23 15:57:29Z seb $
+ * $Id: yocto_quadraturedecoder.m 31436 2018-08-07 15:28:18Z seb $
  *
  * Implements the high-level API for QuadratureDecoder functions
  *
@@ -60,6 +60,8 @@
 //--- (end of YQuadratureDecoder attributes initialization)
     return self;
 }
+//--- (YQuadratureDecoder yapiwrapper)
+//--- (end of YQuadratureDecoder yapiwrapper)
 // destructor
 -(void)  dealloc
 {
@@ -117,7 +119,7 @@
 {
     double res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_SPEED_INVALID;
         }
     }
@@ -142,7 +144,7 @@
 {
     Y_DECODING_enum res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_DECODING_INVALID;
         }
     }

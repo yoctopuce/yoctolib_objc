@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_daisychain.h 28752 2017-10-03 08:41:02Z seb $
+ * $Id: yocto_daisychain.h 31436 2018-08-07 15:28:18Z seb $
  *
  * Declares yFindDaisyChain(), the high-level API for DaisyChain functions
  *
@@ -86,6 +86,8 @@ typedef enum {
 -(int)             _parseAttr:(yJsonStateMachine*) j;
 
 //--- (end of YDaisyChain private methods declaration)
+//--- (YDaisyChain yapiwrapper declaration)
+//--- (end of YDaisyChain yapiwrapper declaration)
 //--- (YDaisyChain public methods declaration)
 /**
  * Returns the state of the daisy-link between modules.

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_powersupply.h 28752 2017-10-03 08:41:02Z seb $
+ * $Id: yocto_powersupply.h 31436 2018-08-07 15:28:18Z seb $
  *
  * Declares yFindPowerSupply(), the high-level API for PowerSupply functions
  *
@@ -109,6 +109,8 @@ typedef enum {
 -(int)             _parseAttr:(yJsonStateMachine*) j;
 
 //--- (end of YPowerSupply private methods declaration)
+//--- (YPowerSupply yapiwrapper declaration)
+//--- (end of YPowerSupply yapiwrapper declaration)
 //--- (YPowerSupply public methods declaration)
 /**
  * Changes the voltage set point, in V.

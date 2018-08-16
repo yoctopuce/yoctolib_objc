@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_longitude.h 28752 2017-10-03 08:41:02Z seb $
+ * $Id: yocto_longitude.h 31436 2018-08-07 15:28:18Z seb $
  *
  * Declares yFindLongitude(), the high-level API for Longitude functions
  *
@@ -73,6 +73,8 @@ typedef void (*YLongitudeTimedReportCallback)(YLongitude *func, YMeasure *measur
 -(int)             _parseAttr:(yJsonStateMachine*) j;
 
 //--- (end of YLongitude private methods declaration)
+//--- (YLongitude yapiwrapper declaration)
+//--- (end of YLongitude yapiwrapper declaration)
 //--- (YLongitude public methods declaration)
 /**
  * Retrieves a longitude sensor for a given identifier.

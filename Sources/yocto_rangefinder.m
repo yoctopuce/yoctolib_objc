@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_rangefinder.m 28744 2017-10-03 08:14:16Z seb $
+ * $Id: yocto_rangefinder.m 31436 2018-08-07 15:28:18Z seb $
  *
  * Implements the high-level API for RangeFinder functions
  *
@@ -62,6 +62,8 @@
 //--- (end of YRangeFinder attributes initialization)
     return self;
 }
+//--- (YRangeFinder yapiwrapper)
+//--- (end of YRangeFinder yapiwrapper)
 // destructor
 -(void)  dealloc
 {
@@ -142,7 +144,7 @@
 {
     Y_RANGEFINDERMODE_enum res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_RANGEFINDERMODE_INVALID;
         }
     }
@@ -183,7 +185,7 @@
 {
     NSString* res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_HARDWARECALIBRATION_INVALID;
         }
     }
@@ -218,7 +220,7 @@
 {
     double res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_CURRENTTEMPERATURE_INVALID;
         }
     }
@@ -235,7 +237,7 @@
 {
     NSString* res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_COMMAND_INVALID;
         }
     }

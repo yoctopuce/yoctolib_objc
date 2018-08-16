@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_wakeupmonitor.h 28752 2017-10-03 08:41:02Z seb $
+ * $Id: yocto_wakeupmonitor.h 31436 2018-08-07 15:28:18Z seb $
  *
  * Declares yFindWakeUpMonitor(), the high-level API for WakeUpMonitor functions
  *
@@ -100,6 +100,8 @@ typedef enum {
 -(int)             _parseAttr:(yJsonStateMachine*) j;
 
 //--- (end of YWakeUpMonitor private methods declaration)
+//--- (YWakeUpMonitor yapiwrapper declaration)
+//--- (end of YWakeUpMonitor yapiwrapper declaration)
 //--- (YWakeUpMonitor public methods declaration)
 /**
  * Returns the maximal wake up time (in seconds) before automatically going to sleep.

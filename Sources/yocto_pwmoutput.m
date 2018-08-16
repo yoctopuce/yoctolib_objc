@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_pwmoutput.m 31296 2018-07-19 12:34:36Z mvuilleu $
+ * $Id: yocto_pwmoutput.m 31436 2018-08-07 15:28:18Z seb $
  *
  * Implements the high-level API for PwmOutput functions
  *
@@ -65,6 +65,8 @@
 //--- (end of YPwmOutput attributes initialization)
     return self;
 }
+//--- (YPwmOutput yapiwrapper)
+//--- (end of YPwmOutput yapiwrapper)
 // destructor
 -(void)  dealloc
 {
@@ -135,7 +137,7 @@
 {
     Y_ENABLED_enum res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_ENABLED_INVALID;
         }
     }
@@ -200,7 +202,7 @@
 {
     double res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_FREQUENCY_INVALID;
         }
     }
@@ -244,7 +246,7 @@
 {
     double res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_PERIOD_INVALID;
         }
     }
@@ -288,7 +290,7 @@
 {
     double res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_DUTYCYCLE_INVALID;
         }
     }
@@ -334,7 +336,7 @@
 {
     double res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_PULSEDURATION_INVALID;
         }
     }
@@ -351,7 +353,7 @@
 {
     NSString* res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_PWMTRANSITION_INVALID;
         }
     }
@@ -387,7 +389,7 @@
 {
     Y_ENABLEDATPOWERON_enum res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_ENABLEDATPOWERON_INVALID;
         }
     }
@@ -455,7 +457,7 @@
 {
     double res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_DUTYCYCLEATPOWERON_INVALID;
         }
     }

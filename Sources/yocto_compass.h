@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_compass.h 28752 2017-10-03 08:41:02Z seb $
+ * $Id: yocto_compass.h 31436 2018-08-07 15:28:18Z seb $
  *
  * Declares yFindCompass(), the high-level API for Compass functions
  *
@@ -92,6 +92,8 @@ typedef enum {
 -(int)             _parseAttr:(yJsonStateMachine*) j;
 
 //--- (end of YCompass private methods declaration)
+//--- (YCompass yapiwrapper declaration)
+//--- (end of YCompass yapiwrapper declaration)
 //--- (YCompass public methods declaration)
 /**
  * Returns the measure update frequency, measured in Hz (Yocto-3D-V2 only).

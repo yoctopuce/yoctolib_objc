@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_motor.h 28752 2017-10-03 08:41:02Z seb $
+ * $Id: yocto_motor.h 31436 2018-08-07 15:28:18Z seb $
  *
  * Declares yFindMotor(), the high-level API for Motor functions
  *
@@ -103,6 +103,8 @@ typedef enum {
 -(int)             _parseAttr:(yJsonStateMachine*) j;
 
 //--- (end of YMotor private methods declaration)
+//--- (YMotor yapiwrapper declaration)
+//--- (end of YMotor yapiwrapper declaration)
 //--- (YMotor public methods declaration)
 /**
  * Return the controller state. Possible states are:

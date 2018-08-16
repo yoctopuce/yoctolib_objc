@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_servo.m 28744 2017-10-03 08:14:16Z seb $
+ * $Id: yocto_servo.m 31436 2018-08-07 15:28:18Z seb $
  *
  * Implements the high-level API for Servo functions
  *
@@ -64,6 +64,8 @@
 //--- (end of YServo attributes initialization)
     return self;
 }
+//--- (YServo yapiwrapper)
+//--- (end of YServo yapiwrapper)
 // destructor
 -(void)  dealloc
 {
@@ -138,7 +140,7 @@
 {
     int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_POSITION_INVALID;
         }
     }
@@ -182,7 +184,7 @@
 {
     Y_ENABLED_enum res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_ENABLED_INVALID;
         }
     }
@@ -226,7 +228,7 @@
 {
     int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_RANGE_INVALID;
         }
     }
@@ -276,7 +278,7 @@
 {
     int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_NEUTRAL_INVALID;
         }
     }
@@ -319,7 +321,7 @@
 {
     YMove res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_MOVE_INVALID;
         }
     }
@@ -371,7 +373,7 @@
 {
     int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_POSITIONATPOWERON_INVALID;
         }
     }
@@ -417,7 +419,7 @@
 {
     Y_ENABLEDATPOWERON_enum res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_ENABLEDATPOWERON_INVALID;
         }
     }

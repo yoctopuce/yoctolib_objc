@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_temperature.h 28752 2017-10-03 08:41:02Z seb $
+ * $Id: yocto_temperature.h 31436 2018-08-07 15:28:18Z seb $
  *
  * Declares yFindTemperature(), the high-level API for Temperature functions
  *
@@ -102,6 +102,8 @@ typedef enum {
 -(int)             _parseAttr:(yJsonStateMachine*) j;
 
 //--- (end of YTemperature private methods declaration)
+//--- (YTemperature yapiwrapper declaration)
+//--- (end of YTemperature yapiwrapper declaration)
 //--- (YTemperature public methods declaration)
 /**
  * Changes the measuring unit for the measured temperature. That unit is a string.

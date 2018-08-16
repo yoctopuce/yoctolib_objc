@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_proximity.m 29767 2018-01-26 08:53:27Z seb $
+ * $Id: yocto_proximity.m 31436 2018-08-07 15:28:18Z seb $
  *
  * Implements the high-level API for Proximity functions
  *
@@ -69,6 +69,8 @@
 //--- (end of YProximity attributes initialization)
     return self;
 }
+//--- (YProximity yapiwrapper)
+//--- (end of YProximity yapiwrapper)
 // destructor
 -(void)  dealloc
 {
@@ -150,7 +152,7 @@
 {
     double res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_SIGNALVALUE_INVALID;
         }
     }
@@ -177,7 +179,7 @@
 {
     int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_DETECTIONTHRESHOLD_INVALID;
         }
     }
@@ -227,7 +229,7 @@
 {
     int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_DETECTIONHYSTERESIS_INVALID;
         }
     }
@@ -275,7 +277,7 @@
 {
     int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_PRESENCEMINTIME_INVALID;
         }
     }
@@ -321,7 +323,7 @@
 {
     int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_REMOVALMINTIME_INVALID;
         }
     }
@@ -368,7 +370,7 @@
 {
     Y_ISPRESENT_enum res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_ISPRESENT_INVALID;
         }
     }
@@ -395,7 +397,7 @@
 {
     s64 res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_LASTTIMEAPPROACHED_INVALID;
         }
     }
@@ -422,7 +424,7 @@
 {
     s64 res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_LASTTIMEREMOVED_INVALID;
         }
     }
@@ -448,7 +450,7 @@
 {
     s64 res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_PULSECOUNTER_INVALID;
         }
     }
@@ -483,7 +485,7 @@
 {
     s64 res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_PULSETIMER_INVALID;
         }
     }
@@ -510,7 +512,7 @@
 {
     Y_PROXIMITYREPORTMODE_enum res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_PROXIMITYREPORTMODE_INVALID;
         }
     }

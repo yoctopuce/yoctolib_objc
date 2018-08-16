@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_accelerometer.h 28752 2017-10-03 08:41:02Z seb $
+ * $Id: yocto_accelerometer.h 31436 2018-08-07 15:28:18Z seb $
  *
  * Declares yFindAccelerometer(), the high-level API for Accelerometer functions
  *
@@ -95,6 +95,8 @@ typedef enum {
 -(int)             _parseAttr:(yJsonStateMachine*) j;
 
 //--- (end of YAccelerometer private methods declaration)
+//--- (YAccelerometer yapiwrapper declaration)
+//--- (end of YAccelerometer yapiwrapper declaration)
 //--- (YAccelerometer public methods declaration)
 /**
  * Returns the measure update frequency, measured in Hz (Yocto-3D-V2 only).

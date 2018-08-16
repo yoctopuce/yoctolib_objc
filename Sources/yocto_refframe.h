@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_refframe.h 28752 2017-10-03 08:41:02Z seb $
+ * $Id: yocto_refframe.h 31436 2018-08-07 15:28:18Z seb $
  *
  * Declares yFindRefFrame(), the high-level API for RefFrame functions
  *
@@ -135,6 +135,8 @@ typedef enum {
 -(int)             _parseAttr:(yJsonStateMachine*) j;
 
 //--- (end of YRefFrame private methods declaration)
+//--- (YRefFrame yapiwrapper declaration)
+//--- (end of YRefFrame yapiwrapper declaration)
 //--- (YRefFrame public methods declaration)
 -(int)     get_mountPos;
 

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_watchdog.m 28744 2017-10-03 08:14:16Z seb $
+ * $Id: yocto_watchdog.m 31436 2018-08-07 15:28:18Z seb $
  *
  * Implements the high-level API for Watchdog functions
  *
@@ -69,6 +69,8 @@
 //--- (end of YWatchdog attributes initialization)
     return self;
 }
+//--- (YWatchdog yapiwrapper)
+//--- (end of YWatchdog yapiwrapper)
 // destructor
 -(void)  dealloc
 {
@@ -169,7 +171,7 @@
 {
     Y_STATE_enum res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_STATE_INVALID;
         }
     }
@@ -217,7 +219,7 @@
 {
     Y_STATEATPOWERON_enum res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_STATEATPOWERON_INVALID;
         }
     }
@@ -264,7 +266,7 @@
 {
     s64 res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_MAXTIMEONSTATEA_INVALID;
         }
     }
@@ -310,7 +312,7 @@
 {
     s64 res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_MAXTIMEONSTATEB_INVALID;
         }
     }
@@ -356,7 +358,7 @@
 {
     Y_OUTPUT_enum res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_OUTPUT_INVALID;
         }
     }
@@ -404,7 +406,7 @@
 {
     s64 res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_PULSETIMER_INVALID;
         }
     }
@@ -449,7 +451,7 @@
 {
     YDelayedPulse res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_DELAYEDPULSETIMER_INVALID;
         }
     }
@@ -503,7 +505,7 @@
 {
     s64 res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_COUNTDOWN_INVALID;
         }
     }
@@ -527,7 +529,7 @@
 {
     Y_AUTOSTART_enum res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_AUTOSTART_INVALID;
         }
     }
@@ -573,7 +575,7 @@
 {
     Y_RUNNING_enum res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_RUNNING_INVALID;
         }
     }
@@ -634,7 +636,7 @@
 {
     s64 res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_TRIGGERDELAY_INVALID;
         }
     }
@@ -679,7 +681,7 @@
 {
     s64 res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_TRIGGERDURATION_INVALID;
         }
     }

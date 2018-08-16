@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_multiaxiscontroller.h 28752 2017-10-03 08:41:02Z seb $
+ * $Id: yocto_multiaxiscontroller.h 31436 2018-08-07 15:28:18Z seb $
  *
  * Declares yFindMultiAxisController(), the high-level API for MultiAxisController functions
  *
@@ -85,6 +85,8 @@ typedef enum {
 -(int)             _parseAttr:(yJsonStateMachine*) j;
 
 //--- (end of YMultiAxisController private methods declaration)
+//--- (YMultiAxisController yapiwrapper declaration)
+//--- (end of YMultiAxisController yapiwrapper declaration)
 //--- (YMultiAxisController public methods declaration)
 /**
  * Returns the number of synchronized controllers.

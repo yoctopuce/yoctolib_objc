@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_dualpower.m 28744 2017-10-03 08:14:16Z seb $
+ * $Id: yocto_dualpower.m 31436 2018-08-07 15:28:18Z seb $
  *
  * Implements the high-level API for DualPower functions
  *
@@ -60,6 +60,8 @@
 //--- (end of YDualPower attributes initialization)
     return self;
 }
+//--- (YDualPower yapiwrapper)
+//--- (end of YDualPower yapiwrapper)
 // destructor
 -(void)  dealloc
 {
@@ -102,7 +104,7 @@
 {
     Y_POWERSTATE_enum res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_POWERSTATE_INVALID;
         }
     }
@@ -127,7 +129,7 @@
 {
     Y_POWERCONTROL_enum res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_POWERCONTROL_INVALID;
         }
     }
@@ -173,7 +175,7 @@
 {
     int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_EXTVOLTAGE_INVALID;
         }
     }

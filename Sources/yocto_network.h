@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_network.h 30462 2018-03-26 09:19:24Z mvuilleu $
+ * $Id: yocto_network.h 31436 2018-08-07 15:28:18Z seb $
  *
  * Declares yFindNetwork(), the high-level API for Network functions
  *
@@ -159,6 +159,8 @@ typedef enum {
 -(int)             _parseAttr:(yJsonStateMachine*) j;
 
 //--- (end of YNetwork private methods declaration)
+//--- (YNetwork yapiwrapper declaration)
+//--- (end of YNetwork yapiwrapper declaration)
 //--- (YNetwork public methods declaration)
 /**
  * Returns the current established working mode of the network interface.

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_pwmpowersource.m 28744 2017-10-03 08:14:16Z seb $
+ * $Id: yocto_pwmpowersource.m 31436 2018-08-07 15:28:18Z seb $
  *
  * Implements the high-level API for PwmPowerSource functions
  *
@@ -58,6 +58,8 @@
 //--- (end of YPwmPowerSource attributes initialization)
     return self;
 }
+//--- (YPwmPowerSource yapiwrapper)
+//--- (end of YPwmPowerSource yapiwrapper)
 // destructor
 -(void)  dealloc
 {
@@ -90,7 +92,7 @@
 {
     Y_POWERMODE_enum res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_POWERMODE_INVALID;
         }
     }

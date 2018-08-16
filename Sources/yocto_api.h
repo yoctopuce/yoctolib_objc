@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.h 31238 2018-07-17 11:08:47Z mvuilleu $
+ * $Id: yocto_api.h 31541 2018-08-13 07:06:55Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -62,7 +62,7 @@
 
 extern NSMutableDictionary* YAPI_YFunctions;
 
-#define YOCTO_API_REVISION          "31315"
+#define YOCTO_API_REVISION          "31701"
 
 // yInitAPI argument
 #define Y_DETECT_NONE           0
@@ -81,6 +81,7 @@ extern NSMutableDictionary* YAPI_YFunctions;
 @class YDataSet;
 @class YFirmwareUpdate;
 @class YDataLogger;
+@class YAPIContext;
 
 /// prototype of log callback
 typedef void    (*yLogCallback)(NSString * log);
@@ -226,7 +227,7 @@ typedef enum {
 
 #define Y_DATA_INVALID                  (-DBL_MAX)
 
-
+extern YAPIContext *YAPI_yapiContext;
 
 //
 // Class used to report exceptions within Yocto-API
@@ -292,6 +293,84 @@ YRETCODE yFormatRetVal(NSError** error,YRETCODE errCode,const char *message);
 int _ystrpos(NSString* haystack, NSString* needle);
 
 
+
+//--- (generated code: YAPIContext globals)
+//--- (end of generated code: YAPIContext globals)
+
+//--- (generated code: YAPIContext class start)
+/**
+ * YAPIContext Class: Control interface for the firmware update process
+ *
+ *
+ */
+@interface YAPIContext : NSObject
+//--- (end of generated code: YAPIContext class start)
+{
+@protected
+//--- (generated code: YAPIContext attributes declaration)
+    u64             _cacheValidity;
+//--- (end of generated code: YAPIContext attributes declaration)
+}
+// Constructor is protected, use yFindAPIContext factory function to instantiate
+-(id)    init;
+
+//--- (generated code: YAPIContext private methods declaration)
+//--- (end of generated code: YAPIContext private methods declaration)
+//--- (generated code: YAPIContext public methods declaration)
+/**
+ * Change the time between each forced enumeration of the YoctoHub used.
+ * By default, the library performs a complete enumeration every 10 seconds.
+ * To reduce network traffic it is possible to increase this delay.
+ * This is particularly useful when a YoctoHub is connected to a GSM network
+ * where the traffic is charged. This setting does not affect modules connected by USB,
+ * nor the operation of arrival/removal callbacks.
+ * Note: This function must be called after yInitAPI.
+ *
+ * @param deviceListValidity : number of seconds between each enumeration.
+ */
+-(void)     SetDeviceListValidity:(int)deviceListValidity;
+
+/**
+ * Returns the time between each forced enumeration of the YoctoHub used.
+ * Note: This function must be called after yInitAPI.
+ *
+ * @return the number of seconds between each enumeration.
+ */
+-(int)     GetDeviceListValidity;
+
+/**
+ * Change the validity period of the data loaded by the library.
+ * By default, when accessing a module, all the attributes of the
+ * module functions are automatically kept in cache for the standard
+ * duration (5 ms). This method can be used to change this standard duration,
+ * for example in order to reduce network or USB traffic. This parameter
+ * does not affect value change callbacks
+ * Note: This function must be called after yInitAPI.
+ *
+ * @param cacheValidityMs : an integer corresponding to the validity attributed to the
+ *         loaded function parameters, in milliseconds
+ */
+-(void)     SetCacheValidity:(u64)cacheValidityMs;
+
+/**
+ * Returns the validity period of the data loaded by the library.
+ * This method returns the cache validity of all attributes
+ * module functions.
+ * Note: This function must be called after yInitAPI .
+ *
+ * @return an integer corresponding to the validity attributed to the
+ *         loaded function parameters, in milliseconds
+ */
+-(u64)     GetCacheValidity;
+
+
+//--- (end of generated code: YAPIContext public methods declaration)
+
+@end
+
+//--- (generated code: YAPIContext functions declaration)
+//--- (end of generated code: YAPIContext functions declaration)
+
 //
 // YAPI Context
 //
@@ -314,8 +393,8 @@ int _ystrpos(NSString* haystack, NSString* needle);
 
 // Default cache validity (in [ms]) before reloading data from device. This saves a lots of trafic.
 // Note that a value under 2 ms makes little sense since a USB bus itself has a 2ms roundtrip period
-+(int)         DefaultCacheValidity;
-+(void)        SetDefaultCacheValidity:(int)defaultCacheValidity;
++(u64)         DefaultCacheValidity;
++(void)        SetDefaultCacheValidity:(u64)defaultCacheValidity;
 
 // Switch to turn off exceptions and use return codes instead, for source-code compatibility
 // with languages without exception support like C
@@ -624,6 +703,54 @@ int _ystrpos(NSString* haystack, NSString* needle);
  */
  +(BOOL)        CheckLogicalName:(NSString * const) name;
 
+//--- (generated code: YAPIContext yapiwrapper declaration)
+/**
+ * Change the time between each forced enumeration of the YoctoHub used.
+ * By default, the library performs a complete enumeration every 10 seconds.
+ * To reduce network traffic it is possible to increase this delay.
+ * This is particularly useful when a YoctoHub is connected to a GSM network
+ * where the traffic is charged. This setting does not affect modules connected by USB,
+ * nor the operation of arrival/removal callbacks.
+ * Note: This function must be called after yInitAPI.
+ *
+ * @param deviceListValidity : number of seconds between each enumeration.
+ */
++(void)     SetDeviceListValidity:(int)deviceListValidity;
+
+/**
+ * Returns the time between each forced enumeration of the YoctoHub used.
+ * Note: This function must be called after yInitAPI.
+ *
+ * @return the number of seconds between each enumeration.
+ */
++(int)     GetDeviceListValidity;
+
+/**
+ * Change the validity period of the data loaded by the library.
+ * By default, when accessing a module, all the attributes of the
+ * module functions are automatically kept in cache for the standard
+ * duration (5 ms). This method can be used to change this standard duration,
+ * for example in order to reduce network or USB traffic. This parameter
+ * does not affect value change callbacks
+ * Note: This function must be called after yInitAPI.
+ *
+ * @param cacheValidityMs : an integer corresponding to the validity attributed to the
+ *         loaded function parameters, in milliseconds
+ */
++(void)     SetCacheValidity:(u64)cacheValidityMs;
+
+/**
+ * Returns the validity period of the data loaded by the library.
+ * This method returns the cache validity of all attributes
+ * module functions.
+ * Note: This function must be called after yInitAPI .
+ *
+ * @return an integer corresponding to the validity attributed to the
+ *         loaded function parameters, in milliseconds
+ */
++(u64)     GetCacheValidity;
+
+//--- (end of generated code: YAPIContext yapiwrapper declaration)
 @end
 
 // Wrappers to yapi low-level API
@@ -1026,7 +1153,7 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
  *
  * On failure, throws an exception or returns a negative error code.
  */
--(YRETCODE)    load:(int) msValidity;
+-(YRETCODE)    load:(u64) msValidity;
 
 
 /**

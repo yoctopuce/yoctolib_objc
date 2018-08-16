@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_steppermotor.h 29495 2017-12-22 16:45:20Z mvuilleu $
+ * $Id: yocto_steppermotor.h 31436 2018-08-07 15:28:18Z seb $
  *
  * Declares yFindStepperMotor(), the high-level API for StepperMotor functions
  *
@@ -119,6 +119,8 @@ typedef enum {
 -(int)             _parseAttr:(yJsonStateMachine*) j;
 
 //--- (end of YStepperMotor private methods declaration)
+//--- (YStepperMotor yapiwrapper declaration)
+//--- (end of YStepperMotor yapiwrapper declaration)
 //--- (YStepperMotor public methods declaration)
 /**
  * Returns the motor working state.

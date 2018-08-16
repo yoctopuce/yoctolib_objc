@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_realtimeclock.m 28744 2017-10-03 08:14:16Z seb $
+ * $Id: yocto_realtimeclock.m 31436 2018-08-07 15:28:18Z seb $
  *
  * Implements the high-level API for RealTimeClock functions
  *
@@ -61,6 +61,8 @@
 //--- (end of YRealTimeClock attributes initialization)
     return self;
 }
+//--- (YRealTimeClock yapiwrapper)
+//--- (end of YRealTimeClock yapiwrapper)
 // destructor
 -(void)  dealloc
 {
@@ -112,7 +114,7 @@
 {
     s64 res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_UNIXTIME_INVALID;
         }
     }
@@ -156,7 +158,7 @@
 {
     NSString* res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_DATETIME_INVALID;
         }
     }
@@ -180,7 +182,7 @@
 {
     int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_UTCOFFSET_INVALID;
         }
     }
@@ -226,7 +228,7 @@
 {
     Y_TIMESET_enum res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_TIMESET_INVALID;
         }
     }

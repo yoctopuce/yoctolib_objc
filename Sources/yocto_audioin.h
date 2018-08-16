@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_audioin.h 28752 2017-10-03 08:41:02Z seb $
+ * $Id: yocto_audioin.h 31436 2018-08-07 15:28:18Z seb $
  *
  * Declares yFindAudioIn(), the high-level API for AudioIn functions
  *
@@ -85,6 +85,8 @@ typedef enum {
 -(int)             _parseAttr:(yJsonStateMachine*) j;
 
 //--- (end of YAudioIn private methods declaration)
+//--- (YAudioIn yapiwrapper declaration)
+//--- (end of YAudioIn yapiwrapper declaration)
 //--- (YAudioIn public methods declaration)
 /**
  * Returns audio input gain, in per cents.

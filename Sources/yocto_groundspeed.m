@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_groundspeed.m 28744 2017-10-03 08:14:16Z seb $
+ * $Id: yocto_groundspeed.m 31436 2018-08-07 15:28:18Z seb $
  *
  * Implements the high-level API for GroundSpeed functions
  *
@@ -58,6 +58,8 @@
 //--- (end of YGroundSpeed attributes initialization)
     return self;
 }
+//--- (YGroundSpeed yapiwrapper)
+//--- (end of YGroundSpeed yapiwrapper)
 // destructor
 -(void)  dealloc
 {

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_latitude.m 28744 2017-10-03 08:14:16Z seb $
+ * $Id: yocto_latitude.m 31436 2018-08-07 15:28:18Z seb $
  *
  * Implements the high-level API for Latitude functions
  *
@@ -58,6 +58,8 @@
 //--- (end of YLatitude attributes initialization)
     return self;
 }
+//--- (YLatitude yapiwrapper)
+//--- (end of YLatitude yapiwrapper)
 // destructor
 -(void)  dealloc
 {

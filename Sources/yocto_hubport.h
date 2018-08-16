@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_hubport.h 28752 2017-10-03 08:41:02Z seb $
+ * $Id: yocto_hubport.h 31436 2018-08-07 15:28:18Z seb $
  *
  * Declares yFindHubPort(), the high-level API for HubPort functions
  *
@@ -94,6 +94,8 @@ typedef enum {
 -(int)             _parseAttr:(yJsonStateMachine*) j;
 
 //--- (end of YHubPort private methods declaration)
+//--- (YHubPort yapiwrapper declaration)
+//--- (end of YHubPort yapiwrapper declaration)
 //--- (YHubPort public methods declaration)
 /**
  * Returns true if the Yocto-hub port is powered, false otherwise.

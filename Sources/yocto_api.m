@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.m 31238 2018-07-17 11:08:47Z mvuilleu $
+ * $Id: yocto_api.m 31541 2018-08-13 07:06:55Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -470,8 +470,102 @@ int _ystrpos(NSString* haystack, NSString* needle)
     return (int)range.location;
 }
 
+
+
+
+@implementation YAPIContext
+
+// Constructor is protected, use yFindAPIContext factory function to instantiate
+-(id)              init
+{
+   if(!(self = [super init]))
+          return nil;
+//--- (generated code: YAPIContext attributes initialization)
+    _cacheValidity = 5;
+//--- (end of generated code: YAPIContext attributes initialization)
+    return self;
+}
+// destructor
+-(void)  dealloc
+{
+//--- (generated code: YAPIContext cleanup)
+    ARC_dealloc(super);
+//--- (end of generated code: YAPIContext cleanup)
+}
+//--- (generated code: YAPIContext private methods implementation)
+
+//--- (end of generated code: YAPIContext private methods implementation)
+//--- (generated code: YAPIContext public methods implementation)
+/**
+ * Change the time between each forced enumeration of the YoctoHub used.
+ * By default, the library performs a complete enumeration every 10 seconds.
+ * To reduce network traffic it is possible to increase this delay.
+ * This is particularly useful when a YoctoHub is connected to a GSM network
+ * where the traffic is charged. This setting does not affect modules connected by USB,
+ * nor the operation of arrival/removal callbacks.
+ * Note: This function must be called after yInitAPI.
+ *
+ * @param deviceListValidity : number of seconds between each enumeration.
+ */
+-(void) SetDeviceListValidity:(int)deviceListValidity
+{
+    yapiSetNetDevListValidity(deviceListValidity);
+}
+
+/**
+ * Returns the time between each forced enumeration of the YoctoHub used.
+ * Note: This function must be called after yInitAPI.
+ *
+ * @return the number of seconds between each enumeration.
+ */
+-(int) GetDeviceListValidity
+{
+    int res;
+    res = yapiGetNetDevListValidity();
+    return res;
+}
+
+/**
+ * Change the validity period of the data loaded by the library.
+ * By default, when accessing a module, all the attributes of the
+ * module functions are automatically kept in cache for the standard
+ * duration (5 ms). This method can be used to change this standard duration,
+ * for example in order to reduce network or USB traffic. This parameter
+ * does not affect value change callbacks
+ * Note: This function must be called after yInitAPI.
+ *
+ * @param cacheValidityMs : an integer corresponding to the validity attributed to the
+ *         loaded function parameters, in milliseconds
+ */
+-(void) SetCacheValidity:(u64)cacheValidityMs
+{
+    _cacheValidity = cacheValidityMs;
+}
+
+/**
+ * Returns the validity period of the data loaded by the library.
+ * This method returns the cache validity of all attributes
+ * module functions.
+ * Note: This function must be called after yInitAPI .
+ *
+ * @return an integer corresponding to the validity attributed to the
+ *         loaded function parameters, in milliseconds
+ */
+-(u64) GetCacheValidity
+{
+    return _cacheValidity;
+}
+
+//--- (end of generated code: YAPIContext public methods implementation)
+
+@end
+//--- (generated code: YAPIContext functions)
+//--- (end of generated code: YAPIContext functions)
+
+
 static YAPI_CalibrationObj *YAPI_linearCalibration = nil;
 static YAPI_CalibrationObj *YAPI_invalidCalibration = nil;
+YAPIContext *YAPI_yapiContext = nil;
 
 @implementation YAPI
 
@@ -677,18 +771,20 @@ static const char* hexArray = "0123456789ABCDEF";
 
 // Default cache validity (in [ms]) before reloading data from device. This saves a lots of trafic.
 // Note that a value under 2 ms makes little sense since a USB bus itself has a 2ms roundtrip period
-+(int)         DefaultCacheValidity
++(u64)         DefaultCacheValidity
 {
-    return YAPI_defaultCacheValidity;
+    return [YAPI_yapiContext GetCacheValidity];
 }
 
 /**
  *
  */
-+(void)         SetDefaultCacheValidity:(int)defaultCacheValidity
++(void)         SetDefaultCacheValidity:(u64)defaultCacheValidity
 {
-    YAPI_defaultCacheValidity=defaultCacheValidity;
+    [YAPI_yapiContext SetCacheValidity:defaultCacheValidity];
 }
+
+
 
 // Switch to turn off exceptions and use return codes instead, for source-code compatibility
 // with languages without exception support like C
@@ -702,6 +798,65 @@ static const char* hexArray = "0123456789ABCDEF";
 {
     return Y_INVALID_STRING;
 }
+
+//--- (generated code: YAPIContext yapiwrapper)
+/**
+ * Change the time between each forced enumeration of the YoctoHub used.
+ * By default, the library performs a complete enumeration every 10 seconds.
+ * To reduce network traffic it is possible to increase this delay.
+ * This is particularly useful when a YoctoHub is connected to a GSM network
+ * where the traffic is charged. This setting does not affect modules connected by USB,
+ * nor the operation of arrival/removal callbacks.
+ * Note: This function must be called after yInitAPI.
+ *
+ * @param deviceListValidity : number of seconds between each enumeration.
+ */
++(void) SetDeviceListValidity:(int)deviceListValidity
+{
+        [YAPI_yapiContext SetDeviceListValidity:deviceListValidity];
+}
+/**
+ * Returns the time between each forced enumeration of the YoctoHub used.
+ * Note: This function must be called after yInitAPI.
+ *
+ * @return the number of seconds between each enumeration.
+ */
++(int) GetDeviceListValidity
+{
+        return [YAPI_yapiContext GetDeviceListValidity];
+}
+/**
+ * Change the validity period of the data loaded by the library.
+ * By default, when accessing a module, all the attributes of the
+ * module functions are automatically kept in cache for the standard
+ * duration (5 ms). This method can be used to change this standard duration,
+ * for example in order to reduce network or USB traffic. This parameter
+ * does not affect value change callbacks
+ * Note: This function must be called after yInitAPI.
+ *
+ * @param cacheValidityMs : an integer corresponding to the validity attributed to the
+ *         loaded function parameters, in milliseconds
+ */
++(void) SetCacheValidity:(u64)cacheValidityMs
+{
+        [YAPI_yapiContext SetCacheValidity:cacheValidityMs];
+}
+/**
+ * Returns the validity period of the data loaded by the library.
+ * This method returns the cache validity of all attributes
+ * module functions.
+ * Note: This function must be called after yInitAPI .
+ *
+ * @return an integer corresponding to the validity attributed to the
+ *         loaded function parameters, in milliseconds
+ */
++(u64) GetCacheValidity
+{
+        return [YAPI_yapiContext GetCacheValidity];
+}
+//--- (end of generated code: YAPIContext yapiwrapper)
+
+
 
 
 /**
@@ -773,6 +928,7 @@ static const char* hexArray = "0123456789ABCDEF";
     yInitializeCriticalSection(&YAPI_handleEvent_CS);
     YAPI_linearCalibration  = [[YAPI_CalibrationObj alloc] init];
     YAPI_invalidCalibration = [[YAPI_CalibrationObj alloc] init];
+    YAPI_yapiContext = [[YAPIContext alloc] init];
     YAPI_calibHandlers = [[NSMutableDictionary alloc] initWithCapacity:20];
     for(int i =1 ;i <=20;i++){
         type = [NSNumber numberWithInt:i];
@@ -2410,7 +2566,7 @@ static const char* hexArray = "0123456789ABCDEF";
 {
     NSString* res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_LOGICALNAME_INVALID;
         }
     }
@@ -2461,7 +2617,7 @@ static const char* hexArray = "0123456789ABCDEF";
 {
     NSString* res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_ADVERTISEDVALUE_INVALID;
         }
     }
@@ -2867,7 +3023,7 @@ static const char* hexArray = "0123456789ABCDEF";
  *
  * On failure, throws an exception or returns a negative error code.
  */
--(YRETCODE)    load:(int) msValidity
+-(YRETCODE)    load:(u64) msValidity
 {
     yJsonStateMachine j;
     YDevice     *dev;
@@ -3275,7 +3431,7 @@ static const char* hexArray = "0123456789ABCDEF";
 {
     NSString* res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_UNIT_INVALID;
         }
     }
@@ -3300,7 +3456,7 @@ static const char* hexArray = "0123456789ABCDEF";
 {
     double res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_CURRENTVALUE_INVALID;
         }
     }
@@ -3352,7 +3508,7 @@ static const char* hexArray = "0123456789ABCDEF";
 {
     double res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_LOWESTVALUE_INVALID;
         }
     }
@@ -3400,7 +3556,7 @@ static const char* hexArray = "0123456789ABCDEF";
 {
     double res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_HIGHESTVALUE_INVALID;
         }
     }
@@ -3427,7 +3583,7 @@ static const char* hexArray = "0123456789ABCDEF";
 {
     double res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_CURRENTRAWVALUE_INVALID;
         }
     }
@@ -3453,7 +3609,7 @@ static const char* hexArray = "0123456789ABCDEF";
 {
     NSString* res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_LOGFREQUENCY_INVALID;
         }
     }
@@ -3503,7 +3659,7 @@ static const char* hexArray = "0123456789ABCDEF";
 {
     NSString* res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_REPORTFREQUENCY_INVALID;
         }
     }
@@ -3552,7 +3708,7 @@ static const char* hexArray = "0123456789ABCDEF";
 {
     Y_ADVMODE_enum res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_ADVMODE_INVALID;
         }
     }
@@ -3590,7 +3746,7 @@ static const char* hexArray = "0123456789ABCDEF";
 {
     NSString* res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_CALIBRATIONPARAM_INVALID;
         }
     }
@@ -3647,7 +3803,7 @@ static const char* hexArray = "0123456789ABCDEF";
 {
     double res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_RESOLUTION_INVALID;
         }
     }
@@ -3674,7 +3830,7 @@ static const char* hexArray = "0123456789ABCDEF";
 {
     int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_SENSORSTATE_INVALID;
         }
     }
@@ -4099,7 +4255,7 @@ static const char* hexArray = "0123456789ABCDEF";
     [refValues removeAllObjects];
     // Load function parameters if not yet loaded
     if (_scale == 0) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return YAPI_DEVICE_NOT_FOUND;
         }
     }
@@ -4136,7 +4292,7 @@ static const char* hexArray = "0123456789ABCDEF";
     }
     // Load function parameters if not yet loaded
     if (_scale == 0) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return YAPI_INVALID_STRING;
         }
     }
@@ -4583,7 +4739,7 @@ static const char* hexArray = "0123456789ABCDEF";
 {
     NSString* res;
     if (_cacheExpiration == 0) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_PRODUCTNAME_INVALID;
         }
     }
@@ -4607,7 +4763,7 @@ static const char* hexArray = "0123456789ABCDEF";
 {
     NSString* res;
     if (_cacheExpiration == 0) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_SERIALNUMBER_INVALID;
         }
     }
@@ -4631,7 +4787,7 @@ static const char* hexArray = "0123456789ABCDEF";
 {
     int res;
     if (_cacheExpiration == 0) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_PRODUCTID_INVALID;
         }
     }
@@ -4655,7 +4811,7 @@ static const char* hexArray = "0123456789ABCDEF";
 {
     int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_PRODUCTRELEASE_INVALID;
         }
     }
@@ -4679,7 +4835,7 @@ static const char* hexArray = "0123456789ABCDEF";
 {
     NSString* res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_FIRMWARERELEASE_INVALID;
         }
     }
@@ -4704,7 +4860,7 @@ static const char* hexArray = "0123456789ABCDEF";
 {
     Y_PERSISTENTSETTINGS_enum res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_PERSISTENTSETTINGS_INVALID;
         }
     }
@@ -4739,7 +4895,7 @@ static const char* hexArray = "0123456789ABCDEF";
 {
     int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_LUMINOSITY_INVALID;
         }
     }
@@ -4786,7 +4942,7 @@ static const char* hexArray = "0123456789ABCDEF";
 {
     Y_BEACON_enum res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_BEACON_INVALID;
         }
     }
@@ -4830,7 +4986,7 @@ static const char* hexArray = "0123456789ABCDEF";
 {
     s64 res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_UPTIME_INVALID;
         }
     }
@@ -4854,7 +5010,7 @@ static const char* hexArray = "0123456789ABCDEF";
 {
     int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_USBCURRENT_INVALID;
         }
     }
@@ -4880,7 +5036,7 @@ static const char* hexArray = "0123456789ABCDEF";
 {
     int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_REBOOTCOUNTDOWN_INVALID;
         }
     }
@@ -4916,7 +5072,7 @@ static const char* hexArray = "0123456789ABCDEF";
 {
     int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_USERVAR_INVALID;
         }
     }
@@ -7545,7 +7701,12 @@ static const char* hexArray = "0123456789ABCDEF";
             url = [stream _get_url];
         }
     }
-    return [self processMore:_progress :[_parent _download:url]];
+    @try {
+        return [self processMore:_progress :[_parent _download:url]];
+    }
+    @catch (NSException *e) {
+        return [self processMore:_progress :[_parent _download:url]];
+    }
 }
 
 /**
@@ -8215,7 +8376,7 @@ static const char* hexArray = "0123456789ABCDEF";
 {
     int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_CURRENTRUNINDEX_INVALID;
         }
     }
@@ -8239,7 +8400,7 @@ static const char* hexArray = "0123456789ABCDEF";
 {
     s64 res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_TIMEUTC_INVALID;
         }
     }
@@ -8284,7 +8445,7 @@ static const char* hexArray = "0123456789ABCDEF";
 {
     Y_RECORDING_enum res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_RECORDING_INVALID;
         }
     }
@@ -8330,7 +8491,7 @@ static const char* hexArray = "0123456789ABCDEF";
 {
     Y_AUTOSTART_enum res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_AUTOSTART_INVALID;
         }
     }
@@ -8378,7 +8539,7 @@ static const char* hexArray = "0123456789ABCDEF";
 {
     Y_BEACONDRIVEN_enum res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_BEACONDRIVEN_INVALID;
         }
     }
@@ -8418,7 +8579,7 @@ static const char* hexArray = "0123456789ABCDEF";
 {
     Y_CLEARHISTORY_enum res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_CLEARHISTORY_INVALID;
         }
     }

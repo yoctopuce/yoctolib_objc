@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_oscontrol.h 28752 2017-10-03 08:41:02Z seb $
+ * $Id: yocto_oscontrol.h 31436 2018-08-07 15:28:18Z seb $
  *
  * Declares yFindOsControl(), the high-level API for OsControl functions
  *
@@ -72,6 +72,8 @@ typedef void (*YOsControlValueCallback)(YOsControl *func, NSString *functionValu
 -(int)             _parseAttr:(yJsonStateMachine*) j;
 
 //--- (end of YOsControl private methods declaration)
+//--- (YOsControl yapiwrapper declaration)
+//--- (end of YOsControl yapiwrapper declaration)
 //--- (YOsControl public methods declaration)
 /**
  * Returns the remaining number of seconds before the OS shutdown, or zero when no

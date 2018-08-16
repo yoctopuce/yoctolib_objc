@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_spiport.h 28752 2017-10-03 08:41:02Z seb $
+ * $Id: yocto_spiport.h 31436 2018-08-07 15:28:18Z seb $
  *
  * Declares yFindSpiPort(), the high-level API for SpiPort functions
  *
@@ -129,6 +129,8 @@ typedef enum {
 -(int)             _parseAttr:(yJsonStateMachine*) j;
 
 //--- (end of YSpiPort private methods declaration)
+//--- (YSpiPort yapiwrapper declaration)
+//--- (end of YSpiPort yapiwrapper declaration)
 //--- (YSpiPort public methods declaration)
 /**
  * Returns the total number of bytes received since last reset.

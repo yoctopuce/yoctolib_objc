@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_colorled.h 28752 2017-10-03 08:41:02Z seb $
+ * $Id: yocto_colorled.h 31436 2018-08-07 15:28:18Z seb $
  *
  * Declares yFindColorLed(), the high-level API for ColorLed functions
  *
@@ -99,6 +99,8 @@ typedef struct _YMove {
 -(int)             _parseAttr:(yJsonStateMachine*) j;
 
 //--- (end of YColorLed private methods declaration)
+//--- (YColorLed yapiwrapper declaration)
+//--- (end of YColorLed yapiwrapper declaration)
 //--- (YColorLed public methods declaration)
 /**
  * Returns the current RGB color of the LED.

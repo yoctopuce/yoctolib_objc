@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_humidity.m 28744 2017-10-03 08:14:16Z seb $
+ * $Id: yocto_humidity.m 31436 2018-08-07 15:28:18Z seb $
  *
  * Implements the high-level API for Humidity functions
  *
@@ -60,6 +60,8 @@
 //--- (end of YHumidity attributes initialization)
     return self;
 }
+//--- (YHumidity yapiwrapper)
+//--- (end of YHumidity yapiwrapper)
 // destructor
 -(void)  dealloc
 {
@@ -122,7 +124,7 @@
 {
     double res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_RELHUM_INVALID;
         }
     }
@@ -146,7 +148,7 @@
 {
     double res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_ABSHUM_INVALID;
         }
     }

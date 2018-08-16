@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_pressure.m 28744 2017-10-03 08:14:16Z seb $
+ * $Id: yocto_pressure.m 31436 2018-08-07 15:28:18Z seb $
  *
  * Implements the high-level API for Pressure functions
  *
@@ -58,6 +58,8 @@
 //--- (end of YPressure attributes initialization)
     return self;
 }
+//--- (YPressure yapiwrapper)
+//--- (end of YPressure yapiwrapper)
 // destructor
 -(void)  dealloc
 {

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_watchdog.h 28752 2017-10-03 08:41:02Z seb $
+ * $Id: yocto_watchdog.h 31436 2018-08-07 15:28:18Z seb $
  *
  * Declares yFindWatchdog(), the high-level API for Watchdog functions
  *
@@ -141,6 +141,8 @@ typedef enum {
 -(int)             _parseAttr:(yJsonStateMachine*) j;
 
 //--- (end of YWatchdog private methods declaration)
+//--- (YWatchdog yapiwrapper declaration)
+//--- (end of YWatchdog yapiwrapper declaration)
 //--- (YWatchdog public methods declaration)
 /**
  * Returns the state of the watchdog (A for the idle position, B for the active position).

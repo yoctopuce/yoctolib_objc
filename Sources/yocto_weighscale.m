@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_weighscale.m 31016 2018-06-04 08:45:40Z mvuilleu $
+ * $Id: yocto_weighscale.m 31436 2018-08-07 15:28:18Z seb $
  *
  * Implements the high-level API for WeighScale functions
  *
@@ -66,6 +66,8 @@
 //--- (end of YWeighScale attributes initialization)
     return self;
 }
+//--- (YWeighScale yapiwrapper)
+//--- (end of YWeighScale yapiwrapper)
 // destructor
 -(void)  dealloc
 {
@@ -159,7 +161,7 @@
 {
     Y_EXCITATION_enum res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_EXCITATION_INVALID;
         }
     }
@@ -232,7 +234,7 @@
 {
     double res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_TEMPAVGADAPTRATIO_INVALID;
         }
     }
@@ -282,7 +284,7 @@
 {
     double res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_TEMPCHGADAPTRATIO_INVALID;
         }
     }
@@ -306,7 +308,7 @@
 {
     double res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_COMPTEMPAVG_INVALID;
         }
     }
@@ -331,7 +333,7 @@
 {
     double res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_COMPTEMPCHG_INVALID;
         }
     }
@@ -355,7 +357,7 @@
 {
     double res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_COMPENSATION_INVALID;
         }
     }
@@ -403,7 +405,7 @@
 {
     double res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_ZEROTRACKING_INVALID;
         }
     }
@@ -420,7 +422,7 @@
 {
     NSString* res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_COMMAND_INVALID;
         }
     }

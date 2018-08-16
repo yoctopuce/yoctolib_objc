@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_lightsensor.h 28752 2017-10-03 08:41:02Z seb $
+ * $Id: yocto_lightsensor.h 31436 2018-08-07 15:28:18Z seb $
  *
  * Declares yFindLightSensor(), the high-level API for LightSensor functions
  *
@@ -88,6 +88,8 @@ typedef enum {
 -(int)             _parseAttr:(yJsonStateMachine*) j;
 
 //--- (end of YLightSensor private methods declaration)
+//--- (YLightSensor yapiwrapper declaration)
+//--- (end of YLightSensor yapiwrapper declaration)
 //--- (YLightSensor public methods declaration)
 -(int)     set_currentValue:(double) newval;
 -(int)     setCurrentValue:(double) newval;

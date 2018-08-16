@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_genericsensor.m 30678 2018-04-23 15:57:29Z seb $
+ * $Id: yocto_genericsensor.m 31436 2018-08-07 15:28:18Z seb $
  *
  * Implements the high-level API for GenericSensor functions
  *
@@ -64,6 +64,8 @@
 //--- (end of YGenericSensor attributes initialization)
     return self;
 }
+//--- (YGenericSensor yapiwrapper)
+//--- (end of YGenericSensor yapiwrapper)
 // destructor
 -(void)  dealloc
 {
@@ -155,7 +157,7 @@
 {
     double res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_SIGNALVALUE_INVALID;
         }
     }
@@ -179,7 +181,7 @@
 {
     NSString* res;
     if (_cacheExpiration == 0) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_SIGNALUNIT_INVALID;
         }
     }
@@ -203,7 +205,7 @@
 {
     NSString* res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_SIGNALRANGE_INVALID;
         }
     }
@@ -247,7 +249,7 @@
 {
     NSString* res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_VALUERANGE_INVALID;
         }
     }
@@ -316,7 +318,7 @@
 {
     double res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_SIGNALBIAS_INVALID;
         }
     }
@@ -347,7 +349,7 @@
 {
     Y_SIGNALSAMPLING_enum res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_SIGNALSAMPLING_INVALID;
         }
     }

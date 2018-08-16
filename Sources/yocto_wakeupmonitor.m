@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_wakeupmonitor.m 28744 2017-10-03 08:14:16Z seb $
+ * $Id: yocto_wakeupmonitor.m 31436 2018-08-07 15:28:18Z seb $
  *
  * Implements the high-level API for WakeUpMonitor functions
  *
@@ -64,6 +64,8 @@
 //--- (end of YWakeUpMonitor attributes initialization)
     return self;
 }
+//--- (YWakeUpMonitor yapiwrapper)
+//--- (end of YWakeUpMonitor yapiwrapper)
 // destructor
 -(void)  dealloc
 {
@@ -120,7 +122,7 @@
 {
     int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_POWERDURATION_INVALID;
         }
     }
@@ -165,7 +167,7 @@
 {
     int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_SLEEPCOUNTDOWN_INVALID;
         }
     }
@@ -209,7 +211,7 @@
 {
     s64 res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_NEXTWAKEUP_INVALID;
         }
     }
@@ -255,7 +257,7 @@
 {
     Y_WAKEUPREASON_enum res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_WAKEUPREASON_INVALID;
         }
     }
@@ -279,7 +281,7 @@
 {
     Y_WAKEUPSTATE_enum res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_WAKEUPSTATE_INVALID;
         }
     }
@@ -307,7 +309,7 @@
 {
     s64 res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_RTCTIME_INVALID;
         }
     }

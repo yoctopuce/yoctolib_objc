@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_colorledcluster.m 30500 2018-04-04 07:53:46Z mvuilleu $
+ * $Id: yocto_colorledcluster.m 31436 2018-08-07 15:28:18Z seb $
  *
  * Implements the high-level API for ColorLedCluster functions
  *
@@ -63,6 +63,8 @@
 //--- (end of YColorLedCluster attributes initialization)
     return self;
 }
+//--- (YColorLedCluster yapiwrapper)
+//--- (end of YColorLedCluster yapiwrapper)
 // destructor
 -(void)  dealloc
 {
@@ -123,7 +125,7 @@
 {
     int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_ACTIVELEDCOUNT_INVALID;
         }
     }
@@ -167,7 +169,7 @@
 {
     Y_LEDTYPE_enum res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_LEDTYPE_INVALID;
         }
     }
@@ -212,7 +214,7 @@
 {
     int res;
     if (_cacheExpiration == 0) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_MAXLEDCOUNT_INVALID;
         }
     }
@@ -236,7 +238,7 @@
 {
     int res;
     if (_cacheExpiration == 0) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_BLINKSEQMAXCOUNT_INVALID;
         }
     }
@@ -260,7 +262,7 @@
 {
     int res;
     if (_cacheExpiration == 0) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_BLINKSEQMAXSIZE_INVALID;
         }
     }
@@ -277,7 +279,7 @@
 {
     NSString* res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_COMMAND_INVALID;
         }
     }

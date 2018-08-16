@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_proximity.h 29767 2018-01-26 08:53:27Z seb $
+ * $Id: yocto_proximity.h 31436 2018-08-07 15:28:18Z seb $
  *
  * Declares yFindProximity(), the high-level API for Proximity functions
  *
@@ -111,6 +111,8 @@ typedef enum {
 -(int)             _parseAttr:(yJsonStateMachine*) j;
 
 //--- (end of YProximity private methods declaration)
+//--- (YProximity yapiwrapper declaration)
+//--- (end of YProximity yapiwrapper declaration)
 //--- (YProximity public methods declaration)
 /**
  * Returns the current value of signal measured by the proximity sensor.

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_voltageoutput.m 30678 2018-04-23 15:57:29Z seb $
+ * $Id: yocto_voltageoutput.m 31436 2018-08-07 15:28:18Z seb $
  *
  * Implements the high-level API for VoltageOutput functions
  *
@@ -60,6 +60,8 @@
 //--- (end of YVoltageOutput attributes initialization)
     return self;
 }
+//--- (YVoltageOutput yapiwrapper)
+//--- (end of YVoltageOutput yapiwrapper)
 // destructor
 -(void)  dealloc
 {
@@ -125,7 +127,7 @@
 {
     double res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_CURRENTVOLTAGE_INVALID;
         }
     }
@@ -142,7 +144,7 @@
 {
     NSString* res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_VOLTAGETRANSITION_INVALID;
         }
     }
@@ -198,7 +200,7 @@
 {
     double res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_VOLTAGEATSTARTUP_INVALID;
         }
     }

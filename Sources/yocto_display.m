@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_display.m 28744 2017-10-03 08:14:16Z seb $
+ * $Id: yocto_display.m 31436 2018-08-07 15:28:18Z seb $
  *
  * Implements yFindDisplay(), the high-level API for Display functions
  *
@@ -790,7 +790,7 @@
 {
     Y_ENABLED_enum res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_ENABLED_INVALID;
         }
     }
@@ -834,7 +834,7 @@
 {
     NSString* res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_STARTUPSEQ_INVALID;
         }
     }
@@ -880,7 +880,7 @@
 {
     int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_BRIGHTNESS_INVALID;
         }
     }
@@ -927,7 +927,7 @@
 {
     Y_ORIENTATION_enum res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_ORIENTATION_INVALID;
         }
     }
@@ -973,7 +973,7 @@
 {
     int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_DISPLAYWIDTH_INVALID;
         }
     }
@@ -997,7 +997,7 @@
 {
     int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_DISPLAYHEIGHT_INVALID;
         }
     }
@@ -1022,7 +1022,7 @@
 {
     Y_DISPLAYTYPE_enum res;
     if (_cacheExpiration == 0) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_DISPLAYTYPE_INVALID;
         }
     }
@@ -1046,7 +1046,7 @@
 {
     int res;
     if (_cacheExpiration == 0) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_LAYERWIDTH_INVALID;
         }
     }
@@ -1070,7 +1070,7 @@
 {
     int res;
     if (_cacheExpiration == 0) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_LAYERHEIGHT_INVALID;
         }
     }
@@ -1094,7 +1094,7 @@
 {
     int res;
     if (_cacheExpiration == 0) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_LAYERCOUNT_INVALID;
         }
     }
@@ -1111,7 +1111,7 @@
 {
     NSString* res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_COMMAND_INVALID;
         }
     }

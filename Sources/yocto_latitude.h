@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_latitude.h 28752 2017-10-03 08:41:02Z seb $
+ * $Id: yocto_latitude.h 31436 2018-08-07 15:28:18Z seb $
  *
  * Declares yFindLatitude(), the high-level API for Latitude functions
  *
@@ -73,6 +73,8 @@ typedef void (*YLatitudeTimedReportCallback)(YLatitude *func, YMeasure *measure)
 -(int)             _parseAttr:(yJsonStateMachine*) j;
 
 //--- (end of YLatitude private methods declaration)
+//--- (YLatitude yapiwrapper declaration)
+//--- (end of YLatitude yapiwrapper declaration)
 //--- (YLatitude public methods declaration)
 /**
  * Retrieves a latitude sensor for a given identifier.

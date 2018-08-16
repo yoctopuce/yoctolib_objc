@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_power.m 30678 2018-04-23 15:57:29Z seb $
+ * $Id: yocto_power.m 31436 2018-08-07 15:28:18Z seb $
  *
  * Implements the high-level API for Power functions
  *
@@ -61,6 +61,8 @@
 //--- (end of YPower attributes initialization)
     return self;
 }
+//--- (YPower yapiwrapper)
+//--- (end of YPower yapiwrapper)
 // destructor
 -(void)  dealloc
 {
@@ -104,7 +106,7 @@
 {
     double res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_COSPHI_INVALID;
         }
     }
@@ -141,7 +143,7 @@
 {
     double res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_METER_INVALID;
         }
     }
@@ -165,7 +167,7 @@
 {
     int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_METERTIMER_INVALID;
         }
     }

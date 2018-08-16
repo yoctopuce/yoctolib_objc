@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_pressure.h 28752 2017-10-03 08:41:02Z seb $
+ * $Id: yocto_pressure.h 31436 2018-08-07 15:28:18Z seb $
  *
  * Declares yFindPressure(), the high-level API for Pressure functions
  *
@@ -72,6 +72,8 @@ typedef void (*YPressureTimedReportCallback)(YPressure *func, YMeasure *measure)
 -(int)             _parseAttr:(yJsonStateMachine*) j;
 
 //--- (end of YPressure private methods declaration)
+//--- (YPressure yapiwrapper declaration)
+//--- (end of YPressure yapiwrapper declaration)
 //--- (YPressure public methods declaration)
 /**
  * Retrieves a pressure sensor for a given identifier.

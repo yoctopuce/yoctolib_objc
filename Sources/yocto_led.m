@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_led.m 28744 2017-10-03 08:14:16Z seb $
+ * $Id: yocto_led.m 31436 2018-08-07 15:28:18Z seb $
  *
  * Implements the high-level API for Led functions
  *
@@ -60,6 +60,8 @@
 //--- (end of YLed attributes initialization)
     return self;
 }
+//--- (YLed yapiwrapper)
+//--- (end of YLed yapiwrapper)
 // destructor
 -(void)  dealloc
 {
@@ -101,7 +103,7 @@
 {
     Y_POWER_enum res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_POWER_INVALID;
         }
     }
@@ -145,7 +147,7 @@
 {
     int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_LUMINOSITY_INVALID;
         }
     }
@@ -190,7 +192,7 @@
 {
     Y_BLINKING_enum res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_BLINKING_INVALID;
         }
     }

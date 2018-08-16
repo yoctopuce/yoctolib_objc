@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_voltageoutput.h 28752 2017-10-03 08:41:02Z seb $
+ * $Id: yocto_voltageoutput.h 31436 2018-08-07 15:28:18Z seb $
  *
  * Declares yFindVoltageOutput(), the high-level API for VoltageOutput functions
  *
@@ -74,6 +74,8 @@ typedef void (*YVoltageOutputValueCallback)(YVoltageOutput *func, NSString *func
 -(int)             _parseAttr:(yJsonStateMachine*) j;
 
 //--- (end of YVoltageOutput private methods declaration)
+//--- (YVoltageOutput yapiwrapper declaration)
+//--- (end of YVoltageOutput yapiwrapper declaration)
 //--- (YVoltageOutput public methods declaration)
 /**
  * Changes the output voltage, in V. Valid range is from 0 to 10V.

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_led.h 28752 2017-10-03 08:41:02Z seb $
+ * $Id: yocto_led.h 31436 2018-08-07 15:28:18Z seb $
  *
  * Declares yFindLed(), the high-level API for Led functions
  *
@@ -94,6 +94,8 @@ typedef enum {
 -(int)             _parseAttr:(yJsonStateMachine*) j;
 
 //--- (end of YLed private methods declaration)
+//--- (YLed yapiwrapper declaration)
+//--- (end of YLed yapiwrapper declaration)
 //--- (YLed public methods declaration)
 /**
  * Returns the current LED state.

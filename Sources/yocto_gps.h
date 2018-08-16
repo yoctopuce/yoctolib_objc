@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_gps.h 28752 2017-10-03 08:41:02Z seb $
+ * $Id: yocto_gps.h 31436 2018-08-07 15:28:18Z seb $
  *
  * Declares yFindGps(), the high-level API for Gps functions
  *
@@ -113,6 +113,8 @@ typedef enum {
 -(int)             _parseAttr:(yJsonStateMachine*) j;
 
 //--- (end of YGps private methods declaration)
+//--- (YGps yapiwrapper declaration)
+//--- (end of YGps yapiwrapper declaration)
 //--- (YGps public methods declaration)
 /**
  * Returns TRUE if the receiver has found enough satellites to work.

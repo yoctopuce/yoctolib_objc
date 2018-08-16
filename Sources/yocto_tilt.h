@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_tilt.h 28752 2017-10-03 08:41:02Z seb $
+ * $Id: yocto_tilt.h 31436 2018-08-07 15:28:18Z seb $
  *
  * Declares yFindTilt(), the high-level API for Tilt functions
  *
@@ -90,6 +90,8 @@ typedef enum {
 -(int)             _parseAttr:(yJsonStateMachine*) j;
 
 //--- (end of YTilt private methods declaration)
+//--- (YTilt yapiwrapper declaration)
+//--- (end of YTilt yapiwrapper declaration)
 //--- (YTilt public methods declaration)
 /**
  * Returns the measure update frequency, measured in Hz (Yocto-3D-V2 only).

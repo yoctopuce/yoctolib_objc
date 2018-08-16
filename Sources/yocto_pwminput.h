@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_pwminput.h 29968 2018-02-19 15:12:34Z seb $
+ * $Id: yocto_pwminput.h 31436 2018-08-07 15:28:18Z seb $
  *
  * Declares yFindPwmInput(), the high-level API for PwmInput functions
  *
@@ -105,6 +105,8 @@ typedef enum {
 -(int)             _parseAttr:(yJsonStateMachine*) j;
 
 //--- (end of YPwmInput private methods declaration)
+//--- (YPwmInput yapiwrapper declaration)
+//--- (end of YPwmInput yapiwrapper declaration)
 //--- (YPwmInput public methods declaration)
 /**
  * Returns the PWM duty cycle, in per cents.

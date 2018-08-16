@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_altitude.m 30678 2018-04-23 15:57:29Z seb $
+ * $Id: yocto_altitude.m 31436 2018-08-07 15:28:18Z seb $
  *
  * Implements the high-level API for Altitude functions
  *
@@ -60,6 +60,8 @@
 //--- (end of YAltitude attributes initialization)
     return self;
 }
+//--- (YAltitude yapiwrapper)
+//--- (end of YAltitude yapiwrapper)
 // destructor
 -(void)  dealloc
 {
@@ -147,7 +149,7 @@
 {
     double res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_QNH_INVALID;
         }
     }
@@ -173,7 +175,7 @@
 {
     NSString* res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_TECHNOLOGY_INVALID;
         }
     }

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_audioout.h 28752 2017-10-03 08:41:02Z seb $
+ * $Id: yocto_audioout.h 31436 2018-08-07 15:28:18Z seb $
  *
  * Declares yFindAudioOut(), the high-level API for AudioOut functions
  *
@@ -85,6 +85,8 @@ typedef enum {
 -(int)             _parseAttr:(yJsonStateMachine*) j;
 
 //--- (end of YAudioOut private methods declaration)
+//--- (YAudioOut yapiwrapper declaration)
+//--- (end of YAudioOut yapiwrapper declaration)
 //--- (YAudioOut public methods declaration)
 /**
  * Returns audio output volume, in per cents.

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_rangefinder.h 28752 2017-10-03 08:41:02Z seb $
+ * $Id: yocto_rangefinder.h 31436 2018-08-07 15:28:18Z seb $
  *
  * Declares yFindRangeFinder(), the high-level API for RangeFinder functions
  *
@@ -91,6 +91,8 @@ typedef enum {
 -(int)             _parseAttr:(yJsonStateMachine*) j;
 
 //--- (end of YRangeFinder private methods declaration)
+//--- (YRangeFinder yapiwrapper declaration)
+//--- (end of YRangeFinder yapiwrapper declaration)
 //--- (YRangeFinder public methods declaration)
 /**
  * Changes the measuring unit for the measured range. That unit is a string.

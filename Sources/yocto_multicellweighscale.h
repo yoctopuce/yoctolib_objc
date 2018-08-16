@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_multicellweighscale.h 31016 2018-06-04 08:45:40Z mvuilleu $
+ * $Id: yocto_multicellweighscale.h 31436 2018-08-07 15:28:18Z seb $
  *
  * Declares yFindMultiCellWeighScale(), the high-level API for MultiCellWeighScale functions
  *
@@ -100,6 +100,8 @@ typedef enum {
 -(int)             _parseAttr:(yJsonStateMachine*) j;
 
 //--- (end of YMultiCellWeighScale private methods declaration)
+//--- (YMultiCellWeighScale yapiwrapper declaration)
+//--- (end of YMultiCellWeighScale yapiwrapper declaration)
 //--- (YMultiCellWeighScale public methods declaration)
 /**
  * Changes the measuring unit for the weight.

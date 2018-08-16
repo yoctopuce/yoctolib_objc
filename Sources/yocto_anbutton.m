@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_anbutton.m 28744 2017-10-03 08:14:16Z seb $
+ * $Id: yocto_anbutton.m 31436 2018-08-07 15:28:18Z seb $
  *
  * Implements the high-level API for AnButton functions
  *
@@ -68,6 +68,8 @@
 //--- (end of YAnButton attributes initialization)
     return self;
 }
+//--- (YAnButton yapiwrapper)
+//--- (end of YAnButton yapiwrapper)
 // destructor
 -(void)  dealloc
 {
@@ -149,7 +151,7 @@
 {
     int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_CALIBRATEDVALUE_INVALID;
         }
     }
@@ -173,7 +175,7 @@
 {
     int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_RAWVALUE_INVALID;
         }
     }
@@ -197,7 +199,7 @@
 {
     Y_ANALOGCALIBRATION_enum res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_ANALOGCALIBRATION_INVALID;
         }
     }
@@ -243,7 +245,7 @@
 {
     int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_CALIBRATIONMAX_INVALID;
         }
     }
@@ -292,7 +294,7 @@
 {
     int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_CALIBRATIONMIN_INVALID;
         }
     }
@@ -341,7 +343,7 @@
 {
     int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_SENSITIVITY_INVALID;
         }
     }
@@ -392,7 +394,7 @@
 {
     Y_ISPRESSED_enum res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_ISPRESSED_INVALID;
         }
     }
@@ -419,7 +421,7 @@
 {
     s64 res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_LASTTIMEPRESSED_INVALID;
         }
     }
@@ -446,7 +448,7 @@
 {
     s64 res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_LASTTIMERELEASED_INVALID;
         }
     }
@@ -472,7 +474,7 @@
 {
     s64 res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_PULSECOUNTER_INVALID;
         }
     }
@@ -507,7 +509,7 @@
 {
     s64 res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_PULSETIMER_INVALID;
         }
     }

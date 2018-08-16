@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_multiaxiscontroller.m 30483 2018-03-29 07:43:07Z mvuilleu $
+ * $Id: yocto_multiaxiscontroller.m 31436 2018-08-07 15:28:18Z seb $
  *
  * Implements the high-level API for MultiAxisController functions
  *
@@ -60,6 +60,8 @@
 //--- (end of YMultiAxisController attributes initialization)
     return self;
 }
+//--- (YMultiAxisController yapiwrapper)
+//--- (end of YMultiAxisController yapiwrapper)
 // destructor
 -(void)  dealloc
 {
@@ -105,7 +107,7 @@
 {
     int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_NAXIS_INVALID;
         }
     }
@@ -151,7 +153,7 @@
 {
     Y_GLOBALSTATE_enum res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_GLOBALSTATE_INVALID;
         }
     }
@@ -168,7 +170,7 @@
 {
     NSString* res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_COMMAND_INVALID;
         }
     }

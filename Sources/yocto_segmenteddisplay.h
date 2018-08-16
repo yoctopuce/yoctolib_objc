@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_segmenteddisplay.h 28752 2017-10-03 08:41:02Z seb $
+ * $Id: yocto_segmenteddisplay.h 31436 2018-08-07 15:28:18Z seb $
  *
  * Declares yFindSegmentedDisplay(), the high-level API for SegmentedDisplay functions
  *
@@ -81,6 +81,8 @@ typedef enum {
 -(int)             _parseAttr:(yJsonStateMachine*) j;
 
 //--- (end of YSegmentedDisplay private methods declaration)
+//--- (YSegmentedDisplay yapiwrapper declaration)
+//--- (end of YSegmentedDisplay yapiwrapper declaration)
 //--- (YSegmentedDisplay public methods declaration)
 /**
  * Returns the text currently displayed on the screen.

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_power.h 28752 2017-10-03 08:41:02Z seb $
+ * $Id: yocto_power.h 31436 2018-08-07 15:28:18Z seb $
  *
  * Declares yFindPower(), the high-level API for Power functions
  *
@@ -79,6 +79,8 @@ typedef void (*YPowerTimedReportCallback)(YPower *func, YMeasure *measure);
 -(int)             _parseAttr:(yJsonStateMachine*) j;
 
 //--- (end of YPower private methods declaration)
+//--- (YPower yapiwrapper declaration)
+//--- (end of YPower yapiwrapper declaration)
 //--- (YPower public methods declaration)
 /**
  * Returns the power factor (the ratio between the real power consumed,

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_voc.h 28752 2017-10-03 08:41:02Z seb $
+ * $Id: yocto_voc.h 31436 2018-08-07 15:28:18Z seb $
  *
  * Declares yFindVoc(), the high-level API for Voc functions
  *
@@ -72,6 +72,8 @@ typedef void (*YVocTimedReportCallback)(YVoc *func, YMeasure *measure);
 -(int)             _parseAttr:(yJsonStateMachine*) j;
 
 //--- (end of YVoc private methods declaration)
+//--- (YVoc yapiwrapper declaration)
+//--- (end of YVoc yapiwrapper declaration)
 //--- (YVoc public methods declaration)
 /**
  * Retrieves a Volatile Organic Compound sensor for a given identifier.

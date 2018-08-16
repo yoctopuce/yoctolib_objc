@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_currentloopoutput.h 28752 2017-10-03 08:41:02Z seb $
+ * $Id: yocto_currentloopoutput.h 31436 2018-08-07 15:28:18Z seb $
  *
  * Declares yFindCurrentLoopOutput(), the high-level API for CurrentLoopOutput functions
  *
@@ -85,6 +85,8 @@ typedef enum {
 -(int)             _parseAttr:(yJsonStateMachine*) j;
 
 //--- (end of YCurrentLoopOutput private methods declaration)
+//--- (YCurrentLoopOutput yapiwrapper declaration)
+//--- (end of YCurrentLoopOutput yapiwrapper declaration)
 //--- (YCurrentLoopOutput public methods declaration)
 /**
  * Changes the current loop, the valid range is from 3 to 21mA. If the loop is

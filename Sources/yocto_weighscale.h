@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_weighscale.h 31016 2018-06-04 08:45:40Z mvuilleu $
+ * $Id: yocto_weighscale.h 31436 2018-08-07 15:28:18Z seb $
  *
  * Declares yFindWeighScale(), the high-level API for WeighScale functions
  *
@@ -98,6 +98,8 @@ typedef enum {
 -(int)             _parseAttr:(yJsonStateMachine*) j;
 
 //--- (end of YWeighScale private methods declaration)
+//--- (YWeighScale yapiwrapper declaration)
+//--- (end of YWeighScale yapiwrapper declaration)
 //--- (YWeighScale public methods declaration)
 /**
  * Changes the measuring unit for the weight.

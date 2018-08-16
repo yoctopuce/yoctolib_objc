@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_buzzer.h 28752 2017-10-03 08:41:02Z seb $
+ * $Id: yocto_buzzer.h 31436 2018-08-07 15:28:18Z seb $
  *
  * Declares yFindBuzzer(), the high-level API for Buzzer functions
  *
@@ -82,6 +82,8 @@ typedef void (*YBuzzerValueCallback)(YBuzzer *func, NSString *functionValue);
 -(int)             _parseAttr:(yJsonStateMachine*) j;
 
 //--- (end of YBuzzer private methods declaration)
+//--- (YBuzzer yapiwrapper declaration)
+//--- (end of YBuzzer yapiwrapper declaration)
 //--- (YBuzzer public methods declaration)
 /**
  * Changes the frequency of the signal sent to the buzzer. A zero value stops the buzzer.

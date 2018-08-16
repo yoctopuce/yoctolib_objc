@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_magnetometer.h 28752 2017-10-03 08:41:02Z seb $
+ * $Id: yocto_magnetometer.h 31436 2018-08-07 15:28:18Z seb $
  *
  * Declares yFindMagnetometer(), the high-level API for Magnetometer functions
  *
@@ -86,6 +86,8 @@ typedef void (*YMagnetometerTimedReportCallback)(YMagnetometer *func, YMeasure *
 -(int)             _parseAttr:(yJsonStateMachine*) j;
 
 //--- (end of YMagnetometer private methods declaration)
+//--- (YMagnetometer yapiwrapper declaration)
+//--- (end of YMagnetometer yapiwrapper declaration)
 //--- (YMagnetometer public methods declaration)
 /**
  * Returns the measure update frequency, measured in Hz (Yocto-3D-V2 only).

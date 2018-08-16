@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_current.h 28752 2017-10-03 08:41:02Z seb $
+ * $Id: yocto_current.h 31436 2018-08-07 15:28:18Z seb $
  *
  * Declares yFindCurrent(), the high-level API for Current functions
  *
@@ -81,6 +81,8 @@ typedef enum {
 -(int)             _parseAttr:(yJsonStateMachine*) j;
 
 //--- (end of YCurrent private methods declaration)
+//--- (YCurrent yapiwrapper declaration)
+//--- (end of YCurrent yapiwrapper declaration)
 //--- (YCurrent public methods declaration)
 -(Y_ENABLED_enum)     get_enabled;
 

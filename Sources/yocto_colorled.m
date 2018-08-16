@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_colorled.m 28744 2017-10-03 08:14:16Z seb $
+ * $Id: yocto_colorled.m 31436 2018-08-07 15:28:18Z seb $
  *
  * Implements the high-level API for ColorLed functions
  *
@@ -66,6 +66,8 @@
 //--- (end of YColorLed attributes initialization)
     return self;
 }
+//--- (YColorLed yapiwrapper)
+//--- (end of YColorLed yapiwrapper)
 // destructor
 -(void)  dealloc
 {
@@ -167,7 +169,7 @@
 {
     int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_RGBCOLOR_INVALID;
         }
     }
@@ -211,7 +213,7 @@
 {
     int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_HSLCOLOR_INVALID;
         }
     }
@@ -248,7 +250,7 @@
 {
     YMove res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_RGBMOVE_INVALID;
         }
     }
@@ -293,7 +295,7 @@
 {
     YMove res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_HSLMOVE_INVALID;
         }
     }
@@ -345,7 +347,7 @@
 {
     int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_RGBCOLORATPOWERON_INVALID;
         }
     }
@@ -390,7 +392,7 @@
 {
     int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_BLINKSEQSIZE_INVALID;
         }
     }
@@ -414,7 +416,7 @@
 {
     int res;
     if (_cacheExpiration == 0) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_BLINKSEQMAXSIZE_INVALID;
         }
     }
@@ -441,7 +443,7 @@
 {
     int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_BLINKSEQSIGNATURE_INVALID;
         }
     }
@@ -458,7 +460,7 @@
 {
     NSString* res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_COMMAND_INVALID;
         }
     }

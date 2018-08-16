@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_genericsensor.h 28752 2017-10-03 08:41:02Z seb $
+ * $Id: yocto_genericsensor.h 31436 2018-08-07 15:28:18Z seb $
  *
  * Declares yFindGenericSensor(), the high-level API for GenericSensor functions
  *
@@ -95,6 +95,8 @@ typedef enum {
 -(int)             _parseAttr:(yJsonStateMachine*) j;
 
 //--- (end of YGenericSensor private methods declaration)
+//--- (YGenericSensor yapiwrapper declaration)
+//--- (end of YGenericSensor yapiwrapper declaration)
 //--- (YGenericSensor public methods declaration)
 /**
  * Changes the measuring unit for the measured value.

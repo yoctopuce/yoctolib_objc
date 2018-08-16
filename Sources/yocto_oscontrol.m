@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_oscontrol.m 28744 2017-10-03 08:14:16Z seb $
+ * $Id: yocto_oscontrol.m 31436 2018-08-07 15:28:18Z seb $
  *
  * Implements the high-level API for OsControl functions
  *
@@ -58,6 +58,8 @@
 //--- (end of YOsControl attributes initialization)
     return self;
 }
+//--- (YOsControl yapiwrapper)
+//--- (end of YOsControl yapiwrapper)
 // destructor
 -(void)  dealloc
 {
@@ -91,7 +93,7 @@
 {
     int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_SHUTDOWNCOUNTDOWN_INVALID;
         }
     }

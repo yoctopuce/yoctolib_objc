@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_accelerometer.m 28744 2017-10-03 08:14:16Z seb $
+ * $Id: yocto_accelerometer.m 31436 2018-08-07 15:28:18Z seb $
  *
  * Implements the high-level API for Accelerometer functions
  *
@@ -63,6 +63,8 @@
 //--- (end of YAccelerometer attributes initialization)
     return self;
 }
+//--- (YAccelerometer yapiwrapper)
+//--- (end of YAccelerometer yapiwrapper)
 // destructor
 -(void)  dealloc
 {
@@ -114,7 +116,7 @@
 {
     int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_BANDWIDTH_INVALID;
         }
     }
@@ -159,7 +161,7 @@
 {
     double res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_XVALUE_INVALID;
         }
     }
@@ -183,7 +185,7 @@
 {
     double res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_YVALUE_INVALID;
         }
     }
@@ -207,7 +209,7 @@
 {
     double res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_ZVALUE_INVALID;
         }
     }
@@ -224,7 +226,7 @@
 {
     Y_GRAVITYCANCELLATION_enum res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_GRAVITYCANCELLATION_INVALID;
         }
     }

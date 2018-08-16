@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_humidity.h 28752 2017-10-03 08:41:02Z seb $
+ * $Id: yocto_humidity.h 31436 2018-08-07 15:28:18Z seb $
  *
  * Declares yFindHumidity(), the high-level API for Humidity functions
  *
@@ -76,6 +76,8 @@ typedef void (*YHumidityTimedReportCallback)(YHumidity *func, YMeasure *measure)
 -(int)             _parseAttr:(yJsonStateMachine*) j;
 
 //--- (end of YHumidity private methods declaration)
+//--- (YHumidity yapiwrapper declaration)
+//--- (end of YHumidity yapiwrapper declaration)
 //--- (YHumidity public methods declaration)
 /**
  * Changes the primary unit for measuring humidity. That unit is a string.

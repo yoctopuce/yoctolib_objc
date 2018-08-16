@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_colorledcluster.h 30500 2018-04-04 07:53:46Z mvuilleu $
+ * $Id: yocto_colorledcluster.h 31436 2018-08-07 15:28:18Z seb $
  *
  * Declares yFindColorLedCluster(), the high-level API for ColorLedCluster functions
  *
@@ -94,6 +94,8 @@ typedef enum {
 -(int)             _parseAttr:(yJsonStateMachine*) j;
 
 //--- (end of YColorLedCluster private methods declaration)
+//--- (YColorLedCluster yapiwrapper declaration)
+//--- (end of YColorLedCluster yapiwrapper declaration)
 //--- (YColorLedCluster public methods declaration)
 /**
  * Returns the number of LEDs currently handled by the device.

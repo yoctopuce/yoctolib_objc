@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_longitude.m 28744 2017-10-03 08:14:16Z seb $
+ * $Id: yocto_longitude.m 31436 2018-08-07 15:28:18Z seb $
  *
  * Implements the high-level API for Longitude functions
  *
@@ -58,6 +58,8 @@
 //--- (end of YLongitude attributes initialization)
     return self;
 }
+//--- (YLongitude yapiwrapper)
+//--- (end of YLongitude yapiwrapper)
 // destructor
 -(void)  dealloc
 {

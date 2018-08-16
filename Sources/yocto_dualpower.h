@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_dualpower.h 28752 2017-10-03 08:41:02Z seb $
+ * $Id: yocto_dualpower.h 31436 2018-08-07 15:28:18Z seb $
  *
  * Declares yFindDualPower(), the high-level API for DualPower functions
  *
@@ -95,6 +95,8 @@ typedef enum {
 -(int)             _parseAttr:(yJsonStateMachine*) j;
 
 //--- (end of YDualPower private methods declaration)
+//--- (YDualPower yapiwrapper declaration)
+//--- (end of YDualPower yapiwrapper declaration)
 //--- (YDualPower public methods declaration)
 /**
  * Returns the current power source for module functions that require lots of current.

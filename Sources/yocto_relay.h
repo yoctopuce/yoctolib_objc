@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_relay.h 28752 2017-10-03 08:41:02Z seb $
+ * $Id: yocto_relay.h 31436 2018-08-07 15:28:18Z seb $
  *
  * Declares yFindRelay(), the high-level API for Relay functions
  *
@@ -120,6 +120,8 @@ typedef struct _YDelayedPulse {
 -(int)             _parseAttr:(yJsonStateMachine*) j;
 
 //--- (end of YRelay private methods declaration)
+//--- (YRelay yapiwrapper declaration)
+//--- (end of YRelay yapiwrapper declaration)
 //--- (YRelay public methods declaration)
 /**
  * Returns the state of the relays (A for the idle position, B for the active position).

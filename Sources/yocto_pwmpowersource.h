@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_pwmpowersource.h 28752 2017-10-03 08:41:02Z seb $
+ * $Id: yocto_pwmpowersource.h 31436 2018-08-07 15:28:18Z seb $
  *
  * Declares yFindPwmPowerSource(), the high-level API for PwmPowerSource functions
  *
@@ -80,6 +80,8 @@ typedef enum {
 -(int)             _parseAttr:(yJsonStateMachine*) j;
 
 //--- (end of YPwmPowerSource private methods declaration)
+//--- (YPwmPowerSource yapiwrapper declaration)
+//--- (end of YPwmPowerSource yapiwrapper declaration)
 //--- (YPwmPowerSource public methods declaration)
 /**
  * Returns the selected power source for the PWM on the same device.

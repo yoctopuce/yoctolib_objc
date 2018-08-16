@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_buzzer.m 30678 2018-04-23 15:57:29Z seb $
+ * $Id: yocto_buzzer.m 31436 2018-08-07 15:28:18Z seb $
  *
  * Implements the high-level API for Buzzer functions
  *
@@ -63,6 +63,8 @@
 //--- (end of YBuzzer attributes initialization)
     return self;
 }
+//--- (YBuzzer yapiwrapper)
+//--- (end of YBuzzer yapiwrapper)
 // destructor
 -(void)  dealloc
 {
@@ -143,7 +145,7 @@
 {
     double res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_FREQUENCY_INVALID;
         }
     }
@@ -167,7 +169,7 @@
 {
     int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_VOLUME_INVALID;
         }
     }
@@ -211,7 +213,7 @@
 {
     int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_PLAYSEQSIZE_INVALID;
         }
     }
@@ -235,7 +237,7 @@
 {
     int res;
     if (_cacheExpiration == 0) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_PLAYSEQMAXSIZE_INVALID;
         }
     }
@@ -262,7 +264,7 @@
 {
     int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_PLAYSEQSIGNATURE_INVALID;
         }
     }
@@ -279,7 +281,7 @@
 {
     NSString* res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_COMMAND_INVALID;
         }
     }

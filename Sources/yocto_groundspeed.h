@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_groundspeed.h 28752 2017-10-03 08:41:02Z seb $
+ * $Id: yocto_groundspeed.h 31436 2018-08-07 15:28:18Z seb $
  *
  * Declares yFindGroundSpeed(), the high-level API for GroundSpeed functions
  *
@@ -73,6 +73,8 @@ typedef void (*YGroundSpeedTimedReportCallback)(YGroundSpeed *func, YMeasure *me
 -(int)             _parseAttr:(yJsonStateMachine*) j;
 
 //--- (end of YGroundSpeed private methods declaration)
+//--- (YGroundSpeed yapiwrapper declaration)
+//--- (end of YGroundSpeed yapiwrapper declaration)
 //--- (YGroundSpeed public methods declaration)
 /**
  * Retrieves a ground speed sensor for a given identifier.

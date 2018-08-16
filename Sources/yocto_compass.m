@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_compass.m 28744 2017-10-03 08:14:16Z seb $
+ * $Id: yocto_compass.m 31436 2018-08-07 15:28:18Z seb $
  *
  * Implements the high-level API for Compass functions
  *
@@ -61,6 +61,8 @@
 //--- (end of YCompass attributes initialization)
     return self;
 }
+//--- (YCompass yapiwrapper)
+//--- (end of YCompass yapiwrapper)
 // destructor
 -(void)  dealloc
 {
@@ -102,7 +104,7 @@
 {
     int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_BANDWIDTH_INVALID;
         }
     }
@@ -140,7 +142,7 @@
 {
     Y_AXIS_enum res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_AXIS_INVALID;
         }
     }
@@ -164,7 +166,7 @@
 {
     double res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_MAGNETICHEADING_INVALID;
         }
     }

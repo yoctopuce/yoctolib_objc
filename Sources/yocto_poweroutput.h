@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_poweroutput.h 28752 2017-10-03 08:41:02Z seb $
+ * $Id: yocto_poweroutput.h 31436 2018-08-07 15:28:18Z seb $
  *
  * Declares yFindPowerOutput(), the high-level API for PowerOutput functions
  *
@@ -79,6 +79,8 @@ typedef enum {
 -(int)             _parseAttr:(yJsonStateMachine*) j;
 
 //--- (end of YPowerOutput private methods declaration)
+//--- (YPowerOutput yapiwrapper declaration)
+//--- (end of YPowerOutput yapiwrapper declaration)
 //--- (YPowerOutput public methods declaration)
 /**
  * Returns the voltage on the power output featured by the module.

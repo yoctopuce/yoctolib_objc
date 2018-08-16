@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_wakeupschedule.m 28744 2017-10-03 08:14:16Z seb $
+ * $Id: yocto_wakeupschedule.m 31436 2018-08-07 15:28:18Z seb $
  *
  * Implements the high-level API for WakeUpSchedule functions
  *
@@ -64,6 +64,8 @@
 //--- (end of YWakeUpSchedule attributes initialization)
     return self;
 }
+//--- (YWakeUpSchedule yapiwrapper)
+//--- (end of YWakeUpSchedule yapiwrapper)
 // destructor
 -(void)  dealloc
 {
@@ -125,7 +127,7 @@
 {
     int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_MINUTESA_INVALID;
         }
     }
@@ -169,7 +171,7 @@
 {
     int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_MINUTESB_INVALID;
         }
     }
@@ -213,7 +215,7 @@
 {
     int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_HOURS_INVALID;
         }
     }
@@ -257,7 +259,7 @@
 {
     int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_WEEKDAYS_INVALID;
         }
     }
@@ -301,7 +303,7 @@
 {
     int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_MONTHDAYS_INVALID;
         }
     }
@@ -345,7 +347,7 @@
 {
     int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_MONTHS_INVALID;
         }
     }
@@ -389,7 +391,7 @@
 {
     s64 res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_NEXTOCCURENCE_INVALID;
         }
     }

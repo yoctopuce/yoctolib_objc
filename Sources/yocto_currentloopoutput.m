@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_currentloopoutput.m 30678 2018-04-23 15:57:29Z seb $
+ * $Id: yocto_currentloopoutput.m 31436 2018-08-07 15:28:18Z seb $
  *
  * Implements the high-level API for CurrentLoopOutput functions
  *
@@ -61,6 +61,8 @@
 //--- (end of YCurrentLoopOutput attributes initialization)
     return self;
 }
+//--- (YCurrentLoopOutput yapiwrapper)
+//--- (end of YCurrentLoopOutput yapiwrapper)
 // destructor
 -(void)  dealloc
 {
@@ -133,7 +135,7 @@
 {
     double res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_CURRENT_INVALID;
         }
     }
@@ -150,7 +152,7 @@
 {
     NSString* res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_CURRENTTRANSITION_INVALID;
         }
     }
@@ -206,7 +208,7 @@
 {
     double res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_CURRENTATSTARTUP_INVALID;
         }
     }
@@ -233,7 +235,7 @@
 {
     Y_LOOPPOWER_enum res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_LOOPPOWER_INVALID;
         }
     }

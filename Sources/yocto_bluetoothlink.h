@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_bluetoothlink.h 28752 2017-10-03 08:41:02Z seb $
+ * $Id: yocto_bluetoothlink.h 31436 2018-08-07 15:28:18Z seb $
  *
  * Declares yFindBluetoothLink(), the high-level API for BluetoothLink functions
  *
@@ -107,6 +107,8 @@ typedef enum {
 -(int)             _parseAttr:(yJsonStateMachine*) j;
 
 //--- (end of YBluetoothLink private methods declaration)
+//--- (YBluetoothLink yapiwrapper declaration)
+//--- (end of YBluetoothLink yapiwrapper declaration)
 //--- (YBluetoothLink public methods declaration)
 /**
  * Returns the MAC-48 address of the bluetooth interface, which is unique on the bluetooth network.

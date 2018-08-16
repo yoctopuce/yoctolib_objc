@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_pwmoutput.h 31296 2018-07-19 12:34:36Z mvuilleu $
+ * $Id: yocto_pwmoutput.h 31436 2018-08-07 15:28:18Z seb $
  *
  * Declares yFindPwmOutput(), the high-level API for PwmOutput functions
  *
@@ -98,6 +98,8 @@ typedef enum {
 -(int)             _parseAttr:(yJsonStateMachine*) j;
 
 //--- (end of YPwmOutput private methods declaration)
+//--- (YPwmOutput yapiwrapper declaration)
+//--- (end of YPwmOutput yapiwrapper declaration)
 //--- (YPwmOutput public methods declaration)
 /**
  * Returns the state of the PWMs.

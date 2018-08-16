@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_servo.h 28752 2017-10-03 08:41:02Z seb $
+ * $Id: yocto_servo.h 31436 2018-08-07 15:28:18Z seb $
  *
  * Declares yFindServo(), the high-level API for Servo functions
  *
@@ -107,6 +107,8 @@ typedef enum {
 -(int)             _parseAttr:(yJsonStateMachine*) j;
 
 //--- (end of YServo private methods declaration)
+//--- (YServo yapiwrapper declaration)
+//--- (end of YServo yapiwrapper declaration)
 //--- (YServo public methods declaration)
 /**
  * Returns the current servo position.

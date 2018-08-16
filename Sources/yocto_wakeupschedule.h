@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_wakeupschedule.h 28752 2017-10-03 08:41:02Z seb $
+ * $Id: yocto_wakeupschedule.h 31436 2018-08-07 15:28:18Z seb $
  *
  * Declares yFindWakeUpSchedule(), the high-level API for WakeUpSchedule functions
  *
@@ -84,6 +84,8 @@ typedef void (*YWakeUpScheduleValueCallback)(YWakeUpSchedule *func, NSString *fu
 -(int)             _parseAttr:(yJsonStateMachine*) j;
 
 //--- (end of YWakeUpSchedule private methods declaration)
+//--- (YWakeUpSchedule yapiwrapper declaration)
+//--- (end of YWakeUpSchedule yapiwrapper declaration)
 //--- (YWakeUpSchedule public methods declaration)
 /**
  * Returns the minutes in the 00-29 interval of each hour scheduled for wake up.

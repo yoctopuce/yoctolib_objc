@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_digitalio.h 28752 2017-10-03 08:41:02Z seb $
+ * $Id: yocto_digitalio.h 31436 2018-08-07 15:28:18Z seb $
  *
  * Declares yFindDigitalIO(), the high-level API for DigitalIO functions
  *
@@ -95,6 +95,8 @@ typedef enum {
 -(int)             _parseAttr:(yJsonStateMachine*) j;
 
 //--- (end of YDigitalIO private methods declaration)
+//--- (YDigitalIO yapiwrapper declaration)
+//--- (end of YDigitalIO yapiwrapper declaration)
 //--- (YDigitalIO public methods declaration)
 /**
  * Returns the digital IO port state: bit 0 represents input 0, and so on.

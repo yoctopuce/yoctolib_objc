@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_voc.m 28744 2017-10-03 08:14:16Z seb $
+ * $Id: yocto_voc.m 31436 2018-08-07 15:28:18Z seb $
  *
  * Implements the high-level API for Voc functions
  *
@@ -58,6 +58,8 @@
 //--- (end of YVoc attributes initialization)
     return self;
 }
+//--- (YVoc yapiwrapper)
+//--- (end of YVoc yapiwrapper)
 // destructor
 -(void)  dealloc
 {

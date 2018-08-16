@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_carbondioxide.h 28752 2017-10-03 08:41:02Z seb $
+ * $Id: yocto_carbondioxide.h 31436 2018-08-07 15:28:18Z seb $
  *
  * Declares yFindCarbonDioxide(), the high-level API for CarbonDioxide functions
  *
@@ -77,6 +77,8 @@ typedef void (*YCarbonDioxideTimedReportCallback)(YCarbonDioxide *func, YMeasure
 -(int)             _parseAttr:(yJsonStateMachine*) j;
 
 //--- (end of YCarbonDioxide private methods declaration)
+//--- (YCarbonDioxide yapiwrapper declaration)
+//--- (end of YCarbonDioxide yapiwrapper declaration)
 //--- (YCarbonDioxide public methods declaration)
 /**
  * Returns the Automatic Baseline Calibration period, in hours. A negative value

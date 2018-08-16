@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_refframe.m 30678 2018-04-23 15:57:29Z seb $
+ * $Id: yocto_refframe.m 31436 2018-08-07 15:28:18Z seb $
  *
  * Implements the high-level API for RefFrame functions
  *
@@ -78,6 +78,8 @@
 //--- (end of YRefFrame attributes initialization)
     return self;
 }
+//--- (YRefFrame yapiwrapper)
+//--- (end of YRefFrame yapiwrapper)
 // destructor
 -(void)  dealloc
 {
@@ -121,7 +123,7 @@
 {
     int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_MOUNTPOS_INVALID;
         }
     }
@@ -191,7 +193,7 @@
 {
     double res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_BEARING_INVALID;
         }
     }
@@ -208,7 +210,7 @@
 {
     NSString* res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_CALIBRATIONPARAM_INVALID;
         }
     }
@@ -236,7 +238,7 @@
 {
     Y_FUSIONMODE_enum res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_FUSIONMODE_INVALID;
         }
     }

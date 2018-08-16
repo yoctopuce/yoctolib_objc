@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_realtimeclock.h 28752 2017-10-03 08:41:02Z seb $
+ * $Id: yocto_realtimeclock.h 31436 2018-08-07 15:28:18Z seb $
  *
  * Declares yFindRealTimeClock(), the high-level API for RealTimeClock functions
  *
@@ -86,6 +86,8 @@ typedef enum {
 -(int)             _parseAttr:(yJsonStateMachine*) j;
 
 //--- (end of YRealTimeClock private methods declaration)
+//--- (YRealTimeClock yapiwrapper declaration)
+//--- (end of YRealTimeClock yapiwrapper declaration)
 //--- (YRealTimeClock public methods declaration)
 /**
  * Returns the current time in Unix format (number of elapsed seconds since Jan 1st, 1970).

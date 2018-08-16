@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_daisychain.m 28744 2017-10-03 08:14:16Z seb $
+ * $Id: yocto_daisychain.m 31436 2018-08-07 15:28:18Z seb $
  *
  * Implements the high-level API for DaisyChain functions
  *
@@ -60,6 +60,8 @@
 //--- (end of YDaisyChain attributes initialization)
     return self;
 }
+//--- (YDaisyChain yapiwrapper)
+//--- (end of YDaisyChain yapiwrapper)
 // destructor
 -(void)  dealloc
 {
@@ -103,7 +105,7 @@
 {
     Y_DAISYSTATE_enum res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_DAISYSTATE_INVALID;
         }
     }
@@ -127,7 +129,7 @@
 {
     int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_CHILDCOUNT_INVALID;
         }
     }
@@ -151,7 +153,7 @@
 {
     int res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI DefaultCacheValidity]] != YAPI_SUCCESS) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_REQUIREDCHILDCOUNT_INVALID;
         }
     }

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_quadraturedecoder.h 28752 2017-10-03 08:41:02Z seb $
+ * $Id: yocto_quadraturedecoder.h 31436 2018-08-07 15:28:18Z seb $
  *
  * Declares yFindQuadratureDecoder(), the high-level API for QuadratureDecoder functions
  *
@@ -83,6 +83,8 @@ typedef enum {
 -(int)             _parseAttr:(yJsonStateMachine*) j;
 
 //--- (end of YQuadratureDecoder private methods declaration)
+//--- (YQuadratureDecoder yapiwrapper declaration)
+//--- (end of YQuadratureDecoder yapiwrapper declaration)
 //--- (YQuadratureDecoder public methods declaration)
 /**
  * Changes the current expected position of the quadrature decoder.
