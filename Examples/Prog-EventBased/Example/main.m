@@ -26,7 +26,7 @@ static void sensorTimedReportCallBack(YSensor* fct, YMeasure* measure)
 
 static void configChangeCallBack(YModule* mod)
 {
-    NSLog(@"%@ : configuration change", [mod get_serialNumber]);
+  NSLog(@"%@ : configuration change", [mod get_serialNumber]);
 }
 
 static void deviceArrival(YModule *m)

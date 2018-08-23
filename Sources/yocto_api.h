@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.h 31541 2018-08-13 07:06:55Z seb $
+ * $Id: yocto_api.h 31770 2018-08-20 09:54:36Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -62,7 +62,7 @@
 
 extern NSMutableDictionary* YAPI_YFunctions;
 
-#define YOCTO_API_REVISION          "31701"
+#define YOCTO_API_REVISION          "31874"
 
 // yInitAPI argument
 #define Y_DETECT_NONE           0
@@ -308,7 +308,7 @@ int _ystrpos(NSString* haystack, NSString* needle);
 {
 @protected
 //--- (generated code: YAPIContext attributes declaration)
-    u64             _cacheValidity;
+    u64             _defaultCacheValidity;
 //--- (end of generated code: YAPIContext attributes declaration)
 }
 // Constructor is protected, use yFindAPIContext factory function to instantiate
@@ -327,6 +327,7 @@ int _ystrpos(NSString* haystack, NSString* needle);
  * Note: This function must be called after yInitAPI.
  *
  * @param deviceListValidity : number of seconds between each enumeration.
+ * @noreturn
  */
 -(void)     SetDeviceListValidity:(int)deviceListValidity;
 
@@ -348,7 +349,8 @@ int _ystrpos(NSString* haystack, NSString* needle);
  * Note: This function must be called after yInitAPI.
  *
  * @param cacheValidityMs : an integer corresponding to the validity attributed to the
- *         loaded function parameters, in milliseconds
+ *         loaded function parameters, in milliseconds.
+ * @noreturn
  */
 -(void)     SetCacheValidity:(u64)cacheValidityMs;
 
@@ -714,6 +716,7 @@ int _ystrpos(NSString* haystack, NSString* needle);
  * Note: This function must be called after yInitAPI.
  *
  * @param deviceListValidity : number of seconds between each enumeration.
+ * @noreturn
  */
 +(void)     SetDeviceListValidity:(int)deviceListValidity;
 
@@ -735,7 +738,8 @@ int _ystrpos(NSString* haystack, NSString* needle);
  * Note: This function must be called after yInitAPI.
  *
  * @param cacheValidityMs : an integer corresponding to the validity attributed to the
- *         loaded function parameters, in milliseconds
+ *         loaded function parameters, in milliseconds.
+ * @noreturn
  */
 +(void)     SetCacheValidity:(u64)cacheValidityMs;
 

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.m 31541 2018-08-13 07:06:55Z seb $
+ * $Id: yocto_api.m 31770 2018-08-20 09:54:36Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -481,7 +481,7 @@ int _ystrpos(NSString* haystack, NSString* needle)
    if(!(self = [super init]))
           return nil;
 //--- (generated code: YAPIContext attributes initialization)
-    _cacheValidity = 5;
+    _defaultCacheValidity = 5;
 //--- (end of generated code: YAPIContext attributes initialization)
     return self;
 }
@@ -506,6 +506,7 @@ int _ystrpos(NSString* haystack, NSString* needle)
  * Note: This function must be called after yInitAPI.
  *
  * @param deviceListValidity : number of seconds between each enumeration.
+ * @noreturn
  */
 -(void) SetDeviceListValidity:(int)deviceListValidity
 {
@@ -535,11 +536,12 @@ int _ystrpos(NSString* haystack, NSString* needle)
  * Note: This function must be called after yInitAPI.
  *
  * @param cacheValidityMs : an integer corresponding to the validity attributed to the
- *         loaded function parameters, in milliseconds
+ *         loaded function parameters, in milliseconds.
+ * @noreturn
  */
 -(void) SetCacheValidity:(u64)cacheValidityMs
 {
-    _cacheValidity = cacheValidityMs;
+    _defaultCacheValidity = cacheValidityMs;
 }
 
 /**
@@ -553,7 +555,7 @@ int _ystrpos(NSString* haystack, NSString* needle)
  */
 -(u64) GetCacheValidity
 {
-    return _cacheValidity;
+    return _defaultCacheValidity;
 }
 
 //--- (end of generated code: YAPIContext public methods implementation)
@@ -810,6 +812,7 @@ static const char* hexArray = "0123456789ABCDEF";
  * Note: This function must be called after yInitAPI.
  *
  * @param deviceListValidity : number of seconds between each enumeration.
+ * @noreturn
  */
 +(void) SetDeviceListValidity:(int)deviceListValidity
 {
@@ -835,7 +838,8 @@ static const char* hexArray = "0123456789ABCDEF";
  * Note: This function must be called after yInitAPI.
  *
  * @param cacheValidityMs : an integer corresponding to the validity attributed to the
- *         loaded function parameters, in milliseconds
+ *         loaded function parameters, in milliseconds.
+ * @noreturn
  */
 +(void) SetCacheValidity:(u64)cacheValidityMs
 {
