@@ -29,12 +29,18 @@ static void configChangeCallBack(YModule* mod)
   NSLog(@"%@ : configuration change", [mod get_serialNumber]);
 }
 
+static void beaconCallback(YModule* mod, int beacon)
+{
+    NSLog(@"%@ : beacon changed to %d", [mod get_serialNumber], beacon);
+}
+
 static void deviceArrival(YModule *m)
 {
   NSString *fctName, *serial, *hardwareId;
   serial = [m get_serialNumber];
   NSLog(@"Device arrival          : %@", serial);
   [m registerConfigChangeCallback:configChangeCallBack];
+    [m registerBeaconCallback:beaconCallback];
 
   // First solution: look for a specific type of function (eg. anButton)
   int fctcount = [m functionCount];

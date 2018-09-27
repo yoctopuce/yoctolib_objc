@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.m 31770 2018-08-20 09:54:36Z seb $
+ * $Id: yocto_api.m 32376 2018-09-27 07:57:07Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -50,17 +50,21 @@ static yDeviceUpdateCallback YAPI_deviceChangeCallback = NULL;
 static YHubDiscoveryCallback YAPI_HubDiscoveryCallback = NULL;
 static id              YAPI_delegate=nil;
 
+
+
+
 NSMutableDictionary* YAPI_YFunctions;
 
 @implementation  YapiEvent
 
--(id) initFull:(yapiEventType)type :(YModule*)module :(YFunction*)function :(NSString*)value
+-(id) initFull:(yapiEventType)type :(YModule*)module :(YFunction*)function :(NSString*)value :(int)beacon
 {
     if((self=[super init])){
         _type      = type;
         _module    = module;
         _function  = function;
         _value = value;
+        _beacon = beacon;
         if(_value!=nil){
             ARC_retain(_value);
         }
@@ -70,17 +74,23 @@ NSMutableDictionary* YAPI_YFunctions;
 
 -(id) initDeviceEvent:(yapiEventType)type forModule:(YModule*)module
 {
-    return [self initFull:type:module :nil :nil];
+    return [self initFull:type:module :nil :nil :-1];
+}
+
+
+-(id) initDeviceEvent:(yapiEventType)type forModule:(YModule*)module andBeacon:(int)beacon
+{
+    return [self initFull:type:module :nil :nil :beacon];
 }
 
 -(id) initFunction:(YFunction*)function withEvent:(unsigned) type
 {
-    return [self initFull:type :nil :function :nil];
+    return [self initFull:type :nil :function :nil :-1];
 }
 
 -(id) initFunction:(YFunction*)function newValue:(NSString*)value
 {
-    return [self initFull:YAPI_FUN_VALUE :nil :function :value];
+    return [self initFull:YAPI_FUN_VALUE :nil :function :value :-1];
 }
 
 -(id) initWithSensor:(YSensor*)sensor AndTimestamp:(double)timestamp AndReport:(NSMutableArray*) report
@@ -111,7 +121,7 @@ NSMutableDictionary* YAPI_YFunctions;
 
 -(id) _init
 {
-    return [self initFull:YAPI_INVALID:nil:nil:nil];
+    return [self initFull:YAPI_INVALID:nil:nil:nil:-1];
 }
 
 -(void)  dealloc
@@ -151,6 +161,9 @@ NSMutableDictionary* YAPI_YFunctions;
             break;
         case YAPI_DEV_CONFCHANGE:
             [_module _invokeConfigChangeCallback];
+            break;
+        case YAPI_DEV_BEACON:
+            [_module _invokeBeaconCallback:_beacon];
             break;
         default:
             break;
@@ -240,6 +253,7 @@ static NSMutableArray* _ValueCallbackList = nil;
 static NSMutableArray* _TimedReportCallbackList = nil;
 static NSMutableArray* _devCache = nil;
 static NSMutableDictionary* YFunctions_cache = nil;
+static NSMutableDictionary* _moduleCallbackList = nil;
 
 
 
@@ -342,14 +356,50 @@ static void yapiDeviceConfigChangeCallbackFwd(YAPI_DEVICE devdescr)
     YapiEvent    *ev;
     yDeviceSt    infos;
     YModule      *module;
+    NSString     *serial;
+    NSNumber     *val;
     @autoreleasepool {
         if(YISERR(yapiGetDeviceInfo(devdescr,&infos,NULL))) return;
-        module = yFindModule([STR_y2oc(infos.serial) stringByAppendingFormat:@".module"]);
-        ev =[[YapiEvent alloc] initDeviceEvent:YAPI_DEV_CONFCHANGE forModule:module];
-        [YAPI_data_events addObject:ev];
-        ARC_release(ev);
+         serial = STR_y2oc(infos.serial);
+        module = yFindModule([serial stringByAppendingFormat:@".module"]);
+        val = [_moduleCallbackList objectForKey:serial] ;
+        if (val != nil) {
+            int int_val = [val intValue];
+            if (int_val > 0) {
+                ev =[[YapiEvent alloc] initDeviceEvent:YAPI_DEV_CONFCHANGE forModule:module];
+                [YAPI_data_events addObject:ev];
+                ARC_release(ev);
+            }
+        }
     }
 }
+
+
+static void yapiBeaconCallbackFwd(YAPI_DEVICE devdescr, int beacon)
+{
+    YapiEvent    *ev;
+    yDeviceSt    infos;
+    YModule      *module;
+    NSString     *serial;
+    NSNumber     *val;
+    @autoreleasepool {
+        if(YISERR(yapiGetDeviceInfo(devdescr,&infos,NULL))) return;
+        serial = STR_y2oc(infos.serial);
+        module = yFindModule([serial stringByAppendingFormat:@".module"]);
+        val = [_moduleCallbackList objectForKey:serial] ;
+        if (val != nil) {
+            int int_val = [val intValue];
+            if (int_val > 0) {
+                ev =[[YapiEvent alloc] initDeviceEvent:YAPI_DEV_BEACON forModule:module andBeacon:beacon];
+                [YAPI_data_events addObject:ev];
+                ARC_release(ev);
+            }
+        }
+    }
+}
+
+
+
 
 static void yapiHubDiscoveryCallbackFwd(const char *serial_ptr, const char *url_ptr)
 {
@@ -927,6 +977,7 @@ static const char* hexArray = "0123456789ABCDEF";
     yapiRegisterFunctionUpdateCallback(yapiFunctionUpdateCallbackFwd);
     yapiRegisterTimedReportCallback(yapiTimedReportCallbackFwd);
     yapiRegisterDeviceConfigChangeCallback(yapiDeviceConfigChangeCallbackFwd);
+    yapiRegisterBeaconCallback(yapiBeaconCallbackFwd);
     yapiRegisterHubDiscoveryCallback(yapiHubDiscoveryCallbackFwd);
     yInitializeCriticalSection(&YAPI_updateDeviceList_CS);
     yInitializeCriticalSection(&YAPI_handleEvent_CS);
@@ -940,7 +991,7 @@ static const char* hexArray = "0123456789ABCDEF";
     }
     type = [NSNumber numberWithInt:YOCTO_CALIB_TYPE_OFS];
     [YAPI_calibHandlers setObject:YAPI_linearCalibration forKey:type];
-    YAPI_YFunctions =[[NSMutableDictionary alloc] initWithCapacity:8];
+    YAPI_YFunctions = [[NSMutableDictionary alloc] init];
     YAPI_apiInitialized = YES;
 
     return YAPI_SUCCESS;
@@ -2532,10 +2583,6 @@ static const char* hexArray = "0123456789ABCDEF";
     }
 }
 
-
-
-
-
 //--- (generated code: YFunction private methods implementation)
 
 -(int) _parseAttr:(yJsonStateMachine*) j
@@ -4106,7 +4153,7 @@ static const char* hexArray = "0123456789ABCDEF";
         return nil;
     }
     hwid = [NSString stringWithFormat:@"%@%@", serial, @".dataLogger"];
-    logger  = [YDataLogger FindDataLogger:hwid];
+    logger = [YDataLogger FindDataLogger:hwid];
     return logger;
 }
 
@@ -4584,6 +4631,7 @@ static const char* hexArray = "0123456789ABCDEF";
     _valueCallbackModule = NULL;
     _logCallback = NULL;
     _confChangeCallback = NULL;
+    _beaconCallback = NULL;
 //--- (end of generated code: YModule attributes initialization)
     return self;
 }
@@ -4635,6 +4683,37 @@ static const char* hexArray = "0123456789ABCDEF";
     return YAPI_SUCCESS;
 
 }
+
+
++(void) _updateModuleCallbackList:(YModule*)modul :(BOOL)add;
+{
+    NSNumber *val;
+    NSString *serial;
+    if (add) {
+        [modul isOnline];
+        serial = [modul get_serialNumber];
+        if (_moduleCallbackList == nil){
+            _moduleCallbackList = [[NSMutableDictionary alloc] init];
+        }
+        val = [_moduleCallbackList objectForKey:serial] ;
+        if (val == nil) {
+            [_moduleCallbackList setObject: [NSNumber numberWithLong:1] forKey:serial];
+        } else {
+            int int_val = [val intValue] + 1;
+            [_moduleCallbackList setObject:[NSNumber numberWithLong:int_val] forKey:serial];
+        }
+    } else {
+        serial = [modul get_serialNumber];
+        val = [_moduleCallbackList objectForKey:serial] ;
+        if (val != nil) {
+            int int_val = [val intValue];
+            if (int_val > 1) {
+                [_moduleCallbackList setObject:[NSNumber numberWithLong:int_val - 1] forKey:serial];
+            }
+        }
+    }
+}
+
 
 
 //--- (generated code: YModule private methods implementation)
@@ -5247,6 +5326,11 @@ static const char* hexArray = "0123456789ABCDEF";
  */
 -(int) registerConfigChangeCallback:(YModuleConfigChangeCallback)callback
 {
+    if (callback != NULL) {
+        [YModule _updateModuleCallbackList:self :YES];
+    } else {
+        [YModule _updateModuleCallbackList:self :NO];
+    }
     _confChangeCallback = callback;
     return 0;
 }
@@ -5255,6 +5339,33 @@ static const char* hexArray = "0123456789ABCDEF";
 {
     if (_confChangeCallback != NULL) {
         _confChangeCallback(self);
+    }
+    return 0;
+}
+
+/**
+ * Register a callback function, to be called when the localization beacon of the module
+ * has been changed. The callback function should take two arguments: the YModule object of
+ * which the beacon has changed, and an integer describing the new beacon state.
+ *
+ * @param callback : The callback function to call, or nil to unregister a
+ *         previously registered callback.
+ */
+-(int) registerBeaconCallback:(YModuleBeaconCallback)callback
+{
+    if (callback != NULL) {
+        [YModule _updateModuleCallbackList:self :YES];
+    } else {
+        [YModule _updateModuleCallbackList:self :NO];
+    }
+    _beaconCallback = callback;
+    return 0;
+}
+
+-(int) _invokeBeaconCallback:(int)beaconState
+{
+    if (_beaconCallback != NULL) {
+        _beaconCallback(self, beaconState);
     }
     return 0;
 }
@@ -5295,7 +5406,7 @@ static const char* hexArray = "0123456789ABCDEF";
     }
     //may throw an exception
     serial = [self get_serialNumber];
-    tmp_res = [YFirmwareUpdate CheckFirmware:serial :path :release];
+    tmp_res = [YFirmwareUpdate CheckFirmware:serial : path :release];
     if (_ystrpos(tmp_res, @"error:") == 0) {
         [self _throw:YAPI_INVALID_ARGUMENT :tmp_res];
     }
@@ -5518,10 +5629,10 @@ static const char* hexArray = "0123456789ABCDEF";
     int i;
     NSString* fid;
 
-    count  = [self functionCount];
+    count = [self functionCount];
     i = 0;
     while (i < count) {
-        fid  = [self functionId:i];
+        fid = [self functionId:i];
         if ([fid isEqualToString:funcId]) {
             return YES;
         }
@@ -6424,7 +6535,7 @@ static const char* hexArray = "0123456789ABCDEF";
     _restore_step = 0;
 //--- (end of generated code: YFirmwareUpdate attributes initialization)
     _serial = serial;
-    _firmwarepath = path,
+    _firmwarepath = path;
     _settings = [NSMutableData dataWithData: settings];
     _force = force;
     return self;
@@ -6501,12 +6612,12 @@ static const char* hexArray = "0123456789ABCDEF";
                     _progress = YAPI_IO_ERROR;
                     _progress_msg = @"Unable to update firmware";
                 } else {
-                    _progress =  100;
+                    _progress = 100;
                     _progress_msg = @"success";
                 }
             }
         } else {
-            _progress =  100;
+            _progress = 100;
             _progress_msg = @"success";
         }
     }
@@ -6646,7 +6757,7 @@ static const char* hexArray = "0123456789ABCDEF";
     int leng;
     err = ARC_sendAutorelease([[NSString alloc] initWithData:_settings encoding:NSISOLatin1StringEncoding]);
     leng = (int)[(err) length];
-    if (( leng >= 6) && ([@"error:" isEqualToString:[err substringWithRange:NSMakeRange(0, 6)]])) {
+    if ((leng >= 6) && ([@"error:" isEqualToString:[err substringWithRange:NSMakeRange(0, 6)]])) {
         _progress = -1;
         _progress_msg = [err substringWithRange:NSMakeRange( 6, leng - 6)];
     } else {

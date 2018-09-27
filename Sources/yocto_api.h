@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.h 31770 2018-08-20 09:54:36Z seb $
+ * $Id: yocto_api.h 32376 2018-09-27 07:57:07Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -62,7 +62,7 @@
 
 extern NSMutableDictionary* YAPI_YFunctions;
 
-#define YOCTO_API_REVISION          "31897"
+#define YOCTO_API_REVISION          "32391"
 
 // yInitAPI argument
 #define Y_DETECT_NONE           0
@@ -145,6 +145,7 @@ typedef enum {
 #define Y_USBCURRENT_INVALID            YAPI_INVALID_UINT
 #define Y_REBOOTCOUNTDOWN_INVALID       YAPI_INVALID_INT
 #define Y_USERVAR_INVALID               YAPI_INVALID_INT
+typedef void (*YModuleBeaconCallback)(YModule *module, int beacon);
 //--- (end of generated code: YModule globals)
 
 //--- (generated code: YSensor globals)
@@ -250,6 +251,7 @@ typedef enum {
     YAPI_FUN_TIMEDREPORT,
     YAPI_FUN_REFRESH,
     YAPI_DEV_CONFCHANGE,
+    YAPI_DEV_BEACON,
     YAPI_HUB_DISCOVERY,
     YAPI_INVALID
 } yapiEventType;
@@ -265,6 +267,7 @@ typedef enum {
     NSString*           _value;
     NSString*           _serial;
     NSString*           _url;
+    int                 _beacon;
 }
 
 -(void) invokeFunctionEvent;
@@ -1247,12 +1250,15 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
     YModuleValueCallback _valueCallbackModule;
     YModuleLogCallback _logCallback;
     YModuleConfigChangeCallback _confChangeCallback;
+    YModuleBeaconCallback _beaconCallback;
 //--- (end of generated code: YModule attributes declaration)
 }
 
 
 // Method used to retrieve details of the nth function of our device
 -(YRETCODE)        _getFunction:(int) idx  :(NSString**)serial  :(NSString**)funcId :(NSString**)baseType :(NSString**)funcName :(NSString**)funcVal :(NSError**)error;
+
++(void) _updateModuleCallbackList:(YModule*)func :(BOOL)add;
 
 //--- (generated code: YModule private methods declaration)
 // Function-specific method for parsing of JSON output and caching result
@@ -1596,6 +1602,18 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
 -(int)     registerConfigChangeCallback:(YModuleConfigChangeCallback)callback;
 
 -(int)     _invokeConfigChangeCallback;
+
+/**
+ * Register a callback function, to be called when the localization beacon of the module
+ * has been changed. The callback function should take two arguments: the YModule object of
+ * which the beacon has changed, and an integer describing the new beacon state.
+ *
+ * @param callback : The callback function to call, or nil to unregister a
+ *         previously registered callback.
+ */
+-(int)     registerBeaconCallback:(YModuleBeaconCallback)callback;
+
+-(int)     _invokeBeaconCallback:(int)beaconState;
 
 /**
  * Triggers a configuration change callback, to check if they are supported or not.
