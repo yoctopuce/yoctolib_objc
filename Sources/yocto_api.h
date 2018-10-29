@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.h 32376 2018-09-27 07:57:07Z seb $
+ * $Id: yocto_api.h 32489 2018-10-04 12:33:12Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -62,7 +62,7 @@
 
 extern NSMutableDictionary* YAPI_YFunctions;
 
-#define YOCTO_API_REVISION          "32391"
+#define YOCTO_API_REVISION          "32759"
 
 // yInitAPI argument
 #define Y_DETECT_NONE           0
@@ -1728,6 +1728,15 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
  * On failure, throws an exception or returns a negative error code.
  */
 -(int)     set_allSettings:(NSData*)settings;
+
+/**
+ * Returns the unique hardware identifier of the module.
+ * The unique hardware identifier is made of the device serial
+ * number followed by string ".module".
+ *
+ * @return a string that uniquely identifies the module
+ */
+-(NSString*)     get_hardwareId;
 
 /**
  * Downloads the specified built-in file and returns a binary buffer with its content.

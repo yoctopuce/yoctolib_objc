@@ -1,10 +1,10 @@
 /*********************************************************************
  *
- * $Id: yocto_pwmoutput.h 31436 2018-08-07 15:28:18Z seb $
+ *  $Id: yocto_pwmoutput.h 32610 2018-10-10 06:52:20Z seb $
  *
- * Declares yFindPwmOutput(), the high-level API for PwmOutput functions
+ *  Declares yFindPwmOutput(), the high-level API for PwmOutput functions
  *
- * - - - - - - - - - License information: - - - - - - - - -
+ *  - - - - - - - - - License information: - - - - - - - - -
  *
  *  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
  *

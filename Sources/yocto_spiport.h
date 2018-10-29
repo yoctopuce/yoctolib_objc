@@ -1,10 +1,10 @@
 /*********************************************************************
  *
- * $Id: yocto_spiport.h 31436 2018-08-07 15:28:18Z seb $
+ *  $Id: yocto_spiport.h 32610 2018-10-10 06:52:20Z seb $
  *
- * Declares yFindSpiPort(), the high-level API for SpiPort functions
+ *  Declares yFindSpiPort(), the high-level API for SpiPort functions
  *
- * - - - - - - - - - License information: - - - - - - - - -
+ *  - - - - - - - - - License information: - - - - - - - - -
  *
  *  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
  *

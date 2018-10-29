@@ -1,10 +1,10 @@
 /*********************************************************************
  *
- * $Id: yocto_pressure.h 31436 2018-08-07 15:28:18Z seb $
+ *  $Id: yocto_pressure.h 32610 2018-10-10 06:52:20Z seb $
  *
- * Declares yFindPressure(), the high-level API for Pressure functions
+ *  Declares yFindPressure(), the high-level API for Pressure functions
  *
- * - - - - - - - - - License information: - - - - - - - - -
+ *  - - - - - - - - - License information: - - - - - - - - -
  *
  *  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
  *

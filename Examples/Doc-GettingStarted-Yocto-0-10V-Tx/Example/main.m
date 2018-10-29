@@ -1,3 +1,17 @@
+/*********************************************************************
+ *
+ *  $Id: main.m 32622 2018-10-10 13:11:04Z seb $
+ *
+ *  An example that show how to use a  Yocto-0-10V-Tx
+ *
+ *  You can find more information on our web site:
+ *   Yocto-0-10V-Tx documentation:
+ *      https://www.yoctopuce.com/EN/products/yocto-0-10v-tx/doc.html
+ *   Objective-C API Reference:
+ *      https://www.yoctopuce.com/EN/doc/reference/yoctolib-objc-EN.html
+ *
+ *********************************************************************/
+
 #import <Foundation/Foundation.h>
 #import "yocto_api.h"
 #import "yocto_voltageoutput.h"

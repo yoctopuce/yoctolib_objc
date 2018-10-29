@@ -1,10 +1,10 @@
 /*********************************************************************
  *
- * $Id: yocto_pwminput.h 31436 2018-08-07 15:28:18Z seb $
+ *  $Id: yocto_pwminput.h 32610 2018-10-10 06:52:20Z seb $
  *
- * Declares yFindPwmInput(), the high-level API for PwmInput functions
+ *  Declares yFindPwmInput(), the high-level API for PwmInput functions
  *
- * - - - - - - - - - License information: - - - - - - - - -
+ *  - - - - - - - - - License information: - - - - - - - - -
  *
  *  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
  *
@@ -108,6 +108,21 @@ typedef enum {
 //--- (YPwmInput yapiwrapper declaration)
 //--- (end of YPwmInput yapiwrapper declaration)
 //--- (YPwmInput public methods declaration)
+/**
+ * Changes the measuring unit for the measured quantity. That unit
+ * is just a string which is automatically initialized each time
+ * the measurement mode is changed. But is can be set to an
+ * arbitrary value.
+ *
+ * @param newval : a string corresponding to the measuring unit for the measured quantity
+ *
+ * @return YAPI_SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     set_unit:(NSString*) newval;
+-(int)     setUnit:(NSString*) newval;
+
 /**
  * Returns the PWM duty cycle, in per cents.
  *

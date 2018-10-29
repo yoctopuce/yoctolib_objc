@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.m 32376 2018-09-27 07:57:07Z seb $
+ * $Id: yocto_api.m 32489 2018-10-04 12:33:12Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -6212,6 +6212,21 @@ static const char* hexArray = "0123456789ABCDEF";
     }
     [self clearCache];
     return YAPI_SUCCESS;
+}
+
+/**
+ * Returns the unique hardware identifier of the module.
+ * The unique hardware identifier is made of the device serial
+ * number followed by string ".module".
+ *
+ * @return a string that uniquely identifies the module
+ */
+-(NSString*) get_hardwareId
+{
+    NSString* serial;
+
+    serial = [self get_serialNumber];
+    return [NSString stringWithFormat:@"%@%@", serial, @".module"];
 }
 
 /**

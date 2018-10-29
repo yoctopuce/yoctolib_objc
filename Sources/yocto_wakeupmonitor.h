@@ -1,10 +1,10 @@
 /*********************************************************************
  *
- * $Id: yocto_wakeupmonitor.h 31436 2018-08-07 15:28:18Z seb $
+ *  $Id: yocto_wakeupmonitor.h 32610 2018-10-10 06:52:20Z seb $
  *
- * Declares yFindWakeUpMonitor(), the high-level API for WakeUpMonitor functions
+ *  Declares yFindWakeUpMonitor(), the high-level API for WakeUpMonitor functions
  *
- * - - - - - - - - - License information: - - - - - - - - -
+ *  - - - - - - - - - License information: - - - - - - - - -
  *
  *  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
  *

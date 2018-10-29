@@ -1,10 +1,10 @@
 /*********************************************************************
  *
- * $Id: yocto_segmenteddisplay.h 31436 2018-08-07 15:28:18Z seb $
+ *  $Id: yocto_segmenteddisplay.h 32610 2018-10-10 06:52:20Z seb $
  *
- * Declares yFindSegmentedDisplay(), the high-level API for SegmentedDisplay functions
+ *  Declares yFindSegmentedDisplay(), the high-level API for SegmentedDisplay functions
  *
- * - - - - - - - - - License information: - - - - - - - - -
+ *  - - - - - - - - - License information: - - - - - - - - -
  *
  *  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
  *

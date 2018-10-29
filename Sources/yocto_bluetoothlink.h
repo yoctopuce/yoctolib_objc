@@ -1,10 +1,10 @@
 /*********************************************************************
  *
- * $Id: yocto_bluetoothlink.h 31436 2018-08-07 15:28:18Z seb $
+ *  $Id: yocto_bluetoothlink.h 32610 2018-10-10 06:52:20Z seb $
  *
- * Declares yFindBluetoothLink(), the high-level API for BluetoothLink functions
+ *  Declares yFindBluetoothLink(), the high-level API for BluetoothLink functions
  *
- * - - - - - - - - - License information: - - - - - - - - -
+ *  - - - - - - - - - License information: - - - - - - - - -
  *
  *  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
  *

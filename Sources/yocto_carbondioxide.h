@@ -1,10 +1,10 @@
 /*********************************************************************
  *
- * $Id: yocto_carbondioxide.h 31436 2018-08-07 15:28:18Z seb $
+ *  $Id: yocto_carbondioxide.h 32610 2018-10-10 06:52:20Z seb $
  *
- * Declares yFindCarbonDioxide(), the high-level API for CarbonDioxide functions
+ *  Declares yFindCarbonDioxide(), the high-level API for CarbonDioxide functions
  *
- * - - - - - - - - - License information: - - - - - - - - -
+ *  - - - - - - - - - License information: - - - - - - - - -
  *
  *  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
  *

@@ -1,10 +1,10 @@
 /*********************************************************************
  *
- * $Id: yocto_digitalio.h 31436 2018-08-07 15:28:18Z seb $
+ *  $Id: yocto_digitalio.h 32610 2018-10-10 06:52:20Z seb $
  *
- * Declares yFindDigitalIO(), the high-level API for DigitalIO functions
+ *  Declares yFindDigitalIO(), the high-level API for DigitalIO functions
  *
- * - - - - - - - - - License information: - - - - - - - - -
+ *  - - - - - - - - - License information: - - - - - - - - -
  *
  *  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
  *

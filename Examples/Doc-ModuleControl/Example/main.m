@@ -1,3 +1,15 @@
+/*********************************************************************
+ *
+ *  $Id: main.m 32622 2018-10-10 13:11:04Z seb $
+ *
+ *  Doc-ModuleControl example
+ *
+ *  You can find more information on our web site:
+ *   Objective-C API Reference:
+ *      https://www.yoctopuce.com/EN/doc/reference/yoctolib-objc-EN.html
+ *
+ *********************************************************************/
+
 #import <Foundation/Foundation.h>
 #import "yocto_api.h"
 

@@ -1,10 +1,10 @@
 /*********************************************************************
  *
- * $Id: yocto_groundspeed.m 31436 2018-08-07 15:28:18Z seb $
+ *  $Id: yocto_groundspeed.m 32610 2018-10-10 06:52:20Z seb $
  *
- * Implements the high-level API for GroundSpeed functions
+ *  Implements the high-level API for GroundSpeed functions
  *
- * - - - - - - - - - License information: - - - - - - - - -
+ *  - - - - - - - - - License information: - - - - - - - - -
  *
  *  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
  *
