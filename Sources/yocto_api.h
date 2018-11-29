@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.h 32489 2018-10-04 12:33:12Z seb $
+ * $Id: yocto_api.h 33393 2018-11-26 17:44:40Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -62,7 +62,7 @@
 
 extern NSMutableDictionary* YAPI_YFunctions;
 
-#define YOCTO_API_REVISION          "32759"
+#define YOCTO_API_REVISION          "33423"
 
 // yInitAPI argument
 #define Y_DETECT_NONE           0
@@ -263,6 +263,7 @@ typedef enum {
     YFunction*          _function;
     YSensor*            _sensor;
     double              _timestamp;
+    double              _duration;
     NSMutableArray*     _report;
     NSString*           _value;
     NSString*           _serial;
@@ -1312,20 +1313,6 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
  */
 -(NSString*)           functionValue:(int) functionIndex;
 
-/**
- * Registers a device log callback function. This callback will be called each time
- * that a module sends a new log message. Mostly useful to debug a Yoctopuce module.
- *
- * @param callback : the callback function to call, or a nil pointer. The callback function should take two
- *         arguments: the module object that emitted the log message, and the character string containing the log.
- * @noreturn
- */
--(void)            registerLogCallback:(YModuleLogCallback) callback;
-
-
--(YModuleLogCallback) get_logCallback;
-
-
 
 //--- (generated code: YModule public methods declaration)
 /**
@@ -1522,6 +1509,7 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
  *
+ *
  * If a call to this object's is_online() method returns FALSE although
  * you are certain that the device is plugged, make sure that you did
  * call registerHub() at application initialization time.
@@ -1591,6 +1579,20 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
  * On failure, throws an exception or returns a negative error code.
  */
 -(int)     triggerFirmwareUpdate:(int)secBeforeReboot;
+
+-(void)     _startStopDevLog:(NSString*)serial :(bool)start;
+
+/**
+ * Registers a device log callback function. This callback will be called each time
+ * that a module sends a new log message. Mostly useful to debug a Yoctopuce module.
+ *
+ * @param callback : the callback function to call, or a nil pointer. The callback function should take two
+ *         arguments: the module object that emitted the log message, and the character string containing the log.
+ *         On failure, throws an exception or returns a negative error code.
+ */
+-(int)     registerLogCallback:(YModuleLogCallback)callback;
+
+-(YModuleLogCallback)     get_logCallback;
 
 /**
  * Register a callback function, to be called when a persistent settings in
@@ -1809,6 +1811,9 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
 
 /**
  * Continues the module enumeration started using yFirstModule().
+ * Caution: You can't make any assumption about the returned modules order.
+ * If you want to find a specific module, use Module.findModule()
+ * and a hardwareID or a logical name.
  *
  * @return a pointer to a YModule object, corresponding to
  *         the next module found, or a nil pointer
@@ -1867,8 +1872,6 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
     double          _offset;
     double          _scale;
     double          _decexp;
-    bool            _isScal;
-    bool            _isScal32;
     int             _caltyp;
     NSMutableArray* _calpar;
     NSMutableArray* _calraw;
@@ -2218,7 +2221,7 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
  *         data. Past measures can be loaded progressively
  *         using methods from the YDataSet object.
  */
--(YDataSet*)     get_recordedData:(s64)startTime :(s64)endTime;
+-(YDataSet*)     get_recordedData:(double)startTime :(double)endTime;
 
 /**
  * Registers the callback function that is invoked on every periodic timed notification.
@@ -2277,7 +2280,7 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
 
 -(double)     _applyCalibration:(double)rawValue;
 
--(YMeasure*)     _decodeTimedReport:(double)timestamp :(NSMutableArray*)report;
+-(YMeasure*)     _decodeTimedReport:(double)timestamp :(double)duration :(NSMutableArray*)report;
 
 -(double)     _decodeVal:(int)w;
 
@@ -2286,6 +2289,9 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
 
 /**
  * Continues the enumeration of sensors started using yFirstSensor().
+ * Caution: You can't make any assumption about the returned sensors order.
+ * If you want to find a specific a sensor, use Sensor.findSensor()
+ * and a hardwareID or a logical name.
  *
  * @return a pointer to a YSensor object, corresponding to
  *         a sensor currently online, or a nil pointer
@@ -2428,21 +2434,17 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
     s64             _utcStamp;
     int             _nCols;
     int             _nRows;
-    int             _duration;
+    double          _startTime;
+    double          _duration;
+    double          _dataSamplesInterval;
+    double          _firstMeasureDuration;
     NSMutableArray* _columnNames;
     NSString*       _functionId;
     bool            _isClosed;
     bool            _isAvg;
-    bool            _isScal;
-    bool            _isScal32;
-    int             _decimals;
-    double          _offset;
-    double          _scale;
-    int             _samplesPerHour;
     double          _minVal;
     double          _avgVal;
     double          _maxVal;
-    double          _decexp;
     int             _caltyp;
     NSMutableArray* _calpar;
     NSMutableArray* _calraw;
@@ -2488,7 +2490,9 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
  * If the device uses a firmware older than version 13000, value is
  * relative to the start of the time the device was powered on, and
  * is always positive.
- * If you need an absolute UTC timestamp, use get_startTimeUTC().
+ * If you need an absolute UTC timestamp, use get_realStartTimeUTC().
+ *
+ * <b>DEPRECATED</b>: This method has been replaced by get_realStartTimeUTC().
  *
  * @return an unsigned number corresponding to the number of seconds
  *         between the start of the run and the beginning of this data
@@ -2501,11 +2505,24 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
  * If the UTC time was not set in the datalogger at the time of the recording
  * of this data stream, this method returns 0.
  *
+ * <b>DEPRECATED</b>: This method has been replaced by get_realStartTimeUTC().
+ *
  * @return an unsigned number corresponding to the number of seconds
  *         between the Jan 1, 1970 and the beginning of this data
  *         stream (i.e. Unix time representation of the absolute time).
  */
 -(s64)     get_startTimeUTC;
+
+/**
+ * Returns the start time of the data stream, relative to the Jan 1, 1970.
+ * If the UTC time was not set in the datalogger at the time of the recording
+ * of this data stream, this method returns 0.
+ *
+ * @return a floating-point number  corresponding to the number of seconds
+ *         between the Jan 1, 1970 and the beginning of this data
+ *         stream (i.e. Unix time representation of the absolute time).
+ */
+-(double)     get_realStartTimeUTC;
 
 /**
  * Returns the number of milliseconds between two consecutive
@@ -2518,6 +2535,8 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
 -(int)     get_dataSamplesIntervalMs;
 
 -(double)     get_dataSamplesInterval;
+
+-(double)     get_firstDataSamplesInterval;
 
 /**
  * Returns the number of data rows present in this stream.
@@ -2602,14 +2621,7 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
  */
 -(double)     get_maxValue;
 
-/**
- * Returns the approximate duration of this stream, in seconds.
- *
- * @return the number of seconds covered by this stream.
- *
- * On failure, throws an exception or returns Y_DURATION_INVALID.
- */
--(int)     get_duration;
+-(double)     get_realDuration;
 
 /**
  * Returns the whole data set contained in the stream, as a bidimensional
@@ -2761,8 +2773,8 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
     NSString*       _hardwareId;
     NSString*       _functionId;
     NSString*       _unit;
-    s64             _startTime;
-    s64             _endTime;
+    double          _startTime;
+    double          _endTime;
     int             _progress;
     NSMutableArray* _calib;
     NSMutableArray* _streams;
@@ -2772,7 +2784,7 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
 //--- (end of generated code: YDataSet attributes declaration)
 }
 
--(id)   initWith:(YFunction *)parent :(NSString*)functionId :(NSString*)unit :(s64)startTime :(s64)endTime;
+-(id)   initWith:(YFunction *)parent :(NSString*)functionId :(NSString*)unit :(double)startTime :(double)endTime;
 -(id)   initWith:(YFunction *)parent;
 
 -(int)  _parse:(NSString *)json;
@@ -2823,11 +2835,16 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
  * to reflect the timestamp of the first measure actually found in the
  * dataLogger within the specified range.
  *
+ * <b>DEPRECATED</b>: This method has been replaced by get_summary()
+ * which contain more precise informations on the YDataSet.
+ *
  * @return an unsigned number corresponding to the number of seconds
  *         between the Jan 1, 1970 and the beginning of this data
  *         set (i.e. Unix time representation of the absolute time).
  */
 -(s64)     get_startTimeUTC;
+
+-(s64)     imm_get_startTimeUTC;
 
 /**
  * Returns the end time of the dataset, relative to the Jan 1, 1970.
@@ -2837,11 +2854,17 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
  * to reflect the timestamp of the last measure actually found in the
  * dataLogger within the specified range.
  *
+ * <b>DEPRECATED</b>: This method has been replaced by get_summary()
+ * which contain more precise informations on the YDataSet.
+ *
+ *
  * @return an unsigned number corresponding to the number of seconds
  *         between the Jan 1, 1970 and the end of this data
  *         set (i.e. Unix time representation of the absolute time).
  */
 -(s64)     get_endTimeUTC;
+
+-(s64)     imm_get_endTimeUTC;
 
 /**
  * Returns the progress of the downloads of the measures from the data logger,
@@ -3264,6 +3287,7 @@ YFunction* yFirstFunction(void);
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
  *
+ *
  * If a call to this object's is_online() method returns FALSE although
  * you are certain that the device is plugged, make sure that you did
  * call registerHub() at application initialization time.
@@ -3332,65 +3356,6 @@ YSensor* yFirstSensor(void);
 
 
 
-/**
- * YOldDataStream Class: Sequence of measured data, returned by the data logger
- *
- * A data stream is a small collection of consecutive measures for a set
- * of sensors. A few properties are available directly from the object itself
- * (they are preloaded at instantiation time), while most other properties and
- * the actual data are loaded on demand when accessed for the first time.
- *
- * This is the old version of the YDataStream class, used for backward-compatibility
- * with devices with firmware < 13000
- */
-@interface YOldDataStream : YDataStream
-{
-    // Data preloaded on object instantiation
-    YDataLogger     *_dataLogger;
-    unsigned        _timeStamp;
-    unsigned        _interval;
-}
-
--(id)   initWithDataLogger:(YDataLogger *)parrent :(unsigned)run :(unsigned) stamp :(unsigned)utc :(unsigned)itv;
-
-// override new version with backward-compatible code
--(int)  _loadStream;
-
-
-/**
- * Returns the relative start time of the data stream, measured in seconds.
- * For recent firmwares, the value is relative to the present time,
- * which means the value is always negative.
- * If the device uses a firmware older than version 13000, value is
- * relative to the start of the time the device was powered on, and
- * is always positive.
- * If you need an absolute UTC timestamp, use get_startTimeUTC().
- *
- * @return an unsigned number corresponding to the number of seconds
- *         between the start of the run and the beginning of this data
- *         stream.
- */
--(unsigned)       get_startTime;
-@property (readonly)    unsigned startTime;
-
-/**
- * Returns the number of seconds elapsed between  two consecutive
- * rows of this data stream. By default, the data logger records one row
- * per second, but there might be alternative streams at lower resolution
- * created by summarizing the original stream for archiving purposes.
- *
- * This method does not cause any access to the device, as the value
- * is preloaded in the object at instantiation time.
- *
- * @return an unsigned number corresponding to a number of seconds.
- */
--(unsigned)        get_dataSamplesInterval;
-@property (readonly)    unsigned dataSamplesInterval;
-
-@end
-
-
-
 
 //--- (generated code: YDataLogger class start)
 /**
@@ -3427,26 +3392,6 @@ YSensor* yFirstSensor(void);
 
 //--- (end of generated code: YDataLogger private methods declaration)
 
-
-/**
- * Builds a list of all data streams hold by the data logger (legacy method).
- * The caller must pass by reference an empty array to hold YDataStream
- * objects, and the function fills it with objects describing available
- * data sequences.
- *
- * This is the old way to retrieve data from the DataLogger.
- * For new applications, you should rather use get_dataSets()
- * method, or call directly get_recordedData() on the
- * sensor object.
- *
- * @param v : an array of YDataStream objects to be filled in
- *
- * @return YAPI_SUCCESS if the call succeeds.
- *
- * On failure, throws an exception or returns a negative error code.
- */
--(int)             get_dataStreams:(NSArray**) v;
--(int)             dataStreams:(NSArray**) param;
 
 //--- (generated code: YDataLogger public methods declaration)
 /**
@@ -3644,6 +3589,9 @@ YSensor* yFirstSensor(void);
 
 /**
  * Continues the enumeration of data loggers started using yFirstDataLogger().
+ * Caution: You can't make any assumption about the returned data loggers order.
+ * If you want to find a specific a data logger, use DataLogger.findDataLogger()
+ * and a hardwareID or a logical name.
  *
  * @return a pointer to a YDataLogger object, corresponding to
  *         a data logger currently online, or a nil pointer

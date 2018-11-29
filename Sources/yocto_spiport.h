@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_spiport.h 32610 2018-10-10 06:52:20Z seb $
+ *  $Id: yocto_spiport.h 32906 2018-11-02 10:18:15Z seb $
  *
  *  Declares yFindSpiPort(), the high-level API for SpiPort functions
  *
@@ -700,6 +700,9 @@ typedef enum {
 
 /**
  * Continues the enumeration of SPI ports started using yFirstSpiPort().
+ * Caution: You can't make any assumption about the returned SPI ports order.
+ * If you want to find a specific a SPI port, use SpiPort.findSpiPort()
+ * and a hardwareID or a logical name.
  *
  * @return a pointer to a YSpiPort object, corresponding to
  *         a SPI port currently online, or a nil pointer

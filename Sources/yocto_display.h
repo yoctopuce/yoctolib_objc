@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_display.h 28744 2017-10-03 08:14:16Z seb $
+ * $Id: yocto_display.h 32906 2018-11-02 10:18:15Z seb $
  *
  * Declares yFindDisplay(), the high-level API for Display functions
  *
@@ -959,6 +959,9 @@ typedef enum {
 
 /**
  * Continues the enumeration of displays started using yFirstDisplay().
+ * Caution: You can't make any assumption about the returned displays order.
+ * If you want to find a specific a display, use Display.findDisplay()
+ * and a hardwareID or a logical name.
  *
  * @return a pointer to a YDisplay object, corresponding to
  *         a display currently online, or a nil pointer

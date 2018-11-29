@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_weighscale.h 32610 2018-10-10 06:52:20Z seb $
+ *  $Id: yocto_weighscale.h 32906 2018-11-02 10:18:15Z seb $
  *
  *  Declares yFindWeighScale(), the high-level API for WeighScale functions
  *
@@ -493,6 +493,9 @@ typedef enum {
 
 /**
  * Continues the enumeration of weighing scale sensors started using yFirstWeighScale().
+ * Caution: You can't make any assumption about the returned weighing scale sensors order.
+ * If you want to find a specific a weighing scale sensor, use WeighScale.findWeighScale()
+ * and a hardwareID or a logical name.
  *
  * @return a pointer to a YWeighScale object, corresponding to
  *         a weighing scale sensor currently online, or a nil pointer

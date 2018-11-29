@@ -1,8 +1,8 @@
 /*********************************************************************
  *
- *  $Id: yocto_pressure.h 32906 2018-11-02 10:18:15Z seb $
+ *  $Id: yocto_tvoc.h 33270 2018-11-22 08:41:15Z seb $
  *
- *  Declares yFindPressure(), the high-level API for Pressure functions
+ *  Declares yFindTvoc(), the high-level API for Tvoc functions
  *
  *  - - - - - - - - - License information: - - - - - - - - -
  *
@@ -40,43 +40,43 @@
 #include "yocto_api.h"
 CF_EXTERN_C_BEGIN
 
-@class YPressure;
+@class YTvoc;
 
-//--- (YPressure globals)
-typedef void (*YPressureValueCallback)(YPressure *func, NSString *functionValue);
-typedef void (*YPressureTimedReportCallback)(YPressure *func, YMeasure *measure);
-//--- (end of YPressure globals)
+//--- (YTvoc globals)
+typedef void (*YTvocValueCallback)(YTvoc *func, NSString *functionValue);
+typedef void (*YTvocTimedReportCallback)(YTvoc *func, YMeasure *measure);
+//--- (end of YTvoc globals)
 
-//--- (YPressure class start)
+//--- (YTvoc class start)
 /**
- * YPressure Class: Pressure function interface
+ * YTvoc Class: Tvoc function interface
  *
- * The Yoctopuce class YPressure allows you to read and configure Yoctopuce pressure
- * sensors. It inherits from YSensor class the core functions to read measurements,
+ * The Yoctopuce class YTvoc allows you to read and configure Yoctopuce Total Volatile Organic
+ * Compound sensors. It inherits from YSensor class the core functions to read measurements,
  * to register callback functions, to access the autonomous datalogger.
  */
-@interface YPressure : YSensor
-//--- (end of YPressure class start)
+@interface YTvoc : YSensor
+//--- (end of YTvoc class start)
 {
 @protected
-//--- (YPressure attributes declaration)
-    YPressureValueCallback _valueCallbackPressure;
-    YPressureTimedReportCallback _timedReportCallbackPressure;
-//--- (end of YPressure attributes declaration)
+//--- (YTvoc attributes declaration)
+    YTvocValueCallback _valueCallbackTvoc;
+    YTvocTimedReportCallback _timedReportCallbackTvoc;
+//--- (end of YTvoc attributes declaration)
 }
-// Constructor is protected, use yFindPressure factory function to instantiate
+// Constructor is protected, use yFindTvoc factory function to instantiate
 -(id)    initWith:(NSString*) func;
 
-//--- (YPressure private methods declaration)
+//--- (YTvoc private methods declaration)
 // Function-specific method for parsing of JSON output and caching result
 -(int)             _parseAttr:(yJsonStateMachine*) j;
 
-//--- (end of YPressure private methods declaration)
-//--- (YPressure yapiwrapper declaration)
-//--- (end of YPressure yapiwrapper declaration)
-//--- (YPressure public methods declaration)
+//--- (end of YTvoc private methods declaration)
+//--- (YTvoc yapiwrapper declaration)
+//--- (end of YTvoc yapiwrapper declaration)
+//--- (YTvoc public methods declaration)
 /**
- * Retrieves a pressure sensor for a given identifier.
+ * Retrieves a Total  Volatile Organic Compound sensor for a given identifier.
  * The identifier can be specified using several formats:
  * <ul>
  * <li>FunctionLogicalName</li>
@@ -86,11 +86,11 @@ typedef void (*YPressureTimedReportCallback)(YPressure *func, YMeasure *measure)
  * <li>ModuleLogicalName.FunctionLogicalName</li>
  * </ul>
  *
- * This function does not require that the pressure sensor is online at the time
+ * This function does not require that the Total  Volatile Organic Compound sensor is online at the time
  * it is invoked. The returned object is nevertheless valid.
- * Use the method YPressure.isOnline() to test if the pressure sensor is
+ * Use the method YTvoc.isOnline() to test if the Total  Volatile Organic Compound sensor is
  * indeed online at a given time. In case of ambiguity when looking for
- * a pressure sensor by logical name, no error is notified: the first instance
+ * a Total  Volatile Organic Compound sensor by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
  *
@@ -98,11 +98,11 @@ typedef void (*YPressureTimedReportCallback)(YPressure *func, YMeasure *measure)
  * you are certain that the matching device is plugged, make sure that you did
  * call registerHub() at application initialization time.
  *
- * @param func : a string that uniquely characterizes the pressure sensor
+ * @param func : a string that uniquely characterizes the Total  Volatile Organic Compound sensor
  *
- * @return a YPressure object allowing you to drive the pressure sensor.
+ * @return a YTvoc object allowing you to drive the Total  Volatile Organic Compound sensor.
  */
-+(YPressure*)     FindPressure:(NSString*)func;
++(YTvoc*)     FindTvoc:(NSString*)func;
 
 /**
  * Registers the callback function that is invoked on every change of advertised value.
@@ -115,7 +115,7 @@ typedef void (*YPressureTimedReportCallback)(YPressure *func, YMeasure *measure)
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerValueCallback:(YPressureValueCallback)callback;
+-(int)     registerValueCallback:(YTvocValueCallback)callback;
 
 -(int)     _invokeValueCallback:(NSString*)value;
 
@@ -130,39 +130,39 @@ typedef void (*YPressureTimedReportCallback)(YPressure *func, YMeasure *measure)
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerTimedReportCallback:(YPressureTimedReportCallback)callback;
+-(int)     registerTimedReportCallback:(YTvocTimedReportCallback)callback;
 
 -(int)     _invokeTimedReportCallback:(YMeasure*)value;
 
 
 /**
- * Continues the enumeration of pressure sensors started using yFirstPressure().
- * Caution: You can't make any assumption about the returned pressure sensors order.
- * If you want to find a specific a pressure sensor, use Pressure.findPressure()
+ * Continues the enumeration of Total Volatile Organic Compound sensors started using yFirstTvoc().
+ * Caution: You can't make any assumption about the returned Total Volatile Organic Compound sensors order.
+ * If you want to find a specific a Total  Volatile Organic Compound sensor, use Tvoc.findTvoc()
  * and a hardwareID or a logical name.
  *
- * @return a pointer to a YPressure object, corresponding to
- *         a pressure sensor currently online, or a nil pointer
- *         if there are no more pressure sensors to enumerate.
+ * @return a pointer to a YTvoc object, corresponding to
+ *         a Total  Volatile Organic Compound sensor currently online, or a nil pointer
+ *         if there are no more Total Volatile Organic Compound sensors to enumerate.
  */
--(YPressure*) nextPressure;
+-(YTvoc*) nextTvoc;
 /**
- * Starts the enumeration of pressure sensors currently accessible.
- * Use the method YPressure.nextPressure() to iterate on
- * next pressure sensors.
+ * Starts the enumeration of Total Volatile Organic Compound sensors currently accessible.
+ * Use the method YTvoc.nextTvoc() to iterate on
+ * next Total Volatile Organic Compound sensors.
  *
- * @return a pointer to a YPressure object, corresponding to
- *         the first pressure sensor currently online, or a nil pointer
+ * @return a pointer to a YTvoc object, corresponding to
+ *         the first Total Volatile Organic Compound sensor currently online, or a nil pointer
  *         if there are none.
  */
-+(YPressure*) FirstPressure;
-//--- (end of YPressure public methods declaration)
++(YTvoc*) FirstTvoc;
+//--- (end of YTvoc public methods declaration)
 
 @end
 
-//--- (YPressure functions declaration)
+//--- (YTvoc functions declaration)
 /**
- * Retrieves a pressure sensor for a given identifier.
+ * Retrieves a Total  Volatile Organic Compound sensor for a given identifier.
  * The identifier can be specified using several formats:
  * <ul>
  * <li>FunctionLogicalName</li>
@@ -172,11 +172,11 @@ typedef void (*YPressureTimedReportCallback)(YPressure *func, YMeasure *measure)
  * <li>ModuleLogicalName.FunctionLogicalName</li>
  * </ul>
  *
- * This function does not require that the pressure sensor is online at the time
+ * This function does not require that the Total  Volatile Organic Compound sensor is online at the time
  * it is invoked. The returned object is nevertheless valid.
- * Use the method YPressure.isOnline() to test if the pressure sensor is
+ * Use the method YTvoc.isOnline() to test if the Total  Volatile Organic Compound sensor is
  * indeed online at a given time. In case of ambiguity when looking for
- * a pressure sensor by logical name, no error is notified: the first instance
+ * a Total  Volatile Organic Compound sensor by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
  *
@@ -184,22 +184,22 @@ typedef void (*YPressureTimedReportCallback)(YPressure *func, YMeasure *measure)
  * you are certain that the matching device is plugged, make sure that you did
  * call registerHub() at application initialization time.
  *
- * @param func : a string that uniquely characterizes the pressure sensor
+ * @param func : a string that uniquely characterizes the Total  Volatile Organic Compound sensor
  *
- * @return a YPressure object allowing you to drive the pressure sensor.
+ * @return a YTvoc object allowing you to drive the Total  Volatile Organic Compound sensor.
  */
-YPressure* yFindPressure(NSString* func);
+YTvoc* yFindTvoc(NSString* func);
 /**
- * Starts the enumeration of pressure sensors currently accessible.
- * Use the method YPressure.nextPressure() to iterate on
- * next pressure sensors.
+ * Starts the enumeration of Total Volatile Organic Compound sensors currently accessible.
+ * Use the method YTvoc.nextTvoc() to iterate on
+ * next Total Volatile Organic Compound sensors.
  *
- * @return a pointer to a YPressure object, corresponding to
- *         the first pressure sensor currently online, or a nil pointer
+ * @return a pointer to a YTvoc object, corresponding to
+ *         the first Total Volatile Organic Compound sensor currently online, or a nil pointer
  *         if there are none.
  */
-YPressure* yFirstPressure(void);
+YTvoc* yFirstTvoc(void);
 
-//--- (end of YPressure functions declaration)
+//--- (end of YTvoc functions declaration)
 CF_EXTERN_C_END
 

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_power.h 32610 2018-10-10 06:52:20Z seb $
+ *  $Id: yocto_power.h 32906 2018-11-02 10:18:15Z seb $
  *
  *  Declares yFindPower(), the high-level API for Power functions
  *
@@ -193,6 +193,9 @@ typedef void (*YPowerTimedReportCallback)(YPower *func, YMeasure *measure);
 
 /**
  * Continues the enumeration of electrical power sensors started using yFirstPower().
+ * Caution: You can't make any assumption about the returned electrical power sensors order.
+ * If you want to find a specific a electrical power sensor, use Power.findPower()
+ * and a hardwareID or a logical name.
  *
  * @return a pointer to a YPower object, corresponding to
  *         a electrical power sensor currently online, or a nil pointer

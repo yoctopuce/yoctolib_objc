@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_colorled.h 32610 2018-10-10 06:52:20Z seb $
+ *  $Id: yocto_colorled.h 32906 2018-11-02 10:18:15Z seb $
  *
  *  Declares yFindColorLed(), the high-level API for ColorLed functions
  *
@@ -352,6 +352,9 @@ typedef struct _YMove {
 
 /**
  * Continues the enumeration of RGB LEDs started using yFirstColorLed().
+ * Caution: You can't make any assumption about the returned RGB LEDs order.
+ * If you want to find a specific an RGB LED, use ColorLed.findColorLed()
+ * and a hardwareID or a logical name.
  *
  * @return a pointer to a YColorLed object, corresponding to
  *         an RGB LED currently online, or a nil pointer

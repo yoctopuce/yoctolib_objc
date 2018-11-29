@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_files.h 28744 2017-10-03 08:14:16Z seb $
+ * $Id: yocto_files.h 32906 2018-11-02 10:18:15Z seb $
  *
  * Declares yFindFiles(), the high-level API for Files functions
  *
@@ -266,6 +266,9 @@ typedef void (*YFilesValueCallback)(YFiles *func, NSString *functionValue);
 
 /**
  * Continues the enumeration of filesystems started using yFirstFiles().
+ * Caution: You can't make any assumption about the returned filesystems order.
+ * If you want to find a specific a filesystem, use Files.findFiles()
+ * and a hardwareID or a logical name.
  *
  * @return a pointer to a YFiles object, corresponding to
  *         a filesystem currently online, or a nil pointer

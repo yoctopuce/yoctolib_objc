@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_rangefinder.h 32610 2018-10-10 06:52:20Z seb $
+ *  $Id: yocto_rangefinder.h 32906 2018-11-02 10:18:15Z seb $
  *
  *  Declares yFindRangeFinder(), the high-level API for RangeFinder functions
  *
@@ -296,6 +296,9 @@ typedef enum {
 
 /**
  * Continues the enumeration of range finders started using yFirstRangeFinder().
+ * Caution: You can't make any assumption about the returned range finders order.
+ * If you want to find a specific a range finder, use RangeFinder.findRangeFinder()
+ * and a hardwareID or a logical name.
  *
  * @return a pointer to a YRangeFinder object, corresponding to
  *         a range finder currently online, or a nil pointer

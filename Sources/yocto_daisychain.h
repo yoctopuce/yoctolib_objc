@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_daisychain.h 32610 2018-10-10 06:52:20Z seb $
+ *  $Id: yocto_daisychain.h 32906 2018-11-02 10:18:15Z seb $
  *
  *  Declares yFindDaisyChain(), the high-level API for DaisyChain functions
  *
@@ -186,6 +186,9 @@ typedef enum {
 
 /**
  * Continues the enumeration of module chains started using yFirstDaisyChain().
+ * Caution: You can't make any assumption about the returned module chains order.
+ * If you want to find a specific a module chain, use DaisyChain.findDaisyChain()
+ * and a hardwareID or a logical name.
  *
  * @return a pointer to a YDaisyChain object, corresponding to
  *         a module chain currently online, or a nil pointer

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_anbutton.h 32610 2018-10-10 06:52:20Z seb $
+ *  $Id: yocto_anbutton.h 32906 2018-11-02 10:18:15Z seb $
  *
  *  Declares yFindAnButton(), the high-level API for AnButton functions
  *
@@ -367,6 +367,9 @@ typedef enum {
 
 /**
  * Continues the enumeration of analog inputs started using yFirstAnButton().
+ * Caution: You can't make any assumption about the returned analog inputs order.
+ * If you want to find a specific an analog input, use AnButton.findAnButton()
+ * and a hardwareID or a logical name.
  *
  * @return a pointer to a YAnButton object, corresponding to
  *         an analog input currently online, or a nil pointer

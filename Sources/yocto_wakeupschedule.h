@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_wakeupschedule.h 32610 2018-10-10 06:52:20Z seb $
+ *  $Id: yocto_wakeupschedule.h 32906 2018-11-02 10:18:15Z seb $
  *
  *  Declares yFindWakeUpSchedule(), the high-level API for WakeUpSchedule functions
  *
@@ -299,6 +299,9 @@ typedef void (*YWakeUpScheduleValueCallback)(YWakeUpSchedule *func, NSString *fu
 
 /**
  * Continues the enumeration of wake up schedules started using yFirstWakeUpSchedule().
+ * Caution: You can't make any assumption about the returned wake up schedules order.
+ * If you want to find a specific a wake up schedule, use WakeUpSchedule.findWakeUpSchedule()
+ * and a hardwareID or a logical name.
  *
  * @return a pointer to a YWakeUpSchedule object, corresponding to
  *         a wake up schedule currently online, or a nil pointer

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_messagebox.h 28744 2017-10-03 08:14:16Z seb $
+ * $Id: yocto_messagebox.h 32906 2018-11-02 10:18:15Z seb $
  *
  * Declares yFindMessageBox(), the high-level API for MessageBox functions
  *
@@ -451,6 +451,9 @@ typedef void (*YMessageBoxValueCallback)(YMessageBox *func, NSString *functionVa
 
 /**
  * Continues the enumeration of MessageBox interfaces started using yFirstMessageBox().
+ * Caution: You can't make any assumption about the returned MessageBox interfaces order.
+ * If you want to find a specific a MessageBox interface, use MessageBox.findMessageBox()
+ * and a hardwareID or a logical name.
  *
  * @return a pointer to a YMessageBox object, corresponding to
  *         a MessageBox interface currently online, or a nil pointer

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.m 32489 2018-10-04 12:33:12Z seb $
+ * $Id: yocto_api.m 33400 2018-11-27 07:58:29Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -93,12 +93,13 @@ NSMutableDictionary* YAPI_YFunctions;
     return [self initFull:YAPI_FUN_VALUE :nil :function :value :-1];
 }
 
--(id) initWithSensor:(YSensor*)sensor AndTimestamp:(double)timestamp AndReport:(NSMutableArray*) report
+-(id) initWithSensor:(YSensor*)sensor AndTimestamp:(double)timestamp AndDuration:(double)duration AndReport:(NSMutableArray*) report
 {
     if((self=[super init])){
         _type = YAPI_FUN_TIMEDREPORT;
         _sensor = sensor;
         _timestamp = timestamp;
+        _duration = duration;
         _report =report;
         ARC_retain(_report);
     }
@@ -152,7 +153,7 @@ NSMutableDictionary* YAPI_YFunctions;
             break;
         case YAPI_FUN_TIMEDREPORT:
             if([[_report objectAtIndex:0] intValue] <= 2) {
-                measure = [_sensor _decodeTimedReport:_timestamp :_report];
+                measure = [_sensor _decodeTimedReport:_timestamp :_duration :_report];
                 [_sensor _invokeTimedReportCallback:measure];
             }
             break;
@@ -445,7 +446,7 @@ static void yapiFunctionUpdateCallbackFwd(YAPI_FUNCTION fundescr,const char *val
 }
 
 
-static void yapiTimedReportCallbackFwd(YAPI_FUNCTION fundescr,double timestamp, const u8* bytes, u32 len)
+static void yapiTimedReportCallbackFwd(YAPI_FUNCTION fundescr,double timestamp, const u8* bytes, u32 len, double duration)
 {
     YapiEvent  *ev;
     if (_TimedReportCallbackList==nil)
@@ -456,7 +457,7 @@ static void yapiTimedReportCallbackFwd(YAPI_FUNCTION fundescr,double timestamp, 
             for (int i = 0; i < len; i++) {
                 [report addObject:[NSNumber numberWithUnsignedShort:bytes[i]]];
             }
-            ev =[[YapiEvent alloc] initWithSensor:it AndTimestamp:timestamp AndReport:report];
+            ev =[[YapiEvent alloc] initWithSensor:it AndTimestamp:timestamp AndDuration:duration AndReport:report];
             [YAPI_data_events addObject:ev];
             ARC_release(ev);
         }
@@ -2050,7 +2051,9 @@ static const char* hexArray = "0123456789ABCDEF";
 {
 
     ARC_retain(error);
-    ARC_release(_lastError)
+    //if (_lastError != nil){
+    //    ARC_release(_lastError)
+    //}
     _lastError  = error;
     // Method used to throw exceptions or save error type/message
     if(![YAPI ExceptionsDisabled]) {
@@ -3983,7 +3986,6 @@ static const char* hexArray = "0123456789ABCDEF";
     double fRef;
     _caltyp = -1;
     _scale = -1;
-    _isScal32 = NO;
     [_calpar removeAllObjects];
     [_calraw removeAllObjects];
     [_calref removeAllObjects];
@@ -4017,8 +4019,6 @@ static const char* hexArray = "0123456789ABCDEF";
             }
         }
         // New 32bit text format
-        _isScal = YES;
-        _isScal32 = YES;
         _offset = 0;
         _scale = 1000;
         maxpos = (int)[iCalib count];
@@ -4049,23 +4049,13 @@ static const char* hexArray = "0123456789ABCDEF";
             return 0;
         }
         // Save variable format (scale for scalar, or decimal exponent)
-        _isScal = ([[iCalib objectAtIndex:1] intValue] > 0);
-        if (_isScal) {
-            _offset = [[iCalib objectAtIndex:0] doubleValue];
-            if (_offset > 32767) {
-                _offset = _offset - 65536;
-            }
-            _scale = [[iCalib objectAtIndex:1] doubleValue];
-            _decexp = 0;
-        } else {
-            _offset = 0;
-            _scale = 1;
-            _decexp = 1.0;
-            position = [[iCalib objectAtIndex:0] intValue];
-            while (position > 0) {
-                _decexp = _decexp * 10;
-                position = position - 1;
-            }
+        _offset = 0;
+        _scale = 1;
+        _decexp = 1.0;
+        position = [[iCalib objectAtIndex:0] intValue];
+        while (position > 0) {
+            _decexp = _decexp * 10;
+            position = position - 1;
         }
         // Shortcut when there is no calibration parameter
         if ((int)[iCalib count] == 2) {
@@ -4097,17 +4087,8 @@ static const char* hexArray = "0123456789ABCDEF";
             iRef = [[iCalib objectAtIndex:position + 1] intValue];
             [_calpar addObject:[NSNumber numberWithLong:iRaw]];
             [_calpar addObject:[NSNumber numberWithLong:iRef]];
-            if (_isScal) {
-                fRaw = iRaw;
-                fRaw = (fRaw - _offset) / _scale;
-                fRef = iRef;
-                fRef = (fRef - _offset) / _scale;
-                [_calraw addObject:[NSNumber numberWithDouble:fRaw]];
-                [_calref addObject:[NSNumber numberWithDouble:fRef]];
-            } else {
-                [_calraw addObject:[NSNumber numberWithDouble:[YAPI _decimalToDouble:iRaw]]];
-                [_calref addObject:[NSNumber numberWithDouble:[YAPI _decimalToDouble:iRef]]];
-            }
+            [_calraw addObject:[NSNumber numberWithDouble:[YAPI _decimalToDouble:iRaw]]];
+            [_calref addObject:[NSNumber numberWithDouble:[YAPI _decimalToDouble:iRef]]];
             position = position + 2;
         }
     }
@@ -4213,7 +4194,7 @@ static const char* hexArray = "0123456789ABCDEF";
  *         data. Past measures can be loaded progressively
  *         using methods from the YDataSet object.
  */
--(YDataSet*) get_recordedData:(s64)startTime :(s64)endTime
+-(YDataSet*) get_recordedData:(double)startTime :(double)endTime
 {
     NSString* funcid;
     NSString* funit;
@@ -4330,8 +4311,6 @@ static const char* hexArray = "0123456789ABCDEF";
     NSString* res;
     int npt;
     int idx;
-    int iRaw;
-    int iRef;
     npt = (int)[rawValues count];
     if (npt != (int)[refValues count]) {
         [self _throw:YAPI_INVALID_ARGUMENT :@"Invalid calibration parameters (size mismatch)"];
@@ -4352,36 +4331,12 @@ static const char* hexArray = "0123456789ABCDEF";
         [self _throw:YAPI_NOT_SUPPORTED :@"Calibration parameters format mismatch. Please upgrade your library or firmware."];
         return @"0";
     }
-    if (_isScal32) {
-        // 32-bit fixed-point encoding
-        res = [NSString stringWithFormat:@"%d",YOCTO_CALIB_TYPE_OFS];
-        idx = 0;
-        while (idx < npt) {
-            res = [NSString stringWithFormat:@"%@,%g,%g", res, [[rawValues objectAtIndex:idx] doubleValue],[[refValues objectAtIndex:idx] doubleValue]];
-            idx = idx + 1;
-        }
-    } else {
-        if (_isScal) {
-            // 16-bit fixed-point encoding
-            res = [NSString stringWithFormat:@"%d",npt];
-            idx = 0;
-            while (idx < npt) {
-                iRaw = (int) floor([[rawValues objectAtIndex:idx] doubleValue] * _scale + _offset+0.5);
-                iRef = (int) floor([[refValues objectAtIndex:idx] doubleValue] * _scale + _offset+0.5);
-                res = [NSString stringWithFormat:@"%@,%d,%d", res, iRaw,iRef];
-                idx = idx + 1;
-            }
-        } else {
-            // 16-bit floating-point decimal encoding
-            res = [NSString stringWithFormat:@"%d",10 + npt];
-            idx = 0;
-            while (idx < npt) {
-                iRaw = (int) [YAPI _doubleToDecimal:[[rawValues objectAtIndex:idx] doubleValue]];
-                iRef = (int) [YAPI _doubleToDecimal:[[refValues objectAtIndex:idx] doubleValue]];
-                res = [NSString stringWithFormat:@"%@,%d,%d", res, iRaw,iRef];
-                idx = idx + 1;
-            }
-        }
+    // 32-bit fixed-point encoding
+    res = [NSString stringWithFormat:@"%d",YOCTO_CALIB_TYPE_OFS];
+    idx = 0;
+    while (idx < npt) {
+        res = [NSString stringWithFormat:@"%@,%g,%g", res, [[rawValues objectAtIndex:idx] doubleValue],[[refValues objectAtIndex:idx] doubleValue]];
+        idx = idx + 1;
     }
     return res;
 }
@@ -4403,140 +4358,103 @@ static const char* hexArray = "0123456789ABCDEF";
     return [_calhdl yCalibrationHandler: rawValue: _caltyp: _calpar: _calraw:_calref];
 }
 
--(YMeasure*) _decodeTimedReport:(double)timestamp :(NSMutableArray*)report
+-(YMeasure*) _decodeTimedReport:(double)timestamp :(double)duration :(NSMutableArray*)report
 {
     int i;
     int byteVal;
-    int poww;
-    int minRaw;
-    int avgRaw;
-    int maxRaw;
+    double poww;
+    double minRaw;
+    double avgRaw;
+    double maxRaw;
     int sublen;
-    int difRaw;
+    double difRaw;
     double startTime;
     double endTime;
     double minVal;
     double avgVal;
     double maxVal;
-    startTime = _prevTimedReport;
+    if (duration > 0) {
+        startTime = timestamp - duration;
+    } else {
+        startTime = _prevTimedReport;
+    }
     endTime = timestamp;
     _prevTimedReport = endTime;
     if (startTime == 0) {
         startTime = endTime;
     }
-    if ([[report objectAtIndex:0] intValue] == 2) {
-        // 32bit timed report format
-        if ((int)[report count] <= 5) {
-            // sub-second report, 1-4 bytes
-            poww = 1;
-            avgRaw = 0;
-            byteVal = 0;
-            i = 1;
-            while (i < (int)[report count]) {
-                byteVal = [[report objectAtIndex:i] intValue];
-                avgRaw = avgRaw + poww * byteVal;
-                poww = poww * 0x100;
-                i = i + 1;
-            }
-            if (((byteVal) & (0x80)) != 0) {
-                avgRaw = avgRaw - poww;
-            }
-            avgVal = avgRaw / 1000.0;
-            if (_caltyp != 0) {
-                if (_calhdl != NULL) {
-                    avgVal = [_calhdl yCalibrationHandler: avgVal: _caltyp: _calpar: _calraw:_calref];
-                }
-            }
-            minVal = avgVal;
-            maxVal = avgVal;
-        } else {
-            // averaged report: avg,avg-min,max-avg
-            sublen = 1 + (([[report objectAtIndex:1] intValue]) & (3));
-            poww = 1;
-            avgRaw = 0;
-            byteVal = 0;
-            i = 2;
-            while ((sublen > 0) && (i < (int)[report count])) {
-                byteVal = [[report objectAtIndex:i] intValue];
-                avgRaw = avgRaw + poww * byteVal;
-                poww = poww * 0x100;
-                i = i + 1;
-                sublen = sublen - 1;
-            }
-            if (((byteVal) & (0x80)) != 0) {
-                avgRaw = avgRaw - poww;
-            }
-            sublen = 1 + (((([[report objectAtIndex:1] intValue]) >> (2))) & (3));
-            poww = 1;
-            difRaw = 0;
-            while ((sublen > 0) && (i < (int)[report count])) {
-                byteVal = [[report objectAtIndex:i] intValue];
-                difRaw = difRaw + poww * byteVal;
-                poww = poww * 0x100;
-                i = i + 1;
-                sublen = sublen - 1;
-            }
-            minRaw = avgRaw - difRaw;
-            sublen = 1 + (((([[report objectAtIndex:1] intValue]) >> (4))) & (3));
-            poww = 1;
-            difRaw = 0;
-            while ((sublen > 0) && (i < (int)[report count])) {
-                byteVal = [[report objectAtIndex:i] intValue];
-                difRaw = difRaw + poww * byteVal;
-                poww = poww * 0x100;
-                i = i + 1;
-                sublen = sublen - 1;
-            }
-            maxRaw = avgRaw + difRaw;
-            avgVal = avgRaw / 1000.0;
-            minVal = minRaw / 1000.0;
-            maxVal = maxRaw / 1000.0;
-            if (_caltyp != 0) {
-                if (_calhdl != NULL) {
-                    avgVal = [_calhdl yCalibrationHandler: avgVal: _caltyp: _calpar: _calraw:_calref];
-                    minVal = [_calhdl yCalibrationHandler: minVal: _caltyp: _calpar: _calraw:_calref];
-                    maxVal = [_calhdl yCalibrationHandler: maxVal: _caltyp: _calpar: _calraw:_calref];
-                }
+    // 32bit timed report format
+    if ((int)[report count] <= 5) {
+        // sub-second report, 1-4 bytes
+        poww = 1;
+        avgRaw = 0;
+        byteVal = 0;
+        i = 1;
+        while (i < (int)[report count]) {
+            byteVal = [[report objectAtIndex:i] intValue];
+            avgRaw = avgRaw + poww * byteVal;
+            poww = poww * 0x100;
+            i = i + 1;
+        }
+        if (((byteVal) & (0x80)) != 0) {
+            avgRaw = avgRaw - poww;
+        }
+        avgVal = avgRaw / 1000.0;
+        if (_caltyp != 0) {
+            if (_calhdl != NULL) {
+                avgVal = [_calhdl yCalibrationHandler: avgVal: _caltyp: _calpar: _calraw:_calref];
             }
         }
+        minVal = avgVal;
+        maxVal = avgVal;
     } else {
-        // 16bit timed report format
-        if ([[report objectAtIndex:0] intValue] == 0) {
-            // sub-second report, 1-4 bytes
-            poww = 1;
-            avgRaw = 0;
-            byteVal = 0;
-            i = 1;
-            while (i < (int)[report count]) {
-                byteVal = [[report objectAtIndex:i] intValue];
-                avgRaw = avgRaw + poww * byteVal;
-                poww = poww * 0x100;
-                i = i + 1;
+        // averaged report: avg,avg-min,max-avg
+        sublen = 1 + (([[report objectAtIndex:1] intValue]) & (3));
+        poww = 1;
+        avgRaw = 0;
+        byteVal = 0;
+        i = 2;
+        while ((sublen > 0) && (i < (int)[report count])) {
+            byteVal = [[report objectAtIndex:i] intValue];
+            avgRaw = avgRaw + poww * byteVal;
+            poww = poww * 0x100;
+            i = i + 1;
+            sublen = sublen - 1;
+        }
+        if (((byteVal) & (0x80)) != 0) {
+            avgRaw = avgRaw - poww;
+        }
+        sublen = 1 + (((([[report objectAtIndex:1] intValue]) >> (2))) & (3));
+        poww = 1;
+        difRaw = 0;
+        while ((sublen > 0) && (i < (int)[report count])) {
+            byteVal = [[report objectAtIndex:i] intValue];
+            difRaw = difRaw + poww * byteVal;
+            poww = poww * 0x100;
+            i = i + 1;
+            sublen = sublen - 1;
+        }
+        minRaw = avgRaw - difRaw;
+        sublen = 1 + (((([[report objectAtIndex:1] intValue]) >> (4))) & (3));
+        poww = 1;
+        difRaw = 0;
+        while ((sublen > 0) && (i < (int)[report count])) {
+            byteVal = [[report objectAtIndex:i] intValue];
+            difRaw = difRaw + poww * byteVal;
+            poww = poww * 0x100;
+            i = i + 1;
+            sublen = sublen - 1;
+        }
+        maxRaw = avgRaw + difRaw;
+        avgVal = avgRaw / 1000.0;
+        minVal = minRaw / 1000.0;
+        maxVal = maxRaw / 1000.0;
+        if (_caltyp != 0) {
+            if (_calhdl != NULL) {
+                avgVal = [_calhdl yCalibrationHandler: avgVal: _caltyp: _calpar: _calraw:_calref];
+                minVal = [_calhdl yCalibrationHandler: minVal: _caltyp: _calpar: _calraw:_calref];
+                maxVal = [_calhdl yCalibrationHandler: maxVal: _caltyp: _calpar: _calraw:_calref];
             }
-            if (_isScal) {
-                avgVal = [self _decodeVal:avgRaw];
-            } else {
-                if (((byteVal) & (0x80)) != 0) {
-                    avgRaw = avgRaw - poww;
-                }
-                avgVal = [self _decodeAvg:avgRaw];
-            }
-            minVal = avgVal;
-            maxVal = avgVal;
-        } else {
-            // averaged report 2+4+2 bytes
-            minRaw = [[report objectAtIndex:1] intValue] + 0x100 * [[report objectAtIndex:2] intValue];
-            maxRaw = [[report objectAtIndex:3] intValue] + 0x100 * [[report objectAtIndex:4] intValue];
-            avgRaw = [[report objectAtIndex:5] intValue] + 0x100 * [[report objectAtIndex:6] intValue] + 0x10000 * [[report objectAtIndex:7] intValue];
-            byteVal = [[report objectAtIndex:8] intValue];
-            if (((byteVal) & (0x80)) == 0) {
-                avgRaw = avgRaw + 0x1000000 * byteVal;
-            } else {
-                avgRaw = avgRaw - 0x1000000 * (0x100 - byteVal);
-            }
-            minVal = [self _decodeVal:minRaw];
-            avgVal = [self _decodeAvg:avgRaw];
-            maxVal = [self _decodeVal:maxRaw];
         }
     }
     return ARC_sendAutorelease([[YMeasure alloc] initWith:startTime :endTime :minVal :avgVal :maxVal]);
@@ -4546,11 +4464,6 @@ static const char* hexArray = "0123456789ABCDEF";
 {
     double val;
     val = w;
-    if (_isScal) {
-        val = (val - _offset) / _scale;
-    } else {
-        val = [YAPI _decimalToDouble:w];
-    }
     if (_caltyp != 0) {
         if (_calhdl != NULL) {
             val = [_calhdl yCalibrationHandler: val:_caltyp: _calpar: _calraw:_calref];
@@ -4563,11 +4476,6 @@ static const char* hexArray = "0123456789ABCDEF";
 {
     double val;
     val = dw;
-    if (_isScal) {
-        val = (val / 100 - _offset) / _scale;
-    } else {
-        val = val / _decexp;
-    }
     if (_caltyp != 0) {
         if (_calhdl != NULL) {
             val = [_calhdl yCalibrationHandler: val: _caltyp: _calpar: _calraw:_calref];
@@ -4789,26 +4697,6 @@ static const char* hexArray = "0123456789ABCDEF";
     return [super _parseAttr:j];
 }
 //--- (end of generated code: YModule private methods implementation)
-
-/**
- * Registers a device log callback function. This callback will be called each time
- * that a module sends a new log message. Mostly useful to debug a Yoctopuce module.
- *
- * @param callback : the callback function to call, or a nil pointer. The callback function should take two
- *         arguments: the module object that emitted the log message, and the character string containing the log.
- * @noreturn
- */
--(void)            registerLogCallback:(YModuleLogCallback) callback
-{
-    _logCallback = callback;
-    yapiStartStopDeviceLogCallback(STR_oc2y(_serial), _logCallback!=NULL);
-}
-
-
--(YModuleLogCallback) get_logCallback
-{
-    return _logCallback;
-}
 
 //--- (generated code: YModule public methods implementation)
 /**
@@ -5201,6 +5089,7 @@ static const char* hexArray = "0123456789ABCDEF";
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
  *
+ *
  * If a call to this object's is_online() method returns FALSE although
  * you are certain that the device is plugged, make sure that you did
  * call registerHub() at application initialization time.
@@ -5315,6 +5204,44 @@ static const char* hexArray = "0123456789ABCDEF";
 -(int) triggerFirmwareUpdate:(int)secBeforeReboot
 {
     return [self set_rebootCountdown:-secBeforeReboot];
+}
+
+-(void) _startStopDevLog:(NSString*)serial :(bool)start
+{
+    int i_start;
+    if (start) {
+        i_start = 1;
+    } else {
+        i_start = 0;
+    }
+
+    yapiStartStopDeviceLogCallback(STR_oc2y(serial), i_start);
+}
+
+/**
+ * Registers a device log callback function. This callback will be called each time
+ * that a module sends a new log message. Mostly useful to debug a Yoctopuce module.
+ *
+ * @param callback : the callback function to call, or a nil pointer. The callback function should take two
+ *         arguments: the module object that emitted the log message, and the character string containing the log.
+ *         On failure, throws an exception or returns a negative error code.
+ */
+-(int) registerLogCallback:(YModuleLogCallback)callback
+{
+    NSString* serial;
+
+    serial = [self get_serialNumber];
+    if ([serial isEqualToString:YAPI_INVALID_STRING]) {
+        return YAPI_DEVICE_NOT_FOUND;
+    }
+    _logCallback = callback;
+    [self _startStopDevLog:serial :callback != NULL];
+    return 0;
+}
+
+-(YModuleLogCallback) get_logCallback
+{
+    return _logCallback;
 }
 
 /**
@@ -5612,6 +5539,8 @@ static const char* hexArray = "0123456789ABCDEF";
             [self _upload:name :[YAPI _hexStr2Bin:data]];
         }
     }
+    // Apply settings a second time for file-dependent settings and dynamic sensor nodes
+    [self set_allSettings:[NSMutableData dataWithData:[json_api dataUsingEncoding:NSISOLatin1StringEncoding]]];
     return YAPI_SUCCESS;
 }
 
@@ -6799,16 +6728,14 @@ static const char* hexArray = "0123456789ABCDEF";
     _utcStamp = 0;
     _nCols = 0;
     _nRows = 0;
+    _startTime = 0;
     _duration = 0;
+    _dataSamplesInterval = 0;
+    _firstMeasureDuration = 0;
     _columnNames = [NSMutableArray array];
-    _decimals = 0;
-    _offset = 0;
-    _scale = 0;
-    _samplesPerHour = 0;
     _minVal = 0;
     _avgVal = 0;
     _maxVal = 0;
-    _decexp = 0;
     _caltyp = 0;
     _calpar = [NSMutableArray array];
     _calraw = [NSMutableArray array];
@@ -6828,16 +6755,14 @@ static const char* hexArray = "0123456789ABCDEF";
     _utcStamp = 0;
     _nCols = 0;
     _nRows = 0;
+    _startTime = 0;
     _duration = 0;
+    _dataSamplesInterval = 0;
+    _firstMeasureDuration = 0;
     _columnNames = [NSMutableArray array];
-    _decimals = 0;
-    _offset = 0;
-    _scale = 0;
-    _samplesPerHour = 0;
     _minVal = 0;
     _avgVal = 0;
     _maxVal = 0;
-    _decexp = 0;
     _caltyp = 0;
     _calpar = [NSMutableArray array];
     _calraw = [NSMutableArray array];
@@ -6871,51 +6796,45 @@ static const char* hexArray = "0123456789ABCDEF";
     int val;
     int i;
     int maxpos;
-    int iRaw;
-    int iRef;
+    int ms_offset;
+    int samplesPerHour;
     double fRaw;
     double fRef;
-    double duration_float;
     NSMutableArray* iCalib = [NSMutableArray array];
     // decode sequence header to extract data
     _runNo = [[encoded objectAtIndex:0] intValue] + ((([[encoded objectAtIndex:1] intValue]) << (16)));
     _utcStamp = [[encoded objectAtIndex:2] intValue] + ((([[encoded objectAtIndex:3] intValue]) << (16)));
     val = [[encoded objectAtIndex:4] intValue];
     _isAvg = (((val) & (0x100)) == 0);
-    _samplesPerHour = ((val) & (0xff));
+    samplesPerHour = ((val) & (0xff));
     if (((val) & (0x100)) != 0) {
-        _samplesPerHour = _samplesPerHour * 3600;
+        samplesPerHour = samplesPerHour * 3600;
     } else {
         if (((val) & (0x200)) != 0) {
-            _samplesPerHour = _samplesPerHour * 60;
+            samplesPerHour = samplesPerHour * 60;
         }
     }
-    val = [[encoded objectAtIndex:5] intValue];
-    if (val > 32767) {
-        val = val - 65536;
+    _dataSamplesInterval = 3600.0 / samplesPerHour;
+    ms_offset = [[encoded objectAtIndex:6] intValue];
+    if (ms_offset < 1000) {
+        // new encoding -> add the ms to the UTC timestamp
+        _startTime = _utcStamp + (ms_offset / 1000.0);
+    } else {
+        // legacy encoding subtract the measure interval form the UTC timestamp
+        _startTime = _utcStamp -  _dataSamplesInterval;
     }
-    _decimals = val;
-    _offset = val;
-    _scale = [[encoded objectAtIndex:6] intValue];
-    _isScal = (_scale != 0);
-    _isScal32 = ((int)[encoded count] >= 14);
+    _firstMeasureDuration = [[encoded objectAtIndex:5] intValue];
+    if (!(_isAvg)) {
+        _firstMeasureDuration = _firstMeasureDuration / 1000.0;
+    }
     val = [[encoded objectAtIndex:7] intValue];
     _isClosed = (val != 0xffff);
     if (val == 0xffff) {
         val = 0;
     }
     _nRows = val;
-    duration_float = _nRows * 3600 / _samplesPerHour;
-    _duration = (int) floor(duration_float+0.5);
+    _duration = _nRows * _dataSamplesInterval;
     // precompute decoding parameters
-    _decexp = 1.0;
-    if (_scale == 0) {
-        i = 0;
-        while (i < _decimals) {
-            _decexp = _decexp * 10.0;
-            i = i + 1;
-        }
-    }
     iCalib = [dataset _get_calibration];
     _caltyp = [[iCalib objectAtIndex:0] intValue];
     if (_caltyp != 0) {
@@ -6924,42 +6843,20 @@ static const char* hexArray = "0123456789ABCDEF";
         [_calpar removeAllObjects];
         [_calraw removeAllObjects];
         [_calref removeAllObjects];
-        if (_isScal32) {
-            i = 1;
-            while (i < maxpos) {
-                [_calpar addObject:[iCalib objectAtIndex:i]];
-                i = i + 1;
-            }
-            i = 1;
-            while (i + 1 < maxpos) {
-                fRaw = [[iCalib objectAtIndex:i] doubleValue];
-                fRaw = fRaw / 1000.0;
-                fRef = [[iCalib objectAtIndex:i + 1] doubleValue];
-                fRef = fRef / 1000.0;
-                [_calraw addObject:[NSNumber numberWithDouble:fRaw]];
-                [_calref addObject:[NSNumber numberWithDouble:fRef]];
-                i = i + 2;
-            }
-        } else {
-            i = 1;
-            while (i + 1 < maxpos) {
-                iRaw = [[iCalib objectAtIndex:i] intValue];
-                iRef = [[iCalib objectAtIndex:i + 1] intValue];
-                [_calpar addObject:[NSNumber numberWithLong:iRaw]];
-                [_calpar addObject:[NSNumber numberWithLong:iRef]];
-                if (_isScal) {
-                    fRaw = iRaw;
-                    fRaw = (fRaw - _offset) / _scale;
-                    fRef = iRef;
-                    fRef = (fRef - _offset) / _scale;
-                    [_calraw addObject:[NSNumber numberWithDouble:fRaw]];
-                    [_calref addObject:[NSNumber numberWithDouble:fRef]];
-                } else {
-                    [_calraw addObject:[NSNumber numberWithDouble:[YAPI _decimalToDouble:iRaw]]];
-                    [_calref addObject:[NSNumber numberWithDouble:[YAPI _decimalToDouble:iRef]]];
-                }
-                i = i + 2;
-            }
+        i = 1;
+        while (i < maxpos) {
+            [_calpar addObject:[iCalib objectAtIndex:i]];
+            i = i + 1;
+        }
+        i = 1;
+        while (i + 1 < maxpos) {
+            fRaw = [[iCalib objectAtIndex:i] doubleValue];
+            fRaw = fRaw / 1000.0;
+            fRef = [[iCalib objectAtIndex:i + 1] doubleValue];
+            fRef = fRef / 1000.0;
+            [_calraw addObject:[NSNumber numberWithDouble:fRaw]];
+            [_calref addObject:[NSNumber numberWithDouble:fRef]];
+            i = i + 2;
         }
     }
     // preload column names for backward-compatibility
@@ -6977,15 +6874,9 @@ static const char* hexArray = "0123456789ABCDEF";
     }
     // decode min/avg/max values for the sequence
     if (_nRows > 0) {
-        if (_isScal32) {
-            _avgVal = [self _decodeAvg:[[encoded objectAtIndex:8] intValue] + ((((([[encoded objectAtIndex:9] intValue]) ^ (0x8000))) << (16))) :1];
-            _minVal = [self _decodeVal:[[encoded objectAtIndex:10] intValue] + ((([[encoded objectAtIndex:11] intValue]) << (16)))];
-            _maxVal = [self _decodeVal:[[encoded objectAtIndex:12] intValue] + ((([[encoded objectAtIndex:13] intValue]) << (16)))];
-        } else {
-            _minVal = [self _decodeVal:[[encoded objectAtIndex:8] intValue]];
-            _maxVal = [self _decodeVal:[[encoded objectAtIndex:9] intValue]];
-            _avgVal = [self _decodeAvg:[[encoded objectAtIndex:10] intValue] + ((([[encoded objectAtIndex:11] intValue]) << (16))) :_nRows];
-        }
+        _avgVal = [self _decodeAvg:[[encoded objectAtIndex:8] intValue] + ((((([[encoded objectAtIndex:9] intValue]) ^ (0x8000))) << (16))) :1];
+        _minVal = [self _decodeVal:[[encoded objectAtIndex:10] intValue] + ((([[encoded objectAtIndex:11] intValue]) << (16)))];
+        _maxVal = [self _decodeVal:[[encoded objectAtIndex:12] intValue] + ((([[encoded objectAtIndex:13] intValue]) << (16)))];
     }
     return 0;
 }
@@ -7006,34 +6897,18 @@ static const char* hexArray = "0123456789ABCDEF";
     if (_isAvg) {
         while (idx + 3 < (int)[udat count]) {
             [dat removeAllObjects];
-            if (_isScal32) {
-                [dat addObject:[NSNumber numberWithDouble:[self _decodeVal:[[udat objectAtIndex:idx + 2] intValue] + ((([[udat objectAtIndex:idx + 3] intValue]) << (16)))]]];
-                [dat addObject:[NSNumber numberWithDouble:[self _decodeAvg:[[udat objectAtIndex:idx] intValue] + ((((([[udat objectAtIndex:idx + 1] intValue]) ^ (0x8000))) << (16))) :1]]];
-                [dat addObject:[NSNumber numberWithDouble:[self _decodeVal:[[udat objectAtIndex:idx + 4] intValue] + ((([[udat objectAtIndex:idx + 5] intValue]) << (16)))]]];
-                idx = idx + 6;
-            } else {
-                [dat addObject:[NSNumber numberWithDouble:[self _decodeVal:[[udat objectAtIndex:idx] intValue]]]];
-                [dat addObject:[NSNumber numberWithDouble:[self _decodeAvg:[[udat objectAtIndex:idx + 2] intValue] + ((([[udat objectAtIndex:idx + 3] intValue]) << (16))) :1]]];
-                [dat addObject:[NSNumber numberWithDouble:[self _decodeVal:[[udat objectAtIndex:idx + 1] intValue]]]];
-                idx = idx + 4;
-            }
+            [dat addObject:[NSNumber numberWithDouble:[self _decodeVal:[[udat objectAtIndex:idx + 2] intValue] + ((([[udat objectAtIndex:idx + 3] intValue]) << (16)))]]];
+            [dat addObject:[NSNumber numberWithDouble:[self _decodeAvg:[[udat objectAtIndex:idx] intValue] + ((((([[udat objectAtIndex:idx + 1] intValue]) ^ (0x8000))) << (16))) :1]]];
+            [dat addObject:[NSNumber numberWithDouble:[self _decodeVal:[[udat objectAtIndex:idx + 4] intValue] + ((([[udat objectAtIndex:idx + 5] intValue]) << (16)))]]];
+            idx = idx + 6;
             [_values addObject:[dat copy]];
         }
     } else {
-        if (_isScal && !(_isScal32)) {
-            while (idx < (int)[udat count]) {
-                [dat removeAllObjects];
-                [dat addObject:[NSNumber numberWithDouble:[self _decodeVal:[[udat objectAtIndex:idx] intValue]]]];
-                [_values addObject:[dat copy]];
-                idx = idx + 1;
-            }
-        } else {
-            while (idx + 1 < (int)[udat count]) {
-                [dat removeAllObjects];
-                [dat addObject:[NSNumber numberWithDouble:[self _decodeAvg:[[udat objectAtIndex:idx] intValue] + ((((([[udat objectAtIndex:idx + 1] intValue]) ^ (0x8000))) << (16))) :1]]];
-                [_values addObject:[dat copy]];
-                idx = idx + 2;
-            }
+        while (idx + 1 < (int)[udat count]) {
+            [dat removeAllObjects];
+            [dat addObject:[NSNumber numberWithDouble:[self _decodeAvg:[[udat objectAtIndex:idx] intValue] + ((((([[udat objectAtIndex:idx + 1] intValue]) ^ (0x8000))) << (16))) :1]]];
+            [_values addObject:[dat copy]];
+            idx = idx + 2;
         }
     }
 
@@ -7058,15 +6933,7 @@ static const char* hexArray = "0123456789ABCDEF";
 {
     double val;
     val = w;
-    if (_isScal32) {
-        val = val / 1000.0;
-    } else {
-        if (_isScal) {
-            val = (val - _offset) / _scale;
-        } else {
-            val = [YAPI _decimalToDouble:w];
-        }
-    }
+    val = val / 1000.0;
     if (_caltyp != 0) {
         if (_calhdl != NULL) {
             val = [_calhdl yCalibrationHandler: val:_caltyp: _calpar: _calraw:_calref];
@@ -7079,15 +6946,7 @@ static const char* hexArray = "0123456789ABCDEF";
 {
     double val;
     val = dw;
-    if (_isScal32) {
-        val = val / 1000.0;
-    } else {
-        if (_isScal) {
-            val = (val / (100 * count) - _offset) / _scale;
-        } else {
-            val = val / (count * _decexp);
-        }
-    }
+    val = val / 1000.0;
     if (_caltyp != 0) {
         if (_calhdl != NULL) {
             val = [_calhdl yCalibrationHandler: val: _caltyp: _calpar: _calraw:_calref];
@@ -7119,7 +6978,9 @@ static const char* hexArray = "0123456789ABCDEF";
  * If the device uses a firmware older than version 13000, value is
  * relative to the start of the time the device was powered on, and
  * is always positive.
- * If you need an absolute UTC timestamp, use get_startTimeUTC().
+ * If you need an absolute UTC timestamp, use get_realStartTimeUTC().
+ *
+ * <b>DEPRECATED</b>: This method has been replaced by get_realStartTimeUTC().
  *
  * @return an unsigned number corresponding to the number of seconds
  *         between the start of the run and the beginning of this data
@@ -7135,13 +6996,29 @@ static const char* hexArray = "0123456789ABCDEF";
  * If the UTC time was not set in the datalogger at the time of the recording
  * of this data stream, this method returns 0.
  *
+ * <b>DEPRECATED</b>: This method has been replaced by get_realStartTimeUTC().
+ *
  * @return an unsigned number corresponding to the number of seconds
  *         between the Jan 1, 1970 and the beginning of this data
  *         stream (i.e. Unix time representation of the absolute time).
  */
 -(s64) get_startTimeUTC
 {
-    return _utcStamp;
+    return (int) floor(_startTime+0.5);
+}
+
+/**
+ * Returns the start time of the data stream, relative to the Jan 1, 1970.
+ * If the UTC time was not set in the datalogger at the time of the recording
+ * of this data stream, this method returns 0.
+ *
+ * @return a floating-point number  corresponding to the number of seconds
+ *         between the Jan 1, 1970 and the beginning of this data
+ *         stream (i.e. Unix time representation of the absolute time).
+ */
+-(double) get_realStartTimeUTC
+{
+    return _startTime;
 }
 
 /**
@@ -7154,12 +7031,17 @@ static const char* hexArray = "0123456789ABCDEF";
  */
 -(int) get_dataSamplesIntervalMs
 {
-    return ((3600000) / (_samplesPerHour));
+    return (int) floor(_dataSamplesInterval*1000+0.5);
 }
 
 -(double) get_dataSamplesInterval
 {
-    return 3600.0 / _samplesPerHour;
+    return _dataSamplesInterval;
+}
+
+-(double) get_firstDataSamplesInterval
+{
+    return _firstMeasureDuration;
 }
 
 /**
@@ -7275,19 +7157,12 @@ static const char* hexArray = "0123456789ABCDEF";
     return _maxVal;
 }
 
-/**
- * Returns the approximate duration of this stream, in seconds.
- *
- * @return the number of seconds covered by this stream.
- *
- * On failure, throws an exception or returns Y_DURATION_INVALID.
- */
--(int) get_duration
+-(double) get_realDuration
 {
     if (_isClosed) {
         return _duration;
     }
-    return (int)(((unsigned)time(NULL)) - _utcStamp);
+    return (double) ((unsigned)time(NULL)) - _utcStamp;
 }
 
 /**
@@ -7473,7 +7348,7 @@ static const char* hexArray = "0123456789ABCDEF";
 
 @implementation YDataSet
 
--(id)   initWith:(YFunction *)parent :(NSString*)functionId :(NSString*)unit :(s64)startTime :(s64)endTime
+-(id)   initWith:(YFunction *)parent :(NSString*)functionId :(NSString*)unit :(double)startTime :(double)endTime
 {
     if(!(self = [super init]))
         return nil;
@@ -7558,8 +7433,8 @@ static const char* hexArray = "0123456789ABCDEF";
             }
         } else if (!strcmp(j.token, "streams")) {
             YDataStream *stream;
-            s64 streamEndTime, endTime = 0;
-            s64 streamStartTime, startTime = 0x7fffffff;
+            double streamEndTime, endTime = 0;
+            double streamStartTime, startTime = 0x7fffffff;
             _streams = [[NSMutableArray alloc] init];
             _preview = [[NSMutableArray alloc] init];
             _measures = [[NSMutableArray alloc] init];
@@ -7569,11 +7444,11 @@ static const char* hexArray = "0123456789ABCDEF";
             // select streams for specified timeframe
             while(yJsonParse(&j) == YJSON_PARSE_AVAIL && j.token[0] != ']') {
                 stream = [_parent _findDataStream:self:[_parent _parseString:&j]];
-                streamStartTime = [stream get_startTimeUTC] - [stream get_dataSamplesIntervalMs] / 1000;
-                streamEndTime = [stream get_startTimeUTC] + [stream get_duration];
-                if(_startTime > 0 && [stream get_startTimeUTC] + [stream get_duration] <= _startTime) {
+                streamStartTime = [stream get_realStartTimeUTC];
+                streamEndTime = streamStartTime + [stream get_realDuration];
+                if(_startTime > 0 && streamEndTime <= _startTime) {
                     // this stream is too early, drop it
-                } else if(_endTime > 0 && [stream get_startTimeUTC] > _endTime) {
+                } else if(_endTime > 0 && streamStartTime >= _endTime) {
                     // this stream is too late, drop it
                 } else {
                     [_streams addObject:stream];
@@ -7583,17 +7458,17 @@ static const char* hexArray = "0123456789ABCDEF";
                     if(endTime < streamEndTime) {
                         endTime = streamEndTime;
                     }
-                    if([stream isClosed] && [stream get_startTimeUTC] >= _startTime &&
-                       (_endTime == 0 || [stream get_startTimeUTC] + [stream get_duration] <= _endTime)) {
+                    if([stream isClosed] && streamStartTime >= _startTime &&
+                       (_endTime == 0 || streamStartTime <= _endTime)) {
                         if (summaryMinVal > [stream get_minValue])
                             summaryMinVal =[stream get_minValue];
                         if (summaryMaxVal < [stream get_maxValue])
                             summaryMaxVal =[stream get_maxValue];
-                        summaryTotalAvg  += [stream get_averageValue] * [stream get_duration];
-                        summaryTotalTime += [stream get_duration];
+                        summaryTotalAvg  += [stream get_averageValue] * [stream get_realDuration];
+                        summaryTotalTime += [stream get_realDuration];
 
-                        YMeasure *rec = [[YMeasure alloc] initWith :[stream get_startTimeUTC]
-                                                                   :[stream get_startTimeUTC] + [stream get_duration]
+                        YMeasure *rec = [[YMeasure alloc] initWith :streamStartTime
+                                                                   :streamEndTime
                                                                    :[stream get_minValue]
                                                                    :[stream get_averageValue]
                                                                    :[stream get_maxValue]];
@@ -7648,10 +7523,13 @@ static const char* hexArray = "0123456789ABCDEF";
     NSString* strdata;
     double tim;
     double itv;
+    double fitv;
+    double end_;
     int nCols;
     int minCol;
     int avgCol;
     int maxCol;
+    bool firstMeasure;
 
     if (progress != _progress) {
         return _progress;
@@ -7671,8 +7549,12 @@ static const char* hexArray = "0123456789ABCDEF";
     if ((int)[dataRows count] == 0) {
         return [self get_progress];
     }
-    tim = (double) [stream get_startTimeUTC];
+    tim = [stream get_realStartTimeUTC];
+    fitv = [stream get_firstDataSamplesInterval];
     itv = [stream get_dataSamplesInterval];
+    if (fitv == 0) {
+        fitv = itv;
+    }
     if (tim < itv) {
         tim = itv;
     }
@@ -7689,12 +7571,18 @@ static const char* hexArray = "0123456789ABCDEF";
         maxCol = 0;
     }
 
+    firstMeasure = YES;
     for (NSMutableArray* _each  in dataRows) {
-        if ((tim >= _startTime) && ((_endTime == 0) || (tim <= _endTime))) {
-            [_measures addObject:ARC_sendAutorelease([[YMeasure alloc] initWith:tim - itv :tim :[[_each objectAtIndex:minCol] doubleValue] :[[_each objectAtIndex:avgCol] doubleValue] :[[_each objectAtIndex:maxCol] doubleValue]])];
+        if (firstMeasure) {
+            end_ = tim + fitv;
+            firstMeasure = NO;
+        } else {
+            end_ = tim + itv;
         }
-        tim = tim + itv;
-        tim = floor(tim * 1000+0.5) / 1000.0;
+        if ((tim >= _startTime) && ((_endTime == 0) || (end_ <= _endTime))) {
+            [_measures addObject:ARC_sendAutorelease([[YMeasure alloc] initWith:tim :end_ :[[_each objectAtIndex:minCol] doubleValue] :[[_each objectAtIndex:avgCol] doubleValue] :[[_each objectAtIndex:maxCol] doubleValue]])];
+        }
+        tim = end_;
     }
     return [self get_progress];
 }
@@ -7756,13 +7644,21 @@ static const char* hexArray = "0123456789ABCDEF";
  * to reflect the timestamp of the first measure actually found in the
  * dataLogger within the specified range.
  *
+ * <b>DEPRECATED</b>: This method has been replaced by get_summary()
+ * which contain more precise informations on the YDataSet.
+ *
  * @return an unsigned number corresponding to the number of seconds
  *         between the Jan 1, 1970 and the beginning of this data
  *         set (i.e. Unix time representation of the absolute time).
  */
 -(s64) get_startTimeUTC
 {
-    return _startTime;
+    return [self imm_get_startTimeUTC];
+}
+
+-(s64) imm_get_startTimeUTC
+{
+    return (s64) _startTime;
 }
 
 /**
@@ -7773,13 +7669,22 @@ static const char* hexArray = "0123456789ABCDEF";
  * to reflect the timestamp of the last measure actually found in the
  * dataLogger within the specified range.
  *
+ * <b>DEPRECATED</b>: This method has been replaced by get_summary()
+ * which contain more precise informations on the YDataSet.
+ *
+ *
  * @return an unsigned number corresponding to the number of seconds
  *         between the Jan 1, 1970 and the end of this data
  *         set (i.e. Unix time representation of the absolute time).
  */
 -(s64) get_endTimeUTC
 {
-    return _endTime;
+    return [self imm_get_endTimeUTC];
+}
+
+-(s64) imm_get_endTimeUTC
+{
+    return (s64) floor(_endTime+0.5);
 }
 
 /**
@@ -7818,10 +7723,10 @@ static const char* hexArray = "0123456789ABCDEF";
     if (_progress < 0) {
         url = [NSString stringWithFormat:@"logger.json?id=%@",_functionId];
         if (_startTime != 0) {
-            url = [NSString stringWithFormat:@"%@&from=%lu",url,_startTime];
+            url = [NSString stringWithFormat:@"%@&from=%lu",url,[self imm_get_startTimeUTC]];
         }
         if (_endTime != 0) {
-            url = [NSString stringWithFormat:@"%@&to=%lu",url,_endTime];
+            url = [NSString stringWithFormat:@"%@&to=%lu",url,[self imm_get_endTimeUTC]+1];
         }
     } else {
         if (_progress >= (int)[_streams count]) {
@@ -7896,21 +7801,22 @@ static const char* hexArray = "0123456789ABCDEF";
  */
 -(NSMutableArray*) get_measuresAt:(YMeasure*)measure
 {
-    s64 startUtc;
+    double startUtc;
     YDataStream* stream;
     NSMutableArray* dataRows = [NSMutableArray array];
     NSMutableArray* measures = [NSMutableArray array];
     double tim;
     double itv;
+    double end_;
     int nCols;
     int minCol;
     int avgCol;
     int maxCol;
 
-    startUtc = (s64) floor(measure.get_startTimeUTC+0.5);
+    startUtc = measure.get_startTimeUTC;
     stream = nil;
     for (YDataStream* _each  in _streams) {
-        if ([_each get_startTimeUTC] == startUtc) {
+        if ([_each get_realStartTimeUTC] == startUtc) {
             stream = _each;
         }
     }
@@ -7921,7 +7827,7 @@ static const char* hexArray = "0123456789ABCDEF";
     if ((int)[dataRows count] == 0) {
         return measures;
     }
-    tim = (double) [stream get_startTimeUTC];
+    tim = [stream get_realStartTimeUTC];
     itv = [stream get_dataSamplesInterval];
     if (tim < itv) {
         tim = itv;
@@ -7940,10 +7846,11 @@ static const char* hexArray = "0123456789ABCDEF";
     }
 
     for (NSMutableArray* _each  in dataRows) {
-        if ((tim >= _startTime) && ((_endTime == 0) || (tim <= _endTime))) {
-            [measures addObject:ARC_sendAutorelease([[YMeasure alloc] initWith:tim - itv :tim :[[_each objectAtIndex:minCol] doubleValue] :[[_each objectAtIndex:avgCol] doubleValue] :[[_each objectAtIndex:maxCol] doubleValue]])];
+        end_ = tim + itv;
+        if ((tim >= _startTime) && ((_endTime == 0) || (end_ <= _endTime))) {
+            [measures addObject:ARC_sendAutorelease([[YMeasure alloc] initWith:tim :end_ :[[_each objectAtIndex:minCol] doubleValue] :[[_each objectAtIndex:avgCol] doubleValue] :[[_each objectAtIndex:maxCol] doubleValue]])];
         }
-        tim = tim + itv;
+        tim = end_;
     }
     return measures;
 }
@@ -7981,298 +7888,6 @@ static const char* hexArray = "0123456789ABCDEF";
 //--- (end of generated code: YDataSet public methods implementation)
 @end
 
-
-/**
- * YDataStream Class: Sequence of measured data, returned by the data logger
- *
- * A data stream is a small collection of consecutive measures for a set
- * of sensors. A few properties are available directly from the object itself
- * (they are preloaded at instantiation time), while most other properties and
- * the actual data are loaded on demand when accessed for the first time.
- */
-@implementation YOldDataStream
-
-
--(id) initWithDataLogger:(YDataLogger *)parrent :(unsigned int)run :(unsigned int)stamp :(unsigned int)utc :(unsigned int)itv
-{
-    self = [super init];
-    if(self){
-        _dataLogger     = parrent;
-        _runNo       = run;
-        _startTime      = stamp;
-        _interval       = itv;
-        _columnNames    = [[NSMutableArray alloc ] init] ;
-        _values         = [[NSMutableArray alloc ] init] ;
-    }
-    return self;
-}
-
-- (void)dealloc {
-    ARC_release(_columnNames);
-    ARC_release(_values);
-    ARC_dealloc(super);
-}
-
-
-// Preload all values into the data stream object
--(int)  _loadStream
-{
-    NSString            *buffer;
-    yJsonStateMachine   j;
-    int                 res,p;
-    NSMutableArray      *coldiv, *coltyp;
-    NSMutableArray      *dat;
-    NSMutableArray      *udat;
-    NSMutableArray      *colscl;
-    NSMutableArray      *colofs;
-    NSMutableArray      *calhdl=nil;
-    NSMutableArray      *caltyp=nil;
-    NSMutableArray      *calpar=nil;
-    NSMutableArray      *calraw=nil;
-    NSMutableArray      *calref=nil;
-
-    if((res = [_dataLogger _getData:_runNo:_startTime:&buffer:&j]) != YAPI_SUCCESS) {
-        return res;
-    }
-    coldiv = [[NSMutableArray alloc] init];
-    coltyp = [[NSMutableArray alloc] init];
-    colscl = [[NSMutableArray alloc] init];
-    colofs = [[NSMutableArray alloc] init];
-
-    if(yJsonParse(&j) != YJSON_PARSE_AVAIL || j.st != YJSON_PARSE_STRUCT) {
-    fail:
-        ARC_release(coldiv);
-        ARC_release(coltyp);
-        ARC_release(colscl);
-        ARC_release(colofs);
-        if (calhdl!=nil)
-            ARC_release(calhdl);
-        if (caltyp!=nil)
-            ARC_release(caltyp);
-        if (calpar!=nil)
-            ARC_release(calpar);
-        if (calraw!=nil)
-            ARC_release(calraw);
-        if (calref!=nil)
-            ARC_release(calref);
-        NSError *error;
-        yFormatRetVal(&error,YAPI_IO_ERROR,"Unexpected JSON reply format");
-        [_dataLogger _throw:error];
-        return YAPI_IO_ERROR;
-    }
-    _nRows = _nCols = 0;
-    [_columnNames removeAllObjects];
-    [_values removeAllObjects];
-    while(yJsonParse(&j) == YJSON_PARSE_AVAIL && j.st == YJSON_PARSE_MEMBNAME) {
-        if(!strcmp(j.token, "time")) {
-            if(yJsonParse(&j) != YJSON_PARSE_AVAIL)
-                goto fail;
-            _startTime = atoi(j.token);
-        } else if(!strcmp(j.token, "UTC")) {
-            if(yJsonParse(&j) != YJSON_PARSE_AVAIL)
-                goto fail;
-            _utcStamp = atoi(j.token);
-        } else if(!strcmp(j.token, "interval")) {
-            if(yJsonParse(&j) != YJSON_PARSE_AVAIL)
-                goto fail;
-            _interval = atoi(j.token);
-        } else if(!strcmp(j.token, "nRows")) {
-            if(yJsonParse(&j) != YJSON_PARSE_AVAIL)
-                goto fail;
-            _nRows = atoi(j.token);
-        } else if(!strcmp(j.token, "keys")) {
-            if(yJsonParse(&j) != YJSON_PARSE_AVAIL || j.st != YJSON_PARSE_ARRAY) break;
-            while(yJsonParse(&j) == YJSON_PARSE_AVAIL && j.st == YJSON_PARSE_STRING) {
-                NSString *tmp = [_dataLogger _parseString:&j];
-                [_columnNames addObject:tmp];
-            }
-            if(j.token[0] != ']') goto fail;
-            if(_nCols == 0) {
-                _nCols = (unsigned)[_columnNames count];
-            } else if(_nCols != [_columnNames count]) {
-                _nCols = 0;
-                goto fail;
-            }
-        } else if(!strcmp(j.token, "div")) {
-            if(yJsonParse(&j) != YJSON_PARSE_AVAIL || j.st != YJSON_PARSE_ARRAY) break;
-            while(yJsonParse(&j) == YJSON_PARSE_AVAIL && j.st == YJSON_PARSE_NUM) {
-                int tmp = atoi(j.token);
-                NSNumber *n = [NSNumber numberWithInt:tmp];
-                [coldiv addObject:n];
-            }
-            if(j.token[0] != ']')
-                goto fail;
-            if(_nCols == 0) {
-                _nCols = (unsigned)[coldiv count];
-            } else if(_nCols != [coldiv count]) {
-                _nCols = 0;
-                goto fail;
-            }
-        } else if(!strcmp(j.token, "type")) {
-            if(yJsonParse(&j) != YJSON_PARSE_AVAIL || j.st != YJSON_PARSE_ARRAY) break;
-            while(yJsonParse(&j) == YJSON_PARSE_AVAIL && j.st == YJSON_PARSE_NUM) {
-                NSNumber *n = [NSNumber numberWithInt:atoi(j.token)];
-                [coltyp addObject:n];
-            }
-            if(j.token[0] != ']') goto fail;
-            if(_nCols == 0) {
-                _nCols = (unsigned)[coltyp count];
-            } else if(_nCols != [coltyp count]) {
-                _nCols = 0;
-                goto fail;
-            }
-        } else if(!strcmp(j.token, "scal")) {
-            if(yJsonParse(&j) != YJSON_PARSE_AVAIL || j.st != YJSON_PARSE_ARRAY) break;
-            int c=0;
-            while(yJsonParse(&j) == YJSON_PARSE_AVAIL && j.st == YJSON_PARSE_NUM) {
-                double scal = (double)atoi(j.token) / 65536.0;
-                NSNumber *n = [NSNumber numberWithDouble:scal];
-                [colscl addObject:n];
-                [colofs addObject:[NSNumber numberWithInt:([[coltyp objectAtIndex:c++] intValue]!= 0 ? -32767 : 0)]];
-            }
-            if(j.token[0] != ']') goto fail;
-            if(_nCols == 0) {
-                _nCols = (unsigned)[colscl count];
-            } else if(_nCols != [colscl count]) {
-                _nCols = 0;
-                goto fail;
-            }
-        }  else if(!strcmp(j.token, "cal")) {
-            if(yJsonParse(&j) != YJSON_PARSE_AVAIL || j.st != YJSON_PARSE_ARRAY)
-                break;
-            calhdl = [[NSMutableArray alloc] initWithCapacity:_nCols];
-            caltyp = [[NSMutableArray alloc] initWithCapacity:_nCols];
-            calpar = [[NSMutableArray alloc] initWithCapacity:_nCols];
-            calraw = [[NSMutableArray alloc] initWithCapacity:_nCols];
-            calref = [[NSMutableArray alloc] initWithCapacity:_nCols];
-            int c = 0;
-            while(yJsonParse(&j) == YJSON_PARSE_AVAIL && j.st == YJSON_PARSE_STRING) {
-                NSMutableArray * cur_calraw = [NSMutableArray array];
-                NSMutableArray * cur_calref = [NSMutableArray array];
-                int calibType = 0;
-                [caltyp addObject:[NSNumber numberWithInt:calibType]];
-                [calpar addObject:cur_calraw];
-                [calraw addObject:cur_calraw];
-                [calref addObject:cur_calref];
-                [calhdl addObject:[YAPI _getCalibrationHandler:calibType]];
-                c++;
-            }
-            if(j.token[0] != ']') goto fail;
-        }  else if(!strcmp(j.token, "data")) {
-            if ([colscl count] == 0) {
-                for (p =0; p< [coldiv count];p++) {
-                    double pseudo_scal = 1.0 / (double)[[coldiv objectAtIndex:p] doubleValue];
-                    NSNumber *n = [NSNumber numberWithDouble:pseudo_scal];
-                    [colscl addObject:n];
-                }
-            }
-
-            if(yJsonParse(&j) != YJSON_PARSE_AVAIL ) break;
-            udat = [NSMutableArray arrayWithCapacity:_nCols];
-
-            if(j.st == YJSON_PARSE_STRING) {
-                NSString* sdat = [_dataLogger _parseString:&j];
-                for(p = 0; p < [sdat length];) {
-                    NSNumber* val;
-                    unsigned c = [sdat characterAtIndex:p++];
-                    if(c >= 'a') {
-                        int srcpos = (int) [udat count]-1-(c-'a');
-                        if(srcpos < 0) goto fail;
-                        val = [udat objectAtIndex:srcpos];
-                    } else {
-                        unsigned tval;
-                        if(p+2 > [sdat length]) goto fail;
-                        tval = (c - '0');
-                        c = [sdat characterAtIndex:p++];
-                        tval += (c - '0') << 5;
-                        c = [sdat characterAtIndex:p++];
-                        if(c == 'z') c = '\\';
-                        tval += (c - '0') << 10;
-                        val = [NSNumber numberWithUnsignedInt:tval];
-                    }
-                    [udat addObject:val];
-                }
-
-            } else if(j.st ==YJSON_PARSE_ARRAY)  {
-                while(yJsonParse(&j) == YJSON_PARSE_AVAIL && j.st == YJSON_PARSE_NUM) {
-                    unsigned val = atoi(j.token);
-                    [udat addObject:[NSNumber numberWithUnsignedInt:val]];
-                }
-                if(j.token[0] != ']' )
-                    goto fail;
-            } else {
-                goto fail;
-            }
-
-            dat = [NSMutableArray arrayWithCapacity:_nCols];
-            int c =0;
-            for (NSNumber* val in udat) {
-                double newval;
-                if([[coltyp objectAtIndex:c] intValue] < 2) {
-                    newval = ([val intValue] + [[colofs objectAtIndex:c] doubleValue]) * [[colscl objectAtIndex:c] doubleValue];
-                } else {
-                    newval = [YAPI _decimalToDouble:[val intValue]-32767];
-                }
-
-                [dat addObject:[NSNumber numberWithDouble:newval]];
-                if(++c == _nCols) {
-                    [_values addObject:dat];
-                    dat = [NSMutableArray arrayWithCapacity:_nCols];
-                    c=0;
-                }
-            }
-            if( [dat count] > 0) goto fail;
-        } else {
-            // ignore unknown field
-            yJsonSkip(&j, 1);
-        }
-    }
-    ARC_release(coldiv);
-    ARC_release(coltyp);
-    ARC_release(colscl);
-    ARC_release(colofs);
-
-    return YAPI_SUCCESS;
-}
-
-
-
-
-/**
- * Returns the relative start time of the data stream, measured in seconds.
- * For recent firmwares, the value is relative to the present time,
- * which means the value is always negative.
- * If the device uses a firmware older than version 13000, value is
- * relative to the start of the time the device was powered on, and
- * is always positive.
- * If you need an absolute UTC timestamp, use get_startTimeUTC().
- *
- * @return an unsigned number corresponding to the number of seconds
- *         between the start of the run and the beginning of this data
- *         stream.
- */
--(unsigned)       get_startTime
-{ return self.startTime;}
-@synthesize startTime = _startTime;
-
-/**
- * Returns the number of seconds elapsed between  two consecutive
- * rows of this data stream. By default, the data logger records one row
- * per second, but there might be alternative streams at lower resolution
- * created by summarizing the original stream for archiving purposes.
- *
- * This method does not cause any access to the device, as the value
- * is preloaded in the object at instantiation time.
- *
- * @return an unsigned number corresponding to a number of seconds.
- */
--(unsigned)        get_dataSamplesInterval
-{
-    return self.dataSamplesInterval;
-}
-@synthesize dataSamplesInterval =_interval;
-
-@end
 
 
 
@@ -8415,82 +8030,6 @@ static const char* hexArray = "0123456789ABCDEF";
     return YAPI_SUCCESS;
 }
 
-/**
- * Builds a list of all data streams hold by the data logger (legacy method).
- * The caller must pass by reference an empty array to hold YDataStream
- * objects, and the function fills it with objects describing available
- * data sequences.
- *
- * This is the old way to retrieve data from the DataLogger.
- * For new applications, you should rather use get_dataSets()
- * method, or call directly get_recordedData() on the
- * sensor object.
- *
- * @param v : an array of YDataStream objects to be filled in
- *
- * @return YAPI_SUCCESS if the call succeeds.
- *
- * On failure, throws an exception or returns a negative error code.
- */
--(int)             get_dataStreams:(NSArray**) v
-{
-    return [self dataStreams:v];
-}
-
--(int)             dataStreams:(NSArray**) param
-{
-    NSString            *buffer;
-    yJsonStateMachine   j;
-    int                 i, res;
-    unsigned            arr[4];
-    NSMutableArray      *v;
-
-    //v.clear();
-    if((res = [self _getData:0: 0: &buffer: &j]) != YAPI_SUCCESS) {
-        return res;
-    }
-    if(yJsonParse(&j) != YJSON_PARSE_AVAIL || j.st != YJSON_PARSE_ARRAY) {
-        NSError *error;
-        yFormatRetVal(&error,YAPI_IO_ERROR,"Unexpected JSON reply format");
-        [self _throw:error];
-        return YAPI_IO_ERROR;
-    }
-    v = [[NSMutableArray alloc] init];
-    // expect arrays in array
-    while(yJsonParse(&j) == YJSON_PARSE_AVAIL) {
-        if (j.token[0] == '[') {
-            // get four number
-            for(i = 0; i < 4; i++) {
-                if(yJsonParse(&j) != YJSON_PARSE_AVAIL || j.st != YJSON_PARSE_NUM) break;
-                arr[i] = atoi(j.token);
-            }
-            if(i < 4) break;
-            // skip any extra item in array
-            while(yJsonParse(&j) != YJSON_PARSE_AVAIL && j.token[0] != ']');
-            // instantiate a data stream
-            YDataStream *stream =[[YOldDataStream alloc] initWithDataLogger:self :arr[0] :arr[1] :arr[2] :arr[3]];
-            [v addObject:stream];
-        }else if(j.token[0] == '{') {
-            // new datalogger format: {"id":"...","unit":"...","streams":["...",...]}
-            NSRange range = [buffer rangeOfString:@"\r\n\r\n"];
-            buffer = [buffer substringFromIndex:NSMaxRange(range)];
-            NSData* buffer_bin = [buffer dataUsingEncoding:NSISOLatin1StringEncoding];
-            NSMutableArray* sets = [self parse_dataSets:buffer_bin];
-            for (i=0; i < [sets count]; i++) {
-                YDataSet *dset = [sets objectAtIndex:i];
-                NSMutableArray* ds = [dset get_privateDataStreams];
-                for (int si=0; si < [ds count]; si++) {
-                    [v addObject:[ds objectAtIndex:si]];
-                }
-            }
-            break;
-        } else break;
-    }
-    *param =v;
-    return YAPI_SUCCESS;
-
-
-}
 
 //--- (generated code: YDataLogger public methods implementation)
 /**

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_multiaxiscontroller.h 32610 2018-10-10 06:52:20Z seb $
+ *  $Id: yocto_multiaxiscontroller.h 32906 2018-11-02 10:18:15Z seb $
  *
  *  Declares yFindMultiAxisController(), the high-level API for MultiAxisController functions
  *
@@ -258,6 +258,9 @@ typedef enum {
 
 /**
  * Continues the enumeration of multi-axis controllers started using yFirstMultiAxisController().
+ * Caution: You can't make any assumption about the returned multi-axis controllers order.
+ * If you want to find a specific a multi-axis controller, use MultiAxisController.findMultiAxisController()
+ * and a hardwareID or a logical name.
  *
  * @return a pointer to a YMultiAxisController object, corresponding to
  *         a multi-axis controller currently online, or a nil pointer
