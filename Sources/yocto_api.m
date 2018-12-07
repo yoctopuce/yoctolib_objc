@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.m 33400 2018-11-27 07:58:29Z seb $
+ * $Id: yocto_api.m 33533 2018-12-06 08:49:30Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -7353,19 +7353,23 @@ static const char* hexArray = "0123456789ABCDEF";
     if(!(self = [super init]))
         return nil;
 //--- (generated code: YDataSet attributes initialization)
-    _startTime = 0;
-    _endTime = 0;
+    _startTimeMs = 0;
+    _endTimeMs = 0;
     _progress = 0;
     _calib = [NSMutableArray array];
     _streams = [NSMutableArray array];
     _preview = [NSMutableArray array];
     _measures = [NSMutableArray array];
+    _summaryMinVal = 0;
+    _summaryMaxVal = 0;
+    _summaryTotalAvg = 0;
+    _summaryTotalTime = 0;
 //--- (end of generated code: YDataSet attributes initialization)
     _parent = parent;
     _functionId = functionId;
     _unit       = unit;
-    _startTime  = startTime;
-    _endTime    = endTime;
+    _startTimeMs  = startTime * 1000;
+    _endTimeMs    = endTime * 1000;
     _progress   = -1;
     return self;
 }
@@ -7375,17 +7379,21 @@ static const char* hexArray = "0123456789ABCDEF";
     if(!(self = [super init]))
         return nil;
 //--- (generated code: YDataSet attributes initialization)
-    _startTime = 0;
-    _endTime = 0;
+    _startTimeMs = 0;
+    _endTimeMs = 0;
     _progress = 0;
     _calib = [NSMutableArray array];
     _streams = [NSMutableArray array];
     _preview = [NSMutableArray array];
     _measures = [NSMutableArray array];
+    _summaryMinVal = 0;
+    _summaryMaxVal = 0;
+    _summaryTotalAvg = 0;
+    _summaryTotalTime = 0;
 //--- (end of generated code: YDataSet attributes initialization)
     _parent    = parent;
-    _startTime = 0;
-    _endTime   = 0;
+    _startTimeMs = 0;
+    _endTimeMs   = 0;
     _summary = [[YMeasure alloc] init];
     return self;
 }
@@ -7393,11 +7401,6 @@ static const char* hexArray = "0123456789ABCDEF";
 -(int)  _parse:(NSString *)json
 {
     yJsonStateMachine j;
-    double summaryMinVal=DBL_MAX;
-    double summaryMaxVal=-DBL_MAX;
-    double summaryTotalTime=0;
-    double summaryTotalAvg=0;
-
 
     // Parse JSON data
     const char *json_cstr;
@@ -7433,8 +7436,8 @@ static const char* hexArray = "0123456789ABCDEF";
             }
         } else if (!strcmp(j.token, "streams")) {
             YDataStream *stream;
-            double streamEndTime, endTime = 0;
-            double streamStartTime, startTime = 0x7fffffff;
+            double streamEndTime;
+            double streamStartTime;
             _streams = [[NSMutableArray alloc] init];
             _preview = [[NSMutableArray alloc] init];
             _measures = [[NSMutableArray alloc] init];
@@ -7444,51 +7447,15 @@ static const char* hexArray = "0123456789ABCDEF";
             // select streams for specified timeframe
             while(yJsonParse(&j) == YJSON_PARSE_AVAIL && j.token[0] != ']') {
                 stream = [_parent _findDataStream:self:[_parent _parseString:&j]];
-                streamStartTime = [stream get_realStartTimeUTC];
-                streamEndTime = streamStartTime + [stream get_realDuration];
-                if(_startTime > 0 && streamEndTime <= _startTime) {
+                streamStartTime = [stream get_realStartTimeUTC] * 1000;
+                streamEndTime = streamStartTime + [stream get_realDuration] * 1000;
+                if(_startTimeMs > 0 && streamEndTime <= _startTimeMs) {
                     // this stream is too early, drop it
-                } else if(_endTime > 0 && streamStartTime >= _endTime) {
+                } else if(_endTimeMs > 0 && streamStartTime >= _endTimeMs) {
                     // this stream is too late, drop it
                 } else {
                     [_streams addObject:stream];
-                    if(startTime > streamStartTime) {
-                        startTime = streamStartTime;
-                    }
-                    if(endTime < streamEndTime) {
-                        endTime = streamEndTime;
-                    }
-                    if([stream isClosed] && streamStartTime >= _startTime &&
-                       (_endTime == 0 || streamStartTime <= _endTime)) {
-                        if (summaryMinVal > [stream get_minValue])
-                            summaryMinVal =[stream get_minValue];
-                        if (summaryMaxVal < [stream get_maxValue])
-                            summaryMaxVal =[stream get_maxValue];
-                        summaryTotalAvg  += [stream get_averageValue] * [stream get_realDuration];
-                        summaryTotalTime += [stream get_realDuration];
-
-                        YMeasure *rec = [[YMeasure alloc] initWith :streamStartTime
-                                                                   :streamEndTime
-                                                                   :[stream get_minValue]
-                                                                   :[stream get_averageValue]
-                                                                   :[stream get_maxValue]];
-                        [_preview addObject:rec];
-                    }
                 }
-            }
-            if(([_streams count] > 0) && (summaryTotalTime>0)) {
-                // update time boundaries with actual data
-                if(_startTime < startTime) {
-                    _startTime = startTime;
-                }
-                if(_endTime == 0 || _endTime > endTime) {
-                    _endTime = endTime;
-                }
-                _summary = [[YMeasure alloc] initWith :_startTime
-                                                      :_endTime
-                                                      :summaryMinVal
-                                                      :summaryTotalAvg/summaryTotalTime
-                                                      :summaryMaxVal];
             }
         } else {
             yJsonSkip(&j, 1);
@@ -7516,11 +7483,179 @@ static const char* hexArray = "0123456789ABCDEF";
     return _calib;
 }
 
+-(int) loadSummary:(NSData*)data
+{
+    NSMutableArray* dataRows = [NSMutableArray array];
+    double tim;
+    double mitv;
+    double itv;
+    double fitv;
+    double end_;
+    int nCols;
+    int minCol;
+    int avgCol;
+    int maxCol;
+    int res;
+    int m_pos;
+    double previewTotalTime;
+    double previewTotalAvg;
+    double previewMinVal;
+    double previewMaxVal;
+    double previewAvgVal;
+    double previewStartMs;
+    double previewStopMs;
+    double previewDuration;
+    double streamStartTimeMs;
+    double streamDuration;
+    double streamEndTimeMs;
+    double minVal;
+    double avgVal;
+    double maxVal;
+    double summaryStartMs;
+    double summaryStopMs;
+    double summaryTotalTime;
+    double summaryTotalAvg;
+    double summaryMinVal;
+    double summaryMaxVal;
+    NSString* url;
+    NSString* strdata;
+    NSMutableArray* measure_data = [NSMutableArray array];
+
+    if (_progress < 0) {
+        strdata = ARC_sendAutorelease([[NSString alloc] initWithData:data encoding:NSISOLatin1StringEncoding]);
+        if ([strdata isEqualToString:@"{}"]) {
+            [_parent _throw:YAPI_VERSION_MISMATCH :@"device firmware is too old"];
+            return YAPI_VERSION_MISMATCH;
+        }
+        res = [self _parse:strdata];
+        if (res < 0) {
+            return res;
+        }
+    }
+    summaryTotalTime = 0;
+    summaryTotalAvg = 0;
+    summaryMinVal = YAPI_MAX_DOUBLE;
+    summaryMaxVal = YAPI_MIN_DOUBLE;
+    summaryStartMs = YAPI_MAX_DOUBLE;
+    summaryStopMs = YAPI_MIN_DOUBLE;
+
+    // Parse comlete streams
+    for (YDataStream* _each  in  _streams) {
+        streamStartTimeMs = floor([_each get_realStartTimeUTC] *1000+0.5);
+        streamDuration = [_each get_realDuration] ;
+        streamEndTimeMs = streamStartTimeMs + floor(streamDuration * 1000+0.5);
+        if ((streamStartTimeMs >= _startTimeMs) && ((_endTimeMs == 0) || (streamEndTimeMs <= _endTimeMs))) {
+            // stream that are completely inside the dataset
+            previewMinVal = [_each get_minValue];
+            previewAvgVal = [_each get_averageValue];
+            previewMaxVal = [_each get_maxValue];
+            previewStartMs = streamStartTimeMs;
+            previewStopMs = streamEndTimeMs;
+            previewDuration = streamDuration;
+        } else {
+            // stream that are partially in the dataset
+            // we need to parse data to filter value outide the dataset
+            url = [_each _get_url];
+            data = [_parent _download:url];
+            [_each _parseStream:data];
+            dataRows = [_each get_dataRows];
+            if ((int)[dataRows count] == 0) {
+                return [self get_progress];
+            }
+            tim = streamStartTimeMs;
+            fitv = floor([_each get_firstDataSamplesInterval] * 1000+0.5);
+            itv = floor([_each get_dataSamplesInterval] * 1000+0.5);
+            nCols = (int)[[dataRows objectAtIndex:0] count];
+            minCol = 0;
+            if (nCols > 2) {
+                avgCol = 1;
+            } else {
+                avgCol = 0;
+            }
+            if (nCols > 2) {
+                maxCol = 2;
+            } else {
+                maxCol = 0;
+            }
+            previewTotalTime = 0;
+            previewTotalAvg = 0;
+            previewStartMs = streamEndTimeMs;
+            previewStopMs = streamStartTimeMs;
+            previewMinVal = YAPI_MAX_DOUBLE;
+            previewMaxVal = YAPI_MIN_DOUBLE;
+            m_pos = 0;
+            while (m_pos < (int)[dataRows count]) {
+                measure_data  = [dataRows objectAtIndex:m_pos];
+                if (m_pos == 0) {
+                    mitv = fitv;
+                } else {
+                    mitv = itv;
+                }
+                end_ = tim + mitv;
+                if ((end_ > _startTimeMs) && ((_endTimeMs == 0) || (tim < _endTimeMs))) {
+                    minVal = [[measure_data objectAtIndex:minCol] doubleValue];
+                    avgVal = [[measure_data objectAtIndex:avgCol] doubleValue];
+                    maxVal = [[measure_data objectAtIndex:maxCol] doubleValue];
+                    if (previewStartMs > tim) {
+                        previewStartMs = tim;
+                    }
+                    if (previewStopMs < end_) {
+                        previewStopMs = end_;
+                    }
+                    if (previewMinVal > minVal) {
+                        previewMinVal = minVal;
+                    }
+                    if (previewMaxVal < maxVal) {
+                        previewMaxVal = maxVal;
+                    }
+                    previewTotalAvg = previewTotalAvg + (avgVal * mitv);
+                    previewTotalTime = previewTotalTime + mitv;
+                }
+                tim = end_;
+                m_pos = m_pos + 1;
+            }
+            if (previewTotalTime > 0) {
+                previewAvgVal = previewTotalAvg / previewTotalTime;
+                previewDuration = (previewStopMs - previewStartMs) / 1000.0;
+            } else {
+                previewAvgVal = 0.0;
+                previewDuration = 0.0;
+            }
+        }
+        [_preview addObject:ARC_sendAutorelease([[YMeasure alloc] initWith:previewStartMs / 1000.0 :previewStopMs / 1000.0 :previewMinVal :previewAvgVal :previewMaxVal])];
+        if (summaryMinVal > previewMinVal) {
+            summaryMinVal = previewMinVal;
+        }
+        if (summaryMaxVal < previewMaxVal) {
+            summaryMaxVal = previewMaxVal;
+        }
+        if (summaryStartMs > previewStartMs) {
+            summaryStartMs = previewStartMs;
+        }
+        if (summaryStopMs < previewStopMs) {
+            summaryStopMs = previewStopMs;
+        }
+        summaryTotalAvg = summaryTotalAvg + (previewAvgVal * previewDuration);
+        summaryTotalTime = summaryTotalTime + previewDuration;
+    }
+    if ((_startTimeMs == 0) || (_startTimeMs > summaryStartMs)) {
+        _startTimeMs = summaryStartMs;
+    }
+    if ((_endTimeMs == 0) || (_endTimeMs < summaryStopMs)) {
+        _endTimeMs = summaryStopMs;
+    }
+    if (summaryTotalTime > 0) {
+        _summary = ARC_sendAutorelease([[YMeasure alloc] initWith:summaryStartMs / 1000.0 :summaryStopMs / 1000.0 :summaryMinVal :summaryTotalAvg / summaryTotalTime :summaryMaxVal]);
+    } else {
+        _summary = ARC_sendAutorelease([[YMeasure alloc] initWith:0.0 :0.0 :YAPI_INVALID_DOUBLE :YAPI_INVALID_DOUBLE :YAPI_INVALID_DOUBLE]);
+    }
+    return [self get_progress];
+}
+
 -(int) processMore:(int)progress :(NSData*)data
 {
     YDataStream* stream;
     NSMutableArray* dataRows = [NSMutableArray array];
-    NSString* strdata;
     double tim;
     double itv;
     double fitv;
@@ -7535,12 +7670,7 @@ static const char* hexArray = "0123456789ABCDEF";
         return _progress;
     }
     if (_progress < 0) {
-        strdata = ARC_sendAutorelease([[NSString alloc] initWithData:data encoding:NSISOLatin1StringEncoding]);
-        if ([strdata isEqualToString:@"{}"]) {
-            [_parent _throw:YAPI_VERSION_MISMATCH :@"device firmware is too old"];
-            return YAPI_VERSION_MISMATCH;
-        }
-        return [self _parse:strdata];
+        return [self loadSummary:data];
     }
     stream = [_streams objectAtIndex:_progress];
     [stream _parseStream:data];
@@ -7549,9 +7679,9 @@ static const char* hexArray = "0123456789ABCDEF";
     if ((int)[dataRows count] == 0) {
         return [self get_progress];
     }
-    tim = [stream get_realStartTimeUTC];
-    fitv = [stream get_firstDataSamplesInterval];
-    itv = [stream get_dataSamplesInterval];
+    tim = floor([stream get_realStartTimeUTC] * 1000+0.5);
+    fitv = floor([stream get_firstDataSamplesInterval] * 1000+0.5);
+    itv = floor([stream get_dataSamplesInterval] * 1000+0.5);
     if (fitv == 0) {
         fitv = itv;
     }
@@ -7579,8 +7709,8 @@ static const char* hexArray = "0123456789ABCDEF";
         } else {
             end_ = tim + itv;
         }
-        if ((tim >= _startTime) && ((_endTime == 0) || (end_ <= _endTime))) {
-            [_measures addObject:ARC_sendAutorelease([[YMeasure alloc] initWith:tim :end_ :[[_each objectAtIndex:minCol] doubleValue] :[[_each objectAtIndex:avgCol] doubleValue] :[[_each objectAtIndex:maxCol] doubleValue]])];
+        if ((end_ > _startTimeMs) && ((_endTimeMs == 0) || (tim < _endTimeMs))) {
+            [_measures addObject:ARC_sendAutorelease([[YMeasure alloc] initWith:tim / 1000 :end_ / 1000 :[[_each objectAtIndex:minCol] doubleValue] :[[_each objectAtIndex:avgCol] doubleValue] :[[_each objectAtIndex:maxCol] doubleValue]])];
         }
         tim = end_;
     }
@@ -7658,7 +7788,7 @@ static const char* hexArray = "0123456789ABCDEF";
 
 -(s64) imm_get_startTimeUTC
 {
-    return (s64) _startTime;
+    return (s64) (_startTimeMs / 1000.0);
 }
 
 /**
@@ -7684,7 +7814,7 @@ static const char* hexArray = "0123456789ABCDEF";
 
 -(s64) imm_get_endTimeUTC
 {
-    return (s64) floor(_endTime+0.5);
+    return (s64) floor(_endTimeMs / 1000.0+0.5);
 }
 
 /**
@@ -7722,10 +7852,10 @@ static const char* hexArray = "0123456789ABCDEF";
     YDataStream* stream;
     if (_progress < 0) {
         url = [NSString stringWithFormat:@"logger.json?id=%@",_functionId];
-        if (_startTime != 0) {
+        if (_startTimeMs != 0) {
             url = [NSString stringWithFormat:@"%@&from=%lu",url,[self imm_get_startTimeUTC]];
         }
-        if (_endTime != 0) {
+        if (_endTimeMs != 0) {
             url = [NSString stringWithFormat:@"%@&to=%lu",url,[self imm_get_endTimeUTC]+1];
         }
     } else {
@@ -7801,7 +7931,7 @@ static const char* hexArray = "0123456789ABCDEF";
  */
 -(NSMutableArray*) get_measuresAt:(YMeasure*)measure
 {
-    double startUtc;
+    double startUtcMs;
     YDataStream* stream;
     NSMutableArray* dataRows = [NSMutableArray array];
     NSMutableArray* measures = [NSMutableArray array];
@@ -7813,10 +7943,10 @@ static const char* hexArray = "0123456789ABCDEF";
     int avgCol;
     int maxCol;
 
-    startUtc = measure.get_startTimeUTC;
+    startUtcMs = measure.get_startTimeUTC * 1000;
     stream = nil;
     for (YDataStream* _each  in _streams) {
-        if ([_each get_realStartTimeUTC] == startUtc) {
+        if (floor([_each get_realStartTimeUTC] *1000+0.5) == startUtcMs) {
             stream = _each;
         }
     }
@@ -7827,8 +7957,8 @@ static const char* hexArray = "0123456789ABCDEF";
     if ((int)[dataRows count] == 0) {
         return measures;
     }
-    tim = [stream get_realStartTimeUTC];
-    itv = [stream get_dataSamplesInterval];
+    tim = floor([stream get_realStartTimeUTC] * 1000+0.5);
+    itv = floor([stream get_dataSamplesInterval] * 1000+0.5);
     if (tim < itv) {
         tim = itv;
     }
@@ -7847,8 +7977,8 @@ static const char* hexArray = "0123456789ABCDEF";
 
     for (NSMutableArray* _each  in dataRows) {
         end_ = tim + itv;
-        if ((tim >= _startTime) && ((_endTime == 0) || (end_ <= _endTime))) {
-            [measures addObject:ARC_sendAutorelease([[YMeasure alloc] initWith:tim :end_ :[[_each objectAtIndex:minCol] doubleValue] :[[_each objectAtIndex:avgCol] doubleValue] :[[_each objectAtIndex:maxCol] doubleValue]])];
+        if ((end_ > _startTimeMs) && ((_endTimeMs == 0) || (tim < _endTimeMs))) {
+            [measures addObject:ARC_sendAutorelease([[YMeasure alloc] initWith:tim / 1000.0 :end_ / 1000.0 :[[_each objectAtIndex:minCol] doubleValue] :[[_each objectAtIndex:avgCol] doubleValue] :[[_each objectAtIndex:maxCol] doubleValue]])];
         }
         tim = end_;
     }

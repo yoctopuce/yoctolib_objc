@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.h 33393 2018-11-26 17:44:40Z seb $
+ * $Id: yocto_api.h 33505 2018-12-05 14:45:46Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -62,7 +62,7 @@
 
 extern NSMutableDictionary* YAPI_YFunctions;
 
-#define YOCTO_API_REVISION          "33423"
+#define YOCTO_API_REVISION          "33576"
 
 // yInitAPI argument
 #define Y_DETECT_NONE           0
@@ -102,6 +102,8 @@ extern NSString *           YAPI_INVALID_STRING;
 #define YAPI_INVALID_UINT                 (-1)
 #define YAPI_INVALID_LONG                 (0x7fffffffffffffff)
 #define YAPI_INVALID_DOUBLE               (-DBL_MAX)
+#define YAPI_MAX_DOUBLE                   DBL_MAX
+#define YAPI_MIN_DOUBLE                   (-DBL_MAX)
 
 #define Y_HARDWAREID_INVALID              YAPI_INVALID_STRING
 #define Y_FUNCTIONID_INVALID              YAPI_INVALID_STRING
@@ -2773,14 +2775,18 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
     NSString*       _hardwareId;
     NSString*       _functionId;
     NSString*       _unit;
-    double          _startTime;
-    double          _endTime;
+    double          _startTimeMs;
+    double          _endTimeMs;
     int             _progress;
     NSMutableArray* _calib;
     NSMutableArray* _streams;
     YMeasure*       _summary;
     NSMutableArray* _preview;
     NSMutableArray* _measures;
+    double          _summaryMinVal;
+    double          _summaryMaxVal;
+    double          _summaryTotalAvg;
+    double          _summaryTotalTime;
 //--- (end of generated code: YDataSet attributes declaration)
 }
 
@@ -2793,6 +2799,8 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
 
 //--- (generated code: YDataSet public methods declaration)
 -(NSMutableArray*)     _get_calibration;
+
+-(int)     loadSummary:(NSData*)data;
 
 -(int)     processMore:(int)progress :(NSData*)data;
 
