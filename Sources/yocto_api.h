@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.h 33505 2018-12-05 14:45:46Z seb $
+ * $Id: yocto_api.h 33601 2018-12-09 14:30:31Z mvuilleu $
  *
  * High-level programming interface, common to all modules
  *
@@ -62,7 +62,7 @@
 
 extern NSMutableDictionary* YAPI_YFunctions;
 
-#define YOCTO_API_REVISION          "33576"
+#define YOCTO_API_REVISION          "33636"
 
 // yInitAPI argument
 #define Y_DETECT_NONE           0
@@ -225,6 +225,7 @@ typedef enum {
 #endif
 #define Y_CURRENTRUNINDEX_INVALID       YAPI_INVALID_UINT
 #define Y_TIMEUTC_INVALID               YAPI_INVALID_LONG
+#define Y_USAGE_INVALID                 YAPI_INVALID_UINT
 //--- (end of generated code: YDataLogger globals)
 
 
@@ -3384,6 +3385,7 @@ YSensor* yFirstSensor(void);
     Y_RECORDING_enum _recording;
     Y_AUTOSTART_enum _autoStart;
     Y_BEACONDRIVEN_enum _beaconDriven;
+    int             _usage;
     Y_CLEARHISTORY_enum _clearHistory;
     YDataLoggerValueCallback _valueCallbackDataLogger;
 //--- (end of generated code: YDataLogger attributes declaration)
@@ -3517,6 +3519,17 @@ YSensor* yFirstSensor(void);
 -(int)     set_beaconDriven:(Y_BEACONDRIVEN_enum) newval;
 -(int)     setBeaconDriven:(Y_BEACONDRIVEN_enum) newval;
 
+/**
+ * Returns the percentage of datalogger memory in use.
+ *
+ * @return an integer corresponding to the percentage of datalogger memory in use
+ *
+ * On failure, throws an exception or returns Y_USAGE_INVALID.
+ */
+-(int)     get_usage;
+
+
+-(int) usage;
 -(Y_CLEARHISTORY_enum)     get_clearHistory;
 
 

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.m 33533 2018-12-06 08:49:30Z seb $
+ * $Id: yocto_api.m 33601 2018-12-09 14:30:31Z mvuilleu $
  *
  * High-level programming interface, common to all modules
  *
@@ -8035,6 +8035,7 @@ static const char* hexArray = "0123456789ABCDEF";
     _recording = Y_RECORDING_INVALID;
     _autoStart = Y_AUTOSTART_INVALID;
     _beaconDriven = Y_BEACONDRIVEN_INVALID;
+    _usage = Y_USAGE_INVALID;
     _clearHistory = Y_CLEARHISTORY_INVALID;
     _valueCallbackDataLogger = NULL;
 //--- (end of generated code: YDataLogger attributes initialization)
@@ -8077,6 +8078,11 @@ static const char* hexArray = "0123456789ABCDEF";
     if(!strcmp(j->token, "beaconDriven")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
         _beaconDriven =  (Y_BEACONDRIVEN_enum)atoi(j->token);
+        return 1;
+    }
+    if(!strcmp(j->token, "usage")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _usage =  atoi(j->token);
         return 1;
     }
     if(!strcmp(j->token, "clearHistory")) {
@@ -8373,6 +8379,30 @@ static const char* hexArray = "0123456789ABCDEF";
     NSString* rest_val;
     rest_val = (newval ? @"1" : @"0");
     return [self _setAttr:@"beaconDriven" :rest_val];
+}
+/**
+ * Returns the percentage of datalogger memory in use.
+ *
+ * @return an integer corresponding to the percentage of datalogger memory in use
+ *
+ * On failure, throws an exception or returns Y_USAGE_INVALID.
+ */
+-(int) get_usage
+{
+    int res;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
+            return Y_USAGE_INVALID;
+        }
+    }
+    res = _usage;
+    return res;
+}
+
+
+-(int) usage
+{
+    return [self get_usage];
 }
 -(Y_CLEARHISTORY_enum) get_clearHistory
 {
