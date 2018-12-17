@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_multicellweighscale.m 32610 2018-10-10 06:52:20Z seb $
+ *  $Id: yocto_multicellweighscale.m 33715 2018-12-14 14:21:27Z seb $
  *
  *  Implements the high-level API for MultiCellWeighScale functions
  *
@@ -250,7 +250,7 @@
  * Changes the averaged temperature update rate, in per mille.
  * The purpose of this adaptation ratio is to model the thermal inertia of the load cell.
  * The averaged temperature is updated every 10 seconds, by applying this adaptation rate
- * to the difference between the measures ambiant temperature and the current compensation
+ * to the difference between the measures ambient temperature and the current compensation
  * temperature. The standard rate is 0.2 per mille, and the maximal rate is 65 per mille.
  *
  * @param newval : a floating point number corresponding to the averaged temperature update rate, in per mille
@@ -273,7 +273,7 @@
  * Returns the averaged temperature update rate, in per mille.
  * The purpose of this adaptation ratio is to model the thermal inertia of the load cell.
  * The averaged temperature is updated every 10 seconds, by applying this adaptation rate
- * to the difference between the measures ambiant temperature and the current compensation
+ * to the difference between the measures ambient temperature and the current compensation
  * temperature. The standard rate is 0.2 per mille, and the maximal rate is 65 per mille.
  *
  * @return a floating point number corresponding to the averaged temperature update rate, in per mille
@@ -301,7 +301,7 @@
 /**
  * Changes the temperature change update rate, in per mille.
  * The temperature change is updated every 10 seconds, by applying this adaptation rate
- * to the difference between the measures ambiant temperature and the current temperature used for
+ * to the difference between the measures ambient temperature and the current temperature used for
  * change compensation. The standard rate is 0.6 per mille, and the maximal rate is 65 pour mille.
  *
  * @param newval : a floating point number corresponding to the temperature change update rate, in per mille
@@ -323,7 +323,7 @@
 /**
  * Returns the temperature change update rate, in per mille.
  * The temperature change is updated every 10 seconds, by applying this adaptation rate
- * to the difference between the measures ambiant temperature and the current temperature used for
+ * to the difference between the measures ambient temperature and the current temperature used for
  * change compensation. The standard rate is 0.6 per mille, and the maximal rate is 65 pour mille.
  *
  * @return a floating point number corresponding to the temperature change update rate, in per mille
@@ -626,7 +626,7 @@
  * so that the current signal corresponds to the specified reference weight.
  *
  * @param currWeight : reference weight presently on the load cell.
- * @param maxWeight : maximum weight to be expectect on the load cell.
+ * @param maxWeight : maximum weight to be expected on the load cell.
  *
  * @return YAPI_SUCCESS if the call succeeds.
  *

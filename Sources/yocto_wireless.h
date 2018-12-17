@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_wireless.h 32906 2018-11-02 10:18:15Z seb $
+ * $Id: yocto_wireless.h 33715 2018-12-14 14:21:27Z seb $
  *
  * Declares yFindWireless(), the high-level API for Wireless functions
  *
@@ -350,7 +350,7 @@ typedef enum {
 
 /**
  * Returns a list of YWlanRecord objects that describe detected Wireless networks.
- * This list is not updated when the module is already connected to an acces point (infrastructure mode).
+ * This list is not updated when the module is already connected to an access point (infrastructure mode).
  * To force an update of this list, startWlanScan() must be called.
  * Note that an languages without garbage collections, the returned list must be freed by the caller.
  *

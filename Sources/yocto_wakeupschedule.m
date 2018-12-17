@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_wakeupschedule.m 32610 2018-10-10 06:52:20Z seb $
+ *  $Id: yocto_wakeupschedule.m 33715 2018-12-14 14:21:27Z seb $
  *
  *  Implements the high-level API for WakeUpSchedule functions
  *
@@ -161,9 +161,9 @@
     return [self _setAttr:@"minutesA" :rest_val];
 }
 /**
- * Returns the minutes in the 30-59 intervalof each hour scheduled for wake up.
+ * Returns the minutes in the 30-59 interval of each hour scheduled for wake up.
  *
- * @return an integer corresponding to the minutes in the 30-59 intervalof each hour scheduled for wake up
+ * @return an integer corresponding to the minutes in the 30-59 interval of each hour scheduled for wake up
  *
  * On failure, throws an exception or returns Y_MINUTESB_INVALID.
  */
@@ -381,9 +381,9 @@
     return [self _setAttr:@"months" :rest_val];
 }
 /**
- * Returns the date/time (seconds) of the next wake up occurence.
+ * Returns the date/time (seconds) of the next wake up occurrence.
  *
- * @return an integer corresponding to the date/time (seconds) of the next wake up occurence
+ * @return an integer corresponding to the date/time (seconds) of the next wake up occurrence
  *
  * On failure, throws an exception or returns Y_NEXTOCCURENCE_INVALID.
  */

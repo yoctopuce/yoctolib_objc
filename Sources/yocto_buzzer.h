@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_buzzer.h 32906 2018-11-02 10:18:15Z seb $
+ *  $Id: yocto_buzzer.h 33715 2018-12-14 14:21:27Z seb $
  *
  *  Declares yFindBuzzer(), the high-level API for Buzzer functions
  *
@@ -307,7 +307,7 @@ typedef void (*YBuzzerValueCallback)(YBuzzer *func, NSString *functionValue);
  * Activates the buzzer for a short duration.
  *
  * @param frequency : pulse frequency, in hertz
- * @param duration : pulse duration in millseconds
+ * @param duration : pulse duration in milliseconds
  *
  * @return YAPI_SUCCESS if the call succeeds.
  *
@@ -319,7 +319,7 @@ typedef void (*YBuzzerValueCallback)(YBuzzer *func, NSString *functionValue);
  * Makes the buzzer frequency change over a period of time.
  *
  * @param frequency : frequency to reach, in hertz. A frequency under 25Hz stops the buzzer.
- * @param duration :  pulse duration in millseconds
+ * @param duration :  pulse duration in milliseconds
  *
  * @return YAPI_SUCCESS if the call succeeds.
  *
@@ -331,7 +331,7 @@ typedef void (*YBuzzerValueCallback)(YBuzzer *func, NSString *functionValue);
  * Makes the buzzer volume change over a period of time, frequency  stays untouched.
  *
  * @param volume : volume to reach in %
- * @param duration : change duration in millseconds
+ * @param duration : change duration in milliseconds
  *
  * @return YAPI_SUCCESS if the call succeeds.
  *

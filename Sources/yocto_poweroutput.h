@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_poweroutput.h 32906 2018-11-02 10:18:15Z seb $
+ *  $Id: yocto_poweroutput.h 33715 2018-12-14 14:21:27Z seb $
  *
  *  Declares yFindPowerOutput(), the high-level API for PowerOutput functions
  *
@@ -60,7 +60,7 @@ typedef enum {
  * YPowerOutput Class: External power supply control interface
  *
  * Yoctopuce application programming interface allows you to control
- * the power ouput featured on some devices such as the Yocto-Serial.
+ * the power output featured on some devices such as the Yocto-Serial.
  */
 @interface YPowerOutput : YFunction
 //--- (end of YPowerOutput class start)
@@ -111,7 +111,7 @@ typedef enum {
 -(int)     setVoltage:(Y_VOLTAGE_enum) newval;
 
 /**
- * Retrieves a dual power  ouput control for a given identifier.
+ * Retrieves a dual power  output control for a given identifier.
  * The identifier can be specified using several formats:
  * <ul>
  * <li>FunctionLogicalName</li>
@@ -121,11 +121,11 @@ typedef enum {
  * <li>ModuleLogicalName.FunctionLogicalName</li>
  * </ul>
  *
- * This function does not require that the power ouput control is online at the time
+ * This function does not require that the power output control is online at the time
  * it is invoked. The returned object is nevertheless valid.
- * Use the method YPowerOutput.isOnline() to test if the power ouput control is
+ * Use the method YPowerOutput.isOnline() to test if the power output control is
  * indeed online at a given time. In case of ambiguity when looking for
- * a dual power  ouput control by logical name, no error is notified: the first instance
+ * a dual power  output control by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
  *
@@ -133,9 +133,9 @@ typedef enum {
  * you are certain that the matching device is plugged, make sure that you did
  * call registerHub() at application initialization time.
  *
- * @param func : a string that uniquely characterizes the power ouput control
+ * @param func : a string that uniquely characterizes the power output control
  *
- * @return a YPowerOutput object allowing you to drive the power ouput control.
+ * @return a YPowerOutput object allowing you to drive the power output control.
  */
 +(YPowerOutput*)     FindPowerOutput:(NSString*)func;
 
@@ -156,23 +156,23 @@ typedef enum {
 
 
 /**
- * Continues the enumeration of dual power ouput controls started using yFirstPowerOutput().
- * Caution: You can't make any assumption about the returned dual power ouput controls order.
- * If you want to find a specific a dual power  ouput control, use PowerOutput.findPowerOutput()
+ * Continues the enumeration of dual power output controls started using yFirstPowerOutput().
+ * Caution: You can't make any assumption about the returned dual power output controls order.
+ * If you want to find a specific a dual power  output control, use PowerOutput.findPowerOutput()
  * and a hardwareID or a logical name.
  *
  * @return a pointer to a YPowerOutput object, corresponding to
- *         a dual power  ouput control currently online, or a nil pointer
- *         if there are no more dual power ouput controls to enumerate.
+ *         a dual power  output control currently online, or a nil pointer
+ *         if there are no more dual power output controls to enumerate.
  */
 -(YPowerOutput*) nextPowerOutput;
 /**
- * Starts the enumeration of dual power ouput controls currently accessible.
+ * Starts the enumeration of dual power output controls currently accessible.
  * Use the method YPowerOutput.nextPowerOutput() to iterate on
- * next dual power ouput controls.
+ * next dual power output controls.
  *
  * @return a pointer to a YPowerOutput object, corresponding to
- *         the first dual power ouput control currently online, or a nil pointer
+ *         the first dual power output control currently online, or a nil pointer
  *         if there are none.
  */
 +(YPowerOutput*) FirstPowerOutput;
@@ -182,7 +182,7 @@ typedef enum {
 
 //--- (YPowerOutput functions declaration)
 /**
- * Retrieves a dual power  ouput control for a given identifier.
+ * Retrieves a dual power  output control for a given identifier.
  * The identifier can be specified using several formats:
  * <ul>
  * <li>FunctionLogicalName</li>
@@ -192,11 +192,11 @@ typedef enum {
  * <li>ModuleLogicalName.FunctionLogicalName</li>
  * </ul>
  *
- * This function does not require that the power ouput control is online at the time
+ * This function does not require that the power output control is online at the time
  * it is invoked. The returned object is nevertheless valid.
- * Use the method YPowerOutput.isOnline() to test if the power ouput control is
+ * Use the method YPowerOutput.isOnline() to test if the power output control is
  * indeed online at a given time. In case of ambiguity when looking for
- * a dual power  ouput control by logical name, no error is notified: the first instance
+ * a dual power  output control by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
  *
@@ -204,18 +204,18 @@ typedef enum {
  * you are certain that the matching device is plugged, make sure that you did
  * call registerHub() at application initialization time.
  *
- * @param func : a string that uniquely characterizes the power ouput control
+ * @param func : a string that uniquely characterizes the power output control
  *
- * @return a YPowerOutput object allowing you to drive the power ouput control.
+ * @return a YPowerOutput object allowing you to drive the power output control.
  */
 YPowerOutput* yFindPowerOutput(NSString* func);
 /**
- * Starts the enumeration of dual power ouput controls currently accessible.
+ * Starts the enumeration of dual power output controls currently accessible.
  * Use the method YPowerOutput.nextPowerOutput() to iterate on
- * next dual power ouput controls.
+ * next dual power output controls.
  *
  * @return a pointer to a YPowerOutput object, corresponding to
- *         the first dual power ouput control currently online, or a nil pointer
+ *         the first dual power output control currently online, or a nil pointer
  *         if there are none.
  */
 YPowerOutput* yFirstPowerOutput(void);

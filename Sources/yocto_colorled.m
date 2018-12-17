@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_colorled.m 32610 2018-10-10 06:52:20Z seb $
+ *  $Id: yocto_colorled.m 33715 2018-12-14 14:21:27Z seb $
  *
  *  Implements the high-level API for ColorLed functions
  *
@@ -571,7 +571,7 @@
  * Add a new transition to the blinking sequence, the move will
  * be performed in the HSL space.
  *
- * @param HSLcolor : desired HSL color when the traisntion is completed
+ * @param HSLcolor : desired HSL color when the transition is completed
  * @param msDelay : duration of the color transition, in milliseconds.
  *
  * @return YAPI_SUCCESS if the call succeeds.

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_colorledcluster.m 32610 2018-10-10 06:52:20Z seb $
+ *  $Id: yocto_colorledcluster.m 33715 2018-12-14 14:21:27Z seb $
  *
  *  Implements the high-level API for ColorLedCluster functions
  *
@@ -387,8 +387,8 @@
 }
 
 /**
- * Changes the current color of consecutve LEDs in the cluster, using a RGB color. Encoding is done as
- * follows: 0xRRGGBB.
+ * Changes the current color of consecutive LEDs in the cluster, using a RGB color. Encoding is done
+ * as follows: 0xRRGGBB.
  *
  * @param ledIndex :  index of the first affected LED.
  * @param count    :  affected LED count.
@@ -404,8 +404,8 @@
 }
 
 /**
- * Changes the  color at device startup of consecutve LEDs in the cluster, using a RGB color. Encoding
- * is done as follows: 0xRRGGBB.
+ * Changes the  color at device startup of consecutive LEDs in the cluster, using a RGB color.
+ * Encoding is done as follows: 0xRRGGBB.
  * Don't forget to call saveLedsConfigAtPowerOn() to make sure the modification is saved in the device
  * flash memory.
  *
@@ -423,8 +423,8 @@
 }
 
 /**
- * Changes the  color at device startup of consecutve LEDs in the cluster, using a HSL color. Encoding
- * is done as follows: 0xHHSSLL.
+ * Changes the  color at device startup of consecutive LEDs in the cluster, using a HSL color.
+ * Encoding is done as follows: 0xHHSSLL.
  * Don't forget to call saveLedsConfigAtPowerOn() to make sure the modification is saved in the device
  * flash memory.
  *
@@ -486,7 +486,7 @@
  * If the difference is exactly 180°, the module selects the transition which increases
  * the hue.
  *
- * @param ledIndex :  index of the fisrt affected LED.
+ * @param ledIndex :  index of the first affected LED.
  * @param count    :  affected LED count.
  * @param hslValue :  new color (0xHHSSLL).
  * @param delay    :  transition duration in ms
@@ -520,7 +520,7 @@
 
 /**
  * Adds an HSL transition to a sequence. A sequence is a transition list, which can
- * be executed in loop by an group of LEDs.  Sequences are persistant and are saved
+ * be executed in loop by an group of LEDs.  Sequences are persistent and are saved
  * in the device flash memory as soon as the saveBlinkSeq() method is called.
  *
  * @param seqIndex : sequence index.
@@ -608,7 +608,7 @@
 }
 
 /**
- * Links adjacent LEDs to a specific sequence at device poweron. Don't forget to configure
+ * Links adjacent LEDs to a specific sequence at device power-on. Don't forget to configure
  * the sequence auto start flag as well and call saveLedsConfigAtPowerOn(). It is possible to add an offset
  * in the execution: that way we  can have several groups of LEDs executing the same
  * sequence, with a  temporal offset. A LED cannot be linked to more than one sequence.
@@ -693,7 +693,7 @@
 }
 
 /**
- * Stops a sequence execution and resets its contents. Leds linked to this
+ * Stops a sequence execution and resets its contents. LEDs linked to this
  * sequence are not automatically updated anymore.
  *
  * @param seqIndex :  index of the sequence to reset
@@ -1008,7 +1008,7 @@
 
 /**
  * Returns a list on 24bit RGB color values with the current colors displayed on
- * the RGB leds. The first number represents the RGB value of the first LED,
+ * the RGB LEDs. The first number represents the RGB value of the first LED,
  * the second number represents the RGB value of the second LED, etc.
  *
  * @param ledIndex : index of the first LED which should be returned

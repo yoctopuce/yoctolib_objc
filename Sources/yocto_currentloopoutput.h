@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_currentloopoutput.h 32906 2018-11-02 10:18:15Z seb $
+ *  $Id: yocto_currentloopoutput.h 33715 2018-12-14 14:21:27Z seb $
  *
  *  Declares yFindCurrentLoopOutput(), the high-level API for CurrentLoopOutput functions
  *
@@ -90,7 +90,7 @@ typedef enum {
 //--- (YCurrentLoopOutput public methods declaration)
 /**
  * Changes the current loop, the valid range is from 3 to 21mA. If the loop is
- * not propely powered, the  target current is not reached and
+ * not properly powered, the  target current is not reached and
  * loopPower is set to LOWPWR.
  *
  * @param newval : a floating point number corresponding to the current loop, the valid range is from 3 to 21mA
@@ -203,7 +203,7 @@ typedef enum {
 -(int)     _invokeValueCallback:(NSString*)value;
 
 /**
- * Performs a smooth transistion of current flowing in the loop. Any current explicit
+ * Performs a smooth transition of current flowing in the loop. Any current explicit
  * change cancels any ongoing transition process.
  *
  * @param mA_target   : new current value at the end of the transition

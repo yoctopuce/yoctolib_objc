@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_steppermotor.h 32906 2018-11-02 10:18:15Z seb $
+ *  $Id: yocto_steppermotor.h 33715 2018-12-14 14:21:27Z seb $
  *
  *  Declares yFindStepperMotor(), the high-level API for StepperMotor functions
  *
@@ -532,7 +532,7 @@ typedef enum {
 
 /**
  * Move one step in the direction opposite the direction set when the most recent alert was raised.
- * The move occures even if the system is still in alert mode (end switch depressed). Caution.
+ * The move occurs even if the system is still in alert mode (end switch depressed). Caution.
  * use this function with great care as it may cause mechanical damages !
  *
  * @return YAPI_SUCCESS if the call succeeds.
@@ -542,10 +542,10 @@ typedef enum {
 
 /**
  * Move one single step in the selected direction without regards to end switches.
- * The move occures even if the system is still in alert mode (end switch depressed). Caution.
+ * The move occurs even if the system is still in alert mode (end switch depressed). Caution.
  * use this function with great care as it may cause mechanical damages !
  *
- * @param dir : Value +1 ou -1, according to the desired direction of the move
+ * @param dir : Value +1 or -1, according to the desired direction of the move
  *
  * @return YAPI_SUCCESS if the call succeeds.
  *         On failure, throws an exception or returns a negative error code.

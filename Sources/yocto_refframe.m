@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_refframe.m 32610 2018-10-10 06:52:20Z seb $
+ *  $Id: yocto_refframe.m 33715 2018-12-14 14:21:27Z seb $
  *
  *  Implements the high-level API for RefFrame functions
  *
@@ -533,7 +533,7 @@
  * The calibration procedure is completed when the method
  * get_3DCalibrationProgress returns 100. At this point,
  * the computed calibration parameters can be applied using method
- * save3DCalibration. The calibration process can be canceled
+ * save3DCalibration. The calibration process can be cancelled
  * at any time using method cancel3DCalibration.
  *
  * On failure, throws an exception or returns a negative error code.
@@ -604,7 +604,7 @@
     if (_calibProgress == 100) {
         return YAPI_SUCCESS;
     }
-    // make sure we leave at least 160ms between samples
+    // make sure we leave at least 160 ms between samples
     currTick =  (int) (([YAPI GetTickCount]) & (0x7FFFFFFF));
     if (((currTick - _calibPrevTick) & (0x7FFFFFFF)) < 160) {
         return YAPI_SUCCESS;

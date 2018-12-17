@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_latitude.h 32906 2018-11-02 10:18:15Z seb $
+ *  $Id: yocto_latitude.h 33715 2018-12-14 14:21:27Z seb $
  *
  *  Declares yFindLatitude(), the high-level API for Latitude functions
  *
@@ -52,7 +52,7 @@ typedef void (*YLatitudeTimedReportCallback)(YLatitude *func, YMeasure *measure)
  * YLatitude Class: Latitude function interface
  *
  * The Yoctopuce class YLatitude allows you to read the latitude from Yoctopuce
- * geolocalization sensors. It inherits from the YSensor class the core functions to
+ * geolocation sensors. It inherits from the YSensor class the core functions to
  * read measurements, to register callback functions, to access the autonomous
  * datalogger.
  */

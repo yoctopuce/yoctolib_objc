@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_proximity.h 32906 2018-11-02 10:18:15Z seb $
+ *  $Id: yocto_proximity.h 33715 2018-12-14 14:21:27Z seb $
  *
  *  Declares yFindProximity(), the high-level API for Proximity functions
  *
@@ -184,10 +184,10 @@ typedef enum {
 -(int)     setDetectionHysteresis:(int) newval;
 
 /**
- * Returns the minimal detection duration before signaling a presence event. Any shorter detection is
+ * Returns the minimal detection duration before signalling a presence event. Any shorter detection is
  * considered as noise or bounce (false positive) and filtered out.
  *
- * @return an integer corresponding to the minimal detection duration before signaling a presence event
+ * @return an integer corresponding to the minimal detection duration before signalling a presence event
  *
  * On failure, throws an exception or returns Y_PRESENCEMINTIME_INVALID.
  */
@@ -196,10 +196,10 @@ typedef enum {
 
 -(int) presenceMinTime;
 /**
- * Changes the minimal detection duration before signaling a presence event. Any shorter detection is
+ * Changes the minimal detection duration before signalling a presence event. Any shorter detection is
  * considered as noise or bounce (false positive) and filtered out.
  *
- * @param newval : an integer corresponding to the minimal detection duration before signaling a presence event
+ * @param newval : an integer corresponding to the minimal detection duration before signalling a presence event
  *
  * @return YAPI_SUCCESS if the call succeeds.
  *
@@ -209,10 +209,10 @@ typedef enum {
 -(int)     setPresenceMinTime:(int) newval;
 
 /**
- * Returns the minimal detection duration before signaling a removal event. Any shorter detection is
+ * Returns the minimal detection duration before signalling a removal event. Any shorter detection is
  * considered as noise or bounce (false positive) and filtered out.
  *
- * @return an integer corresponding to the minimal detection duration before signaling a removal event
+ * @return an integer corresponding to the minimal detection duration before signalling a removal event
  *
  * On failure, throws an exception or returns Y_REMOVALMINTIME_INVALID.
  */
@@ -221,10 +221,10 @@ typedef enum {
 
 -(int) removalMinTime;
 /**
- * Changes the minimal detection duration before signaling a removal event. Any shorter detection is
+ * Changes the minimal detection duration before signalling a removal event. Any shorter detection is
  * considered as noise or bounce (false positive) and filtered out.
  *
- * @param newval : an integer corresponding to the minimal detection duration before signaling a removal event
+ * @param newval : an integer corresponding to the minimal detection duration before signalling a removal event
  *
  * @return YAPI_SUCCESS if the call succeeds.
  *

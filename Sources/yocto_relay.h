@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_relay.h 32906 2018-11-02 10:18:15Z seb $
+ *  $Id: yocto_relay.h 33715 2018-12-14 14:21:27Z seb $
  *
  *  Declares yFindRelay(), the high-level API for Relay functions
  *
@@ -272,7 +272,7 @@ typedef struct _YDelayedPulse {
  * Sets the relay to output B (active) for a specified duration, then brings it
  * automatically back to output A (idle state).
  *
- * @param ms_duration : pulse duration, in millisecondes
+ * @param ms_duration : pulse duration, in milliseconds
  *
  * @return YAPI_SUCCESS if the call succeeds.
  *
@@ -290,8 +290,8 @@ typedef struct _YDelayedPulse {
 /**
  * Schedules a pulse.
  *
- * @param ms_delay : waiting time before the pulse, in millisecondes
- * @param ms_duration : pulse duration, in millisecondes
+ * @param ms_delay : waiting time before the pulse, in milliseconds
+ * @param ms_duration : pulse duration, in milliseconds
  *
  * @return YAPI_SUCCESS if the call succeeds.
  *

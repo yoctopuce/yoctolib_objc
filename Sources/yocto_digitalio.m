@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_digitalio.m 33135 2018-11-12 15:32:32Z mvuilleu $
+ *  $Id: yocto_digitalio.m 33722 2018-12-14 15:04:43Z seb $
  *
  *  Implements the high-level API for DigitalIO functions
  *
@@ -552,8 +552,8 @@
  */
 -(int) set_bitState:(int)bitno :(int)bitstate
 {
-    if (!(bitstate >= 0)) {[self _throw: YAPI_INVALID_ARGUMENT: @"invalid bitstate"]; return YAPI_INVALID_ARGUMENT;}
-    if (!(bitstate <= 1)) {[self _throw: YAPI_INVALID_ARGUMENT: @"invalid bitstate"]; return YAPI_INVALID_ARGUMENT;}
+    if (!(bitstate >= 0)) {[self _throw: YAPI_INVALID_ARGUMENT: @"invalid bit state"]; return YAPI_INVALID_ARGUMENT;}
+    if (!(bitstate <= 1)) {[self _throw: YAPI_INVALID_ARGUMENT: @"invalid bit state"]; return YAPI_INVALID_ARGUMENT;}
     return [self set_command:[NSString stringWithFormat:@"%c%d",82+bitstate,bitno]];
 }
 
@@ -636,8 +636,8 @@
  */
 -(int) set_bitPolarity:(int)bitno :(int)bitpolarity
 {
-    if (!(bitpolarity >= 0)) {[self _throw: YAPI_INVALID_ARGUMENT: @"invalid bitpolarity"]; return YAPI_INVALID_ARGUMENT;}
-    if (!(bitpolarity <= 1)) {[self _throw: YAPI_INVALID_ARGUMENT: @"invalid bitpolarity"]; return YAPI_INVALID_ARGUMENT;}
+    if (!(bitpolarity >= 0)) {[self _throw: YAPI_INVALID_ARGUMENT: @"invalid bit polarity"]; return YAPI_INVALID_ARGUMENT;}
+    if (!(bitpolarity <= 1)) {[self _throw: YAPI_INVALID_ARGUMENT: @"invalid bit polarity"]; return YAPI_INVALID_ARGUMENT;}
     return [self set_command:[NSString stringWithFormat:@"%c%d",110+4*bitpolarity,bitno]];
 }
 

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.m 33601 2018-12-09 14:30:31Z mvuilleu $
+ * $Id: yocto_api.m 33715 2018-12-14 14:21:27Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -1170,7 +1170,7 @@ static const char* hexArray = "0123456789ABCDEF";
  * parameter will determine how the API will work. Use the following values:
  *
  * <b>usb</b>: When the usb keyword is used, the API will work with
- * devices connected directly to the USB bus. Some programming languages such a Javascript,
+ * devices connected directly to the USB bus. Some programming languages such a JavaScript,
  * PHP, and Java don't provide direct access to USB hardware, so usb will
  * not work with these. In this case, use a VirtualHub or a networked YoctoHub (see below).
  *
@@ -3731,7 +3731,7 @@ static const char* hexArray = "0123456789ABCDEF";
  * Changes the timed value notification frequency for this function.
  * The frequency can be specified as samples per second,
  * as sample per minute (for instance "15/m") or in samples per
- * hour (eg. "4/h"). To disable timed value notifications for this
+ * hour (e.g. "4/h"). To disable timed value notifications for this
  * function, use the value "OFF".
  *
  * @param newval : a string corresponding to the timed value notification frequency for this function
@@ -4018,7 +4018,7 @@ static const char* hexArray = "0123456789ABCDEF";
                 return 0;
             }
         }
-        // New 32bit text format
+        // New 32 bits text format
         _offset = 0;
         _scale = 1000;
         maxpos = (int)[iCalib count];
@@ -4184,11 +4184,11 @@ static const char* hexArray = "0123456789ABCDEF";
  * @param startTime : the start of the desired measure time interval,
  *         as a Unix timestamp, i.e. the number of seconds since
  *         January 1, 1970 UTC. The special value 0 can be used
- *         to include any meaasure, without initial limit.
+ *         to include any measure, without initial limit.
  * @param endTime : the end of the desired measure time interval,
  *         as a Unix timestamp, i.e. the number of seconds since
  *         January 1, 1970 UTC. The special value 0 can be used
- *         to include any meaasure, without ending limit.
+ *         to include any measure, without ending limit.
  *
  * @return an instance of YDataSet, providing access to historical
  *         data. Past measures can be loaded progressively
@@ -4383,7 +4383,7 @@ static const char* hexArray = "0123456789ABCDEF";
     if (startTime == 0) {
         startTime = endTime;
     }
-    // 32bit timed report format
+    // 32 bits timed report format
     if ((int)[report count] <= 5) {
         // sub-second report, 1-4 bytes
         poww = 1;
@@ -4856,9 +4856,9 @@ static const char* hexArray = "0123456789ABCDEF";
     return [self _setAttr:@"persistentSettings" :rest_val];
 }
 /**
- * Returns the luminosity of the  module informative leds (from 0 to 100).
+ * Returns the luminosity of the  module informative LEDs (from 0 to 100).
  *
- * @return an integer corresponding to the luminosity of the  module informative leds (from 0 to 100)
+ * @return an integer corresponding to the luminosity of the  module informative LEDs (from 0 to 100)
  *
  * On failure, throws an exception or returns Y_LUMINOSITY_INVALID.
  */
@@ -7539,7 +7539,7 @@ static const char* hexArray = "0123456789ABCDEF";
     summaryStartMs = YAPI_MAX_DOUBLE;
     summaryStopMs = YAPI_MIN_DOUBLE;
 
-    // Parse comlete streams
+    // Parse complete streams
     for (YDataStream* _each  in  _streams) {
         streamStartTimeMs = floor([_each get_realStartTimeUTC] *1000+0.5);
         streamDuration = [_each get_realDuration] ;
@@ -7554,7 +7554,7 @@ static const char* hexArray = "0123456789ABCDEF";
             previewDuration = streamDuration;
         } else {
             // stream that are partially in the dataset
-            // we need to parse data to filter value outide the dataset
+            // we need to parse data to filter value outside the dataset
             url = [_each _get_url];
             data = [_parent _download:url];
             [_each _parseStream:data];
@@ -8683,7 +8683,7 @@ void yEnableExceptions(void)  { [YAPI EnableExceptions]; }
  * parameter will determine how the API will work. Use the following values:
  *
  * <b>usb</b>: When the usb keyword is used, the API will work with
- * devices connected directly to the USB bus. Some programming languages such a Javascript,
+ * devices connected directly to the USB bus. Some programming languages such a JavaScript,
  * PHP, and Java don't provide direct access to USB hardware, so usb will
  * not work with these. In this case, use a VirtualHub or a networked YoctoHub (see below).
  *

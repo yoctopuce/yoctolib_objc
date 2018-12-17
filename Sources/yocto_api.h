@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.h 33601 2018-12-09 14:30:31Z mvuilleu $
+ * $Id: yocto_api.h 33715 2018-12-14 14:21:27Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -62,7 +62,7 @@
 
 extern NSMutableDictionary* YAPI_YFunctions;
 
-#define YOCTO_API_REVISION          "33657"
+#define YOCTO_API_REVISION          "33736"
 
 // yInitAPI argument
 #define Y_DETECT_NONE           0
@@ -538,7 +538,7 @@ int _ystrpos(NSString* haystack, NSString* needle);
  * parameter will determine how the API will work. Use the following values:
  *
  * <b>usb</b>: When the usb keyword is used, the API will work with
- * devices connected directly to the USB bus. Some programming languages such a Javascript,
+ * devices connected directly to the USB bus. Some programming languages such a JavaScript,
  * PHP, and Java don't provide direct access to USB hardware, so usb will
  * not work with these. In this case, use a VirtualHub or a networked YoctoHub (see below).
  *
@@ -1389,9 +1389,9 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
 -(int)     setPersistentSettings:(Y_PERSISTENTSETTINGS_enum) newval;
 
 /**
- * Returns the luminosity of the  module informative leds (from 0 to 100).
+ * Returns the luminosity of the  module informative LEDs (from 0 to 100).
  *
- * @return an integer corresponding to the luminosity of the  module informative leds (from 0 to 100)
+ * @return an integer corresponding to the luminosity of the  module informative LEDs (from 0 to 100)
  *
  * On failure, throws an exception or returns Y_LUMINOSITY_INVALID.
  */
@@ -2034,7 +2034,7 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
  * Changes the timed value notification frequency for this function.
  * The frequency can be specified as samples per second,
  * as sample per minute (for instance "15/m") or in samples per
- * hour (eg. "4/h"). To disable timed value notifications for this
+ * hour (e.g. "4/h"). To disable timed value notifications for this
  * function, use the value "OFF".
  *
  * @param newval : a string corresponding to the timed value notification frequency for this function
@@ -2214,11 +2214,11 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
  * @param startTime : the start of the desired measure time interval,
  *         as a Unix timestamp, i.e. the number of seconds since
  *         January 1, 1970 UTC. The special value 0 can be used
- *         to include any meaasure, without initial limit.
+ *         to include any measure, without initial limit.
  * @param endTime : the end of the desired measure time interval,
  *         as a Unix timestamp, i.e. the number of seconds since
  *         January 1, 1970 UTC. The special value 0 can be used
- *         to include any meaasure, without ending limit.
+ *         to include any measure, without ending limit.
  *
  * @return an instance of YDataSet, providing access to historical
  *         data. Past measures can be loaded progressively
@@ -3055,7 +3055,7 @@ void yEnableExceptions(void);
  * parameter will determine how the API will work. Use the following values:
  *
  * <b>usb</b>: When the usb keyword is used, the API will work with
- * devices connected directly to the USB bus. Some programming languages such a Javascript,
+ * devices connected directly to the USB bus. Some programming languages such a JavaScript,
  * PHP, and Java don't provide direct access to USB hardware, so usb will
  * not work with these. In this case, use a VirtualHub or a networked YoctoHub (see below).
  *

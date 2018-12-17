@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_colorled.h 32906 2018-11-02 10:18:15Z seb $
+ *  $Id: yocto_colorled.h 33715 2018-12-14 14:21:27Z seb $
  *
  *  Declares yFindColorLed(), the high-level API for ColorLed functions
  *
@@ -303,7 +303,7 @@ typedef struct _YMove {
  * Add a new transition to the blinking sequence, the move will
  * be performed in the HSL space.
  *
- * @param HSLcolor : desired HSL color when the traisntion is completed
+ * @param HSLcolor : desired HSL color when the transition is completed
  * @param msDelay : duration of the color transition, in milliseconds.
  *
  * @return YAPI_SUCCESS if the call succeeds.

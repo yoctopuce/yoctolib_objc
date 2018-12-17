@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_voltageoutput.h 32906 2018-11-02 10:18:15Z seb $
+ *  $Id: yocto_voltageoutput.h 33715 2018-12-14 14:21:27Z seb $
  *
  *  Declares yFindVoltageOutput(), the high-level API for VoltageOutput functions
  *
@@ -176,7 +176,7 @@ typedef void (*YVoltageOutputValueCallback)(YVoltageOutput *func, NSString *func
 -(int)     _invokeValueCallback:(NSString*)value;
 
 /**
- * Performs a smooth transistion of output voltage. Any explicit voltage
+ * Performs a smooth transition of output voltage. Any explicit voltage
  * change cancels any ongoing transition process.
  *
  * @param V_target   : new output voltage value at the end of the transition

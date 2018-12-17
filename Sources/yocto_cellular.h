@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_cellular.h 32906 2018-11-02 10:18:15Z seb $
+ * $Id: yocto_cellular.h 33715 2018-12-14 14:21:27Z seb $
  *
  * Declares yFindCellular(), the high-level API for Cellular functions
  *
@@ -539,7 +539,7 @@ typedef enum {
 
 /**
  * Sends a PUK code to unlock the SIM card after three failed PIN code attempts, and
- * setup a new PIN into the SIM card. Only ten consecutives tentatives are permitted:
+ * setup a new PIN into the SIM card. Only ten consecutive tentatives are permitted:
  * after that, the SIM card will be blocked permanently without any mean of recovery
  * to use it again. Note that after calling this method, you have usually to invoke
  * method set_pin() to tell the YoctoHub which PIN to use in the future.
@@ -602,7 +602,7 @@ typedef enum {
 /**
  * Returns a list of nearby cellular antennas, as required for quick
  * geolocation of the device. The first cell listed is the serving
- * cell, and the next ones are the neighboor cells reported by the
+ * cell, and the next ones are the neighbor cells reported by the
  * serving cell.
  *
  * @return a list of YCellRecords.

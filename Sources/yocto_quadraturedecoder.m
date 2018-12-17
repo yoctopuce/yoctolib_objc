@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_quadraturedecoder.m 32610 2018-10-10 06:52:20Z seb $
+ *  $Id: yocto_quadraturedecoder.m 33715 2018-12-14 14:21:27Z seb $
  *
  *  Implements the high-level API for QuadratureDecoder functions
  *
@@ -90,7 +90,7 @@
 
 /**
  * Changes the current expected position of the quadrature decoder.
- * Invoking this function implicitely activates the quadrature decoder.
+ * Invoking this function implicitly activates the quadrature decoder.
  *
  * @param newval : a floating point number corresponding to the current expected position of the quadrature decoder
  *

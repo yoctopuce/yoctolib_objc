@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_spiport.m 32610 2018-10-10 06:52:20Z seb $
+ *  $Id: yocto_spiport.m 33722 2018-12-14 15:04:43Z seb $
  *
  *  Implements the high-level API for SpiPort functions
  *
@@ -66,7 +66,7 @@
     _protocol = Y_PROTOCOL_INVALID;
     _spiMode = Y_SPIMODE_INVALID;
     _ssPolarity = Y_SSPOLARITY_INVALID;
-    _shitftSampling = Y_SHITFTSAMPLING_INVALID;
+    _shiftSampling = Y_SHIFTSAMPLING_INVALID;
     _valueCallbackSpiPort = NULL;
     _rxptr = 0;
     _rxbuffptr = 0;
@@ -175,9 +175,9 @@
         _ssPolarity =  (Y_SSPOLARITY_enum)atoi(j->token);
         return 1;
     }
-    if(!strcmp(j->token, "shitftSampling")) {
+    if(!strcmp(j->token, "shiftSampling")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-        _shitftSampling =  (Y_SHITFTSAMPLING_enum)atoi(j->token);
+        _shiftSampling =  (Y_SHIFTSAMPLING_enum)atoi(j->token);
         return 1;
     }
     return [super _parseAttr:j];
@@ -651,27 +651,27 @@
 /**
  * Returns true when the SDI line phase is shifted with regards to the SDO line.
  *
- * @return either Y_SHITFTSAMPLING_OFF or Y_SHITFTSAMPLING_ON, according to true when the SDI line
- * phase is shifted with regards to the SDO line
+ * @return either Y_SHIFTSAMPLING_OFF or Y_SHIFTSAMPLING_ON, according to true when the SDI line phase
+ * is shifted with regards to the SDO line
  *
- * On failure, throws an exception or returns Y_SHITFTSAMPLING_INVALID.
+ * On failure, throws an exception or returns Y_SHIFTSAMPLING_INVALID.
  */
--(Y_SHITFTSAMPLING_enum) get_shitftSampling
+-(Y_SHIFTSAMPLING_enum) get_shiftSampling
 {
-    Y_SHITFTSAMPLING_enum res;
+    Y_SHIFTSAMPLING_enum res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
-            return Y_SHITFTSAMPLING_INVALID;
+            return Y_SHIFTSAMPLING_INVALID;
         }
     }
-    res = _shitftSampling;
+    res = _shiftSampling;
     return res;
 }
 
 
--(Y_SHITFTSAMPLING_enum) shitftSampling
+-(Y_SHIFTSAMPLING_enum) shiftSampling
 {
-    return [self get_shitftSampling];
+    return [self get_shiftSampling];
 }
 
 /**
@@ -679,21 +679,21 @@
  * sampled in the middle of data output time. When enabled, SDI line is
  * samples at the end of data output time.
  *
- * @param newval : either Y_SHITFTSAMPLING_OFF or Y_SHITFTSAMPLING_ON, according to the SDI line sampling shift
+ * @param newval : either Y_SHIFTSAMPLING_OFF or Y_SHIFTSAMPLING_ON, according to the SDI line sampling shift
  *
  * @return YAPI_SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
--(int) set_shitftSampling:(Y_SHITFTSAMPLING_enum) newval
+-(int) set_shiftSampling:(Y_SHIFTSAMPLING_enum) newval
 {
-    return [self setShitftSampling:newval];
+    return [self setShiftSampling:newval];
 }
--(int) setShitftSampling:(Y_SHITFTSAMPLING_enum) newval
+-(int) setShiftSampling:(Y_SHIFTSAMPLING_enum) newval
 {
     NSString* rest_val;
     rest_val = (newval ? @"1" : @"0");
-    return [self _setAttr:@"shitftSampling" :rest_val];
+    return [self _setAttr:@"shiftSampling" :rest_val];
 }
 /**
  * Retrieves a SPI port for a given identifier.

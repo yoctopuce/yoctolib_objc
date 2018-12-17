@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_relay.m 32610 2018-10-10 06:52:20Z seb $
+ *  $Id: yocto_relay.m 33715 2018-12-14 14:21:27Z seb $
  *
  *  Implements the high-level API for Relay functions
  *
@@ -411,7 +411,7 @@
  * Sets the relay to output B (active) for a specified duration, then brings it
  * automatically back to output A (idle state).
  *
- * @param ms_duration : pulse duration, in millisecondes
+ * @param ms_duration : pulse duration, in milliseconds
  *
  * @return YAPI_SUCCESS if the call succeeds.
  *
@@ -455,8 +455,8 @@
 /**
  * Schedules a pulse.
  *
- * @param ms_delay : waiting time before the pulse, in millisecondes
- * @param ms_duration : pulse duration, in millisecondes
+ * @param ms_delay : waiting time before the pulse, in milliseconds
+ * @param ms_duration : pulse duration, in milliseconds
  *
  * @return YAPI_SUCCESS if the call succeeds.
  *

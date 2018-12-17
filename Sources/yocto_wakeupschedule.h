@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_wakeupschedule.h 32906 2018-11-02 10:18:15Z seb $
+ *  $Id: yocto_wakeupschedule.h 33715 2018-12-14 14:21:27Z seb $
  *
  *  Declares yFindWakeUpSchedule(), the high-level API for WakeUpSchedule functions
  *
@@ -111,9 +111,9 @@ typedef void (*YWakeUpScheduleValueCallback)(YWakeUpSchedule *func, NSString *fu
 -(int)     setMinutesA:(int) newval;
 
 /**
- * Returns the minutes in the 30-59 intervalof each hour scheduled for wake up.
+ * Returns the minutes in the 30-59 interval of each hour scheduled for wake up.
  *
- * @return an integer corresponding to the minutes in the 30-59 intervalof each hour scheduled for wake up
+ * @return an integer corresponding to the minutes in the 30-59 interval of each hour scheduled for wake up
  *
  * On failure, throws an exception or returns Y_MINUTESB_INVALID.
  */
@@ -226,9 +226,9 @@ typedef void (*YWakeUpScheduleValueCallback)(YWakeUpSchedule *func, NSString *fu
 -(int)     setMonths:(int) newval;
 
 /**
- * Returns the date/time (seconds) of the next wake up occurence.
+ * Returns the date/time (seconds) of the next wake up occurrence.
  *
- * @return an integer corresponding to the date/time (seconds) of the next wake up occurence
+ * @return an integer corresponding to the date/time (seconds) of the next wake up occurrence
  *
  * On failure, throws an exception or returns Y_NEXTOCCURENCE_INVALID.
  */
