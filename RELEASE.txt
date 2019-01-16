@@ -1,4 +1,4 @@
-Objective-C v1.10.33736
+Objective-C v1.10.34022
 
-- Fix some typos in error messages
-- Improve error recovery with WebSocket connection
+- Add get_serialNumber() to YFunctions class
+- Fix crash on device unplug when multiples thread are still using the device.

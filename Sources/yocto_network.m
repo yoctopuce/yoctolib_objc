@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_network.m 33715 2018-12-14 14:21:27Z seb $
+ *  $Id: yocto_network.m 34022 2019-01-15 18:21:34Z seb $
  *
  *  Implements the high-level API for Network functions
  *
@@ -575,7 +575,8 @@
 }
 
 /**
- * Changes the IP address of the NTP server to be used by the module.
+ * Changes the IP address of the NTP server to be used by the module. Use an empty
+ * string to restore the factory set  address.
  * Remember to call the saveToFlash() method and then to reboot the module to apply this setting.
  *
  * @param newval : a string corresponding to the IP address of the NTP server to be used by the module

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_display.m 33715 2018-12-14 14:21:27Z seb $
+ * $Id: yocto_display.m 33877 2018-12-26 12:19:48Z seb $
  *
  * Implements yFindDisplay(), the high-level API for Display functions
  *
@@ -303,7 +303,8 @@
  * file, check the device logs for any error message such as missing font file or bad font
  * file format.
  *
- * @param fontname : the font file name
+ * @param fontname : the font file name, embedded fonts are 8x8.yfm, Small.yfm, Medium.yfm, Large.yfm
+ * (not available on Yocto-MiniDisplay).
  *
  * @return YAPI_SUCCESS if the call succeeds.
  *

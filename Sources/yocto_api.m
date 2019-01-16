@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.m 33715 2018-12-14 14:21:27Z seb $
+ * $Id: yocto_api.m 33903 2018-12-28 08:49:26Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -1299,7 +1299,9 @@ static const char* hexArray = "0123456789ABCDEF";
  * in case a change in the list of connected devices is detected.
  *
  * This function can be called as frequently as desired to refresh the device list
- * and to make the application aware of hot-plug events.
+ * and to make the application aware of hot-plug events. However, since device
+ * detection is quite a heavy process, UpdateDeviceList shouldn't be called more
+ * than once every two seconds.
  *
  * @param errmsg : a string passed by reference to receive any error message.
  *
@@ -2822,6 +2824,20 @@ static const char* hexArray = "0123456789ABCDEF";
     return ARC_sendAutorelease([[NSString alloc] initWithData:attrVal encoding:NSISOLatin1StringEncoding]);
 }
 
+/**
+ * Returns the serial number of the module, as set by the factory.
+ *
+ * @return a string corresponding to the serial number of the module, as set by the factory.
+ *
+ * On failure, throws an exception or returns YModule.SERIALNUMBER_INVALID.
+ */
+-(NSString*) get_serialNumber
+{
+    YModule* m;
+    m = [self get_module];
+    return [m get_serialNumber];
+}
+
 -(int) _parserHelper
 {
     return 0;
@@ -3500,6 +3516,13 @@ static const char* hexArray = "0123456789ABCDEF";
 }
 /**
  * Returns the current value of the measure, in the specified unit, as a floating point number.
+ * Note that a get_currentValue() call will *not* start a measure in the device, it
+ * will just return the last measure that occurred in the device. Indeed, internally, each Yoctopuce
+ * devices is continuously making measurements at a hardware specific frequency.
+ *
+ * If continuously calling  get_currentValue() leads you to performances issues, then
+ * you might consider to switch to callback programming model. Check the "advanced
+ * programming" chapter in in your device user manual for more information.
  *
  * @return a floating point number corresponding to the current value of the measure, in the specified
  * unit, as a floating point number
@@ -3682,7 +3705,9 @@ static const char* hexArray = "0123456789ABCDEF";
  * The frequency can be specified as samples per second,
  * as sample per minute (for instance "15/m") or in samples per
  * hour (eg. "4/h"). To disable recording for this function, use
- * the value "OFF".
+ * the value "OFF". Note that setting the  datalogger recording frequency
+ * to a greater value than the sensor native sampling frequency is useless,
+ * and even counterproductive: those two frequencies are not related.
  *
  * @param newval : a string corresponding to the datalogger recording frequency for this function
  *
@@ -3732,7 +3757,10 @@ static const char* hexArray = "0123456789ABCDEF";
  * The frequency can be specified as samples per second,
  * as sample per minute (for instance "15/m") or in samples per
  * hour (e.g. "4/h"). To disable timed value notifications for this
- * function, use the value "OFF".
+ * function, use the value "OFF". Note that setting the  timed value
+ * notification frequency to a greater value than the sensor native
+ * sampling frequency is unless, and even counterproductive: those two
+ * frequencies are not related.
  *
  * @param newval : a string corresponding to the timed value notification frequency for this function
  *
@@ -8312,8 +8340,10 @@ static const char* hexArray = "0123456789ABCDEF";
 
 /**
  * Changes the default activation state of the data logger on power up.
- * Remember to call the saveToFlash() method of the module if the
- * modification must be kept.
+ * Do not forget to call the saveToFlash() method of the module to save the
+ * configuration change.  Note: if the device doesn't have any time source at his disposal when
+ * starting up, it will wait for ~8 seconds before automatically starting to record  with
+ * an arbitrary timestamp
  *
  * @param newval : either Y_AUTOSTART_OFF or Y_AUTOSTART_ON, according to the default activation state
  * of the data logger on power up
@@ -8759,7 +8789,9 @@ void     yUnregisterHub(NSString * url) { [YAPI UnregisterHub:url]; }
  * in case a change in the list of connected devices is detected.
  *
  * This function can be called as frequently as desired to refresh the device list
- * and to make the application aware of hot-plug events.
+ * and to make the application aware of hot-plug events. However, since device
+ * detection is quite a heavy process, UpdateDeviceList shouldn't be called more
+ * than once every two seconds.
  *
  * @param errmsg : a string passed by reference to receive any error message.
  *
