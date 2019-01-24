@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_powersupply.m 32610 2018-10-10 06:52:20Z seb $
+ *  $Id: yocto_powersupply.m 34115 2019-01-23 14:23:54Z seb $
  *
  *  Implements the high-level API for PowerSupply functions
  *
@@ -681,7 +681,7 @@
 }
 
 /**
- * Performs a smooth transistion of output voltage. Any explicit voltage
+ * Performs a smooth transition of output voltage. Any explicit voltage
  * change cancels any ongoing transition process.
  *
  * @param V_target   : new output voltage value at the end of the transition

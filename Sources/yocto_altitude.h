@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_altitude.h 32950 2018-11-05 17:15:46Z seb $
+ *  $Id: yocto_altitude.h 34115 2019-01-23 14:23:54Z seb $
  *
  *  Declares yFindAltitude(), the high-level API for Altitude functions
  *
@@ -82,7 +82,7 @@ typedef void (*YAltitudeTimedReportCallback)(YAltitude *func, YMeasure *measure)
 //--- (end of YAltitude yapiwrapper declaration)
 //--- (YAltitude public methods declaration)
 /**
- * Changes the current estimated altitude. This allows to compensate for
+ * Changes the current estimated altitude. This allows one to compensate for
  * ambient pressure variations and to work in relative mode.
  *
  * @param newval : a floating point number corresponding to the current estimated altitude

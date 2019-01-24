@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_powersupply.h 32906 2018-11-02 10:18:15Z seb $
+ *  $Id: yocto_powersupply.h 34115 2019-01-23 14:23:54Z seb $
  *
  *  Declares yFindPowerSupply(), the high-level API for PowerSupply functions
  *
@@ -366,7 +366,7 @@ typedef enum {
 -(int)     _invokeValueCallback:(NSString*)value;
 
 /**
- * Performs a smooth transistion of output voltage. Any explicit voltage
+ * Performs a smooth transition of output voltage. Any explicit voltage
  * change cancels any ongoing transition process.
  *
  * @param V_target   : new output voltage value at the end of the transition
