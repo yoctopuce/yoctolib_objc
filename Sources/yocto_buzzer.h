@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_buzzer.h 33715 2018-12-14 14:21:27Z seb $
+ *  $Id: yocto_buzzer.h 34289 2019-02-03 21:12:49Z mvuilleu $
  *
  *  Declares yFindBuzzer(), the high-level API for Buzzer functions
  *
@@ -302,6 +302,22 @@ typedef void (*YBuzzerValueCallback)(YBuzzer *func, NSString *functionValue);
  *         On failure, throws an exception or returns a negative error code.
  */
 -(int)     oncePlaySeq;
+
+/**
+ * Saves the preprogrammed playing sequence to flash memory.
+ *
+ * @return YAPI_SUCCESS if the call succeeds.
+ *         On failure, throws an exception or returns a negative error code.
+ */
+-(int)     savePlaySeq;
+
+/**
+ * Reloads the preprogrammed playing sequence from the flash memory.
+ *
+ * @return YAPI_SUCCESS if the call succeeds.
+ *         On failure, throws an exception or returns a negative error code.
+ */
+-(int)     reloadPlaySeq;
 
 /**
  * Activates the buzzer for a short duration.
