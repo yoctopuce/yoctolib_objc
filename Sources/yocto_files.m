@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_files.m 33715 2018-12-14 14:21:27Z seb $
+ * $Id: yocto_files.m 34651 2019-03-15 17:21:54Z seb $
  *
  * Implements yFindFiles(), the high-level API for Files functions
  *
@@ -103,16 +103,31 @@
 //--- (end of generated code: YFileRecord private methods implementation)
 
 //--- (generated code: YFileRecord public methods implementation)
+/**
+ * Returns the name of the file.
+ *
+ * @return a string with the name of the file.
+ */
 -(NSString*) get_name
 {
     return _name;
 }
 
+/**
+ * Returns the size of the file in bytes.
+ *
+ * @return the size of the file.
+ */
 -(int) get_size
 {
     return _size;
 }
 
+/**
+ * Returns the 32-bit CRC of the file content.
+ *
+ * @return the 32-bit CRC of the file content.
+ */
 -(int) get_crc
 {
     return _crc;

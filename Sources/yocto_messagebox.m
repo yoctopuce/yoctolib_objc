@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_messagebox.m 31436 2018-08-07 15:28:18Z seb $
+ * $Id: yocto_messagebox.m 34661 2019-03-18 11:02:50Z seb $
  *
  * Implements the high-level API for MessageBox functions
  *
@@ -141,6 +141,11 @@
     return _udata;
 }
 
+/**
+ * Returns the content of the message.
+ *
+ * @return  a string with the content of the message.
+ */
 -(NSString*) get_textData
 {
     NSMutableData* isolatin;
@@ -368,6 +373,16 @@
     return YAPI_SUCCESS;
 }
 
+/**
+ * Add a regular text to the SMS. This function support messages
+ * of more than 160 characters. ISO-latin accented characters
+ * are supported. For messages with special unicode characters such as asian
+ * characters and emoticons, use the  addUnicodeData method.
+ *
+ * @param val : the text to be sent in the message
+ *
+ * @return YAPI_SUCCESS when the call succeeds.
+ */
 -(int) addText:(NSString*)val
 {
     NSMutableData* udata;
@@ -425,6 +440,14 @@
     return [self set_userData:udata];
 }
 
+/**
+ * Add a unicode text to the SMS. This function support messages
+ * of more than 160 characters, using SMS concatenation.
+ *
+ * @param val : an array of special unicode characters
+ *
+ * @return YAPI_SUCCESS when the call succeeds.
+ */
 -(int) addUnicodeData:(NSMutableArray*)val
 {
     int arrlen;
@@ -1214,6 +1237,14 @@
     return YAPI_SUCCESS;
 }
 
+/**
+ * Sends the SMS to the recipient. Messages of more than 160 characters are supported
+ * using SMS concatenation.
+ *
+ * @return YAPI_SUCCESS when the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
 -(int) send
 {
     int i;

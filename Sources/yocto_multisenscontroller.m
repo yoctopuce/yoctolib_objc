@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_multisenscontroller.m 33715 2018-12-14 14:21:27Z seb $
+ *  $Id: yocto_multisenscontroller.m 34975 2019-04-04 17:01:43Z seb $
  *
  *  Implements the high-level API for MultiSensController functions
  *
@@ -130,7 +130,7 @@
 /**
  * Changes the number of sensors to poll. Remember to call the
  * saveToFlash() method of the module if the
- * modification must be kept. It's recommended to restart the
+ * modification must be kept. It is recommended to restart the
  * device with  module->reboot() after modifying
  * (and saving) this settings
  *
@@ -201,12 +201,12 @@
 }
 
 /**
- * Changes the device mode to enable maintenance and stop sensors polling.
- * This way, the device will not restart automatically in case it cannot
+ * Changes the device mode to enable maintenance and to stop sensor polling.
+ * This way, the device does not automatically restart when it cannot
  * communicate with one of the sensors.
  *
  * @param newval : either Y_MAINTENANCEMODE_FALSE or Y_MAINTENANCEMODE_TRUE, according to the device
- * mode to enable maintenance and stop sensors polling
+ * mode to enable maintenance and to stop sensor polling
  *
  * @return YAPI_SUCCESS if the call succeeds.
  *
@@ -329,10 +329,10 @@
 }
 
 /**
- * Configure the I2C address of the only sensor connected to the device.
+ * Configures the I2C address of the only sensor connected to the device.
  * It is recommended to put the the device in maintenance mode before
- * changing Sensors addresses.  This method is only intended to work with a single
- * sensor connected to the device, if several sensors are connected, result
+ * changing sensor addresses.  This method is only intended to work with a single
+ * sensor connected to the device, if several sensors are connected, the result
  * is unpredictable.
  * Note that the device is probably expecting to find a string of sensors with specific
  * addresses. Check the device documentation to find out which addresses should be used.

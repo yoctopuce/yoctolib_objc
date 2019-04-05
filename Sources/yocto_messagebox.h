@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_messagebox.h 32906 2018-11-02 10:18:15Z seb $
+ * $Id: yocto_messagebox.h 34661 2019-03-18 11:02:50Z seb $
  *
  * Declares yFindMessageBox(), the high-level API for MessageBox functions
  *
@@ -50,7 +50,8 @@ CF_EXTERN_C_BEGIN
 /**
  * YSms Class: SMS message sent or received
  *
- *
+ * YSms objects are used to describe a SMS.
+ * These objects are used in particular in conjunction with the YMessageBox class.
  */
 @interface YSms : NSObject
 //--- (end of generated code: YSms class start)
@@ -110,6 +111,11 @@ CF_EXTERN_C_BEGIN
 
 -(NSMutableData*)     get_userData;
 
+/**
+ * Returns the content of the message.
+ *
+ * @return  a string with the content of the message.
+ */
 -(NSString*)     get_textData;
 
 -(NSMutableArray*)     get_unicodeData;
@@ -154,8 +160,26 @@ CF_EXTERN_C_BEGIN
 
 -(int)     convertToUnicode;
 
+/**
+ * Add a regular text to the SMS. This function support messages
+ * of more than 160 characters. ISO-latin accented characters
+ * are supported. For messages with special unicode characters such as asian
+ * characters and emoticons, use the  addUnicodeData method.
+ *
+ * @param val : the text to be sent in the message
+ *
+ * @return YAPI_SUCCESS when the call succeeds.
+ */
 -(int)     addText:(NSString*)val;
 
+/**
+ * Add a unicode text to the SMS. This function support messages
+ * of more than 160 characters, using SMS concatenation.
+ *
+ * @param val : an array of special unicode characters
+ *
+ * @return YAPI_SUCCESS when the call succeeds.
+ */
 -(int)     addUnicodeData:(NSMutableArray*)val;
 
 -(int)     set_pdu:(NSData*)pdu;
@@ -182,6 +206,14 @@ CF_EXTERN_C_BEGIN
 
 -(int)     parsePdu:(NSData*)pdu;
 
+/**
+ * Sends the SMS to the recipient. Messages of more than 160 characters are supported
+ * using SMS concatenation.
+ *
+ * @return YAPI_SUCCESS when the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
 -(int)     send;
 
 -(int)     deleteFromSIM;

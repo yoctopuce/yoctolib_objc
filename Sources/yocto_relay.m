@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_relay.m 33715 2018-12-14 14:21:27Z seb $
+ *  $Id: yocto_relay.m 34976 2019-04-05 06:47:49Z seb $
  *
  *  Implements the high-level API for Relay functions
  *
@@ -62,6 +62,7 @@
     _delayedPulseTimer = Y_DELAYEDPULSETIMER_INVALID;
     _countdown = Y_COUNTDOWN_INVALID;
     _valueCallbackRelay = NULL;
+    _firm = 0;
 //--- (end of YRelay attributes initialization)
     return self;
 }
@@ -570,6 +571,42 @@
         [super _invokeValueCallback:value];
     }
     return 0;
+}
+
+/**
+ * Switch the relay to the opposite state.
+ *
+ * @return YAPI_SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) toggle
+{
+    int sta;
+    NSString* fw;
+    YModule* mo;
+    if (_firm == 0) {
+        mo = [self get_module];
+        fw = [mo get_firmwareRelease];
+        if ([fw isEqualToString:Y_FIRMWARERELEASE_INVALID]) {
+            return Y_STATE_INVALID;
+        }
+        _firm = [fw intValue];
+    }
+    if (_firm < 34921) {
+        sta = [self get_state];
+        if (sta == Y_STATE_INVALID) {
+            return Y_STATE_INVALID;
+        }
+        if (sta == Y_STATE_B) {
+            [self set_state:Y_STATE_A];
+        } else {
+            [self set_state:Y_STATE_B];
+        }
+        return YAPI_SUCCESS;
+    } else {
+        return [self _setAttr:@"state" :@"X"];
+    }
 }
 
 

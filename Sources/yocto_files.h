@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_files.h 33715 2018-12-14 14:21:27Z seb $
+ * $Id: yocto_files.h 34651 2019-03-15 17:21:54Z seb $
  *
  * Declares yFindFiles(), the high-level API for Files functions
  *
@@ -58,7 +58,8 @@ typedef void (*YFilesValueCallback)(YFiles *func, NSString *functionValue);
 /**
  * YFileRecord Class: Description of a file on the device filesystem
  *
- *
+ * YFileRecord objects are used to describe a file that is stored on a Yoctopuce device.
+ * These objects are used in particular in conjunction with the YFiles class.
  */
 @interface YFileRecord : NSObject
 //--- (end of generated code: YFileRecord class start)
@@ -76,10 +77,25 @@ typedef void (*YFilesValueCallback)(YFiles *func, NSString *functionValue);
 //--- (generated code: YFileRecord private methods declaration)
 //--- (end of generated code: YFileRecord private methods declaration)
 //--- (generated code: YFileRecord public methods declaration)
+/**
+ * Returns the name of the file.
+ *
+ * @return a string with the name of the file.
+ */
 -(NSString*)     get_name;
 
+/**
+ * Returns the size of the file in bytes.
+ *
+ * @return the size of the file.
+ */
 -(int)     get_size;
 
+/**
+ * Returns the 32-bit CRC of the file content.
+ *
+ * @return the 32-bit CRC of the file content.
+ */
 -(int)     get_crc;
 
 

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_wireless.m 33715 2018-12-14 14:21:27Z seb $
+ * $Id: yocto_wireless.m 34651 2019-03-15 17:21:54Z seb $
  *
  * Implements yFindWireless(), the high-level API for Wireless functions
  *
@@ -114,21 +114,41 @@
 //--- (end of generated code: YWlanRecord private methods implementation)
 
 //--- (generated code: YWlanRecord public methods implementation)
+/**
+ * Returns the name of the wireless network (SSID).
+ *
+ * @return a string with the name of the wireless network (SSID).
+ */
 -(NSString*) get_ssid
 {
     return _ssid;
 }
 
+/**
+ * Returns the 802.11 channel.
+ *
+ * @return the 802.11 channel.
+ */
 -(int) get_channel
 {
     return _channel;
 }
 
+/**
+ * Returns the security algorithm used by the wireless network.
+ *
+ * @return a string with the security algorithm.
+ */
 -(NSString*) get_security
 {
     return _sec;
 }
 
+/**
+ * Returns the quality of the wireless network link, in per cents.
+ *
+ * @return the quality of the wireless network link, in per cents.
+ */
 -(int) get_linkQuality
 {
     return _rssi;

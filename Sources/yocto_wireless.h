@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_wireless.h 33715 2018-12-14 14:21:27Z seb $
+ * $Id: yocto_wireless.h 34651 2019-03-15 17:21:54Z seb $
  *
  * Declares yFindWireless(), the high-level API for Wireless functions
  *
@@ -80,7 +80,9 @@ typedef enum {
 /**
  * YWlanRecord Class: Description of a wireless network
  *
- *
+ * YWlanRecord objects are used to describe a wireless network.
+ * These objects are  used in particular in conjunction with the
+ * YWireless class.
  */
 @interface YWlanRecord : NSObject
 //--- (end of generated code: YWlanRecord class start)
@@ -99,12 +101,32 @@ typedef enum {
 //--- (generated code: YWlanRecord private methods declaration)
 //--- (end of generated code: YWlanRecord private methods declaration)
 //--- (generated code: YWlanRecord public methods declaration)
+/**
+ * Returns the name of the wireless network (SSID).
+ *
+ * @return a string with the name of the wireless network (SSID).
+ */
 -(NSString*)     get_ssid;
 
+/**
+ * Returns the 802.11 channel.
+ *
+ * @return the 802.11 channel.
+ */
 -(int)     get_channel;
 
+/**
+ * Returns the security algorithm used by the wireless network.
+ *
+ * @return a string with the security algorithm.
+ */
 -(NSString*)     get_security;
 
+/**
+ * Returns the quality of the wireless network link, in per cents.
+ *
+ * @return the quality of the wireless network link, in per cents.
+ */
 -(int)     get_linkQuality;
 
 

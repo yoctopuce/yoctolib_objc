@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_relay.h 33715 2018-12-14 14:21:27Z seb $
+ *  $Id: yocto_relay.h 34975 2019-04-04 17:01:43Z seb $
  *
  *  Declares yFindRelay(), the high-level API for Relay functions
  *
@@ -110,6 +110,7 @@ typedef struct _YDelayedPulse {
     YDelayedPulse   _delayedPulseTimer;
     s64             _countdown;
     YRelayValueCallback _valueCallbackRelay;
+    int             _firm;
 //--- (end of YRelay attributes declaration)
 }
 // Constructor is protected, use yFindRelay factory function to instantiate
@@ -355,6 +356,15 @@ typedef struct _YDelayedPulse {
 -(int)     registerValueCallback:(YRelayValueCallback)callback;
 
 -(int)     _invokeValueCallback:(NSString*)value;
+
+/**
+ * Switch the relay to the opposite state.
+ *
+ * @return YAPI_SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     toggle;
 
 
 /**

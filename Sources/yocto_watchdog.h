@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_watchdog.h 33715 2018-12-14 14:21:27Z seb $
+ *  $Id: yocto_watchdog.h 34975 2019-04-04 17:01:43Z seb $
  *
  *  Declares yFindWatchdog(), the high-level API for Watchdog functions
  *
@@ -131,6 +131,7 @@ typedef enum {
     s64             _triggerDelay;
     s64             _triggerDuration;
     YWatchdogValueCallback _valueCallbackWatchdog;
+    int             _firm;
 //--- (end of YWatchdog attributes declaration)
 }
 // Constructor is protected, use yFindWatchdog factory function to instantiate
@@ -483,6 +484,15 @@ typedef enum {
 -(int)     registerValueCallback:(YWatchdogValueCallback)callback;
 
 -(int)     _invokeValueCallback:(NSString*)value;
+
+/**
+ * Switch the relay to the opposite state.
+ *
+ * @return YAPI_SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     toggle;
 
 
 /**
