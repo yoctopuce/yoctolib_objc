@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_spiport.m 33722 2018-12-14 15:04:43Z seb $
+ *  $Id: yocto_spiport.m 35124 2019-04-12 09:03:41Z seb $
  *
  *  Implements the high-level API for SpiPort functions
  *
@@ -1347,7 +1347,7 @@
     int msglen;
     NSString* res;
 
-    url = [NSString stringWithFormat:@"rxmsg.json?len=1&maxw=%d&cmd=!%@", maxWait,query];
+    url = [NSString stringWithFormat:@"rxmsg.json?len=1&maxw=%d&cmd=!%@", maxWait,[self _escapeAttr:query]];
     msgbin = [self _download:url];
     msgarr = [self _json_get_array:msgbin];
     msglen = (int)[msgarr count];
