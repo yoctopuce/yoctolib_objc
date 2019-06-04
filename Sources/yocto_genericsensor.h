@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_genericsensor.h 33715 2018-12-14 14:21:27Z seb $
+ *  $Id: yocto_genericsensor.h 35360 2019-05-09 09:02:29Z mvuilleu $
  *
  *  Declares yFindGenericSensor(), the high-level API for GenericSensor functions
  *
@@ -56,6 +56,14 @@ typedef enum {
     Y_SIGNALSAMPLING_INVALID = -1,
 } Y_SIGNALSAMPLING_enum;
 #endif
+#ifndef _Y_ENABLED_ENUM
+#define _Y_ENABLED_ENUM
+typedef enum {
+    Y_ENABLED_FALSE = 0,
+    Y_ENABLED_TRUE = 1,
+    Y_ENABLED_INVALID = -1,
+} Y_ENABLED_enum;
+#endif
 #define Y_SIGNALVALUE_INVALID           YAPI_INVALID_DOUBLE
 #define Y_SIGNALUNIT_INVALID            YAPI_INVALID_STRING
 #define Y_SIGNALRANGE_INVALID           YAPI_INVALID_STRING
@@ -84,6 +92,7 @@ typedef enum {
     NSString*       _valueRange;
     double          _signalBias;
     Y_SIGNALSAMPLING_enum _signalSampling;
+    Y_ENABLED_enum  _enabled;
     YGenericSensorValueCallback _valueCallbackGenericSensor;
     YGenericSensorTimedReportCallback _timedReportCallbackGenericSensor;
 //--- (end of YGenericSensor attributes declaration)
@@ -246,6 +255,31 @@ typedef enum {
  */
 -(int)     set_signalSampling:(Y_SIGNALSAMPLING_enum) newval;
 -(int)     setSignalSampling:(Y_SIGNALSAMPLING_enum) newval;
+
+/**
+ * Returns the activation state of this input.
+ *
+ * @return either Y_ENABLED_FALSE or Y_ENABLED_TRUE, according to the activation state of this input
+ *
+ * On failure, throws an exception or returns Y_ENABLED_INVALID.
+ */
+-(Y_ENABLED_enum)     get_enabled;
+
+
+-(Y_ENABLED_enum) enabled;
+/**
+ * Changes the activation state of this input. When an input is disabled,
+ * its value is no more updated. On some devices, disabling an input can
+ * improve the refresh rate of the other active inputs.
+ *
+ * @param newval : either Y_ENABLED_FALSE or Y_ENABLED_TRUE, according to the activation state of this input
+ *
+ * @return YAPI_SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     set_enabled:(Y_ENABLED_enum) newval;
+-(int)     setEnabled:(Y_ENABLED_enum) newval;
 
 /**
  * Retrieves a generic sensor for a given identifier.

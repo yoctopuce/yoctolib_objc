@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_rangefinder.h 32906 2018-11-02 10:18:15Z seb $
+ *  $Id: yocto_rangefinder.h 35185 2019-04-16 19:43:18Z mvuilleu $
  *
  *  Declares yFindRangeFinder(), the high-level API for RangeFinder functions
  *
@@ -55,6 +55,8 @@ typedef enum {
     Y_RANGEFINDERMODE_INVALID = -1,
 } Y_RANGEFINDERMODE_enum;
 #endif
+#define Y_TIMEFRAME_INVALID             YAPI_INVALID_LONG
+#define Y_QUALITY_INVALID               YAPI_INVALID_UINT
 #define Y_HARDWARECALIBRATION_INVALID   YAPI_INVALID_STRING
 #define Y_CURRENTTEMPERATURE_INVALID    YAPI_INVALID_DOUBLE
 #define Y_COMMAND_INVALID               YAPI_INVALID_STRING
@@ -76,6 +78,8 @@ typedef enum {
 @protected
 //--- (YRangeFinder attributes declaration)
     Y_RANGEFINDERMODE_enum _rangeFinderMode;
+    s64             _timeFrame;
+    int             _quality;
     NSString*       _hardwareCalibration;
     double          _currentTemperature;
     NSString*       _command;
@@ -139,6 +143,46 @@ typedef enum {
 -(int)     set_rangeFinderMode:(Y_RANGEFINDERMODE_enum) newval;
 -(int)     setRangeFinderMode:(Y_RANGEFINDERMODE_enum) newval;
 
+/**
+ * Returns the time frame used to measure the distance and estimate the measure
+ * reliability. The time frame is expressed in milliseconds.
+ *
+ * @return an integer corresponding to the time frame used to measure the distance and estimate the measure
+ *         reliability
+ *
+ * On failure, throws an exception or returns Y_TIMEFRAME_INVALID.
+ */
+-(s64)     get_timeFrame;
+
+
+-(s64) timeFrame;
+/**
+ * Changes the time frame used to measure the distance and estimate the measure
+ * reliability. The time frame is expressed in milliseconds. A larger timeframe
+ * improves stability and reliability, at the cost of higher latency, but prevents
+ * the detection of events shorter than the time frame.
+ *
+ * @param newval : an integer corresponding to the time frame used to measure the distance and estimate the measure
+ *         reliability
+ *
+ * @return YAPI_SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     set_timeFrame:(s64) newval;
+-(int)     setTimeFrame:(s64) newval;
+
+/**
+ * Returns a measure quality estimate, based on measured dispersion.
+ *
+ * @return an integer corresponding to a measure quality estimate, based on measured dispersion
+ *
+ * On failure, throws an exception or returns Y_QUALITY_INVALID.
+ */
+-(int)     get_quality;
+
+
+-(int) quality;
 -(NSString*)     get_hardwareCalibration;
 
 

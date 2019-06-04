@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_voltage.m 32610 2018-10-10 06:52:20Z seb $
+ *  $Id: yocto_voltage.m 35360 2019-05-09 09:02:29Z mvuilleu $
  *
  *  Implements the high-level API for Voltage functions
  *
@@ -81,6 +81,13 @@
 }
 //--- (end of YVoltage private methods implementation)
 //--- (YVoltage public methods implementation)
+/**
+ * Returns the activation state of this input.
+ *
+ * @return either Y_ENABLED_FALSE or Y_ENABLED_TRUE, according to the activation state of this input
+ *
+ * On failure, throws an exception or returns Y_ENABLED_INVALID.
+ */
 -(Y_ENABLED_enum) get_enabled
 {
     Y_ENABLED_enum res;
@@ -99,6 +106,17 @@
     return [self get_enabled];
 }
 
+/**
+ * Changes the activation state of this input. When an input is disabled,
+ * its value is no more updated. On some devices, disabling an input can
+ * improve the refresh rate of the other active inputs.
+ *
+ * @param newval : either Y_ENABLED_FALSE or Y_ENABLED_TRUE, according to the activation state of this input
+ *
+ * @return YAPI_SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
 -(int) set_enabled:(Y_ENABLED_enum) newval
 {
     return [self setEnabled:newval];

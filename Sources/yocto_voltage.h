@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_voltage.h 32906 2018-11-02 10:18:15Z seb $
+ *  $Id: yocto_voltage.h 35360 2019-05-09 09:02:29Z mvuilleu $
  *
  *  Declares yFindVoltage(), the high-level API for Voltage functions
  *
@@ -84,10 +84,28 @@ typedef enum {
 //--- (YVoltage yapiwrapper declaration)
 //--- (end of YVoltage yapiwrapper declaration)
 //--- (YVoltage public methods declaration)
+/**
+ * Returns the activation state of this input.
+ *
+ * @return either Y_ENABLED_FALSE or Y_ENABLED_TRUE, according to the activation state of this input
+ *
+ * On failure, throws an exception or returns Y_ENABLED_INVALID.
+ */
 -(Y_ENABLED_enum)     get_enabled;
 
 
 -(Y_ENABLED_enum) enabled;
+/**
+ * Changes the activation state of this input. When an input is disabled,
+ * its value is no more updated. On some devices, disabling an input can
+ * improve the refresh rate of the other active inputs.
+ *
+ * @param newval : either Y_ENABLED_FALSE or Y_ENABLED_TRUE, according to the activation state of this input
+ *
+ * @return YAPI_SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
 -(int)     set_enabled:(Y_ENABLED_enum) newval;
 -(int)     setEnabled:(Y_ENABLED_enum) newval;
 

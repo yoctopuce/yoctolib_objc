@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_serialport.h 32906 2018-11-02 10:18:15Z seb $
+ * $Id: yocto_serialport.h 35465 2019-05-16 14:40:41Z seb $
  *
  * Declares yFindSerialPort(), the high-level API for SerialPort functions
  *
@@ -54,6 +54,7 @@ typedef enum {
     Y_VOLTAGELEVEL_TTL5VR = 4,
     Y_VOLTAGELEVEL_RS232 = 5,
     Y_VOLTAGELEVEL_RS485 = 6,
+    Y_VOLTAGELEVEL_TTL1V8 = 7,
     Y_VOLTAGELEVEL_INVALID = -1,
 } Y_VOLTAGELEVEL_enum;
 #endif
@@ -283,8 +284,8 @@ typedef enum {
  * Returns the voltage level used on the serial line.
  *
  * @return a value among Y_VOLTAGELEVEL_OFF, Y_VOLTAGELEVEL_TTL3V, Y_VOLTAGELEVEL_TTL3VR,
- * Y_VOLTAGELEVEL_TTL5V, Y_VOLTAGELEVEL_TTL5VR, Y_VOLTAGELEVEL_RS232 and Y_VOLTAGELEVEL_RS485
- * corresponding to the voltage level used on the serial line
+ * Y_VOLTAGELEVEL_TTL5V, Y_VOLTAGELEVEL_TTL5VR, Y_VOLTAGELEVEL_RS232, Y_VOLTAGELEVEL_RS485 and
+ * Y_VOLTAGELEVEL_TTL1V8 corresponding to the voltage level used on the serial line
  *
  * On failure, throws an exception or returns Y_VOLTAGELEVEL_INVALID.
  */
@@ -300,8 +301,8 @@ typedef enum {
  * Trying to set an invalid value will have no effect.
  *
  * @param newval : a value among Y_VOLTAGELEVEL_OFF, Y_VOLTAGELEVEL_TTL3V, Y_VOLTAGELEVEL_TTL3VR,
- * Y_VOLTAGELEVEL_TTL5V, Y_VOLTAGELEVEL_TTL5VR, Y_VOLTAGELEVEL_RS232 and Y_VOLTAGELEVEL_RS485
- * corresponding to the voltage type used on the serial line
+ * Y_VOLTAGELEVEL_TTL5V, Y_VOLTAGELEVEL_TTL5VR, Y_VOLTAGELEVEL_RS232, Y_VOLTAGELEVEL_RS485 and
+ * Y_VOLTAGELEVEL_TTL1V8 corresponding to the voltage type used on the serial line
  *
  * @return YAPI_SUCCESS if the call succeeds.
  *

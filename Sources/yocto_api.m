@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.m 33903 2018-12-28 08:49:26Z seb $
+ * $Id: yocto_api.m 35620 2019-06-04 08:29:58Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -2825,6 +2825,30 @@ static const char* hexArray = "0123456789ABCDEF";
 }
 
 /**
+ * Test if the function is readOnly. Return true if the function is write protected
+ * or that the function is not available.
+ *
+ * @return true if the function is readOnly or not online.
+ */
+-(bool) isReadOnly
+{
+    NSString* serial;
+    char errmsg[YOCTO_ERRMSG_LEN];
+    int res;
+    @try {
+        serial = [self get_serialNumber];
+    }
+    @catch (NSException *e) {
+        return YES;
+    }
+    res = yapiIsModuleWritable(STR_oc2y(serial), errmsg);
+    if (res > 0) {
+        return NO;
+    }
+    return YES;
+}
+
+/**
  * Returns the serial number of the module, as set by the factory.
  *
  * @return a string corresponding to the serial number of the module, as set by the factory.
@@ -5131,10 +5155,17 @@ static const char* hexArray = "0123456789ABCDEF";
 +(YModule*) FindModule:(NSString*)func
 {
     YModule* obj;
-    obj = (YModule*) [YFunction _FindFromCache:@"Module" :func];
+    NSString* cleanHwId;
+    int modpos;
+    cleanHwId = func;
+    modpos = _ystrpos(func, @".module");
+    if (modpos != ((int)[(func) length] - 7)) {
+        cleanHwId = [NSString stringWithFormat:@"%@%@", func, @".module"];
+    }
+    obj = (YModule*) [YFunction _FindFromCache:@"Module" :cleanHwId];
     if (obj == nil) {
-        obj = ARC_sendAutorelease([[YModule alloc] initWith:func]);
-        [YFunction _AddToCache:@"Module" : func :obj];
+        obj = ARC_sendAutorelease([[YModule alloc] initWith:cleanHwId]);
+        [YFunction _AddToCache:@"Module" : cleanHwId :obj];
     }
     return obj;
 }
@@ -5441,15 +5472,17 @@ static const char* hexArray = "0123456789ABCDEF";
         if ([[self get_firmwareRelease] intValue] > 9000) {
             url = [NSString stringWithFormat:@"api/%@/sensorType",_each];
             t_type = ARC_sendAutorelease([[NSString alloc] initWithData:[self _download:url] encoding:NSISOLatin1StringEncoding]);
-            if ([t_type isEqualToString:@"RES_NTC"]) {
+            if ([t_type isEqualToString:@"RES_NTC"] || [t_type isEqualToString:@"RES_LINEAR"]) {
                 id = [_each substringWithRange:NSMakeRange( 11, (int)[(_each) length] - 11)];
-                temp_data_bin = [self _download:[NSString stringWithFormat:@"extra.json?page=%@",id]];
-                if ((int)[temp_data_bin length] == 0) {
-                    return temp_data_bin;
+                if ([id isEqualToString:@""]) {
+                    id = @"1";
                 }
-                item = [NSString stringWithFormat:@"%@{\"fid\":\"%@\", \"json\":%@}\n", sep, _each,ARC_sendAutorelease([[NSString alloc] initWithData:temp_data_bin encoding:NSISOLatin1StringEncoding])];
-                ext_settings = [NSString stringWithFormat:@"%@%@", ext_settings, item];
-                sep = @",";
+                temp_data_bin = [self _download:[NSString stringWithFormat:@"extra.json?page=%@",id]];
+                if ((int)[temp_data_bin length] > 0) {
+                    item = [NSString stringWithFormat:@"%@{\"fid\":\"%@\", \"json\":%@}\n", sep, _each,ARC_sendAutorelease([[NSString alloc] initWithData:temp_data_bin encoding:NSISOLatin1StringEncoding])];
+                    ext_settings = [NSString stringWithFormat:@"%@%@", ext_settings, item];
+                    sep = @",";
+                }
             }
         }
     }
@@ -5494,7 +5527,7 @@ static const char* hexArray = "0123456789ABCDEF";
     while (ofs + 1 < size) {
         curr = [values objectAtIndex:ofs];
         currTemp = [values objectAtIndex:ofs + 1];
-        url = [NSString stringWithFormat:@"api/%@/.json?command=m%@:%@",  funcId, curr,currTemp];
+        url = [NSString stringWithFormat:@"api/%@.json?command=m%@:%@", funcId, curr,currTemp];
         [self _download:url];
         ofs = ofs + 2;
     }

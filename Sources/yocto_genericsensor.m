@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_genericsensor.m 33715 2018-12-14 14:21:27Z seb $
+ *  $Id: yocto_genericsensor.m 35360 2019-05-09 09:02:29Z mvuilleu $
  *
  *  Implements the high-level API for GenericSensor functions
  *
@@ -59,6 +59,7 @@
     _valueRange = Y_VALUERANGE_INVALID;
     _signalBias = Y_SIGNALBIAS_INVALID;
     _signalSampling = Y_SIGNALSAMPLING_INVALID;
+    _enabled = Y_ENABLED_INVALID;
     _valueCallbackGenericSensor = NULL;
     _timedReportCallbackGenericSensor = NULL;
 //--- (end of YGenericSensor attributes initialization)
@@ -117,6 +118,11 @@
     if(!strcmp(j->token, "signalSampling")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
         _signalSampling =  atoi(j->token);
+        return 1;
+    }
+    if(!strcmp(j->token, "enabled")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _enabled =  (Y_ENABLED_enum)atoi(j->token);
         return 1;
     }
     return [super _parseAttr:j];
@@ -388,6 +394,52 @@
     NSString* rest_val;
     rest_val = [NSString stringWithFormat:@"%d", newval];
     return [self _setAttr:@"signalSampling" :rest_val];
+}
+/**
+ * Returns the activation state of this input.
+ *
+ * @return either Y_ENABLED_FALSE or Y_ENABLED_TRUE, according to the activation state of this input
+ *
+ * On failure, throws an exception or returns Y_ENABLED_INVALID.
+ */
+-(Y_ENABLED_enum) get_enabled
+{
+    Y_ENABLED_enum res;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
+            return Y_ENABLED_INVALID;
+        }
+    }
+    res = _enabled;
+    return res;
+}
+
+
+-(Y_ENABLED_enum) enabled
+{
+    return [self get_enabled];
+}
+
+/**
+ * Changes the activation state of this input. When an input is disabled,
+ * its value is no more updated. On some devices, disabling an input can
+ * improve the refresh rate of the other active inputs.
+ *
+ * @param newval : either Y_ENABLED_FALSE or Y_ENABLED_TRUE, according to the activation state of this input
+ *
+ * @return YAPI_SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) set_enabled:(Y_ENABLED_enum) newval
+{
+    return [self setEnabled:newval];
+}
+-(int) setEnabled:(Y_ENABLED_enum) newval
+{
+    NSString* rest_val;
+    rest_val = (newval ? @"1" : @"0");
+    return [self _setAttr:@"enabled" :rest_val];
 }
 /**
  * Retrieves a generic sensor for a given identifier.

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_temperature.m 34584 2019-03-08 09:36:55Z mvuilleu $
+ *  $Id: yocto_temperature.m 35465 2019-05-16 14:40:41Z seb $
  *
  *  Implements the high-level API for Temperature functions
  *
@@ -142,7 +142,8 @@
  * Y_SENSORTYPE_TYPE_J, Y_SENSORTYPE_TYPE_N, Y_SENSORTYPE_TYPE_R, Y_SENSORTYPE_TYPE_S,
  * Y_SENSORTYPE_TYPE_T, Y_SENSORTYPE_PT100_4WIRES, Y_SENSORTYPE_PT100_3WIRES,
  * Y_SENSORTYPE_PT100_2WIRES, Y_SENSORTYPE_RES_OHM, Y_SENSORTYPE_RES_NTC, Y_SENSORTYPE_RES_LINEAR,
- * Y_SENSORTYPE_RES_INTERNAL and Y_SENSORTYPE_IR corresponding to the temperature sensor type
+ * Y_SENSORTYPE_RES_INTERNAL, Y_SENSORTYPE_IR and Y_SENSORTYPE_RES_PT1000 corresponding to the
+ * temperature sensor type
  *
  * On failure, throws an exception or returns Y_SENSORTYPE_INVALID.
  */
@@ -175,7 +176,8 @@
  * Y_SENSORTYPE_TYPE_J, Y_SENSORTYPE_TYPE_N, Y_SENSORTYPE_TYPE_R, Y_SENSORTYPE_TYPE_S,
  * Y_SENSORTYPE_TYPE_T, Y_SENSORTYPE_PT100_4WIRES, Y_SENSORTYPE_PT100_3WIRES,
  * Y_SENSORTYPE_PT100_2WIRES, Y_SENSORTYPE_RES_OHM, Y_SENSORTYPE_RES_NTC, Y_SENSORTYPE_RES_LINEAR,
- * Y_SENSORTYPE_RES_INTERNAL and Y_SENSORTYPE_IR corresponding to the temperature sensor type
+ * Y_SENSORTYPE_RES_INTERNAL, Y_SENSORTYPE_IR and Y_SENSORTYPE_RES_PT1000 corresponding to the
+ * temperature sensor type
  *
  * @return YAPI_SUCCESS if the call succeeds.
  *

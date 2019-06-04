@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_poweroutput.m 33715 2018-12-14 14:21:27Z seb $
+ *  $Id: yocto_poweroutput.m 35465 2019-05-16 14:40:41Z seb $
  *
  *  Implements the high-level API for PowerOutput functions
  *
@@ -83,8 +83,8 @@
 /**
  * Returns the voltage on the power output featured by the module.
  *
- * @return a value among Y_VOLTAGE_OFF, Y_VOLTAGE_OUT3V3 and Y_VOLTAGE_OUT5V corresponding to the
- * voltage on the power output featured by the module
+ * @return a value among Y_VOLTAGE_OFF, Y_VOLTAGE_OUT3V3, Y_VOLTAGE_OUT5V, Y_VOLTAGE_OUT4V7 and
+ * Y_VOLTAGE_OUT1V8 corresponding to the voltage on the power output featured by the module
  *
  * On failure, throws an exception or returns Y_VOLTAGE_INVALID.
  */
@@ -111,8 +111,8 @@
  * module. Remember to call the saveToFlash() method of the module if the
  * modification must be kept.
  *
- * @param newval : a value among Y_VOLTAGE_OFF, Y_VOLTAGE_OUT3V3 and Y_VOLTAGE_OUT5V corresponding to
- * the voltage on the power output provided by the
+ * @param newval : a value among Y_VOLTAGE_OFF, Y_VOLTAGE_OUT3V3, Y_VOLTAGE_OUT5V, Y_VOLTAGE_OUT4V7
+ * and Y_VOLTAGE_OUT1V8 corresponding to the voltage on the power output provided by the
  *         module
  *
  * @return YAPI_SUCCESS if the call succeeds.

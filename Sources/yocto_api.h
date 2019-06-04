@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.h 33903 2018-12-28 08:49:26Z seb $
+ * $Id: yocto_api.h 35465 2019-05-16 14:40:41Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -62,7 +62,7 @@
 
 extern NSMutableDictionary* YAPI_YFunctions;
 
-#define YOCTO_API_REVISION          "35153"
+#define YOCTO_API_REVISION          "35622"
 
 // yInitAPI argument
 #define Y_DETECT_NONE           0
@@ -1038,6 +1038,14 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
  * On failure, throws an exception or returns an empty string.
  */
 -(NSString*)     loadAttribute:(NSString*)attrName;
+
+/**
+ * Test if the function is readOnly. Return true if the function is write protected
+ * or that the function is not available.
+ *
+ * @return true if the function is readOnly or not online.
+ */
+-(bool)     isReadOnly;
 
 /**
  * Returns the serial number of the module, as set by the factory.

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_rangefinder.m 32610 2018-10-10 06:52:20Z seb $
+ *  $Id: yocto_rangefinder.m 35185 2019-04-16 19:43:18Z mvuilleu $
  *
  *  Implements the high-level API for RangeFinder functions
  *
@@ -54,6 +54,8 @@
     _className = @"RangeFinder";
 //--- (YRangeFinder attributes initialization)
     _rangeFinderMode = Y_RANGEFINDERMODE_INVALID;
+    _timeFrame = Y_TIMEFRAME_INVALID;
+    _quality = Y_QUALITY_INVALID;
     _hardwareCalibration = Y_HARDWARECALIBRATION_INVALID;
     _currentTemperature = Y_CURRENTTEMPERATURE_INVALID;
     _command = Y_COMMAND_INVALID;
@@ -82,6 +84,16 @@
     if(!strcmp(j->token, "rangeFinderMode")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
         _rangeFinderMode =  atoi(j->token);
+        return 1;
+    }
+    if(!strcmp(j->token, "timeFrame")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _timeFrame =  atol(j->token);
+        return 1;
+    }
+    if(!strcmp(j->token, "quality")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _quality =  atoi(j->token);
         return 1;
     }
     if(!strcmp(j->token, "hardwareCalibration")) {
@@ -180,6 +192,80 @@
     NSString* rest_val;
     rest_val = [NSString stringWithFormat:@"%d", newval];
     return [self _setAttr:@"rangeFinderMode" :rest_val];
+}
+/**
+ * Returns the time frame used to measure the distance and estimate the measure
+ * reliability. The time frame is expressed in milliseconds.
+ *
+ * @return an integer corresponding to the time frame used to measure the distance and estimate the measure
+ *         reliability
+ *
+ * On failure, throws an exception or returns Y_TIMEFRAME_INVALID.
+ */
+-(s64) get_timeFrame
+{
+    s64 res;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
+            return Y_TIMEFRAME_INVALID;
+        }
+    }
+    res = _timeFrame;
+    return res;
+}
+
+
+-(s64) timeFrame
+{
+    return [self get_timeFrame];
+}
+
+/**
+ * Changes the time frame used to measure the distance and estimate the measure
+ * reliability. The time frame is expressed in milliseconds. A larger timeframe
+ * improves stability and reliability, at the cost of higher latency, but prevents
+ * the detection of events shorter than the time frame.
+ *
+ * @param newval : an integer corresponding to the time frame used to measure the distance and estimate the measure
+ *         reliability
+ *
+ * @return YAPI_SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) set_timeFrame:(s64) newval
+{
+    return [self setTimeFrame:newval];
+}
+-(int) setTimeFrame:(s64) newval
+{
+    NSString* rest_val;
+    rest_val = [NSString stringWithFormat:@"%u", (u32)newval];
+    return [self _setAttr:@"timeFrame" :rest_val];
+}
+/**
+ * Returns a measure quality estimate, based on measured dispersion.
+ *
+ * @return an integer corresponding to a measure quality estimate, based on measured dispersion
+ *
+ * On failure, throws an exception or returns Y_QUALITY_INVALID.
+ */
+-(int) get_quality
+{
+    int res;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
+            return Y_QUALITY_INVALID;
+        }
+    }
+    res = _quality;
+    return res;
+}
+
+
+-(int) quality
+{
+    return [self get_quality];
 }
 -(NSString*) get_hardwareCalibration
 {
