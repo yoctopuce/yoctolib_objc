@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.h 35465 2019-05-16 14:40:41Z seb $
+ * $Id: yocto_api.h 35691 2019-06-05 14:04:27Z mvuilleu $
  *
  * High-level programming interface, common to all modules
  *
@@ -62,7 +62,7 @@
 
 extern NSMutableDictionary* YAPI_YFunctions;
 
-#define YOCTO_API_REVISION          "35652"
+#define YOCTO_API_REVISION          "35838"
 
 // yInitAPI argument
 #define Y_DETECT_NONE           0
@@ -894,6 +894,7 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
 -(NSMutableData*)     _download:(NSString*)url;
 // Method used to upload a file to the device
 -(YRETCODE)    _upload:(NSString*)path :(NSData*)content;
+-(NSMutableData*) _uploadEx:(NSString*)path :(NSData*)content;
 -(NSString*)   _json_get_key:(NSData*)json :(NSString*)data;
 -(NSMutableArray*) _json_get_array:(NSData*)json;
 -(NSString*)   _json_get_string:(NSData*)json;

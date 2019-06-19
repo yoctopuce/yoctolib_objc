@@ -28,6 +28,7 @@
 		B8A727A817E0CD3A00575b8a8cae /* yocto_accelerometer.m in Sources */ = {isa = PBXBuildFile; fileRef = B8A727A817E0CD3A00574e805e3e /* yocto_accelerometer.m */; };
 		B8A727A817E0CD3A0057f9627190 /* yocto_altitude.m in Sources */ = {isa = PBXBuildFile; fileRef = B8A727A817E0CD3A0057f908d263 /* yocto_altitude.m */; };
 		B8A727A817E0CD3A00572b0ad650 /* yocto_anbutton.m in Sources */ = {isa = PBXBuildFile; fileRef = B8A727A817E0CD3A00572b6075a3 /* yocto_anbutton.m */; };
+		B8A727A817E0CD3A00579802da6a /* yocto_arithmeticsensor.m in Sources */ = {isa = PBXBuildFile; fileRef = B8A727A817E0CD3A005736ca2c0c /* yocto_arithmeticsensor.m */; };
 		B8A727A817E0CD3A00572cde749f /* yocto_audioin.m in Sources */ = {isa = PBXBuildFile; fileRef = B8A727A817E0CD3A0057467d879f /* yocto_audioin.m */; };
 		B8A727A817E0CD3A005733ba3057 /* yocto_audioout.m in Sources */ = {isa = PBXBuildFile; fileRef = B8A727A817E0CD3A005733d093a4 /* yocto_audioout.m */; };
 		B8A727A817E0CD3A00575e792498 /* yocto_bluetoothlink.m in Sources */ = {isa = PBXBuildFile; fileRef = B8A727A817E0CD3A00574b73f608 /* yocto_bluetoothlink.m */; };
@@ -146,6 +147,8 @@
 		B8A727A817E0CD3A0057896226ec /* yocto_altitude.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yocto_altitude.h; path = ../../../Sources/yocto_altitude.h; sourceTree = "<group>"; };
 		B8A727A817E0CD3A00572b6075a3 /* yocto_anbutton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = yocto_anbutton.m; path = ../../../Sources/yocto_anbutton.m; sourceTree = "<group>"; };
 		B8A727A817E0CD3A00575b0a812c /* yocto_anbutton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yocto_anbutton.h; path = ../../../Sources/yocto_anbutton.h; sourceTree = "<group>"; };
+		B8A727A817E0CD3A005736ca2c0c /* yocto_arithmeticsensor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = yocto_arithmeticsensor.m; path = ../../../Sources/yocto_arithmeticsensor.m; sourceTree = "<group>"; };
+		B8A727A817E0CD3A005746a0d883 /* yocto_arithmeticsensor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yocto_arithmeticsensor.h; path = ../../../Sources/yocto_arithmeticsensor.h; sourceTree = "<group>"; };
 		B8A727A817E0CD3A0057467d879f /* yocto_audioin.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = yocto_audioin.m; path = ../../../Sources/yocto_audioin.m; sourceTree = "<group>"; };
 		B8A727A817E0CD3A005736177310 /* yocto_audioin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yocto_audioin.h; path = ../../../Sources/yocto_audioin.h; sourceTree = "<group>"; };
 		B8A727A817E0CD3A005733d093a4 /* yocto_audioout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = yocto_audioout.m; path = ../../../Sources/yocto_audioout.m; sourceTree = "<group>"; };
@@ -345,6 +348,8 @@
 				B8A727A817E0CD3A0057896226ec /* yocto_altitude.h */,
 				B8A727A817E0CD3A00572b6075a3 /* yocto_anbutton.m */,
 				B8A727A817E0CD3A00575b0a812c /* yocto_anbutton.h */,
+				B8A727A817E0CD3A005736ca2c0c /* yocto_arithmeticsensor.m */,
+				B8A727A817E0CD3A005746a0d883 /* yocto_arithmeticsensor.h */,
 				B8A727A817E0CD3A0057467d879f /* yocto_audioin.m */,
 				B8A727A817E0CD3A005736177310 /* yocto_audioin.h */,
 				B8A727A817E0CD3A005733d093a4 /* yocto_audioout.m */,
@@ -577,6 +582,7 @@
 				B8A727A817E0CD3A00575b8a8cae /* yocto_accelerometer.m in Sources */,
 				B8A727A817E0CD3A0057f9627190 /* yocto_altitude.m in Sources */,
 				B8A727A817E0CD3A00572b0ad650 /* yocto_anbutton.m in Sources */,
+				B8A727A817E0CD3A00579802da6a /* yocto_arithmeticsensor.m in Sources */,
 				B8A727A817E0CD3A00572cde749f /* yocto_audioin.m in Sources */,
 				B8A727A817E0CD3A005733ba3057 /* yocto_audioout.m in Sources */,
 				B8A727A817E0CD3A00575e792498 /* yocto_bluetoothlink.m in Sources */,

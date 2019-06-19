@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.m 35620 2019-06-04 08:29:58Z seb $
+ * $Id: yocto_api.m 35691 2019-06-05 14:04:27Z mvuilleu $
  *
  * High-level programming interface, common to all modules
  *
@@ -2354,11 +2354,21 @@ static const char* hexArray = "0123456789ABCDEF";
 
 -(YRETCODE) _upload:(NSString *)path :(NSData *)content
 {
+    if ([self _uploadEx:path :content]==nil){
+        [self _throw:YAPI_IO_ERROR:@"http request failed"];
+        return YAPI_IO_ERROR;
+    }
+    return YAPI_SUCCESS;
+}
+
+-(NSMutableData*) _uploadEx:(NSString *)path :(NSData *)content
+{
     NSString *request = @"POST /upload.html HTTP/1.1\r\n";
     NSString *mp_header =    [NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"; filename=\"api\"\r\n"
-                                                            "Content-Type: application/octet-stream\r\n"
-                                                            "Content-Transfer-Encoding: binary\r\n\r\n",path];
+                              "Content-Type: application/octet-stream\r\n"
+                              "Content-Transfer-Encoding: binary\r\n\r\n",path];
     NSString *boundary;
+    NSMutableData      *buffer;
     NSRange  mp_head_pos,content_pos;
     do {
         boundary = [NSString stringWithFormat:@"Zz%06xzZ", rand() & 0xffffff];
@@ -2373,12 +2383,22 @@ static const char* hexArray = "0123456789ABCDEF";
     [head_body appendData:[header_start dataUsingEncoding:NSISOLatin1StringEncoding]];
     [head_body appendData:content];
     [head_body appendData:[header_stop dataUsingEncoding:NSISOLatin1StringEncoding]];
-    if ([self _request:request withBody:head_body]==nil){
+    buffer = [self _request:request withBody:head_body];
+    NSString *endofheader= @"\r\n\r\n";
+    NSData   *endofheader_data=[endofheader dataUsingEncoding:NSISOLatin1StringEncoding];
+    NSRange  all = {0,[buffer length]};
+    NSRange  pos = [buffer rangeOfData:endofheader_data options:0 range:all];
+    if(NSNotFound == pos.location){
         [self _throw:YAPI_IO_ERROR:@"http request failed"];
-        return YAPI_IO_ERROR;
+        return nil;
     }
-    return YAPI_SUCCESS;
+    pos.location += [endofheader_data length];
+    pos.length = all.length -pos.location;
+    NSRange range = NSMakeRange(0, pos.location);
+    [buffer replaceBytesInRange:range withBytes:NULL length:0];
+    return buffer;
 }
+
 
 
 -(NSString*)   _json_get_key:(NSData*)json :(NSString*)key
