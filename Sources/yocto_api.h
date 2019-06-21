@@ -62,7 +62,7 @@
 
 extern NSMutableDictionary* YAPI_YFunctions;
 
-#define YOCTO_API_REVISION          "35838"
+#define YOCTO_API_REVISION          "35871"
 
 // yInitAPI argument
 #define Y_DETECT_NONE           0
