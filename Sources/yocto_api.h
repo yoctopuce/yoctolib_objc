@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.h 35691 2019-06-05 14:04:27Z mvuilleu $
+ * $Id: yocto_api.h 36140 2019-07-08 17:43:33Z mvuilleu $
  *
  * High-level programming interface, common to all modules
  *
@@ -62,7 +62,7 @@
 
 extern NSMutableDictionary* YAPI_YFunctions;
 
-#define YOCTO_API_REVISION          "35983"
+#define YOCTO_API_REVISION          "36218"
 
 // yInitAPI argument
 #define Y_DETECT_NONE           0
@@ -79,6 +79,7 @@ extern NSMutableDictionary* YAPI_YFunctions;
 @class YMeasure;
 @class YDataStream;
 @class YDataSet;
+@class YConsolidatedDataSet;
 @class YFirmwareUpdate;
 @class YDataLogger;
 @class YAPIContext;
@@ -187,6 +188,8 @@ typedef enum {
 //--- (generated code: YDataSet globals)
 //--- (end of generated code: YDataSet globals)
 
+//--- (generated code: YConsolidatedDataSet globals)
+//--- (end of generated code: YConsolidatedDataSet globals)
 
 //--- (generated code: YDataLogger globals)
 typedef void (*YDataLoggerValueCallback)(YDataLogger *func, NSString *functionValue);
@@ -2003,11 +2006,11 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
 
 -(double) highestValue;
 /**
- * Returns the uncalibrated, unrounded raw value returned by the sensor, in the specified unit, as a
- * floating point number.
+ * Returns the uncalibrated, unrounded raw value returned by the
+ * sensor, in the specified unit, as a floating point number.
  *
- * @return a floating point number corresponding to the uncalibrated, unrounded raw value returned by
- * the sensor, in the specified unit, as a floating point number
+ * @return a floating point number corresponding to the uncalibrated, unrounded raw value returned by the
+ *         sensor, in the specified unit, as a floating point number
  *
  * On failure, throws an exception or returns Y_CURRENTRAWVALUE_INVALID.
  */
@@ -3011,6 +3014,58 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
 
 @end
 
+//--- (generated code: YConsolidatedDataSet class start)
+/**
+ * YConsolidatedDataSet Class: Cross-sensor consolidated data sequence
+ *
+ * YConsolidatedDataSet objects make it possible to retrieve a set of
+ * recorded measures from multiple sensors, for a specified time interval.
+ * They can be used to load data points progressively, and to receive
+ * data records by timestamp, one by one..
+ */
+@interface YConsolidatedDataSet : NSObject
+//--- (end of generated code: YConsolidatedDataSet class start)
+{
+@protected
+//--- (generated code: YConsolidatedDataSet attributes declaration)
+    double          _start;
+    double          _end;
+    int             _nsensors;
+    NSMutableArray* _sensors;
+    NSMutableArray* _datasets;
+    NSMutableArray* _progresss;
+    NSMutableArray* _nextidx;
+    NSMutableArray* _nexttim;
+//--- (end of generated code: YConsolidatedDataSet attributes declaration)
+}
+
+-(id)   initWith:(double)startTime :(double)endTime :(NSMutableArray*)sensorList;
+
+//--- (generated code: YConsolidatedDataSet private methods declaration)
+//--- (end of generated code: YConsolidatedDataSet private methods declaration)
+
+//--- (generated code: YConsolidatedDataSet public methods declaration)
+-(int)     _init:(double)startt :(double)endt :(NSMutableArray*)sensorList;
+
+/**
+ * Extracts the next data record from the dataLogger of all sensors linked to this
+ * object.
+ *
+ * @param datarec : array of floating point numbers, that will be filled by the
+ *         function with the timestamp of the measure in first position,
+ *         followed by the measured value in next positions.
+ *
+ * @return an integer in the range 0 to 100 (percentage of completion),
+ *         or a negative error code in case of failure.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     nextRecord:(NSMutableArray*)datarec;
+
+
+//--- (end of generated code: YConsolidatedDataSet public methods declaration)
+
+@end
 
 
 /**

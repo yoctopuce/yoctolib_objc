@@ -1,8 +1,8 @@
 /*********************************************************************
  *
- *  $Id: yocto_spiport.h 36048 2019-06-28 17:43:51Z mvuilleu $
+ *  $Id: yocto_i2cport.h 36207 2019-07-10 20:46:18Z mvuilleu $
  *
- *  Declares yFindSpiPort(), the high-level API for SpiPort functions
+ *  Declares yFindI2cPort(), the high-level API for I2cPort functions
  *
  *  - - - - - - - - - License information: - - - - - - - - -
  *
@@ -40,10 +40,10 @@
 #include "yocto_api.h"
 CF_EXTERN_C_BEGIN
 
-@class YSpiPort;
+@class YI2cPort;
 
-//--- (YSpiPort globals)
-typedef void (*YSpiPortValueCallback)(YSpiPort *func, NSString *functionValue);
+//--- (YI2cPort globals)
+typedef void (*YI2cPortValueCallback)(YI2cPort *func, NSString *functionValue);
 #ifndef _Y_VOLTAGELEVEL_ENUM
 #define _Y_VOLTAGELEVEL_ENUM
 typedef enum {
@@ -58,22 +58,6 @@ typedef enum {
     Y_VOLTAGELEVEL_INVALID = -1,
 } Y_VOLTAGELEVEL_enum;
 #endif
-#ifndef _Y_SSPOLARITY_ENUM
-#define _Y_SSPOLARITY_ENUM
-typedef enum {
-    Y_SSPOLARITY_ACTIVE_LOW = 0,
-    Y_SSPOLARITY_ACTIVE_HIGH = 1,
-    Y_SSPOLARITY_INVALID = -1,
-} Y_SSPOLARITY_enum;
-#endif
-#ifndef _Y_SHIFTSAMPLING_ENUM
-#define _Y_SHIFTSAMPLING_ENUM
-typedef enum {
-    Y_SHIFTSAMPLING_OFF = 0,
-    Y_SHIFTSAMPLING_ON = 1,
-    Y_SHIFTSAMPLING_INVALID = -1,
-} Y_SHIFTSAMPLING_enum;
-#endif
 #define Y_RXCOUNT_INVALID               YAPI_INVALID_UINT
 #define Y_TXCOUNT_INVALID               YAPI_INVALID_UINT
 #define Y_ERRCOUNT_INVALID              YAPI_INVALID_UINT
@@ -84,24 +68,24 @@ typedef enum {
 #define Y_STARTUPJOB_INVALID            YAPI_INVALID_STRING
 #define Y_COMMAND_INVALID               YAPI_INVALID_STRING
 #define Y_PROTOCOL_INVALID              YAPI_INVALID_STRING
-#define Y_SPIMODE_INVALID               YAPI_INVALID_STRING
-//--- (end of YSpiPort globals)
+#define Y_I2CMODE_INVALID               YAPI_INVALID_STRING
+//--- (end of YI2cPort globals)
 
-//--- (YSpiPort class start)
+//--- (YI2cPort class start)
 /**
- * YSpiPort Class: SPI Port function interface
+ * YI2cPort Class: I2C Port function interface
  *
- * The SpiPort function interface allows you to fully drive a Yoctopuce
- * SPI port, to send and receive data, and to configure communication
- * parameters (baud rate, bit count, parity, flow control and protocol).
- * Note that Yoctopuce SPI ports are not exposed as virtual COM ports.
+ * The I2cPort function interface allows you to fully drive a Yoctopuce
+ * I2C port, to send and receive data, and to configure communication
+ * parameters (baud rate, etc).
+ * Note that Yoctopuce I2C ports are not exposed as virtual COM ports.
  * They are meant to be used in the same way as all Yoctopuce devices.
  */
-@interface YSpiPort : YFunction
-//--- (end of YSpiPort class start)
+@interface YI2cPort : YFunction
+//--- (end of YI2cPort class start)
 {
 @protected
-//--- (YSpiPort attributes declaration)
+//--- (YI2cPort attributes declaration)
     int             _rxCount;
     int             _txCount;
     int             _errCount;
@@ -113,26 +97,24 @@ typedef enum {
     NSString*       _command;
     Y_VOLTAGELEVEL_enum _voltageLevel;
     NSString*       _protocol;
-    NSString*       _spiMode;
-    Y_SSPOLARITY_enum _ssPolarity;
-    Y_SHIFTSAMPLING_enum _shiftSampling;
-    YSpiPortValueCallback _valueCallbackSpiPort;
+    NSString*       _i2cMode;
+    YI2cPortValueCallback _valueCallbackI2cPort;
     int             _rxptr;
     NSMutableData*  _rxbuff;
     int             _rxbuffptr;
-//--- (end of YSpiPort attributes declaration)
+//--- (end of YI2cPort attributes declaration)
 }
-// Constructor is protected, use yFindSpiPort factory function to instantiate
+// Constructor is protected, use yFindI2cPort factory function to instantiate
 -(id)    initWith:(NSString*) func;
 
-//--- (YSpiPort private methods declaration)
+//--- (YI2cPort private methods declaration)
 // Function-specific method for parsing of JSON output and caching result
 -(int)             _parseAttr:(yJsonStateMachine*) j;
 
-//--- (end of YSpiPort private methods declaration)
-//--- (YSpiPort yapiwrapper declaration)
-//--- (end of YSpiPort yapiwrapper declaration)
-//--- (YSpiPort public methods declaration)
+//--- (end of YI2cPort private methods declaration)
+//--- (YI2cPort yapiwrapper declaration)
+//--- (end of YI2cPort yapiwrapper declaration)
+//--- (YI2cPort public methods declaration)
 /**
  * Returns the total number of bytes received since last reset.
  *
@@ -289,10 +271,9 @@ typedef enum {
 
 /**
  * Returns the type of protocol used over the serial line, as a string.
- * Possible values are "Line" for ASCII messages separated by CR and/or LF,
- * "Frame:[timeout]ms" for binary messages separated by a delay time,
- * "Char" for a continuous ASCII stream or
- * "Byte" for a continuous binary stream.
+ * Possible values are
+ * "Line" for messages separated by LF or
+ * "Char" for continuous stream of codes.
  *
  * @return a string corresponding to the type of protocol used over the serial line, as a string
  *
@@ -304,12 +285,11 @@ typedef enum {
 -(NSString*) protocol;
 /**
  * Changes the type of protocol used over the serial line.
- * Possible values are "Line" for ASCII messages separated by CR and/or LF,
- * "Frame:[timeout]ms" for binary messages separated by a delay time,
- * "Char" for a continuous ASCII stream or
- * "Byte" for a continuous binary stream.
+ * Possible values are
+ * "Line" for messages separated by LF or
+ * "Char" for continuous stream of codes.
  * The suffix "/[wait]ms" can be added to reduce the transmit rate so that there
- * is always at lest the specified number of milliseconds between each bytes sent.
+ * is always at lest the specified number of milliseconds between each message sent.
  *
  * @param newval : a string corresponding to the type of protocol used over the serial line
  *
@@ -322,84 +302,35 @@ typedef enum {
 
 /**
  * Returns the SPI port communication parameters, as a string such as
- * "125000,0,msb". The string includes the baud rate, the SPI mode (between
- * 0 and 3) and the bit order.
+ * "400kbps,2000ms". The string includes the baud rate and  th  e recovery delay
+ * after communications errors.
  *
  * @return a string corresponding to the SPI port communication parameters, as a string such as
- *         "125000,0,msb"
+ *         "400kbps,2000ms"
  *
- * On failure, throws an exception or returns Y_SPIMODE_INVALID.
+ * On failure, throws an exception or returns Y_I2CMODE_INVALID.
  */
--(NSString*)     get_spiMode;
+-(NSString*)     get_i2cMode;
 
 
--(NSString*) spiMode;
+-(NSString*) i2cMode;
 /**
  * Changes the SPI port communication parameters, with a string such as
- * "125000,0,msb". The string includes the baud rate, the SPI mode (between
- * 0 and 3) and the bit order.
+ * "400kbps,2000ms". The string includes the baud rate and the recovery delay
+ * after communications errors.
  *
  * @param newval : a string corresponding to the SPI port communication parameters, with a string such as
- *         "125000,0,msb"
+ *         "400kbps,2000ms"
  *
  * @return YAPI_SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
--(int)     set_spiMode:(NSString*) newval;
--(int)     setSpiMode:(NSString*) newval;
+-(int)     set_i2cMode:(NSString*) newval;
+-(int)     setI2cMode:(NSString*) newval;
 
 /**
- * Returns the SS line polarity.
- *
- * @return either Y_SSPOLARITY_ACTIVE_LOW or Y_SSPOLARITY_ACTIVE_HIGH, according to the SS line polarity
- *
- * On failure, throws an exception or returns Y_SSPOLARITY_INVALID.
- */
--(Y_SSPOLARITY_enum)     get_ssPolarity;
-
-
--(Y_SSPOLARITY_enum) ssPolarity;
-/**
- * Changes the SS line polarity.
- *
- * @param newval : either Y_SSPOLARITY_ACTIVE_LOW or Y_SSPOLARITY_ACTIVE_HIGH, according to the SS line polarity
- *
- * @return YAPI_SUCCESS if the call succeeds.
- *
- * On failure, throws an exception or returns a negative error code.
- */
--(int)     set_ssPolarity:(Y_SSPOLARITY_enum) newval;
--(int)     setSsPolarity:(Y_SSPOLARITY_enum) newval;
-
-/**
- * Returns true when the SDI line phase is shifted with regards to the SDO line.
- *
- * @return either Y_SHIFTSAMPLING_OFF or Y_SHIFTSAMPLING_ON, according to true when the SDI line phase
- * is shifted with regards to the SDO line
- *
- * On failure, throws an exception or returns Y_SHIFTSAMPLING_INVALID.
- */
--(Y_SHIFTSAMPLING_enum)     get_shiftSampling;
-
-
--(Y_SHIFTSAMPLING_enum) shiftSampling;
-/**
- * Changes the SDI line sampling shift. When disabled, SDI line is
- * sampled in the middle of data output time. When enabled, SDI line is
- * samples at the end of data output time.
- *
- * @param newval : either Y_SHIFTSAMPLING_OFF or Y_SHIFTSAMPLING_ON, according to the SDI line sampling shift
- *
- * @return YAPI_SUCCESS if the call succeeds.
- *
- * On failure, throws an exception or returns a negative error code.
- */
--(int)     set_shiftSampling:(Y_SHIFTSAMPLING_enum) newval;
--(int)     setShiftSampling:(Y_SHIFTSAMPLING_enum) newval;
-
-/**
- * Retrieves a SPI port for a given identifier.
+ * Retrieves an I2C port for a given identifier.
  * The identifier can be specified using several formats:
  * <ul>
  * <li>FunctionLogicalName</li>
@@ -409,11 +340,11 @@ typedef enum {
  * <li>ModuleLogicalName.FunctionLogicalName</li>
  * </ul>
  *
- * This function does not require that the SPI port is online at the time
+ * This function does not require that the I2C port is online at the time
  * it is invoked. The returned object is nevertheless valid.
- * Use the method YSpiPort.isOnline() to test if the SPI port is
+ * Use the method YI2cPort.isOnline() to test if the I2C port is
  * indeed online at a given time. In case of ambiguity when looking for
- * a SPI port by logical name, no error is notified: the first instance
+ * an I2C port by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
  *
@@ -421,11 +352,11 @@ typedef enum {
  * you are certain that the matching device is plugged, make sure that you did
  * call registerHub() at application initialization time.
  *
- * @param func : a string that uniquely characterizes the SPI port
+ * @param func : a string that uniquely characterizes the I2C port
  *
- * @return a YSpiPort object allowing you to drive the SPI port.
+ * @return a YI2cPort object allowing you to drive the I2C port.
  */
-+(YSpiPort*)     FindSpiPort:(NSString*)func;
++(YI2cPort*)     FindI2cPort:(NSString*)func;
 
 /**
  * Registers the callback function that is invoked on every change of advertised value.
@@ -438,7 +369,7 @@ typedef enum {
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerValueCallback:(YSpiPortValueCallback)callback;
+-(int)     registerValueCallback:(YI2cPortValueCallback)callback;
 
 -(int)     _invokeValueCallback:(NSString*)value;
 
@@ -558,7 +489,108 @@ typedef enum {
 -(int)     reset;
 
 /**
- * Sends a single byte to the serial port.
+ * Sends a one-way message (provided as a a binary buffer) to a device on the I2C bus.
+ * This function checks and reports communication errors on the I2C bus.
+ *
+ * @param slaveAddr : the 7-bit address of the slave device (without the direction bit)
+ * @param buff : the binary buffer to be sent
+ *
+ * @return YAPI_SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     i2cSendBin:(int)slaveAddr :(NSData*)buff;
+
+/**
+ * Sends a one-way message (provided as a list of integer) to a device on the I2C bus.
+ * This function checks and reports communication errors on the I2C bus.
+ *
+ * @param slaveAddr : the 7-bit address of the slave device (without the direction bit)
+ * @param values : a list of data bytes to be sent
+ *
+ * @return YAPI_SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     i2cSendArray:(int)slaveAddr :(NSMutableArray*)values;
+
+/**
+ * Sends a one-way message (provided as a a binary buffer) to a device on the I2C bus,
+ * then read back the specified number of bytes from device.
+ * This function checks and reports communication errors on the I2C bus.
+ *
+ * @param slaveAddr : the 7-bit address of the slave device (without the direction bit)
+ * @param buff : the binary buffer to be sent
+ * @param rcvCount : the number of bytes to receive once the data bytes are sent
+ *
+ * @return a list of bytes with the data received from slave device.
+ *
+ * On failure, throws an exception or returns an empty binary buffer.
+ */
+-(NSMutableData*)     i2cSendAndReceiveBin:(int)slaveAddr :(NSData*)buff :(int)rcvCount;
+
+/**
+ * Sends a one-way message (provided as a list of integer) to a device on the I2C bus,
+ * then read back the specified number of bytes from device.
+ * This function checks and reports communication errors on the I2C bus.
+ *
+ * @param slaveAddr : the 7-bit address of the slave device (without the direction bit)
+ * @param values : a list of data bytes to be sent
+ * @param rcvCount : the number of bytes to receive once the data bytes are sent
+ *
+ * @return a list of bytes with the data received from slave device.
+ *
+ * On failure, throws an exception or returns an empty array.
+ */
+-(NSMutableArray*)     i2cSendAndReceiveArray:(int)slaveAddr :(NSMutableArray*)values :(int)rcvCount;
+
+/**
+ * Sends a text-encoded I2C code stream to the I2C bus, as is.
+ * An I2C code stream is a string made of hexadecimal data bytes,
+ * but that may also include the I2C state transitions code:
+ * "{S}" to emit a start condition,
+ * "{R}" for a repeated start condition,
+ * "{P}" for a stop condition,
+ * "xx" for receiving a data byte,
+ * "{A}" to ack a data byte received and
+ * "{N}" to nack a data byte received.
+ * If a newline ("\n") is included in the stream, the message
+ * will be terminated and a newline will also be added to the
+ * receive stream.
+ *
+ * @param codes : the code stream to send
+ *
+ * @return YAPI_SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     writeStr:(NSString*)codes;
+
+/**
+ * Sends a text-encoded I2C code stream to the I2C bus, and terminate
+ * the message en relâchant le bus.
+ * An I2C code stream is a string made of hexadecimal data bytes,
+ * but that may also include the I2C state transitions code:
+ * "{S}" to emit a start condition,
+ * "{R}" for a repeated start condition,
+ * "{P}" for a stop condition,
+ * "xx" for receiving a data byte,
+ * "{A}" to ack a data byte received and
+ * "{N}" to nack a data byte received.
+ * At the end of the stream, a stop condition is added if missing
+ * and a newline is added to the receive buffer as well.
+ *
+ * @param codes : the code stream to send
+ *
+ * @return YAPI_SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     writeLine:(NSString*)codes;
+
+/**
+ * Sends a single byte to the I2C bus. Depending on the I2C bus state, the byte
+ * will be interpreted as an address byte or a data byte.
  *
  * @param code : the byte to send
  *
@@ -569,40 +601,9 @@ typedef enum {
 -(int)     writeByte:(int)code;
 
 /**
- * Sends an ASCII string to the serial port, as is.
- *
- * @param text : the text string to send
- *
- * @return YAPI_SUCCESS if the call succeeds.
- *
- * On failure, throws an exception or returns a negative error code.
- */
--(int)     writeStr:(NSString*)text;
-
-/**
- * Sends a binary buffer to the serial port, as is.
- *
- * @param buff : the binary buffer to send
- *
- * @return YAPI_SUCCESS if the call succeeds.
- *
- * On failure, throws an exception or returns a negative error code.
- */
--(int)     writeBin:(NSData*)buff;
-
-/**
- * Sends a byte sequence (provided as a list of bytes) to the serial port.
- *
- * @param byteList : a list of byte codes
- *
- * @return YAPI_SUCCESS if the call succeeds.
- *
- * On failure, throws an exception or returns a negative error code.
- */
--(int)     writeArray:(NSMutableArray*)byteList;
-
-/**
- * Sends a byte sequence (provided as a hexadecimal string) to the serial port.
+ * Sends a byte sequence (provided as a hexadecimal string) to the I2C bus.
+ * Depending on the I2C bus state, the first byte will be interpreted as an
+ * address byte or a data byte.
  *
  * @param hexString : a string of hexadecimal byte codes
  *
@@ -613,120 +614,60 @@ typedef enum {
 -(int)     writeHex:(NSString*)hexString;
 
 /**
- * Sends an ASCII string to the serial port, followed by a line break (CR LF).
+ * Sends a binary buffer to the I2C bus, as is.
+ * Depending on the I2C bus state, the first byte will be interpreted
+ * as an address byte or a data byte.
  *
- * @param text : the text string to send
- *
- * @return YAPI_SUCCESS if the call succeeds.
- *
- * On failure, throws an exception or returns a negative error code.
- */
--(int)     writeLine:(NSString*)text;
-
-/**
- * Reads one byte from the receive buffer, starting at current stream position.
- * If data at current stream position is not available anymore in the receive buffer,
- * or if there is no data available yet, the function returns YAPI_NO_MORE_DATA.
- *
- * @return the next byte
- *
- * On failure, throws an exception or returns a negative error code.
- */
--(int)     readByte;
-
-/**
- * Reads data from the receive buffer as a string, starting at current stream position.
- * If data at current stream position is not available anymore in the receive buffer, the
- * function performs a short read.
- *
- * @param nChars : the maximum number of characters to read
- *
- * @return a string with receive buffer contents
- *
- * On failure, throws an exception or returns a negative error code.
- */
--(NSString*)     readStr:(int)nChars;
-
-/**
- * Reads data from the receive buffer as a binary buffer, starting at current stream position.
- * If data at current stream position is not available anymore in the receive buffer, the
- * function performs a short read.
- *
- * @param nChars : the maximum number of bytes to read
- *
- * @return a binary object with receive buffer contents
- *
- * On failure, throws an exception or returns a negative error code.
- */
--(NSMutableData*)     readBin:(int)nChars;
-
-/**
- * Reads data from the receive buffer as a list of bytes, starting at current stream position.
- * If data at current stream position is not available anymore in the receive buffer, the
- * function performs a short read.
- *
- * @param nChars : the maximum number of bytes to read
- *
- * @return a sequence of bytes with receive buffer contents
- *
- * On failure, throws an exception or returns an empty array.
- */
--(NSMutableArray*)     readArray:(int)nChars;
-
-/**
- * Reads data from the receive buffer as a hexadecimal string, starting at current stream position.
- * If data at current stream position is not available anymore in the receive buffer, the
- * function performs a short read.
- *
- * @param nBytes : the maximum number of bytes to read
- *
- * @return a string with receive buffer contents, encoded in hexadecimal
- *
- * On failure, throws an exception or returns a negative error code.
- */
--(NSString*)     readHex:(int)nBytes;
-
-/**
- * Manually sets the state of the SS line. This function has no effect when
- * the SS line is handled automatically.
- *
- * @param val : 1 to turn SS active, 0 to release SS.
+ * @param buff : the binary buffer to send
  *
  * @return YAPI_SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
--(int)     set_SS:(int)val;
+-(int)     writeBin:(NSData*)buff;
+
+/**
+ * Sends a byte sequence (provided as a list of bytes) to the I2C bus.
+ * Depending on the I2C bus state, the first byte will be interpreted as an
+ * address byte or a data byte.
+ *
+ * @param byteList : a list of byte codes
+ *
+ * @return YAPI_SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     writeArray:(NSMutableArray*)byteList;
 
 
 /**
- * Continues the enumeration of SPI ports started using yFirstSpiPort().
- * Caution: You can't make any assumption about the returned SPI ports order.
- * If you want to find a specific a SPI port, use SpiPort.findSpiPort()
+ * Continues the enumeration of I2C ports started using yFirstI2cPort().
+ * Caution: You can't make any assumption about the returned I2C ports order.
+ * If you want to find a specific an I2C port, use I2cPort.findI2cPort()
  * and a hardwareID or a logical name.
  *
- * @return a pointer to a YSpiPort object, corresponding to
- *         a SPI port currently online, or a nil pointer
- *         if there are no more SPI ports to enumerate.
+ * @return a pointer to a YI2cPort object, corresponding to
+ *         an I2C port currently online, or a nil pointer
+ *         if there are no more I2C ports to enumerate.
  */
--(YSpiPort*) nextSpiPort;
+-(YI2cPort*) nextI2cPort;
 /**
- * Starts the enumeration of SPI ports currently accessible.
- * Use the method YSpiPort.nextSpiPort() to iterate on
- * next SPI ports.
+ * Starts the enumeration of I2C ports currently accessible.
+ * Use the method YI2cPort.nextI2cPort() to iterate on
+ * next I2C ports.
  *
- * @return a pointer to a YSpiPort object, corresponding to
- *         the first SPI port currently online, or a nil pointer
+ * @return a pointer to a YI2cPort object, corresponding to
+ *         the first I2C port currently online, or a nil pointer
  *         if there are none.
  */
-+(YSpiPort*) FirstSpiPort;
-//--- (end of YSpiPort public methods declaration)
++(YI2cPort*) FirstI2cPort;
+//--- (end of YI2cPort public methods declaration)
 
 @end
 
-//--- (YSpiPort functions declaration)
+//--- (YI2cPort functions declaration)
 /**
- * Retrieves a SPI port for a given identifier.
+ * Retrieves an I2C port for a given identifier.
  * The identifier can be specified using several formats:
  * <ul>
  * <li>FunctionLogicalName</li>
@@ -736,11 +677,11 @@ typedef enum {
  * <li>ModuleLogicalName.FunctionLogicalName</li>
  * </ul>
  *
- * This function does not require that the SPI port is online at the time
+ * This function does not require that the I2C port is online at the time
  * it is invoked. The returned object is nevertheless valid.
- * Use the method YSpiPort.isOnline() to test if the SPI port is
+ * Use the method YI2cPort.isOnline() to test if the I2C port is
  * indeed online at a given time. In case of ambiguity when looking for
- * a SPI port by logical name, no error is notified: the first instance
+ * an I2C port by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
  *
@@ -748,22 +689,22 @@ typedef enum {
  * you are certain that the matching device is plugged, make sure that you did
  * call registerHub() at application initialization time.
  *
- * @param func : a string that uniquely characterizes the SPI port
+ * @param func : a string that uniquely characterizes the I2C port
  *
- * @return a YSpiPort object allowing you to drive the SPI port.
+ * @return a YI2cPort object allowing you to drive the I2C port.
  */
-YSpiPort* yFindSpiPort(NSString* func);
+YI2cPort* yFindI2cPort(NSString* func);
 /**
- * Starts the enumeration of SPI ports currently accessible.
- * Use the method YSpiPort.nextSpiPort() to iterate on
- * next SPI ports.
+ * Starts the enumeration of I2C ports currently accessible.
+ * Use the method YI2cPort.nextI2cPort() to iterate on
+ * next I2C ports.
  *
- * @return a pointer to a YSpiPort object, corresponding to
- *         the first SPI port currently online, or a nil pointer
+ * @return a pointer to a YI2cPort object, corresponding to
+ *         the first I2C port currently online, or a nil pointer
  *         if there are none.
  */
-YSpiPort* yFirstSpiPort(void);
+YI2cPort* yFirstI2cPort(void);
 
-//--- (end of YSpiPort functions declaration)
+//--- (end of YI2cPort functions declaration)
 CF_EXTERN_C_END
 

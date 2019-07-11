@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.m 35691 2019-06-05 14:04:27Z mvuilleu $
+ * $Id: yocto_api.m 36204 2019-07-10 16:28:19Z mvuilleu $
  *
  * High-level programming interface, common to all modules
  *
@@ -3692,11 +3692,11 @@ static const char* hexArray = "0123456789ABCDEF";
     return [self get_highestValue];
 }
 /**
- * Returns the uncalibrated, unrounded raw value returned by the sensor, in the specified unit, as a
- * floating point number.
+ * Returns the uncalibrated, unrounded raw value returned by the
+ * sensor, in the specified unit, as a floating point number.
  *
- * @return a floating point number corresponding to the uncalibrated, unrounded raw value returned by
- * the sensor, in the specified unit, as a floating point number
+ * @return a floating point number corresponding to the uncalibrated, unrounded raw value returned by the
+ *         sensor, in the specified unit, as a floating point number
  *
  * On failure, throws an exception or returns Y_CURRENTRAWVALUE_INVALID.
  */
@@ -6492,9 +6492,10 @@ static const char* hexArray = "0123456789ABCDEF";
     }
     p = STR_oc2y(funcId);
     *d++ = *p++ & 0xdf;
-    while (*p && (*p <'0' || *p >'9')) {
+    while (*p) {
         *d++ = *p++;
     }
+    while (d > buffer && d[-1] <= '9') d--;
     *d = 0;
     return STR_y2oc(buffer);
 }
@@ -8100,6 +8101,160 @@ static const char* hexArray = "0123456789ABCDEF";
 @end
 
 
+@implementation YConsolidatedDataSet
+
+-(id)   initWith:(double)startTime :(double)endTime :(NSMutableArray*)sensorList
+{
+    if(!(self = [super init]))
+        return nil;
+//--- (generated code: YConsolidatedDataSet attributes initialization)
+    _start = 0;
+    _end = 0;
+    _nsensors = 0;
+    _sensors = [NSMutableArray array];
+    _datasets = [NSMutableArray array];
+    _progresss = [NSMutableArray array];
+    _nextidx = [NSMutableArray array];
+    _nexttim = [NSMutableArray array];
+//--- (end of generated code: YConsolidatedDataSet attributes initialization)
+    [self _init: startTime :endTime :sensorList];
+    return self;
+}
+
+// destructor
+-(void)  dealloc
+{
+//--- (generated code: YConsolidatedDataSet cleanup)
+    ARC_dealloc(super);
+//--- (end of generated code: YConsolidatedDataSet cleanup)
+}
+//--- (generated code: YConsolidatedDataSet private methods implementation)
+
+//--- (end of generated code: YConsolidatedDataSet private methods implementation)
+
+//--- (generated code: YConsolidatedDataSet public methods implementation)
+-(int) _init:(double)startt :(double)endt :(NSMutableArray*)sensorList
+{
+    _start = startt;
+    _end = endt;
+    _sensors = sensorList;
+    _nsensors = -1;
+    return YAPI_SUCCESS;
+}
+
+/**
+ * Extracts the next data record from the dataLogger of all sensors linked to this
+ * object.
+ *
+ * @param datarec : array of floating point numbers, that will be filled by the
+ *         function with the timestamp of the measure in first position,
+ *         followed by the measured value in next positions.
+ *
+ * @return an integer in the range 0 to 100 (percentage of completion),
+ *         or a negative error code in case of failure.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) nextRecord:(NSMutableArray*)datarec
+{
+    int s;
+    int idx;
+    YSensor* sensor;
+    YDataSet* newdataset;
+    int globprogress;
+    int currprogress;
+    double currnexttim;
+    double newvalue;
+    NSMutableArray* measures = [NSMutableArray array];
+    double nexttime;
+    //
+    // Ensure the dataset have been retrieved
+    //
+    if (_nsensors == -1) {
+        _nsensors = (int)[_sensors count];
+        [_datasets removeAllObjects];
+        [_progresss removeAllObjects];
+        [_nextidx removeAllObjects];
+        [_nexttim removeAllObjects];
+        s = 0;
+        while (s < _nsensors) {
+            sensor = [_sensors objectAtIndex:s];
+            newdataset = [sensor get_recordedData:_start :_end];
+            [_datasets addObject:newdataset];
+            [_progresss addObject:[NSNumber numberWithLong:0]];
+            [_nextidx addObject:[NSNumber numberWithLong:0]];
+            [_nexttim addObject:[NSNumber numberWithDouble:0.0]];
+            s = s + 1;
+        }
+    }
+    [datarec removeAllObjects];
+    //
+    // Find next timestamp to process
+    //
+    nexttime = 0;
+    s = 0;
+    while (s < _nsensors) {
+        currnexttim = [[_nexttim objectAtIndex:s] doubleValue];
+        if (currnexttim == 0) {
+            idx = [[_nextidx objectAtIndex:s] intValue];
+            measures = [[_datasets objectAtIndex:s] get_measures];
+            currprogress = [[_progresss objectAtIndex:s] intValue];
+            while ((idx >= (int)[measures count]) && (currprogress < 100)) {
+                currprogress = [[_datasets objectAtIndex:s] loadMore];
+                if (currprogress < 0) {
+                    currprogress = 100;
+                }
+                [_progresss replaceObjectAtIndex: s withObject:[NSNumber numberWithLong:currprogress]];
+                measures = [[_datasets objectAtIndex:s] get_measures];
+            }
+            if (idx < (int)[measures count]) {
+                currnexttim = [(YMeasure *)[measures objectAtIndex:idx] get_endTimeUTC];
+                [_nexttim replaceObjectAtIndex: s withObject:[NSNumber numberWithDouble:currnexttim]];
+            }
+        }
+        if (currnexttim > 0) {
+            if ((nexttime == 0) || (nexttime > currnexttim)) {
+                nexttime = currnexttim;
+            }
+        }
+        s = s + 1;
+    }
+    if (nexttime == 0) {
+        return 100;
+    }
+    //
+    // Extract data for self timestamp
+    //
+    [datarec removeAllObjects];
+    [datarec addObject:[NSNumber numberWithDouble:nexttime]];
+    globprogress = 0;
+    s = 0;
+    while (s < _nsensors) {
+        if ([[_nexttim objectAtIndex:s] doubleValue] == nexttime) {
+            idx = [[_nextidx objectAtIndex:s] intValue];
+            measures = [[_datasets objectAtIndex:s] get_measures];
+            newvalue = [[measures objectAtIndex:idx] get_averageValue];
+            [datarec addObject:[NSNumber numberWithDouble:newvalue]];
+            [_nexttim replaceObjectAtIndex: s withObject:[NSNumber numberWithDouble:0.0]];
+            [_nextidx replaceObjectAtIndex: s withObject:[NSNumber numberWithLong:idx+1]];
+        } else {
+            [datarec addObject:[NSNumber numberWithDouble:NAN]];
+        }
+        currprogress = [[_progresss objectAtIndex:s] intValue];
+        globprogress = globprogress + currprogress;
+        s = s + 1;
+    }
+    if (globprogress > 0) {
+        globprogress = ((globprogress) / (_nsensors));
+        if (globprogress > 99) {
+            globprogress = 99;
+        }
+    }
+    return globprogress;
+}
+
+//--- (end of generated code: YConsolidatedDataSet public methods implementation)
+@end
 
 
 @implementation YDataLogger
