@@ -25,7 +25,11 @@
 		B8DD8BDB14A9360E008A9E8F /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B8DD8BDA14A9360E008A9E8F /* Foundation.framework */; };
 		B8F48A9314A93A3E008FBD0C /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B8F48A9214A93A3E008FBD0C /* IOKit.framework */; };
 
-		B8A727A817E0CD3A005766ae4107 /* yocto_carbondioxide.m in Sources */ = {isa = PBXBuildFile; fileRef = B8A727A817E0CD3A005773a49397 /* yocto_carbondioxide.m */; };
+		B8A727A817E0CD3A00579802da6a /* yocto_arithmeticsensor.m in Sources */ = {isa = PBXBuildFile; fileRef = B8A727A817E0CD3A005736ca2c0c /* yocto_arithmeticsensor.m */; };
+		B8A727A817E0CD3A00571a2b723e /* yocto_files.m in Sources */ = {isa = PBXBuildFile; fileRef = B8A727A817E0CD3A0057a5413526 /* yocto_files.m */; };
+		B8A727A817E0CD3A005734388c51 /* yocto_genericsensor.m in Sources */ = {isa = PBXBuildFile; fileRef = B8A727A817E0CD3A005721325ec1 /* yocto_genericsensor.m */; };
+		B8A727A817E0CD3A0057e42bca4a /* yocto_poweroutput.m in Sources */ = {isa = PBXBuildFile; fileRef = B8A727A817E0CD3A00577be460af /* yocto_poweroutput.m */; };
+		B8A727A817E0CD3A0057b726534f /* yocto_temperature.m in Sources */ = {isa = PBXBuildFile; fileRef = B8A727A817E0CD3A005728e9f9aa /* yocto_temperature.m */; };
 
 /* End PBXBuildFile section */
 
@@ -75,8 +79,16 @@
 		B8DD8C2814A9370B008A9E8F /* yversion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yversion.h; path = ../../../Sources/yapi/yversion.h; sourceTree = "<group>"; };
 		B8F48A9214A93A3E008FBD0C /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 
-		B8A727A817E0CD3A005773a49397 /* yocto_carbondioxide.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = yocto_carbondioxide.m; path = ../../../Sources/yocto_carbondioxide.m; sourceTree = "<group>"; };
-		B8A727A817E0CD3A00573ce6718 /* yocto_carbondioxide.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yocto_carbondioxide.h; path = ../../../Sources/yocto_carbondioxide.h; sourceTree = "<group>"; };
+		B8A727A817E0CD3A005736ca2c0c /* yocto_arithmeticsensor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = yocto_arithmeticsensor.m; path = ../../../Sources/yocto_arithmeticsensor.m; sourceTree = "<group>"; };
+		B8A727A817E0CD3A005746a0d883 /* yocto_arithmeticsensor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yocto_arithmeticsensor.h; path = ../../../Sources/yocto_arithmeticsensor.h; sourceTree = "<group>"; };
+		B8A727A817E0CD3A0057a5413526 /* yocto_files.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = yocto_files.m; path = ../../../Sources/yocto_files.m; sourceTree = "<group>"; };
+		B8A727A817E0CD3A0057d52bc1a9 /* yocto_files.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yocto_files.h; path = ../../../Sources/yocto_files.h; sourceTree = "<group>"; };
+		B8A727A817E0CD3A005721325ec1 /* yocto_genericsensor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = yocto_genericsensor.m; path = ../../../Sources/yocto_genericsensor.m; sourceTree = "<group>"; };
+		B8A727A817E0CD3A00575158aa4e /* yocto_genericsensor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yocto_genericsensor.h; path = ../../../Sources/yocto_genericsensor.h; sourceTree = "<group>"; };
+		B8A727A817E0CD3A00577be460af /* yocto_poweroutput.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = yocto_poweroutput.m; path = ../../../Sources/yocto_poweroutput.m; sourceTree = "<group>"; };
+		B8A727A817E0CD3A0057b8e9420 /* yocto_poweroutput.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yocto_poweroutput.h; path = ../../../Sources/yocto_poweroutput.h; sourceTree = "<group>"; };
+		B8A727A817E0CD3A005728e9f9aa /* yocto_temperature.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = yocto_temperature.m; path = ../../../Sources/yocto_temperature.m; sourceTree = "<group>"; };
+		B8A727A817E0CD3A005758830d25 /* yocto_temperature.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yocto_temperature.h; path = ../../../Sources/yocto_temperature.h; sourceTree = "<group>"; };
 
 /* End PBXFileReference section */
 
@@ -144,8 +156,16 @@
 				B8DD8BEB14A936EF008A9E8F /* yocto_api.h */,
 				B8DD8BEC14A936EF008A9E8F /* yocto_api.m */,
 
-				B8A727A817E0CD3A005773a49397 /* yocto_carbondioxide.m */,
-				B8A727A817E0CD3A00573ce6718 /* yocto_carbondioxide.h */,
+				B8A727A817E0CD3A005736ca2c0c /* yocto_arithmeticsensor.m */,
+				B8A727A817E0CD3A005746a0d883 /* yocto_arithmeticsensor.h */,
+				B8A727A817E0CD3A0057a5413526 /* yocto_files.m */,
+				B8A727A817E0CD3A0057d52bc1a9 /* yocto_files.h */,
+				B8A727A817E0CD3A005721325ec1 /* yocto_genericsensor.m */,
+				B8A727A817E0CD3A00575158aa4e /* yocto_genericsensor.h */,
+				B8A727A817E0CD3A00577be460af /* yocto_poweroutput.m */,
+				B8A727A817E0CD3A0057b8e9420 /* yocto_poweroutput.h */,
+				B8A727A817E0CD3A005728e9f9aa /* yocto_temperature.m */,
+				B8A727A817E0CD3A005758830d25 /* yocto_temperature.h */,
 
 			);
 			name = Yocto;
@@ -249,7 +269,11 @@
 				B8DD8C3314A9370B008A9E8F /* ytcp.c in Sources */,
 				B845588F14DC315D00425F49 /* ythread.c in Sources */,
 
-				B8A727A817E0CD3A005766ae4107 /* yocto_carbondioxide.m in Sources */,
+				B8A727A817E0CD3A00579802da6a /* yocto_arithmeticsensor.m in Sources */,
+				B8A727A817E0CD3A00571a2b723e /* yocto_files.m in Sources */,
+				B8A727A817E0CD3A005734388c51 /* yocto_genericsensor.m in Sources */,
+				B8A727A817E0CD3A0057e42bca4a /* yocto_poweroutput.m in Sources */,
+				B8A727A817E0CD3A0057b726534f /* yocto_temperature.m in Sources */,
 
 				B853FE21161B49CA0086F1F5 /* ykey.c in Sources */,
 			);

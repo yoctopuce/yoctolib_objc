@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.m 36204 2019-07-10 16:28:19Z mvuilleu $
+ * $Id: yocto_api.m 36468 2019-07-24 10:10:05Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -8197,18 +8197,18 @@ static const char* hexArray = "0123456789ABCDEF";
         currnexttim = [[_nexttim objectAtIndex:s] doubleValue];
         if (currnexttim == 0) {
             idx = [[_nextidx objectAtIndex:s] intValue];
-            measures = [[_datasets objectAtIndex:s] get_measures];
+            measures = [((YDataSet*) [_datasets objectAtIndex:s]) get_measures];
             currprogress = [[_progresss objectAtIndex:s] intValue];
             while ((idx >= (int)[measures count]) && (currprogress < 100)) {
-                currprogress = [[_datasets objectAtIndex:s] loadMore];
+                currprogress = [((YDataSet*) [_datasets objectAtIndex:s]) loadMore];
                 if (currprogress < 0) {
                     currprogress = 100;
                 }
                 [_progresss replaceObjectAtIndex: s withObject:[NSNumber numberWithLong:currprogress]];
-                measures = [[_datasets objectAtIndex:s] get_measures];
+                measures = [((YDataSet*) [_datasets objectAtIndex:s]) get_measures];
             }
             if (idx < (int)[measures count]) {
-                currnexttim = [(YMeasure *)[measures objectAtIndex:idx] get_endTimeUTC];
+                currnexttim = [((YMeasure*) [measures objectAtIndex:idx]) get_endTimeUTC];
                 [_nexttim replaceObjectAtIndex: s withObject:[NSNumber numberWithDouble:currnexttim]];
             }
         }
@@ -8232,8 +8232,8 @@ static const char* hexArray = "0123456789ABCDEF";
     while (s < _nsensors) {
         if ([[_nexttim objectAtIndex:s] doubleValue] == nexttime) {
             idx = [[_nextidx objectAtIndex:s] intValue];
-            measures = [[_datasets objectAtIndex:s] get_measures];
-            newvalue = [[measures objectAtIndex:idx] get_averageValue];
+            measures = [((YDataSet*) [_datasets objectAtIndex:s]) get_measures];
+            newvalue = [((YMeasure*) [measures objectAtIndex:idx]) get_averageValue];
             [datarec addObject:[NSNumber numberWithDouble:newvalue]];
             [_nexttim replaceObjectAtIndex: s withObject:[NSNumber numberWithDouble:0.0]];
             [_nextidx replaceObjectAtIndex: s withObject:[NSNumber numberWithLong:idx+1]];

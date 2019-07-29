@@ -15,13 +15,13 @@ static void anButtonValueChangeCallBack(YAnButton* fct, NSString* value)
 
 static void sensorValueChangeCallBack(YSensor* fct, NSString* value)
 {
-  NSLog(@"%@ : %@ %@ (new value)", [fct get_hardwareId], value, [fct get_unit]);
+  NSLog(@"%@ : %@ %@ (new value)", [fct get_hardwareId], value, [fct get_userData]);
 }
 
 static void sensorTimedReportCallBack(YSensor* fct, YMeasure* measure)
 {
   NSLog(@"%@ : %.3f %@ (timed report)", [fct get_hardwareId], [measure
-        get_averageValue], [fct get_unit]);
+        get_averageValue], [fct get_userData]);
 }
 
 static void configChangeCallBack(YModule* mod)
@@ -36,7 +36,7 @@ static void beaconCallback(YModule* mod, int beacon)
 
 static void deviceArrival(YModule *m)
 {
-  NSString *fctName, *serial, *hardwareId;
+  NSString *fctName, *serial, *hardwareId, *unit;
   serial = [m get_serialNumber];
   NSLog(@"Device arrival          : %@", serial);
   [m registerConfigChangeCallback:configChangeCallBack];
@@ -60,6 +60,8 @@ static void deviceArrival(YModule *m)
   while(sensor) {
     if([[[sensor get_module]  get_serialNumber] isEqualToString:serial]) {
       hardwareId = [sensor get_hardwareId];
+      unit = [sensor get_unit];
+      [sensor set_userData:unit];
       NSLog(@"- %@", hardwareId);
       [sensor registerValueCallback:sensorValueChangeCallBack];
       [sensor registerTimedReportCallback:sensorTimedReportCallBack];
@@ -76,7 +78,7 @@ static void deviceRemoval(YModule *m)
 
 static void customLog(NSString *val)
 {
-  NSLog(@"%@", val);
+  NSLog(@"LOG : %@", val);
 }
 
 
