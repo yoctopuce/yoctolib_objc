@@ -1,4 +1,6 @@
-Objective-C v1.10.36518
+Objective-C v1.10.36692
 
-- Remove unreliable code that returned the process name of the application that was locking the USB port
+- Add method to get product name and revision
 - Improve network error recovery
+- Fix Invalid end time in datalogger preview.
+- Fix set_xxx() methods that may be dropped if executed just before YAPI::UnregisterHub()

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.h 36140 2019-07-08 17:43:33Z mvuilleu $
+ * $Id: yocto_api.h 36544 2019-07-29 05:34:16Z mvuilleu $
  *
  * High-level programming interface, common to all modules
  *
@@ -62,7 +62,7 @@
 
 extern NSMutableDictionary* YAPI_YFunctions;
 
-#define YOCTO_API_REVISION          "36518"
+#define YOCTO_API_REVISION          "36692"
 
 // yInitAPI argument
 #define Y_DETECT_NONE           0
@@ -1375,9 +1375,10 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
 
 -(int) productId;
 /**
- * Returns the hardware release version of the module.
+ * Returns the release number of the module hardware, preprogrammed at the factory.
+ * The original hardware release returns value 1, revision B returns value 2, etc.
  *
- * @return an integer corresponding to the hardware release version of the module
+ * @return an integer corresponding to the release number of the module hardware, preprogrammed at the factory
  *
  * On failure, throws an exception or returns Y_PRODUCTRELEASE_INVALID.
  */
@@ -1562,6 +1563,8 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
 -(int)     registerValueCallback:(YModuleValueCallback)callback;
 
 -(int)     _invokeValueCallback:(NSString*)value;
+
+-(NSString*)     get_productNameAndRevision;
 
 /**
  * Saves current settings in the nonvolatile memory of the module.

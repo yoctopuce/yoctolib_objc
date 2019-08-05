@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.m 36468 2019-07-24 10:10:05Z seb $
+ * $Id: yocto_api.m 36629 2019-07-31 13:03:53Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -4844,16 +4844,17 @@ static const char* hexArray = "0123456789ABCDEF";
     return [self get_productId];
 }
 /**
- * Returns the hardware release version of the module.
+ * Returns the release number of the module hardware, preprogrammed at the factory.
+ * The original hardware release returns value 1, revision B returns value 2, etc.
  *
- * @return an integer corresponding to the hardware release version of the module
+ * @return an integer corresponding to the release number of the module hardware, preprogrammed at the factory
  *
  * On failure, throws an exception or returns Y_PRODUCTRELEASE_INVALID.
  */
 -(int) get_productRelease
 {
     int res;
-    if (_cacheExpiration <= [YAPI GetTickCount]) {
+    if (_cacheExpiration == 0) {
         if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_PRODUCTRELEASE_INVALID;
         }
@@ -5228,6 +5229,22 @@ static const char* hexArray = "0123456789ABCDEF";
         [super _invokeValueCallback:value];
     }
     return 0;
+}
+
+-(NSString*) get_productNameAndRevision
+{
+    NSString* prodname;
+    int prodrel;
+    NSString* fullname;
+
+    prodname = [self get_productName];
+    prodrel = [self get_productRelease];
+    if (prodrel > 1) {
+        fullname = [NSString stringWithFormat:@"%@ rev. %c", prodname,64+prodrel];
+    } else {
+        fullname = prodname;
+    }
+    return fullname;
 }
 
 /**
@@ -6915,7 +6932,15 @@ static const char* hexArray = "0123456789ABCDEF";
         val = 0;
     }
     _nRows = val;
-    _duration = _nRows * _dataSamplesInterval;
+    if (_nRows > 0) {
+        if (_firstMeasureDuration > 0) {
+            _duration = _firstMeasureDuration + (_nRows - 1) * _dataSamplesInterval;
+        } else {
+            _duration = _nRows * _dataSamplesInterval;
+        }
+    } else {
+        _duration = 0;
+    }
     // precompute decoding parameters
     iCalib = [dataset _get_calibration];
     _caltyp = [[iCalib objectAtIndex:0] intValue];
