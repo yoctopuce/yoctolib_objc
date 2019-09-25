@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_digitalio.m 33722 2018-12-14 15:04:43Z seb $
+ *  $Id: yocto_digitalio.m 37149 2019-09-12 21:24:53Z mvuilleu $
  *
  *  Implements the high-level API for DigitalIO functions
  *
@@ -373,7 +373,7 @@
 -(int) get_portSize
 {
     int res;
-    if (_cacheExpiration <= [YAPI GetTickCount]) {
+    if (_cacheExpiration == 0) {
         if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_PORTSIZE_INVALID;
         }

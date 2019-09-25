@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_spiport.h 36048 2019-06-28 17:43:51Z mvuilleu $
+ *  $Id: yocto_spiport.h 37141 2019-09-12 12:37:10Z mvuilleu $
  *
  *  Declares yFindSpiPort(), the high-level API for SpiPort functions
  *
@@ -111,8 +111,8 @@ typedef enum {
     NSString*       _currentJob;
     NSString*       _startupJob;
     NSString*       _command;
-    Y_VOLTAGELEVEL_enum _voltageLevel;
     NSString*       _protocol;
+    Y_VOLTAGELEVEL_enum _voltageLevel;
     NSString*       _spiMode;
     Y_SSPOLARITY_enum _ssPolarity;
     Y_SHIFTSAMPLING_enum _shiftSampling;
@@ -211,11 +211,10 @@ typedef enum {
 
 -(NSString*) currentJob;
 /**
- * Changes the job to use when the device is powered on.
- * Remember to call the saveToFlash() method of the module if the
- * modification must be kept.
+ * Selects a job file to run immediately. If an empty string is
+ * given as argument, stops running current job file.
  *
- * @param newval : a string corresponding to the job to use when the device is powered on
+ * @param newval : a string
  *
  * @return YAPI_SUCCESS if the call succeeds.
  *
@@ -257,37 +256,6 @@ typedef enum {
 -(int)     setCommand:(NSString*) newval;
 
 /**
- * Returns the voltage level used on the serial line.
- *
- * @return a value among Y_VOLTAGELEVEL_OFF, Y_VOLTAGELEVEL_TTL3V, Y_VOLTAGELEVEL_TTL3VR,
- * Y_VOLTAGELEVEL_TTL5V, Y_VOLTAGELEVEL_TTL5VR, Y_VOLTAGELEVEL_RS232, Y_VOLTAGELEVEL_RS485 and
- * Y_VOLTAGELEVEL_TTL1V8 corresponding to the voltage level used on the serial line
- *
- * On failure, throws an exception or returns Y_VOLTAGELEVEL_INVALID.
- */
--(Y_VOLTAGELEVEL_enum)     get_voltageLevel;
-
-
--(Y_VOLTAGELEVEL_enum) voltageLevel;
-/**
- * Changes the voltage type used on the serial line. Valid
- * values  will depend on the Yoctopuce device model featuring
- * the serial port feature.  Check your device documentation
- * to find out which values are valid for that specific model.
- * Trying to set an invalid value will have no effect.
- *
- * @param newval : a value among Y_VOLTAGELEVEL_OFF, Y_VOLTAGELEVEL_TTL3V, Y_VOLTAGELEVEL_TTL3VR,
- * Y_VOLTAGELEVEL_TTL5V, Y_VOLTAGELEVEL_TTL5VR, Y_VOLTAGELEVEL_RS232, Y_VOLTAGELEVEL_RS485 and
- * Y_VOLTAGELEVEL_TTL1V8 corresponding to the voltage type used on the serial line
- *
- * @return YAPI_SUCCESS if the call succeeds.
- *
- * On failure, throws an exception or returns a negative error code.
- */
--(int)     set_voltageLevel:(Y_VOLTAGELEVEL_enum) newval;
--(int)     setVoltageLevel:(Y_VOLTAGELEVEL_enum) newval;
-
-/**
  * Returns the type of protocol used over the serial line, as a string.
  * Possible values are "Line" for ASCII messages separated by CR and/or LF,
  * "Frame:[timeout]ms" for binary messages separated by a delay time,
@@ -310,6 +278,8 @@ typedef enum {
  * "Byte" for a continuous binary stream.
  * The suffix "/[wait]ms" can be added to reduce the transmit rate so that there
  * is always at lest the specified number of milliseconds between each bytes sent.
+ * Remember to call the saveToFlash() method of the module if the
+ * modification must be kept.
  *
  * @param newval : a string corresponding to the type of protocol used over the serial line
  *
@@ -319,6 +289,39 @@ typedef enum {
  */
 -(int)     set_protocol:(NSString*) newval;
 -(int)     setProtocol:(NSString*) newval;
+
+/**
+ * Returns the voltage level used on the serial line.
+ *
+ * @return a value among Y_VOLTAGELEVEL_OFF, Y_VOLTAGELEVEL_TTL3V, Y_VOLTAGELEVEL_TTL3VR,
+ * Y_VOLTAGELEVEL_TTL5V, Y_VOLTAGELEVEL_TTL5VR, Y_VOLTAGELEVEL_RS232, Y_VOLTAGELEVEL_RS485 and
+ * Y_VOLTAGELEVEL_TTL1V8 corresponding to the voltage level used on the serial line
+ *
+ * On failure, throws an exception or returns Y_VOLTAGELEVEL_INVALID.
+ */
+-(Y_VOLTAGELEVEL_enum)     get_voltageLevel;
+
+
+-(Y_VOLTAGELEVEL_enum) voltageLevel;
+/**
+ * Changes the voltage type used on the serial line. Valid
+ * values  will depend on the Yoctopuce device model featuring
+ * the serial port feature.  Check your device documentation
+ * to find out which values are valid for that specific model.
+ * Trying to set an invalid value will have no effect.
+ * Remember to call the saveToFlash() method of the module if the
+ * modification must be kept.
+ *
+ * @param newval : a value among Y_VOLTAGELEVEL_OFF, Y_VOLTAGELEVEL_TTL3V, Y_VOLTAGELEVEL_TTL3VR,
+ * Y_VOLTAGELEVEL_TTL5V, Y_VOLTAGELEVEL_TTL5VR, Y_VOLTAGELEVEL_RS232, Y_VOLTAGELEVEL_RS485 and
+ * Y_VOLTAGELEVEL_TTL1V8 corresponding to the voltage type used on the serial line
+ *
+ * @return YAPI_SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     set_voltageLevel:(Y_VOLTAGELEVEL_enum) newval;
+-(int)     setVoltageLevel:(Y_VOLTAGELEVEL_enum) newval;
 
 /**
  * Returns the SPI port communication parameters, as a string such as
@@ -338,6 +341,8 @@ typedef enum {
  * Changes the SPI port communication parameters, with a string such as
  * "125000,0,msb". The string includes the baud rate, the SPI mode (between
  * 0 and 3) and the bit order.
+ * Remember to call the saveToFlash() method of the module if the
+ * modification must be kept.
  *
  * @param newval : a string corresponding to the SPI port communication parameters, with a string such as
  *         "125000,0,msb"
@@ -362,6 +367,8 @@ typedef enum {
 -(Y_SSPOLARITY_enum) ssPolarity;
 /**
  * Changes the SS line polarity.
+ * Remember to call the saveToFlash() method of the module if the
+ * modification must be kept.
  *
  * @param newval : either Y_SSPOLARITY_ACTIVE_LOW or Y_SSPOLARITY_ACTIVE_HIGH, according to the SS line polarity
  *
@@ -388,6 +395,8 @@ typedef enum {
  * Changes the SDI line sampling shift. When disabled, SDI line is
  * sampled in the middle of data output time. When enabled, SDI line is
  * samples at the end of data output time.
+ * Remember to call the saveToFlash() method of the module if the
+ * modification must be kept.
  *
  * @param newval : either Y_SHIFTSAMPLING_OFF or Y_SHIFTSAMPLING_ON, according to the SDI line sampling shift
  *

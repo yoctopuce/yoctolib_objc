@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.m 36629 2019-07-31 13:03:53Z seb $
+ * $Id: yocto_api.m 37230 2019-09-20 08:43:51Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -548,15 +548,15 @@ int _ystrpos(NSString* haystack, NSString* needle)
 //--- (end of generated code: YAPIContext private methods implementation)
 //--- (generated code: YAPIContext public methods implementation)
 /**
- * Change the time between each forced enumeration of the YoctoHub used.
- * By default, the library performs a complete enumeration every 10 seconds.
- * To reduce network traffic it is possible to increase this delay.
- * This is particularly useful when a YoctoHub is connected to a GSM network
- * where the traffic is charged. This setting does not affect modules connected by USB,
- * nor the operation of arrival/removal callbacks.
- * Note: This function must be called after yInitAPI.
+ * Modifies the delay between each forced enumeration of the used YoctoHubs.
+ * By default, the library performs a full enumeration every 10 seconds.
+ * To reduce network traffic, you can increase this delay.
+ * It's particularly useful when a YoctoHub is connected to the GSM network
+ * where traffic is billed. This parameter doesn't impact modules connected by USB,
+ * nor the working of module arrival/removal callbacks.
+ * Note: you must call this function after yInitAPI.
  *
- * @param deviceListValidity : number of seconds between each enumeration.
+ * @param deviceListValidity : nubmer of seconds between each enumeration.
  * @noreturn
  */
 -(void) SetDeviceListValidity:(int)deviceListValidity
@@ -565,8 +565,8 @@ int _ystrpos(NSString* haystack, NSString* needle)
 }
 
 /**
- * Returns the time between each forced enumeration of the YoctoHub used.
- * Note: This function must be called after yInitAPI.
+ * Returns the delay between each forced enumeration of the used YoctoHubs.
+ * Note: you must call this function after yInitAPI.
  *
  * @return the number of seconds between each enumeration.
  */
@@ -574,6 +574,37 @@ int _ystrpos(NSString* haystack, NSString* needle)
 {
     int res;
     res = yapiGetNetDevListValidity();
+    return res;
+}
+
+/**
+ * Modifies the network connection delay for YAPI.RegisterHub() and
+ * YAPI.UpdateDeviceList(). This delay impacts only the YoctoHubs and VirtualHub
+ * which are accessible through the network. By default, this delay is of 20000 milliseconds,
+ * but depending or you network you may want to change this delay.
+ * For example if your network infrastructure uses a GSM connection.
+ *
+ * @param networkMsTimeout : the network connection delay in milliseconds.
+ * @noreturn
+ */
+-(void) SetNetworkTimeout:(int)networkMsTimeout
+{
+    yapiSetNetworkTimeout(networkMsTimeout);
+}
+
+/**
+ * Returns the network connection delay for YAPI.RegisterHub() and
+ * YAPI.UpdateDeviceList(). This delay impacts only the YoctoHubs and VirtualHub
+ * which are accessible through the network. By default, this delay is of 20000 milliseconds,
+ * but depending or you network you may want to change this delay.
+ * For example if your network infrastructure uses a GSM connection.
+ *
+ * @return the network connection delay in milliseconds.
+ */
+-(int) GetNetworkTimeout
+{
+    int res;
+    res = yapiGetNetworkTimeout();
     return res;
 }
 
@@ -854,15 +885,15 @@ static const char* hexArray = "0123456789ABCDEF";
 
 //--- (generated code: YAPIContext yapiwrapper)
 /**
- * Change the time between each forced enumeration of the YoctoHub used.
- * By default, the library performs a complete enumeration every 10 seconds.
- * To reduce network traffic it is possible to increase this delay.
- * This is particularly useful when a YoctoHub is connected to a GSM network
- * where the traffic is charged. This setting does not affect modules connected by USB,
- * nor the operation of arrival/removal callbacks.
- * Note: This function must be called after yInitAPI.
+ * Modifies the delay between each forced enumeration of the used YoctoHubs.
+ * By default, the library performs a full enumeration every 10 seconds.
+ * To reduce network traffic, you can increase this delay.
+ * It's particularly useful when a YoctoHub is connected to the GSM network
+ * where traffic is billed. This parameter doesn't impact modules connected by USB,
+ * nor the working of module arrival/removal callbacks.
+ * Note: you must call this function after yInitAPI.
  *
- * @param deviceListValidity : number of seconds between each enumeration.
+ * @param deviceListValidity : nubmer of seconds between each enumeration.
  * @noreturn
  */
 +(void) SetDeviceListValidity:(int)deviceListValidity
@@ -870,14 +901,41 @@ static const char* hexArray = "0123456789ABCDEF";
         [YAPI_yapiContext SetDeviceListValidity:deviceListValidity];
 }
 /**
- * Returns the time between each forced enumeration of the YoctoHub used.
- * Note: This function must be called after yInitAPI.
+ * Returns the delay between each forced enumeration of the used YoctoHubs.
+ * Note: you must call this function after yInitAPI.
  *
  * @return the number of seconds between each enumeration.
  */
 +(int) GetDeviceListValidity
 {
         return [YAPI_yapiContext GetDeviceListValidity];
+}
+/**
+ * Modifies the network connection delay for YAPI.RegisterHub() and
+ * YAPI.UpdateDeviceList(). This delay impacts only the YoctoHubs and VirtualHub
+ * which are accessible through the network. By default, this delay is of 20000 milliseconds,
+ * but depending or you network you may want to change this delay.
+ * For example if your network infrastructure uses a GSM connection.
+ *
+ * @param networkMsTimeout : the network connection delay in milliseconds.
+ * @noreturn
+ */
++(void) SetNetworkTimeout:(int)networkMsTimeout
+{
+        [YAPI_yapiContext SetNetworkTimeout:networkMsTimeout];
+}
+/**
+ * Returns the network connection delay for YAPI.RegisterHub() and
+ * YAPI.UpdateDeviceList(). This delay impacts only the YoctoHubs and VirtualHub
+ * which are accessible through the network. By default, this delay is of 20000 milliseconds,
+ * but depending or you network you may want to change this delay.
+ * For example if your network infrastructure uses a GSM connection.
+ *
+ * @return the network connection delay in milliseconds.
+ */
++(int) GetNetworkTimeout
+{
+        return [YAPI_yapiContext GetNetworkTimeout];
 }
 /**
  * Change the validity period of the data loaded by the library.
@@ -3065,13 +3123,15 @@ static const char* hexArray = "0123456789ABCDEF";
 
 
 /**
- * Returns the numerical error code of the latest error with this function.
+ * Returns the numerical error code of the latest error with the function.
  * This method is mostly useful when using the Yoctopuce library with
  * exceptions disabled.
  *
- * @return a number corresponding to the code of the latest error that occured while
- *         using this function object
+ * @return a number corresponding to the code of the latest error that occurred while
+ *         using the function object
  */
+-(YRETCODE)    get_errorType
+{return [self errType];}
 -(YRETCODE)    get_errType
 {return [self errType];}
 -(YRETCODE)    errType
@@ -3752,6 +3812,7 @@ static const char* hexArray = "0123456789ABCDEF";
  * the value "OFF". Note that setting the  datalogger recording frequency
  * to a greater value than the sensor native sampling frequency is useless,
  * and even counterproductive: those two frequencies are not related.
+ * Remember to call the saveToFlash() method of the module if the modification must be kept.
  *
  * @param newval : a string corresponding to the datalogger recording frequency for this function
  *
@@ -3805,6 +3866,7 @@ static const char* hexArray = "0123456789ABCDEF";
  * notification frequency to a greater value than the sensor native
  * sampling frequency is unless, and even counterproductive: those two
  * frequencies are not related.
+ * Remember to call the saveToFlash() method of the module if the modification must be kept.
  *
  * @param newval : a string corresponding to the timed value notification frequency for this function
  *
@@ -3850,6 +3912,7 @@ static const char* hexArray = "0123456789ABCDEF";
 
 /**
  * Changes the measuring mode used for the advertised value pushed to the parent hub.
+ * Remember to call the saveToFlash() method of the module if the modification must be kept.
  *
  * @param newval : a value among Y_ADVMODE_IMMEDIATE, Y_ADVMODE_PERIOD_AVG, Y_ADVMODE_PERIOD_MIN and
  * Y_ADVMODE_PERIOD_MAX corresponding to the measuring mode used for the advertised value pushed to the parent hub
@@ -3900,6 +3963,7 @@ static const char* hexArray = "0123456789ABCDEF";
 /**
  * Changes the resolution of the measured physical values. The resolution corresponds to the numerical precision
  * when displaying value. It does not change the precision of the measure itself.
+ * Remember to call the saveToFlash() method of the module if the modification must be kept.
  *
  * @param newval : a floating point number corresponding to the resolution of the measured physical values
  *
@@ -3920,6 +3984,7 @@ static const char* hexArray = "0123456789ABCDEF";
 /**
  * Returns the resolution of the measured values. The resolution corresponds to the numerical precision
  * of the measures, which is not always the same as the actual precision of the sensor.
+ * Remember to call the saveToFlash() method of the module if the modification must be kept.
  *
  * @return a floating point number corresponding to the resolution of the measured values
  *
@@ -5638,8 +5703,7 @@ static const char* hexArray = "0123456789ABCDEF";
         }
     }
     // Apply settings a second time for file-dependent settings and dynamic sensor nodes
-    [self set_allSettings:[NSMutableData dataWithData:[json_api dataUsingEncoding:NSISOLatin1StringEncoding]]];
-    return YAPI_SUCCESS;
+    return [self set_allSettings:[NSMutableData dataWithData:[json_api dataUsingEncoding:NSISOLatin1StringEncoding]]];
 }
 
 /**
@@ -5955,6 +6019,32 @@ static const char* hexArray = "0123456789ABCDEF";
     return param;
 }
 
+-(int) _tryExec:(NSString*)url
+{
+    int res;
+    int done;
+    res = YAPI_SUCCESS;
+    done = 1;
+    @try {
+        [self _download:url];
+    }
+    @catch (NSException *e) {
+        done = 0;
+    }
+    if (done == 0) {
+        // retry silently after a short wait
+        @try {
+            [YAPI Sleep:500 :NULL];
+            [self _download:url];
+        }
+        @catch (NSException *e) {
+            // second failure, return error code
+            res = [self get_errorType];
+        }
+    }
+    return res;
+}
+
 /**
  * Restores all the settings of the device. Useful to restore all the logical names and calibrations parameters
  * of a module from a backup.Remember to call the saveToFlash() method of the module if the
@@ -5984,6 +6074,8 @@ static const char* hexArray = "0123456789ABCDEF";
     int leng;
     int i;
     int j;
+    int subres;
+    int res;
     NSString* njpath;
     NSString* jpath;
     NSString* fun;
@@ -6000,6 +6092,7 @@ static const char* hexArray = "0123456789ABCDEF";
     NSString* each_str;
     bool do_update;
     bool found;
+    res = YAPI_SUCCESS;
     tmp = ARC_sendAutorelease([[NSString alloc] initWithData:settings encoding:NSISOLatin1StringEncoding]);
     tmp = [self _get_json_path:tmp :@"api"];
     if (!([tmp isEqualToString:@""])) {
@@ -6026,7 +6119,14 @@ static const char* hexArray = "0123456789ABCDEF";
         [old_val_arr addObject:value];
     }
 
-    actualSettings = [self _download:@"api.json"];
+    @try {
+        actualSettings = [self _download:@"api.json"];
+    }
+    @catch (NSException *e) {
+        // retry silently after a short wait
+        [YAPI Sleep:500 :NULL];
+        actualSettings = [self _download:@"api.json"];
+    }
     actualSettings = [self _flattenJsonStruct:actualSettings];
     new_dslist = [self _json_get_array:actualSettings];
     for (NSString* _each  in new_dslist) {
@@ -6115,6 +6215,9 @@ static const char* hexArray = "0123456789ABCDEF";
         if ((do_update) && ([attr isEqualToString:@"message"])) {
             do_update = NO;
         }
+        if ((do_update) && ([attr isEqualToString:@"signalValue"])) {
+            do_update = NO;
+        }
         if ((do_update) && ([attr isEqualToString:@"currentValue"])) {
             do_update = NO;
         }
@@ -6167,6 +6270,12 @@ static const char* hexArray = "0123456789ABCDEF";
             do_update = NO;
         }
         if ((do_update) && ([attr isEqualToString:@"msgCount"])) {
+            do_update = NO;
+        }
+        if ((do_update) && ([attr isEqualToString:@"rxMsgCount"])) {
+            do_update = NO;
+        }
+        if ((do_update) && ([attr isEqualToString:@"txMsgCount"])) {
             do_update = NO;
         }
         if (do_update) {
@@ -6222,23 +6331,32 @@ static const char* hexArray = "0123456789ABCDEF";
                 }
                 newval = [self calibConvert:old_calib : [new_val_arr objectAtIndex:i] : unit_name :sensorType];
                 url = [NSString stringWithFormat:@"%@%@%@%@%@%@", @"api/", fun, @".json?", attr, @"=", [self _escapeAttr:newval]];
-                [self _download:url];
+                subres = [self _tryExec:url];
+                if ((res == YAPI_SUCCESS) && (subres != YAPI_SUCCESS)) {
+                    res = subres;
+                }
             } else {
                 url = [NSString stringWithFormat:@"%@%@%@%@%@%@", @"api/", fun, @".json?", attr, @"=", [self _escapeAttr:oldval]];
                 if ([attr isEqualToString:@"resolution"]) {
                     [restoreLast addObject:url];
                 } else {
-                    [self _download:url];
+                    subres = [self _tryExec:url];
+                    if ((res == YAPI_SUCCESS) && (subres != YAPI_SUCCESS)) {
+                        res = subres;
+                    }
                 }
             }
         }
         i = i + 1;
     }
     for (NSString* _each  in restoreLast) {
-        [self _download:_each];
+        subres = [self _tryExec:_each];
+        if ((res == YAPI_SUCCESS) && (subres != YAPI_SUCCESS)) {
+            res = subres;
+        }
     }
     [self clearCache];
-    return YAPI_SUCCESS;
+    return res;
 }
 
 /**

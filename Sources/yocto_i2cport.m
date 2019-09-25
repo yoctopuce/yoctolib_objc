@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_i2cport.m 36207 2019-07-10 20:46:18Z mvuilleu $
+ *  $Id: yocto_i2cport.m 37168 2019-09-13 17:25:10Z mvuilleu $
  *
  *  Implements the high-level API for I2cPort functions
  *
@@ -62,8 +62,8 @@
     _currentJob = Y_CURRENTJOB_INVALID;
     _startupJob = Y_STARTUPJOB_INVALID;
     _command = Y_COMMAND_INVALID;
-    _voltageLevel = Y_VOLTAGELEVEL_INVALID;
     _protocol = Y_PROTOCOL_INVALID;
+    _i2cVoltageLevel = Y_I2CVOLTAGELEVEL_INVALID;
     _i2cMode = Y_I2CMODE_INVALID;
     _valueCallbackI2cPort = NULL;
     _rxptr = 0;
@@ -149,16 +149,16 @@
         ARC_retain(_command);
         return 1;
     }
-    if(!strcmp(j->token, "voltageLevel")) {
-        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-        _voltageLevel =  atoi(j->token);
-        return 1;
-    }
     if(!strcmp(j->token, "protocol")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
        ARC_release(_protocol);
         _protocol =  [self _parseString:j];
         ARC_retain(_protocol);
+        return 1;
+    }
+    if(!strcmp(j->token, "i2cVoltageLevel")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _i2cVoltageLevel =  atoi(j->token);
         return 1;
     }
     if(!strcmp(j->token, "i2cMode")) {
@@ -342,11 +342,10 @@
 }
 
 /**
- * Changes the job to use when the device is powered on.
- * Remember to call the saveToFlash() method of the module if the
- * modification must be kept.
+ * Selects a job file to run immediately. If an empty string is
+ * given as argument, stops running current job file.
  *
- * @param newval : a string corresponding to the job to use when the device is powered on
+ * @param newval : a string
  *
  * @return YAPI_SUCCESS if the call succeeds.
  *
@@ -437,64 +436,12 @@
     return [self _setAttr:@"command" :rest_val];
 }
 /**
- * Returns the voltage level used on the serial line.
- *
- * @return a value among Y_VOLTAGELEVEL_OFF, Y_VOLTAGELEVEL_TTL3V, Y_VOLTAGELEVEL_TTL3VR,
- * Y_VOLTAGELEVEL_TTL5V, Y_VOLTAGELEVEL_TTL5VR, Y_VOLTAGELEVEL_RS232, Y_VOLTAGELEVEL_RS485 and
- * Y_VOLTAGELEVEL_TTL1V8 corresponding to the voltage level used on the serial line
- *
- * On failure, throws an exception or returns Y_VOLTAGELEVEL_INVALID.
- */
--(Y_VOLTAGELEVEL_enum) get_voltageLevel
-{
-    Y_VOLTAGELEVEL_enum res;
-    if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
-            return Y_VOLTAGELEVEL_INVALID;
-        }
-    }
-    res = _voltageLevel;
-    return res;
-}
-
-
--(Y_VOLTAGELEVEL_enum) voltageLevel
-{
-    return [self get_voltageLevel];
-}
-
-/**
- * Changes the voltage type used on the serial line. Valid
- * values  will depend on the Yoctopuce device model featuring
- * the serial port feature.  Check your device documentation
- * to find out which values are valid for that specific model.
- * Trying to set an invalid value will have no effect.
- *
- * @param newval : a value among Y_VOLTAGELEVEL_OFF, Y_VOLTAGELEVEL_TTL3V, Y_VOLTAGELEVEL_TTL3VR,
- * Y_VOLTAGELEVEL_TTL5V, Y_VOLTAGELEVEL_TTL5VR, Y_VOLTAGELEVEL_RS232, Y_VOLTAGELEVEL_RS485 and
- * Y_VOLTAGELEVEL_TTL1V8 corresponding to the voltage type used on the serial line
- *
- * @return YAPI_SUCCESS if the call succeeds.
- *
- * On failure, throws an exception or returns a negative error code.
- */
--(int) set_voltageLevel:(Y_VOLTAGELEVEL_enum) newval
-{
-    return [self setVoltageLevel:newval];
-}
--(int) setVoltageLevel:(Y_VOLTAGELEVEL_enum) newval
-{
-    NSString* rest_val;
-    rest_val = [NSString stringWithFormat:@"%d", newval];
-    return [self _setAttr:@"voltageLevel" :rest_val];
-}
-/**
- * Returns the type of protocol used over the serial line, as a string.
+ * Returns the type of protocol used to send I2C messages, as a string.
  * Possible values are
  * "Line" for messages separated by LF or
  * "Char" for continuous stream of codes.
  *
- * @return a string corresponding to the type of protocol used over the serial line, as a string
+ * @return a string corresponding to the type of protocol used to send I2C messages, as a string
  *
  * On failure, throws an exception or returns Y_PROTOCOL_INVALID.
  */
@@ -517,14 +464,16 @@
 }
 
 /**
- * Changes the type of protocol used over the serial line.
+ * Changes the type of protocol used to send I2C messages.
  * Possible values are
  * "Line" for messages separated by LF or
  * "Char" for continuous stream of codes.
  * The suffix "/[wait]ms" can be added to reduce the transmit rate so that there
  * is always at lest the specified number of milliseconds between each message sent.
+ * Remember to call the saveToFlash() method of the module if the
+ * modification must be kept.
  *
- * @param newval : a string corresponding to the type of protocol used over the serial line
+ * @param newval : a string corresponding to the type of protocol used to send I2C messages
  *
  * @return YAPI_SUCCESS if the call succeeds.
  *
@@ -541,12 +490,62 @@
     return [self _setAttr:@"protocol" :rest_val];
 }
 /**
+ * Returns the voltage level used on the I2C bus.
+ *
+ * @return a value among Y_I2CVOLTAGELEVEL_OFF, Y_I2CVOLTAGELEVEL_3V3 and Y_I2CVOLTAGELEVEL_1V8
+ * corresponding to the voltage level used on the I2C bus
+ *
+ * On failure, throws an exception or returns Y_I2CVOLTAGELEVEL_INVALID.
+ */
+-(Y_I2CVOLTAGELEVEL_enum) get_i2cVoltageLevel
+{
+    Y_I2CVOLTAGELEVEL_enum res;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
+            return Y_I2CVOLTAGELEVEL_INVALID;
+        }
+    }
+    res = _i2cVoltageLevel;
+    return res;
+}
+
+
+-(Y_I2CVOLTAGELEVEL_enum) i2cVoltageLevel
+{
+    return [self get_i2cVoltageLevel];
+}
+
+/**
+ * Changes the voltage level used on the I2C bus.
+ * Remember to call the saveToFlash() method of the module if the
+ * modification must be kept.
+ *
+ * @param newval : a value among Y_I2CVOLTAGELEVEL_OFF, Y_I2CVOLTAGELEVEL_3V3 and
+ * Y_I2CVOLTAGELEVEL_1V8 corresponding to the voltage level used on the I2C bus
+ *
+ * @return YAPI_SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) set_i2cVoltageLevel:(Y_I2CVOLTAGELEVEL_enum) newval
+{
+    return [self setI2cVoltageLevel:newval];
+}
+-(int) setI2cVoltageLevel:(Y_I2CVOLTAGELEVEL_enum) newval
+{
+    NSString* rest_val;
+    rest_val = [NSString stringWithFormat:@"%d", newval];
+    return [self _setAttr:@"i2cVoltageLevel" :rest_val];
+}
+/**
  * Returns the SPI port communication parameters, as a string such as
- * "400kbps,2000ms". The string includes the baud rate and  th  e recovery delay
- * after communications errors.
+ * "400kbps,2000ms,NoRestart". The string includes the baud rate, the
+ * recovery delay after communications errors, and if needed the option
+ * NoRestart to use a Stop/Start sequence instead of the
+ * Restart state when performing read on the I2C bus.
  *
  * @return a string corresponding to the SPI port communication parameters, as a string such as
- *         "400kbps,2000ms"
+ *         "400kbps,2000ms,NoRestart"
  *
  * On failure, throws an exception or returns Y_I2CMODE_INVALID.
  */
@@ -570,8 +569,12 @@
 
 /**
  * Changes the SPI port communication parameters, with a string such as
- * "400kbps,2000ms". The string includes the baud rate and the recovery delay
- * after communications errors.
+ * "400kbps,2000ms". The string includes the baud rate, the
+ * recovery delay after communications errors, and if needed the option
+ * NoRestart to use a Stop/Start sequence instead of the
+ * Restart state when performing read on the I2C bus.
+ * Remember to call the saveToFlash() method of the module if the
+ * modification must be kept.
  *
  * @param newval : a string corresponding to the SPI port communication parameters, with a string such as
  *         "400kbps,2000ms"
@@ -919,11 +922,11 @@
     }
 
     reply = [self queryLine:msg :1000];
-    if (!((int)[(reply) length] > 0)) {[self _throw: YAPI_IO_ERROR: @"no response from device"]; return YAPI_IO_ERROR;}
+    if (!((int)[(reply) length] > 0)) {[self _throw: YAPI_IO_ERROR: @"No response from I2C device"]; return YAPI_IO_ERROR;}
     idx = _ystrpos(reply, @"[N]!");
-    if (!(idx < 0)) {[self _throw: YAPI_IO_ERROR: @"No ACK received"]; return YAPI_IO_ERROR;}
+    if (!(idx < 0)) {[self _throw: YAPI_IO_ERROR: @"No I2C ACK received"]; return YAPI_IO_ERROR;}
     idx = _ystrpos(reply, @"!");
-    if (!(idx < 0)) {[self _throw: YAPI_IO_ERROR: @"Protocol error"]; return YAPI_IO_ERROR;}
+    if (!(idx < 0)) {[self _throw: YAPI_IO_ERROR: @"I2C protocol error"]; return YAPI_IO_ERROR;}
     return YAPI_SUCCESS;
 }
 
@@ -955,11 +958,11 @@
     }
 
     reply = [self queryLine:msg :1000];
-    if (!((int)[(reply) length] > 0)) {[self _throw: YAPI_IO_ERROR: @"no response from device"]; return YAPI_IO_ERROR;}
+    if (!((int)[(reply) length] > 0)) {[self _throw: YAPI_IO_ERROR: @"No response from I2C device"]; return YAPI_IO_ERROR;}
     idx = _ystrpos(reply, @"[N]!");
-    if (!(idx < 0)) {[self _throw: YAPI_IO_ERROR: @"No ACK received"]; return YAPI_IO_ERROR;}
+    if (!(idx < 0)) {[self _throw: YAPI_IO_ERROR: @"No I2C ACK received"]; return YAPI_IO_ERROR;}
     idx = _ystrpos(reply, @"!");
-    if (!(idx < 0)) {[self _throw: YAPI_IO_ERROR: @"Protocol error"]; return YAPI_IO_ERROR;}
+    if (!(idx < 0)) {[self _throw: YAPI_IO_ERROR: @"I2C protocol error"]; return YAPI_IO_ERROR;}
     return YAPI_SUCCESS;
 }
 
@@ -1000,11 +1003,11 @@
 
     reply = [self queryLine:msg :1000];
     rcvbytes = [NSMutableData dataWithLength:0];
-    if (!((int)[(reply) length] > 0)) {[self _throw: YAPI_IO_ERROR: @"no response from device"]; return rcvbytes;}
+    if (!((int)[(reply) length] > 0)) {[self _throw: YAPI_IO_ERROR: @"No response from I2C device"]; return rcvbytes;}
     idx = _ystrpos(reply, @"[N]!");
-    if (!(idx < 0)) {[self _throw: YAPI_IO_ERROR: @"No ACK received"]; return rcvbytes;}
+    if (!(idx < 0)) {[self _throw: YAPI_IO_ERROR: @"No I2C ACK received"]; return rcvbytes;}
     idx = _ystrpos(reply, @"!");
-    if (!(idx < 0)) {[self _throw: YAPI_IO_ERROR: @"Protocol error"]; return rcvbytes;}
+    if (!(idx < 0)) {[self _throw: YAPI_IO_ERROR: @"I2C protocol error"]; return rcvbytes;}
     reply = [reply substringWithRange:NSMakeRange( (int)[(reply) length]-2*rcvCount, 2*rcvCount)];
     rcvbytes = [YAPI _hexStr2Bin:reply];
     return rcvbytes;
@@ -1047,11 +1050,11 @@
     }
 
     reply = [self queryLine:msg :1000];
-    if (!((int)[(reply) length] > 0)) {[self _throw: YAPI_IO_ERROR: @"no response from device"]; return res;}
+    if (!((int)[(reply) length] > 0)) {[self _throw: YAPI_IO_ERROR: @"No response from I2C device"]; return res;}
     idx = _ystrpos(reply, @"[N]!");
-    if (!(idx < 0)) {[self _throw: YAPI_IO_ERROR: @"No ACK received"]; return res;}
+    if (!(idx < 0)) {[self _throw: YAPI_IO_ERROR: @"No I2C ACK received"]; return res;}
     idx = _ystrpos(reply, @"!");
-    if (!(idx < 0)) {[self _throw: YAPI_IO_ERROR: @"Protocol error"]; return res;}
+    if (!(idx < 0)) {[self _throw: YAPI_IO_ERROR: @"I2C protocol error"]; return res;}
     reply = [reply substringWithRange:NSMakeRange( (int)[(reply) length]-2*rcvCount, 2*rcvCount)];
     rcvbytes = [YAPI _hexStr2Bin:reply];
     [res removeAllObjects];

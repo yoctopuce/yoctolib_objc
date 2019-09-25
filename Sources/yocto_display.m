@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_display.m 33877 2018-12-26 12:19:48Z seb $
+ * $Id: yocto_display.m 37000 2019-09-03 06:40:17Z mvuilleu $
  *
  * Implements yFindDisplay(), the high-level API for Display functions
  *
@@ -973,7 +973,7 @@
 -(int) get_displayWidth
 {
     int res;
-    if (_cacheExpiration <= [YAPI GetTickCount]) {
+    if (_cacheExpiration == 0) {
         if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_DISPLAYWIDTH_INVALID;
         }
@@ -997,7 +997,7 @@
 -(int) get_displayHeight
 {
     int res;
-    if (_cacheExpiration <= [YAPI GetTickCount]) {
+    if (_cacheExpiration == 0) {
         if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return Y_DISPLAYHEIGHT_INVALID;
         }

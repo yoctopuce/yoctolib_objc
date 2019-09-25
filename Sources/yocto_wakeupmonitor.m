@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_wakeupmonitor.m 32610 2018-10-10 06:52:20Z seb $
+ *  $Id: yocto_wakeupmonitor.m 37000 2019-09-03 06:40:17Z mvuilleu $
  *
  *  Implements the high-level API for WakeUpMonitor functions
  *
@@ -138,6 +138,8 @@
 
 /**
  * Changes the maximal wake up time (seconds) before automatically going to sleep.
+ * Remember to call the saveToFlash() method of the module if the
+ * modification must be kept.
  *
  * @param newval : an integer corresponding to the maximal wake up time (seconds) before automatically
  * going to sleep

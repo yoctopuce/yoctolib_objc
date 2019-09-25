@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_pwminput.m 32610 2018-10-10 06:52:20Z seb $
+ *  $Id: yocto_pwminput.m 37149 2019-09-12 21:24:53Z mvuilleu $
  *
  *  Implements the high-level API for PwmInput functions
  *
@@ -129,6 +129,7 @@
  * is just a string which is automatically initialized each time
  * the measurement mode is changed. But is can be set to an
  * arbitrary value.
+ * Remember to call the saveToFlash() method of the module if the modification must be kept.
  *
  * @param newval : a string corresponding to the measuring unit for the measured quantity
  *
@@ -339,6 +340,7 @@
  * get_currentValue function and callbacks.
  * The edge count value is limited to the 6 lowest digits. For values greater than one million, use
  * get_pulseCounter().
+ * Remember to call the saveToFlash() method of the module if the modification must be kept.
  *
  * @param newval : a value among Y_PWMREPORTMODE_PWM_DUTYCYCLE, Y_PWMREPORTMODE_PWM_FREQUENCY,
  * Y_PWMREPORTMODE_PWM_PULSEDURATION, Y_PWMREPORTMODE_PWM_EDGECOUNT, Y_PWMREPORTMODE_PWM_PULSECOUNT,
@@ -387,6 +389,7 @@
 
 /**
  * Changes the shortest expected pulse duration, in ms. Any shorter pulse will be automatically ignored (debounce).
+ * Remember to call the saveToFlash() method of the module if the modification must be kept.
  *
  * @param newval : an integer corresponding to the shortest expected pulse duration, in ms
  *

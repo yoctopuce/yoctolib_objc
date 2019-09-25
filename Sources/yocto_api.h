@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.h 36544 2019-07-29 05:34:16Z mvuilleu $
+ * $Id: yocto_api.h 37230 2019-09-20 08:43:51Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -62,7 +62,7 @@
 
 extern NSMutableDictionary* YAPI_YFunctions;
 
-#define YOCTO_API_REVISION          "36692"
+#define YOCTO_API_REVISION          "37304"
 
 // yInitAPI argument
 #define Y_DETECT_NONE           0
@@ -328,26 +328,49 @@ int _ystrpos(NSString* haystack, NSString* needle);
 //--- (end of generated code: YAPIContext private methods declaration)
 //--- (generated code: YAPIContext public methods declaration)
 /**
- * Change the time between each forced enumeration of the YoctoHub used.
- * By default, the library performs a complete enumeration every 10 seconds.
- * To reduce network traffic it is possible to increase this delay.
- * This is particularly useful when a YoctoHub is connected to a GSM network
- * where the traffic is charged. This setting does not affect modules connected by USB,
- * nor the operation of arrival/removal callbacks.
- * Note: This function must be called after yInitAPI.
+ * Modifies the delay between each forced enumeration of the used YoctoHubs.
+ * By default, the library performs a full enumeration every 10 seconds.
+ * To reduce network traffic, you can increase this delay.
+ * It's particularly useful when a YoctoHub is connected to the GSM network
+ * where traffic is billed. This parameter doesn't impact modules connected by USB,
+ * nor the working of module arrival/removal callbacks.
+ * Note: you must call this function after yInitAPI.
  *
- * @param deviceListValidity : number of seconds between each enumeration.
+ * @param deviceListValidity : nubmer of seconds between each enumeration.
  * @noreturn
  */
 -(void)     SetDeviceListValidity:(int)deviceListValidity;
 
 /**
- * Returns the time between each forced enumeration of the YoctoHub used.
- * Note: This function must be called after yInitAPI.
+ * Returns the delay between each forced enumeration of the used YoctoHubs.
+ * Note: you must call this function after yInitAPI.
  *
  * @return the number of seconds between each enumeration.
  */
 -(int)     GetDeviceListValidity;
+
+/**
+ * Modifies the network connection delay for YAPI.RegisterHub() and
+ * YAPI.UpdateDeviceList(). This delay impacts only the YoctoHubs and VirtualHub
+ * which are accessible through the network. By default, this delay is of 20000 milliseconds,
+ * but depending or you network you may want to change this delay.
+ * For example if your network infrastructure uses a GSM connection.
+ *
+ * @param networkMsTimeout : the network connection delay in milliseconds.
+ * @noreturn
+ */
+-(void)     SetNetworkTimeout:(int)networkMsTimeout;
+
+/**
+ * Returns the network connection delay for YAPI.RegisterHub() and
+ * YAPI.UpdateDeviceList(). This delay impacts only the YoctoHubs and VirtualHub
+ * which are accessible through the network. By default, this delay is of 20000 milliseconds,
+ * but depending or you network you may want to change this delay.
+ * For example if your network infrastructure uses a GSM connection.
+ *
+ * @return the network connection delay in milliseconds.
+ */
+-(int)     GetNetworkTimeout;
 
 /**
  * Change the validity period of the data loaded by the library.
@@ -719,26 +742,49 @@ int _ystrpos(NSString* haystack, NSString* needle);
 
 //--- (generated code: YAPIContext yapiwrapper declaration)
 /**
- * Change the time between each forced enumeration of the YoctoHub used.
- * By default, the library performs a complete enumeration every 10 seconds.
- * To reduce network traffic it is possible to increase this delay.
- * This is particularly useful when a YoctoHub is connected to a GSM network
- * where the traffic is charged. This setting does not affect modules connected by USB,
- * nor the operation of arrival/removal callbacks.
- * Note: This function must be called after yInitAPI.
+ * Modifies the delay between each forced enumeration of the used YoctoHubs.
+ * By default, the library performs a full enumeration every 10 seconds.
+ * To reduce network traffic, you can increase this delay.
+ * It's particularly useful when a YoctoHub is connected to the GSM network
+ * where traffic is billed. This parameter doesn't impact modules connected by USB,
+ * nor the working of module arrival/removal callbacks.
+ * Note: you must call this function after yInitAPI.
  *
- * @param deviceListValidity : number of seconds between each enumeration.
+ * @param deviceListValidity : nubmer of seconds between each enumeration.
  * @noreturn
  */
 +(void)     SetDeviceListValidity:(int)deviceListValidity;
 
 /**
- * Returns the time between each forced enumeration of the YoctoHub used.
- * Note: This function must be called after yInitAPI.
+ * Returns the delay between each forced enumeration of the used YoctoHubs.
+ * Note: you must call this function after yInitAPI.
  *
  * @return the number of seconds between each enumeration.
  */
 +(int)     GetDeviceListValidity;
+
+/**
+ * Modifies the network connection delay for YAPI.RegisterHub() and
+ * YAPI.UpdateDeviceList(). This delay impacts only the YoctoHubs and VirtualHub
+ * which are accessible through the network. By default, this delay is of 20000 milliseconds,
+ * but depending or you network you may want to change this delay.
+ * For example if your network infrastructure uses a GSM connection.
+ *
+ * @param networkMsTimeout : the network connection delay in milliseconds.
+ * @noreturn
+ */
++(void)     SetNetworkTimeout:(int)networkMsTimeout;
+
+/**
+ * Returns the network connection delay for YAPI.RegisterHub() and
+ * YAPI.UpdateDeviceList(). This delay impacts only the YoctoHubs and VirtualHub
+ * which are accessible through the network. By default, this delay is of 20000 milliseconds,
+ * but depending or you network you may want to change this delay.
+ * For example if your network infrastructure uses a GSM connection.
+ *
+ * @return the network connection delay in milliseconds.
+ */
++(int)     GetNetworkTimeout;
 
 /**
  * Change the validity period of the data loaded by the library.
@@ -1139,13 +1185,14 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
 
 
 /**
- * Returns the numerical error code of the last error with this module object.
+ * Returns the numerical error code of the latest error with the function.
  * This method is mostly useful when using the Yoctopuce library with
  * exceptions disabled.
  *
- * @return a number corresponding to the code of the last error that occured while
- *         using this module object
+ * @return a number corresponding to the code of the latest error that occurred while
+ *         using the function object
  */
+-(YRETCODE)    get_errorType;
 -(YRETCODE)    get_errType;
 -(YRETCODE)    errType;
 
@@ -1747,6 +1794,8 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
 
 -(NSString*)     calibConvert:(NSString*)param :(NSString*)currentFuncValue :(NSString*)unit_name :(NSString*)sensorType;
 
+-(int)     _tryExec:(NSString*)url;
+
 /**
  * Restores all the settings of the device. Useful to restore all the logical names and calibrations parameters
  * of a module from a backup.Remember to call the saveToFlash() method of the module if the
@@ -2042,6 +2091,7 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
  * the value "OFF". Note that setting the  datalogger recording frequency
  * to a greater value than the sensor native sampling frequency is useless,
  * and even counterproductive: those two frequencies are not related.
+ * Remember to call the saveToFlash() method of the module if the modification must be kept.
  *
  * @param newval : a string corresponding to the datalogger recording frequency for this function
  *
@@ -2074,6 +2124,7 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
  * notification frequency to a greater value than the sensor native
  * sampling frequency is unless, and even counterproductive: those two
  * frequencies are not related.
+ * Remember to call the saveToFlash() method of the module if the modification must be kept.
  *
  * @param newval : a string corresponding to the timed value notification frequency for this function
  *
@@ -2098,6 +2149,7 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
 -(Y_ADVMODE_enum) advMode;
 /**
  * Changes the measuring mode used for the advertised value pushed to the parent hub.
+ * Remember to call the saveToFlash() method of the module if the modification must be kept.
  *
  * @param newval : a value among Y_ADVMODE_IMMEDIATE, Y_ADVMODE_PERIOD_AVG, Y_ADVMODE_PERIOD_MIN and
  * Y_ADVMODE_PERIOD_MAX corresponding to the measuring mode used for the advertised value pushed to the parent hub
@@ -2119,6 +2171,7 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
 /**
  * Changes the resolution of the measured physical values. The resolution corresponds to the numerical precision
  * when displaying value. It does not change the precision of the measure itself.
+ * Remember to call the saveToFlash() method of the module if the modification must be kept.
  *
  * @param newval : a floating point number corresponding to the resolution of the measured physical values
  *
@@ -2132,6 +2185,7 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
 /**
  * Returns the resolution of the measured values. The resolution corresponds to the numerical precision
  * of the measures, which is not always the same as the actual precision of the sensor.
+ * Remember to call the saveToFlash() method of the module if the modification must be kept.
  *
  * @return a floating point number corresponding to the resolution of the measured values
  *

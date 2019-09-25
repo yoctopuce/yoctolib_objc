@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_serialport.h 36048 2019-06-28 17:43:51Z mvuilleu $
+ * $Id: yocto_serialport.h 37141 2019-09-12 12:37:10Z mvuilleu $
  *
  * Declares yFindSerialPort(), the high-level API for SerialPort functions
  *
@@ -139,8 +139,8 @@ typedef enum {
     NSString*       _currentJob;
     NSString*       _startupJob;
     NSString*       _command;
-    Y_VOLTAGELEVEL_enum _voltageLevel;
     NSString*       _protocol;
+    Y_VOLTAGELEVEL_enum _voltageLevel;
     NSString*       _serialMode;
     YSerialPortValueCallback _valueCallbackSerialPort;
     int             _rxptr;
@@ -235,11 +235,10 @@ typedef enum {
 
 -(NSString*) currentJob;
 /**
- * Changes the job to use when the device is powered on.
- * Remember to call the saveToFlash() method of the module if the
- * modification must be kept.
+ * Selects a job file to run immediately. If an empty string is
+ * given as argument, stops running current job file.
  *
- * @param newval : a string corresponding to the job to use when the device is powered on
+ * @param newval : a string
  *
  * @return YAPI_SUCCESS if the call succeeds.
  *
@@ -281,37 +280,6 @@ typedef enum {
 -(int)     setCommand:(NSString*) newval;
 
 /**
- * Returns the voltage level used on the serial line.
- *
- * @return a value among Y_VOLTAGELEVEL_OFF, Y_VOLTAGELEVEL_TTL3V, Y_VOLTAGELEVEL_TTL3VR,
- * Y_VOLTAGELEVEL_TTL5V, Y_VOLTAGELEVEL_TTL5VR, Y_VOLTAGELEVEL_RS232, Y_VOLTAGELEVEL_RS485 and
- * Y_VOLTAGELEVEL_TTL1V8 corresponding to the voltage level used on the serial line
- *
- * On failure, throws an exception or returns Y_VOLTAGELEVEL_INVALID.
- */
--(Y_VOLTAGELEVEL_enum)     get_voltageLevel;
-
-
--(Y_VOLTAGELEVEL_enum) voltageLevel;
-/**
- * Changes the voltage type used on the serial line. Valid
- * values  will depend on the Yoctopuce device model featuring
- * the serial port feature.  Check your device documentation
- * to find out which values are valid for that specific model.
- * Trying to set an invalid value will have no effect.
- *
- * @param newval : a value among Y_VOLTAGELEVEL_OFF, Y_VOLTAGELEVEL_TTL3V, Y_VOLTAGELEVEL_TTL3VR,
- * Y_VOLTAGELEVEL_TTL5V, Y_VOLTAGELEVEL_TTL5VR, Y_VOLTAGELEVEL_RS232, Y_VOLTAGELEVEL_RS485 and
- * Y_VOLTAGELEVEL_TTL1V8 corresponding to the voltage type used on the serial line
- *
- * @return YAPI_SUCCESS if the call succeeds.
- *
- * On failure, throws an exception or returns a negative error code.
- */
--(int)     set_voltageLevel:(Y_VOLTAGELEVEL_enum) newval;
--(int)     setVoltageLevel:(Y_VOLTAGELEVEL_enum) newval;
-
-/**
  * Returns the type of protocol used over the serial line, as a string.
  * Possible values are "Line" for ASCII messages separated by CR and/or LF,
  * "Frame:[timeout]ms" for binary messages separated by a delay time,
@@ -342,6 +310,8 @@ typedef enum {
  * "Byte" for a continuous binary stream.
  * The suffix "/[wait]ms" can be added to reduce the transmit rate so that there
  * is always at lest the specified number of milliseconds between each bytes sent.
+ * Remember to call the saveToFlash() method of the module if the
+ * modification must be kept.
  *
  * @param newval : a string corresponding to the type of protocol used over the serial line
  *
@@ -351,6 +321,39 @@ typedef enum {
  */
 -(int)     set_protocol:(NSString*) newval;
 -(int)     setProtocol:(NSString*) newval;
+
+/**
+ * Returns the voltage level used on the serial line.
+ *
+ * @return a value among Y_VOLTAGELEVEL_OFF, Y_VOLTAGELEVEL_TTL3V, Y_VOLTAGELEVEL_TTL3VR,
+ * Y_VOLTAGELEVEL_TTL5V, Y_VOLTAGELEVEL_TTL5VR, Y_VOLTAGELEVEL_RS232, Y_VOLTAGELEVEL_RS485 and
+ * Y_VOLTAGELEVEL_TTL1V8 corresponding to the voltage level used on the serial line
+ *
+ * On failure, throws an exception or returns Y_VOLTAGELEVEL_INVALID.
+ */
+-(Y_VOLTAGELEVEL_enum)     get_voltageLevel;
+
+
+-(Y_VOLTAGELEVEL_enum) voltageLevel;
+/**
+ * Changes the voltage type used on the serial line. Valid
+ * values  will depend on the Yoctopuce device model featuring
+ * the serial port feature.  Check your device documentation
+ * to find out which values are valid for that specific model.
+ * Trying to set an invalid value will have no effect.
+ * Remember to call the saveToFlash() method of the module if the
+ * modification must be kept.
+ *
+ * @param newval : a value among Y_VOLTAGELEVEL_OFF, Y_VOLTAGELEVEL_TTL3V, Y_VOLTAGELEVEL_TTL3VR,
+ * Y_VOLTAGELEVEL_TTL5V, Y_VOLTAGELEVEL_TTL5VR, Y_VOLTAGELEVEL_RS232, Y_VOLTAGELEVEL_RS485 and
+ * Y_VOLTAGELEVEL_TTL1V8 corresponding to the voltage type used on the serial line
+ *
+ * @return YAPI_SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     set_voltageLevel:(Y_VOLTAGELEVEL_enum) newval;
+-(int)     setVoltageLevel:(Y_VOLTAGELEVEL_enum) newval;
 
 /**
  * Returns the serial port communication parameters, as a string such as
@@ -376,6 +379,8 @@ typedef enum {
  * to enable flow control: "CtsRts" for hardware handshake, "XOnXOff"
  * for logical flow control and "Simplex" for acquiring a shared bus using
  * the RTS line (as used by some RS485 adapters for instance).
+ * Remember to call the saveToFlash() method of the module if the
+ * modification must be kept.
  *
  * @param newval : a string corresponding to the serial port communication parameters, with a string such as
  *         "9600,8N1"

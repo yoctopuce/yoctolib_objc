@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_wakeupschedule.m 33715 2018-12-14 14:21:27Z seb $
+ *  $Id: yocto_wakeupschedule.m 37000 2019-09-03 06:40:17Z mvuilleu $
  *
  *  Implements the high-level API for WakeUpSchedule functions
  *
@@ -143,6 +143,8 @@
 
 /**
  * Changes the minutes in the 00-29 interval when a wake up must take place.
+ * Remember to call the saveToFlash() method of the module if the
+ * modification must be kept.
  *
  * @param newval : an integer corresponding to the minutes in the 00-29 interval when a wake up must take place
  *
@@ -187,6 +189,8 @@
 
 /**
  * Changes the minutes in the 30-59 interval when a wake up must take place.
+ * Remember to call the saveToFlash() method of the module if the
+ * modification must be kept.
  *
  * @param newval : an integer corresponding to the minutes in the 30-59 interval when a wake up must take place
  *
@@ -231,6 +235,8 @@
 
 /**
  * Changes the hours when a wake up must take place.
+ * Remember to call the saveToFlash() method of the module if the
+ * modification must be kept.
  *
  * @param newval : an integer corresponding to the hours when a wake up must take place
  *
@@ -275,6 +281,8 @@
 
 /**
  * Changes the days of the week when a wake up must take place.
+ * Remember to call the saveToFlash() method of the module if the
+ * modification must be kept.
  *
  * @param newval : an integer corresponding to the days of the week when a wake up must take place
  *
@@ -319,6 +327,8 @@
 
 /**
  * Changes the days of the month when a wake up must take place.
+ * Remember to call the saveToFlash() method of the module if the
+ * modification must be kept.
  *
  * @param newval : an integer corresponding to the days of the month when a wake up must take place
  *
@@ -363,6 +373,8 @@
 
 /**
  * Changes the months when a wake up must take place.
+ * Remember to call the saveToFlash() method of the module if the
+ * modification must be kept.
  *
  * @param newval : an integer corresponding to the months when a wake up must take place
  *

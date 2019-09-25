@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_i2cport.h 36207 2019-07-10 20:46:18Z mvuilleu $
+ *  $Id: yocto_i2cport.h 37144 2019-09-12 13:39:36Z mvuilleu $
  *
  *  Declares yFindI2cPort(), the high-level API for I2cPort functions
  *
@@ -44,19 +44,14 @@ CF_EXTERN_C_BEGIN
 
 //--- (YI2cPort globals)
 typedef void (*YI2cPortValueCallback)(YI2cPort *func, NSString *functionValue);
-#ifndef _Y_VOLTAGELEVEL_ENUM
-#define _Y_VOLTAGELEVEL_ENUM
+#ifndef _Y_I2CVOLTAGELEVEL_ENUM
+#define _Y_I2CVOLTAGELEVEL_ENUM
 typedef enum {
-    Y_VOLTAGELEVEL_OFF = 0,
-    Y_VOLTAGELEVEL_TTL3V = 1,
-    Y_VOLTAGELEVEL_TTL3VR = 2,
-    Y_VOLTAGELEVEL_TTL5V = 3,
-    Y_VOLTAGELEVEL_TTL5VR = 4,
-    Y_VOLTAGELEVEL_RS232 = 5,
-    Y_VOLTAGELEVEL_RS485 = 6,
-    Y_VOLTAGELEVEL_TTL1V8 = 7,
-    Y_VOLTAGELEVEL_INVALID = -1,
-} Y_VOLTAGELEVEL_enum;
+    Y_I2CVOLTAGELEVEL_OFF = 0,
+    Y_I2CVOLTAGELEVEL_3V3 = 1,
+    Y_I2CVOLTAGELEVEL_1V8 = 2,
+    Y_I2CVOLTAGELEVEL_INVALID = -1,
+} Y_I2CVOLTAGELEVEL_enum;
 #endif
 #define Y_RXCOUNT_INVALID               YAPI_INVALID_UINT
 #define Y_TXCOUNT_INVALID               YAPI_INVALID_UINT
@@ -95,8 +90,8 @@ typedef enum {
     NSString*       _currentJob;
     NSString*       _startupJob;
     NSString*       _command;
-    Y_VOLTAGELEVEL_enum _voltageLevel;
     NSString*       _protocol;
+    Y_I2CVOLTAGELEVEL_enum _i2cVoltageLevel;
     NSString*       _i2cMode;
     YI2cPortValueCallback _valueCallbackI2cPort;
     int             _rxptr;
@@ -193,11 +188,10 @@ typedef enum {
 
 -(NSString*) currentJob;
 /**
- * Changes the job to use when the device is powered on.
- * Remember to call the saveToFlash() method of the module if the
- * modification must be kept.
+ * Selects a job file to run immediately. If an empty string is
+ * given as argument, stops running current job file.
  *
- * @param newval : a string corresponding to the job to use when the device is powered on
+ * @param newval : a string
  *
  * @return YAPI_SUCCESS if the call succeeds.
  *
@@ -239,43 +233,12 @@ typedef enum {
 -(int)     setCommand:(NSString*) newval;
 
 /**
- * Returns the voltage level used on the serial line.
- *
- * @return a value among Y_VOLTAGELEVEL_OFF, Y_VOLTAGELEVEL_TTL3V, Y_VOLTAGELEVEL_TTL3VR,
- * Y_VOLTAGELEVEL_TTL5V, Y_VOLTAGELEVEL_TTL5VR, Y_VOLTAGELEVEL_RS232, Y_VOLTAGELEVEL_RS485 and
- * Y_VOLTAGELEVEL_TTL1V8 corresponding to the voltage level used on the serial line
- *
- * On failure, throws an exception or returns Y_VOLTAGELEVEL_INVALID.
- */
--(Y_VOLTAGELEVEL_enum)     get_voltageLevel;
-
-
--(Y_VOLTAGELEVEL_enum) voltageLevel;
-/**
- * Changes the voltage type used on the serial line. Valid
- * values  will depend on the Yoctopuce device model featuring
- * the serial port feature.  Check your device documentation
- * to find out which values are valid for that specific model.
- * Trying to set an invalid value will have no effect.
- *
- * @param newval : a value among Y_VOLTAGELEVEL_OFF, Y_VOLTAGELEVEL_TTL3V, Y_VOLTAGELEVEL_TTL3VR,
- * Y_VOLTAGELEVEL_TTL5V, Y_VOLTAGELEVEL_TTL5VR, Y_VOLTAGELEVEL_RS232, Y_VOLTAGELEVEL_RS485 and
- * Y_VOLTAGELEVEL_TTL1V8 corresponding to the voltage type used on the serial line
- *
- * @return YAPI_SUCCESS if the call succeeds.
- *
- * On failure, throws an exception or returns a negative error code.
- */
--(int)     set_voltageLevel:(Y_VOLTAGELEVEL_enum) newval;
--(int)     setVoltageLevel:(Y_VOLTAGELEVEL_enum) newval;
-
-/**
- * Returns the type of protocol used over the serial line, as a string.
+ * Returns the type of protocol used to send I2C messages, as a string.
  * Possible values are
  * "Line" for messages separated by LF or
  * "Char" for continuous stream of codes.
  *
- * @return a string corresponding to the type of protocol used over the serial line, as a string
+ * @return a string corresponding to the type of protocol used to send I2C messages, as a string
  *
  * On failure, throws an exception or returns Y_PROTOCOL_INVALID.
  */
@@ -284,14 +247,16 @@ typedef enum {
 
 -(NSString*) protocol;
 /**
- * Changes the type of protocol used over the serial line.
+ * Changes the type of protocol used to send I2C messages.
  * Possible values are
  * "Line" for messages separated by LF or
  * "Char" for continuous stream of codes.
  * The suffix "/[wait]ms" can be added to reduce the transmit rate so that there
  * is always at lest the specified number of milliseconds between each message sent.
+ * Remember to call the saveToFlash() method of the module if the
+ * modification must be kept.
  *
- * @param newval : a string corresponding to the type of protocol used over the serial line
+ * @param newval : a string corresponding to the type of protocol used to send I2C messages
  *
  * @return YAPI_SUCCESS if the call succeeds.
  *
@@ -301,12 +266,41 @@ typedef enum {
 -(int)     setProtocol:(NSString*) newval;
 
 /**
+ * Returns the voltage level used on the I2C bus.
+ *
+ * @return a value among Y_I2CVOLTAGELEVEL_OFF, Y_I2CVOLTAGELEVEL_3V3 and Y_I2CVOLTAGELEVEL_1V8
+ * corresponding to the voltage level used on the I2C bus
+ *
+ * On failure, throws an exception or returns Y_I2CVOLTAGELEVEL_INVALID.
+ */
+-(Y_I2CVOLTAGELEVEL_enum)     get_i2cVoltageLevel;
+
+
+-(Y_I2CVOLTAGELEVEL_enum) i2cVoltageLevel;
+/**
+ * Changes the voltage level used on the I2C bus.
+ * Remember to call the saveToFlash() method of the module if the
+ * modification must be kept.
+ *
+ * @param newval : a value among Y_I2CVOLTAGELEVEL_OFF, Y_I2CVOLTAGELEVEL_3V3 and
+ * Y_I2CVOLTAGELEVEL_1V8 corresponding to the voltage level used on the I2C bus
+ *
+ * @return YAPI_SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     set_i2cVoltageLevel:(Y_I2CVOLTAGELEVEL_enum) newval;
+-(int)     setI2cVoltageLevel:(Y_I2CVOLTAGELEVEL_enum) newval;
+
+/**
  * Returns the SPI port communication parameters, as a string such as
- * "400kbps,2000ms". The string includes the baud rate and  th  e recovery delay
- * after communications errors.
+ * "400kbps,2000ms,NoRestart". The string includes the baud rate, the
+ * recovery delay after communications errors, and if needed the option
+ * NoRestart to use a Stop/Start sequence instead of the
+ * Restart state when performing read on the I2C bus.
  *
  * @return a string corresponding to the SPI port communication parameters, as a string such as
- *         "400kbps,2000ms"
+ *         "400kbps,2000ms,NoRestart"
  *
  * On failure, throws an exception or returns Y_I2CMODE_INVALID.
  */
@@ -316,8 +310,12 @@ typedef enum {
 -(NSString*) i2cMode;
 /**
  * Changes the SPI port communication parameters, with a string such as
- * "400kbps,2000ms". The string includes the baud rate and the recovery delay
- * after communications errors.
+ * "400kbps,2000ms". The string includes the baud rate, the
+ * recovery delay after communications errors, and if needed the option
+ * NoRestart to use a Stop/Start sequence instead of the
+ * Restart state when performing read on the I2C bus.
+ * Remember to call the saveToFlash() method of the module if the
+ * modification must be kept.
  *
  * @param newval : a string corresponding to the SPI port communication parameters, with a string such as
  *         "400kbps,2000ms"

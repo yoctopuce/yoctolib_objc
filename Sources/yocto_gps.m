@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_gps.m 32610 2018-10-10 06:52:20Z seb $
+ *  $Id: yocto_gps.m 37165 2019-09-13 16:57:27Z mvuilleu $
  *
  *  Implements the high-level API for Gps functions
  *
@@ -56,6 +56,7 @@
     _isFixed = Y_ISFIXED_INVALID;
     _satCount = Y_SATCOUNT_INVALID;
     _coordSystem = Y_COORDSYSTEM_INVALID;
+    _constellation = Y_CONSTELLATION_INVALID;
     _latitude = Y_LATITUDE_INVALID;
     _longitude = Y_LONGITUDE_INVALID;
     _dilution = Y_DILUTION_INVALID;
@@ -104,6 +105,11 @@
     if(!strcmp(j->token, "coordSystem")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
         _coordSystem =  atoi(j->token);
+        return 1;
+    }
+    if(!strcmp(j->token, "constellation")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _constellation =  atoi(j->token);
         return 1;
     }
     if(!strcmp(j->token, "latitude")) {
@@ -245,6 +251,8 @@
 
 /**
  * Changes the representation system used for positioning data.
+ * Remember to call the saveToFlash() method of the module if the
+ * modification must be kept.
  *
  * @param newval : a value among Y_COORDSYSTEM_GPS_DMS, Y_COORDSYSTEM_GPS_DM and Y_COORDSYSTEM_GPS_D
  * corresponding to the representation system used for positioning data
@@ -262,6 +270,60 @@
     NSString* rest_val;
     rest_val = [NSString stringWithFormat:@"%d", newval];
     return [self _setAttr:@"coordSystem" :rest_val];
+}
+/**
+ * Returns the the satellites constellation used to compute
+ * positioning data.
+ *
+ * @return a value among Y_CONSTELLATION_GPS, Y_CONSTELLATION_GLONASS, Y_CONSTELLATION_GALLILEO,
+ * Y_CONSTELLATION_GNSS, Y_CONSTELLATION_GPS_GLONASS, Y_CONSTELLATION_GPS_GALLILEO and
+ * Y_CONSTELLATION_GLONASS_GALLELIO corresponding to the the satellites constellation used to compute
+ *         positioning data
+ *
+ * On failure, throws an exception or returns Y_CONSTELLATION_INVALID.
+ */
+-(Y_CONSTELLATION_enum) get_constellation
+{
+    Y_CONSTELLATION_enum res;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
+            return Y_CONSTELLATION_INVALID;
+        }
+    }
+    res = _constellation;
+    return res;
+}
+
+
+-(Y_CONSTELLATION_enum) constellation
+{
+    return [self get_constellation];
+}
+
+/**
+ * Changes the satellites constellation used to compute
+ * positioning data. Possible  constellations are GPS, Glonass, Galileo ,
+ * GNSS ( = GPS + Glonass + Galileo) and the 3 possible pairs. This seeting has effect on Yocto-GPS rev A.
+ *
+ * @param newval : a value among Y_CONSTELLATION_GPS, Y_CONSTELLATION_GLONASS,
+ * Y_CONSTELLATION_GALLILEO, Y_CONSTELLATION_GNSS, Y_CONSTELLATION_GPS_GLONASS,
+ * Y_CONSTELLATION_GPS_GALLILEO and Y_CONSTELLATION_GLONASS_GALLELIO corresponding to the satellites
+ * constellation used to compute
+ *         positioning data
+ *
+ * @return YAPI_SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) set_constellation:(Y_CONSTELLATION_enum) newval
+{
+    return [self setConstellation:newval];
+}
+-(int) setConstellation:(Y_CONSTELLATION_enum) newval
+{
+    NSString* rest_val;
+    rest_val = [NSString stringWithFormat:@"%d", newval];
+    return [self _setAttr:@"constellation" :rest_val];
 }
 /**
  * Returns the current latitude.
@@ -491,6 +553,8 @@
  * Changes the number of seconds between current time and UTC time (time zone).
  * The timezone is automatically rounded to the nearest multiple of 15 minutes.
  * If current UTC time is known, the current time is automatically be updated according to the selected time zone.
+ * Remember to call the saveToFlash() method of the module if the
+ * modification must be kept.
  *
  * @param newval : an integer corresponding to the number of seconds between current time and UTC time (time zone)
  *

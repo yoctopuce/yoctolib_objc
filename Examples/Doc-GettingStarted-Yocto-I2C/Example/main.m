@@ -54,7 +54,7 @@ int main(int argc, const char * argv[])
 
     if ([i2cPort isOnline]) {
       [i2cPort set_i2cMode:@"400kbps"];
-      [i2cPort set_voltageLevel:Y_VOLTAGELEVEL_TTL3V];
+      [i2cPort set_i2cVoltageLevel:Y_I2CVOLTAGELEVEL_3V3];
       [i2cPort reset];
       NSLog(@"****************************");
       NSLog(@"* make sure voltage levels *");
