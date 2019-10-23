@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_gyro.h 32906 2018-11-02 10:18:15Z seb $
+ * $Id: yocto_gyro.h 37619 2019-10-11 11:52:42Z mvuilleu $
  *
  * Declares yFindGyro(), the high-level API for Gyro functions
  *
@@ -281,6 +281,8 @@ typedef void(*YAnglesCallback)(YGyro *yGyro, double roll, double pitch, double h
 /**
  * Changes the measure update frequency, measured in Hz (Yocto-3D-V2 only). When the
  * frequency is lower, the device performs averaging.
+ * Remember to call the saveToFlash()
+ * method of the module if the modification must be kept.
  *
  * @param newval : an integer corresponding to the measure update frequency, measured in Hz (Yocto-3D-V2 only)
  *

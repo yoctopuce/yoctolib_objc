@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.h 37230 2019-09-20 08:43:51Z seb $
+ * $Id: yocto_api.h 37692 2019-10-14 14:58:03Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -62,7 +62,7 @@
 
 extern NSMutableDictionary* YAPI_YFunctions;
 
-#define YOCTO_API_REVISION          "37304"
+#define YOCTO_API_REVISION          "37780"
 
 // yInitAPI argument
 #define Y_DETECT_NONE           0
@@ -350,8 +350,8 @@ int _ystrpos(NSString* haystack, NSString* needle);
 -(int)     GetDeviceListValidity;
 
 /**
- * Modifies the network connection delay for YAPI.RegisterHub() and
- * YAPI.UpdateDeviceList(). This delay impacts only the YoctoHubs and VirtualHub
+ * Modifies the network connection delay for yRegisterHub() and yUpdateDeviceList().
+ * This delay impacts only the YoctoHubs and VirtualHub
  * which are accessible through the network. By default, this delay is of 20000 milliseconds,
  * but depending or you network you may want to change this delay.
  * For example if your network infrastructure uses a GSM connection.
@@ -362,8 +362,8 @@ int _ystrpos(NSString* haystack, NSString* needle);
 -(void)     SetNetworkTimeout:(int)networkMsTimeout;
 
 /**
- * Returns the network connection delay for YAPI.RegisterHub() and
- * YAPI.UpdateDeviceList(). This delay impacts only the YoctoHubs and VirtualHub
+ * Returns the network connection delay for yRegisterHub() and yUpdateDeviceList().
+ * This delay impacts only the YoctoHubs and VirtualHub
  * which are accessible through the network. By default, this delay is of 20000 milliseconds,
  * but depending or you network you may want to change this delay.
  * For example if your network infrastructure uses a GSM connection.
@@ -764,8 +764,8 @@ int _ystrpos(NSString* haystack, NSString* needle);
 +(int)     GetDeviceListValidity;
 
 /**
- * Modifies the network connection delay for YAPI.RegisterHub() and
- * YAPI.UpdateDeviceList(). This delay impacts only the YoctoHubs and VirtualHub
+ * Modifies the network connection delay for yRegisterHub() and yUpdateDeviceList().
+ * This delay impacts only the YoctoHubs and VirtualHub
  * which are accessible through the network. By default, this delay is of 20000 milliseconds,
  * but depending or you network you may want to change this delay.
  * For example if your network infrastructure uses a GSM connection.
@@ -776,8 +776,8 @@ int _ystrpos(NSString* haystack, NSString* needle);
 +(void)     SetNetworkTimeout:(int)networkMsTimeout;
 
 /**
- * Returns the network connection delay for YAPI.RegisterHub() and
- * YAPI.UpdateDeviceList(). This delay impacts only the YoctoHubs and VirtualHub
+ * Returns the network connection delay for yRegisterHub() and yUpdateDeviceList().
+ * This delay impacts only the YoctoHubs and VirtualHub
  * which are accessible through the network. By default, this delay is of 20000 milliseconds,
  * but depending or you network you may want to change this delay.
  * For example if your network infrastructure uses a GSM connection.

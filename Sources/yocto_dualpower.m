@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_dualpower.m 32610 2018-10-10 06:52:20Z seb $
+ *  $Id: yocto_dualpower.m 37609 2019-10-09 16:59:35Z mvuilleu $
  *
  *  Implements the high-level API for DualPower functions
  *
@@ -145,6 +145,7 @@
 
 /**
  * Changes the selected power source for module functions that require lots of current.
+ * Remember to call the saveToFlash() method of the module if the modification must be kept.
  *
  * @param newval : a value among Y_POWERCONTROL_AUTO, Y_POWERCONTROL_FROM_USB, Y_POWERCONTROL_FROM_EXT
  * and Y_POWERCONTROL_OFF corresponding to the selected power source for module functions that require

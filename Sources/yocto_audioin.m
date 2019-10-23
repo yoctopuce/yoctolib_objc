@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_audioin.m 32610 2018-10-10 06:52:20Z seb $
+ *  $Id: yocto_audioin.m 37619 2019-10-11 11:52:42Z mvuilleu $
  *
  *  Implements the high-level API for AudioIn functions
  *
@@ -135,6 +135,8 @@
 
 /**
  * Changes audio input gain, in per cents.
+ * Remember to call the saveToFlash()
+ * method of the module if the modification must be kept.
  *
  * @param newval : an integer corresponding to audio input gain, in per cents
  *

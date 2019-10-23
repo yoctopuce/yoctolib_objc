@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_cellular.h 33715 2018-12-14 14:21:27Z seb $
+ * $Id: yocto_cellular.h 37619 2019-10-11 11:52:42Z mvuilleu $
  *
  * Declares yFindCellular(), the high-level API for Cellular functions
  *
@@ -309,6 +309,8 @@ typedef enum {
  * Changes the name of the cell operator to be used. If the name is an empty
  * string, the choice will be made automatically based on the SIM card. Otherwise,
  * the selected operator is the only one that will be used.
+ * Remember to call the saveToFlash()
+ * method of the module if the modification must be kept.
  *
  * @param newval : a string corresponding to the name of the cell operator to be used
  *
@@ -364,6 +366,8 @@ typedef enum {
  * on roaming networks may cause prohibitive communication costs !
  *
  * When data services are disabled, SMS are the only mean of communication.
+ * Remember to call the saveToFlash()
+ * method of the module if the modification must be kept.
  *
  * @param newval : a value among Y_ENABLEDATA_HOMENETWORK, Y_ENABLEDATA_ROAMING, Y_ENABLEDATA_NEVER
  * and Y_ENABLEDATA_NEUTRALITY corresponding to the condition for enabling IP data services (GPRS)
@@ -390,6 +394,8 @@ typedef enum {
 /**
  * Returns the Access Point Name (APN) to be used, if needed.
  * When left blank, the APN suggested by the cell operator will be used.
+ * Remember to call the saveToFlash()
+ * method of the module if the modification must be kept.
  *
  * @param newval : a string
  *
@@ -430,6 +436,8 @@ typedef enum {
 -(int) pingInterval;
 /**
  * Changes the automated connectivity check interval, in seconds.
+ * Remember to call the saveToFlash()
+ * method of the module if the modification must be kept.
  *
  * @param newval : an integer corresponding to the automated connectivity check interval, in seconds
  *

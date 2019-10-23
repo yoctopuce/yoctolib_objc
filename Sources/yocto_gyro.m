@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_gyro.m 31436 2018-08-07 15:28:18Z seb $
+ * $Id: yocto_gyro.m 37619 2019-10-11 11:52:42Z mvuilleu $
  *
  * Implements the high-level API for Gyro functions
  *
@@ -334,6 +334,8 @@ static void yInternalGyroCallback(YQt *obj, NSString *value)
 /**
  * Changes the measure update frequency, measured in Hz (Yocto-3D-V2 only). When the
  * frequency is lower, the device performs averaging.
+ * Remember to call the saveToFlash()
+ * method of the module if the modification must be kept.
  *
  * @param newval : an integer corresponding to the measure update frequency, measured in Hz (Yocto-3D-V2 only)
  *

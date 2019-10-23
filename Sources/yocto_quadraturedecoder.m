@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_quadraturedecoder.m 33715 2018-12-14 14:21:27Z seb $
+ *  $Id: yocto_quadraturedecoder.m 37619 2019-10-11 11:52:42Z mvuilleu $
  *
  *  Implements the high-level API for QuadratureDecoder functions
  *
@@ -160,6 +160,8 @@
 
 /**
  * Changes the activation state of the quadrature decoder.
+ * Remember to call the saveToFlash()
+ * method of the module if the modification must be kept.
  *
  * @param newval : either Y_DECODING_OFF or Y_DECODING_ON, according to the activation state of the
  * quadrature decoder

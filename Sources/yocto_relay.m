@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_relay.m 34976 2019-04-05 06:47:49Z seb $
+ *  $Id: yocto_relay.m 37619 2019-10-11 11:52:42Z mvuilleu $
  *
  *  Implements the high-level API for Relay functions
  *
@@ -211,11 +211,14 @@
 }
 
 /**
- * Preset the state of the relays at device startup (A for the idle position,
- * B for the active position, UNCHANGED for no modification). Remember to call the matching module saveToFlash()
+ * Changes the state of the relays at device startup (A for the idle position,
+ * B for the active position, UNCHANGED for no modification).
+ * Remember to call the matching module saveToFlash()
  * method, otherwise this call will have no effect.
  *
  * @param newval : a value among Y_STATEATPOWERON_UNCHANGED, Y_STATEATPOWERON_A and Y_STATEATPOWERON_B
+ * corresponding to the state of the relays at device startup (A for the idle position,
+ *         B for the active position, UNCHANGED for no modification)
  *
  * @return YAPI_SUCCESS if the call succeeds.
  *
@@ -232,10 +235,11 @@
     return [self _setAttr:@"stateAtPowerOn" :rest_val];
 }
 /**
- * Retourne the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state A before automatically
- * switching back in to B state. Zero means no maximum time.
+ * Returns the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state
+ * A before automatically switching back in to B state. Zero means no time limit.
  *
- * @return an integer
+ * @return an integer corresponding to the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state
+ *         A before automatically switching back in to B state
  *
  * On failure, throws an exception or returns Y_MAXTIMEONSTATEA_INVALID.
  */
@@ -258,10 +262,13 @@
 }
 
 /**
- * Sets the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state A before automatically
- * switching back in to B state. Use zero for no maximum time.
+ * Changes the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state A
+ * before automatically switching back in to B state. Use zero for no time limit.
+ * Remember to call the saveToFlash()
+ * method of the module if the modification must be kept.
  *
- * @param newval : an integer
+ * @param newval : an integer corresponding to the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state A
+ *         before automatically switching back in to B state
  *
  * @return YAPI_SUCCESS if the call succeeds.
  *
@@ -278,8 +285,8 @@
     return [self _setAttr:@"maxTimeOnStateA" :rest_val];
 }
 /**
- * Retourne the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state B before automatically
- * switching back in to A state. Zero means no maximum time.
+ * Retourne the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state B
+ * before automatically switching back in to A state. Zero means no time limit.
  *
  * @return an integer
  *
@@ -304,10 +311,14 @@
 }
 
 /**
- * Sets the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state B before automatically
- * switching back in to A state. Use zero for no maximum time.
+ * Changes the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state B before
+ * automatically switching back in to A state. Use zero for no time limit.
+ * Remember to call the saveToFlash()
+ * method of the module if the modification must be kept.
  *
- * @param newval : an integer
+ * @param newval : an integer corresponding to the maximum time (ms) allowed for $THEFUNCTIONS$ to
+ * stay in state B before
+ *         automatically switching back in to A state
  *
  * @return YAPI_SUCCESS if the call succeeds.
  *

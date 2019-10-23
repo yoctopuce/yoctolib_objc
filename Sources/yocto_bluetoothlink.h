@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_bluetoothlink.h 32906 2018-11-02 10:18:15Z seb $
+ *  $Id: yocto_bluetoothlink.h 37619 2019-10-11 11:52:42Z mvuilleu $
  *
  *  Declares yFindBluetoothLink(), the high-level API for BluetoothLink functions
  *
@@ -164,6 +164,8 @@ typedef enum {
 -(NSString*) remoteAddress;
 /**
  * Changes the MAC-48 address defining which remote device to connect to.
+ * Remember to call the saveToFlash()
+ * method of the module if the modification must be kept.
  *
  * @param newval : a string corresponding to the MAC-48 address defining which remote device to connect to
  *
@@ -222,6 +224,8 @@ typedef enum {
 -(int) preAmplifier;
 /**
  * Changes the audio pre-amplifier volume, in per cents.
+ * Remember to call the saveToFlash()
+ * method of the module if the modification must be kept.
  *
  * @param newval : an integer corresponding to the audio pre-amplifier volume, in per cents
  *

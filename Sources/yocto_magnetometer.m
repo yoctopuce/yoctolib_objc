@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_magnetometer.m 32610 2018-10-10 06:52:20Z seb $
+ *  $Id: yocto_magnetometer.m 37619 2019-10-11 11:52:42Z mvuilleu $
  *
  *  Implements the high-level API for Magnetometer functions
  *
@@ -127,6 +127,8 @@
 /**
  * Changes the measure update frequency, measured in Hz (Yocto-3D-V2 only). When the
  * frequency is lower, the device performs averaging.
+ * Remember to call the saveToFlash()
+ * method of the module if the modification must be kept.
  *
  * @param newval : an integer corresponding to the measure update frequency, measured in Hz (Yocto-3D-V2 only)
  *
