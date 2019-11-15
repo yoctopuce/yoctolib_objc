@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_powersupply.m 34115 2019-01-23 14:23:54Z seb $
+ *  $Id: yocto_powersupply.m 37827 2019-10-25 13:07:48Z mvuilleu $
  *
  *  Implements the high-level API for PowerSupply functions
  *
@@ -625,7 +625,8 @@
  * you are certain that the matching device is plugged, make sure that you did
  * call registerHub() at application initialization time.
  *
- * @param func : a string that uniquely characterizes the regulated power supply
+ * @param func : a string that uniquely characterizes the regulated power supply, for instance
+ *         MyDevice.powerSupply.
  *
  * @return a YPowerSupply object allowing you to drive the regulated power supply.
  */

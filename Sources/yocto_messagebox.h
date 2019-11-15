@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_messagebox.h 34661 2019-03-18 11:02:50Z seb $
+ * $Id: yocto_messagebox.h 37827 2019-10-25 13:07:48Z mvuilleu $
  *
  * Declares yFindMessageBox(), the high-level API for MessageBox functions
  *
@@ -240,8 +240,9 @@ typedef void (*YMessageBoxValueCallback)(YMessageBox *func, NSString *functionVa
 /**
  * YMessageBox Class: MessageBox function interface
  *
- * YMessageBox functions provides SMS sending and receiving capability to
- * GSM-enabled Yoctopuce devices.
+ * The YMessageBox class provides SMS sending and receiving capability to
+ * GSM-enabled Yoctopuce devices, for instance using a YoctoHub-GSM-3G-NA, a YoctoHub-GSM-3G-EU or a
+ * YoctoHub-GSM-2G.
  */
 @interface YMessageBox : YFunction
 //--- (end of generated code: YMessageBox class start)
@@ -375,7 +376,8 @@ typedef void (*YMessageBoxValueCallback)(YMessageBox *func, NSString *functionVa
  * you are certain that the matching device is plugged, make sure that you did
  * call registerHub() at application initialization time.
  *
- * @param func : a string that uniquely characterizes the MessageBox interface
+ * @param func : a string that uniquely characterizes the MessageBox interface, for instance
+ *         YHUBGSM4.messageBox.
  *
  * @return a YMessageBox object allowing you to drive the MessageBox interface.
  */
@@ -530,7 +532,8 @@ typedef void (*YMessageBoxValueCallback)(YMessageBox *func, NSString *functionVa
  * you are certain that the matching device is plugged, make sure that you did
  * call registerHub() at application initialization time.
  *
- * @param func : a string that uniquely characterizes the MessageBox interface
+ * @param func : a string that uniquely characterizes the MessageBox interface, for instance
+ *         YHUBGSM4.messageBox.
  *
  * @return a YMessageBox object allowing you to drive the MessageBox interface.
  */

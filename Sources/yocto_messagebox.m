@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_messagebox.m 34661 2019-03-18 11:02:50Z seb $
+ * $Id: yocto_messagebox.m 37827 2019-10-25 13:07:48Z mvuilleu $
  *
  * Implements the high-level API for MessageBox functions
  *
@@ -1574,7 +1574,8 @@
  * you are certain that the matching device is plugged, make sure that you did
  * call registerHub() at application initialization time.
  *
- * @param func : a string that uniquely characterizes the MessageBox interface
+ * @param func : a string that uniquely characterizes the MessageBox interface, for instance
+ *         YHUBGSM4.messageBox.
  *
  * @return a YMessageBox object allowing you to drive the MessageBox interface.
  */

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_hubport.m 32610 2018-10-10 06:52:20Z seb $
+ *  $Id: yocto_hubport.m 37827 2019-10-25 13:07:48Z mvuilleu $
  *
  *  Implements the high-level API for HubPort functions
  *
@@ -212,7 +212,8 @@
  * you are certain that the matching device is plugged, make sure that you did
  * call registerHub() at application initialization time.
  *
- * @param func : a string that uniquely characterizes the Yocto-hub port
+ * @param func : a string that uniquely characterizes the Yocto-hub port, for instance
+ *         YHUBETH1.hubPort1.
  *
  * @return a YHubPort object allowing you to drive the Yocto-hub port.
  */

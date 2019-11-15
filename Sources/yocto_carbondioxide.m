@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_carbondioxide.m 33715 2018-12-14 14:21:27Z seb $
+ *  $Id: yocto_carbondioxide.m 37827 2019-10-25 13:07:48Z mvuilleu $
  *
  *  Implements the high-level API for CarbonDioxide functions
  *
@@ -191,7 +191,8 @@
  * you are certain that the matching device is plugged, make sure that you did
  * call registerHub() at application initialization time.
  *
- * @param func : a string that uniquely characterizes the CO2 sensor
+ * @param func : a string that uniquely characterizes the CO2 sensor, for instance
+ *         YCO2MK02.carbonDioxide.
  *
  * @return a YCarbonDioxide object allowing you to drive the CO2 sensor.
  */

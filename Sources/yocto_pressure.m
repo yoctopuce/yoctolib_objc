@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_pressure.m 32610 2018-10-10 06:52:20Z seb $
+ *  $Id: yocto_pressure.m 37827 2019-10-25 13:07:48Z mvuilleu $
  *
  *  Implements the high-level API for Pressure functions
  *
@@ -98,7 +98,8 @@
  * you are certain that the matching device is plugged, make sure that you did
  * call registerHub() at application initialization time.
  *
- * @param func : a string that uniquely characterizes the pressure sensor
+ * @param func : a string that uniquely characterizes the pressure sensor, for instance
+ *         METEOMK2.pressure.
  *
  * @return a YPressure object allowing you to drive the pressure sensor.
  */

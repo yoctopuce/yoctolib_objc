@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_currentloopoutput.h 33715 2018-12-14 14:21:27Z seb $
+ *  $Id: yocto_currentloopoutput.h 37827 2019-10-25 13:07:48Z mvuilleu $
  *
  *  Declares yFindCurrentLoopOutput(), the high-level API for CurrentLoopOutput functions
  *
@@ -62,8 +62,8 @@ typedef enum {
 /**
  * YCurrentLoopOutput Class: CurrentLoopOutput function interface
  *
- * The Yoctopuce application programming interface allows you to change the value of the 4-20mA
- * output as well as to know the current loop state.
+ * The YCurrentLoopOutput class allows you to drive a 4-20mA output, for instance using a Yocto-4-20mA-Tx.
+ * It can also provide information about the power state of the current loop.
  */
 @interface YCurrentLoopOutput : YFunction
 //--- (end of YCurrentLoopOutput class start)
@@ -181,7 +181,8 @@ typedef enum {
  * you are certain that the matching device is plugged, make sure that you did
  * call registerHub() at application initialization time.
  *
- * @param func : a string that uniquely characterizes the 4-20mA output
+ * @param func : a string that uniquely characterizes the 4-20mA output, for instance
+ *         TX420MA1.currentLoopOutput.
  *
  * @return a YCurrentLoopOutput object allowing you to drive the 4-20mA output.
  */
@@ -264,7 +265,8 @@ typedef enum {
  * you are certain that the matching device is plugged, make sure that you did
  * call registerHub() at application initialization time.
  *
- * @param func : a string that uniquely characterizes the 4-20mA output
+ * @param func : a string that uniquely characterizes the 4-20mA output, for instance
+ *         TX420MA1.currentLoopOutput.
  *
  * @return a YCurrentLoopOutput object allowing you to drive the 4-20mA output.
  */

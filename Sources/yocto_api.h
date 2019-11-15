@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.h 37692 2019-10-14 14:58:03Z seb $
+ * $Id: yocto_api.h 38137 2019-11-14 10:23:36Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -62,7 +62,7 @@
 
 extern NSMutableDictionary* YAPI_YFunctions;
 
-#define YOCTO_API_REVISION          "37780"
+#define YOCTO_API_REVISION          "38155"
 
 // yInitAPI argument
 #define Y_DETECT_NONE           0
@@ -1031,7 +1031,8 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
  * you are certain that the matching device is plugged, make sure that you did
  * call registerHub() at application initialization time.
  *
- * @param func : a string that uniquely characterizes the function
+ * @param func : a string that uniquely characterizes the function, for instance
+ *         MyDevice..
  *
  * @return a YFunction object allowing you to drive the function.
  */
@@ -1300,7 +1301,7 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
 /**
  * YModule Class: Module control interface
  *
- * This interface is identical for all Yoctopuce USB modules.
+ * The YModule class can be used with all Yoctopuce USB devices.
  * It can be used to control the module global parameters, and
  * to enumerate the functions provided by each module.
  */
@@ -1917,7 +1918,7 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
 /**
  * YSensor Class: Sensor function interface
  *
- * The YSensor class is the parent class for all Yoctopuce sensors. It can be
+ * The YSensor class is the parent class for all Yoctopuce sensor types. It can be
  * used to read the current value and unit of any sensor, read the min/max
  * value, configure autonomous recording frequency and access recorded data.
  * It also provide a function to register a callback invoked each time the
@@ -2232,7 +2233,8 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
  * you are certain that the matching device is plugged, make sure that you did
  * call registerHub() at application initialization time.
  *
- * @param func : a string that uniquely characterizes the sensor
+ * @param func : a string that uniquely characterizes the sensor, for instance
+ *         MyDevice..
  *
  * @return a YSensor object allowing you to drive the sensor.
  */
@@ -3102,7 +3104,7 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
 //--- (end of generated code: YConsolidatedDataSet private methods declaration)
 
 //--- (generated code: YConsolidatedDataSet public methods declaration)
--(int)     _init:(double)startt :(double)endt :(NSMutableArray*)sensorList;
+-(int)     imm_init:(double)startt :(double)endt :(NSMutableArray*)sensorList;
 
 /**
  * Extracts the next data record from the dataLogger of all sensors linked to this
@@ -3418,7 +3420,8 @@ void    yRegisterLogFunction(yLogCallback logfun);
  * you are certain that the matching device is plugged, make sure that you did
  * call registerHub() at application initialization time.
  *
- * @param func : a string that uniquely characterizes the function
+ * @param func : a string that uniquely characterizes the function, for instance
+ *         MyDevice..
  *
  * @return a YFunction object allowing you to drive the function.
  */
@@ -3491,7 +3494,8 @@ YModule* yFirstModule(void);
  * you are certain that the matching device is plugged, make sure that you did
  * call registerHub() at application initialization time.
  *
- * @param func : a string that uniquely characterizes the sensor
+ * @param func : a string that uniquely characterizes the sensor, for instance
+ *         MyDevice..
  *
  * @return a YSensor object allowing you to drive the sensor.
  */
@@ -3516,9 +3520,11 @@ YSensor* yFirstSensor(void);
 /**
  * YDataLogger Class: DataLogger function interface
  *
- * Yoctopuce sensors include a non-volatile memory capable of storing ongoing measured
- * data automatically, without requiring a permanent connection to a computer.
- * The DataLogger function controls the global parameters of the internal data
+ * A non-volatile memory for storing ongoing measured data is available on most Yoctopuce
+ * sensors, for instance using a Yocto-Light-V3, a Yocto-Meteo-V2, a Yocto-Watt or a Yocto-3D-V2.
+ * Recording can happen automatically, without requiring a permanent
+ * connection to a computer.
+ * The YDataLogger class controls the global parameters of the internal data
  * logger. Recording control (start/stop) as well as data retreival is done at
  * sensor objects level.
  */
@@ -3709,7 +3715,8 @@ YSensor* yFirstSensor(void);
  * you are certain that the matching device is plugged, make sure that you did
  * call registerHub() at application initialization time.
  *
- * @param func : a string that uniquely characterizes the data logger
+ * @param func : a string that uniquely characterizes the data logger, for instance
+ *         LIGHTMK3.dataLogger.
  *
  * @return a YDataLogger object allowing you to drive the data logger.
  */
@@ -3806,7 +3813,8 @@ YSensor* yFirstSensor(void);
  * you are certain that the matching device is plugged, make sure that you did
  * call registerHub() at application initialization time.
  *
- * @param func : a string that uniquely characterizes the data logger
+ * @param func : a string that uniquely characterizes the data logger, for instance
+ *         LIGHTMK3.dataLogger.
  *
  * @return a YDataLogger object allowing you to drive the data logger.
  */

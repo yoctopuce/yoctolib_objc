@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.m 37692 2019-10-14 14:58:03Z seb $
+ * $Id: yocto_api.m 38137 2019-11-14 10:23:36Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -2798,7 +2798,8 @@ static const char* hexArray = "0123456789ABCDEF";
  * you are certain that the matching device is plugged, make sure that you did
  * call registerHub() at application initialization time.
  *
- * @param func : a string that uniquely characterizes the function
+ * @param func : a string that uniquely characterizes the function, for instance
+ *         MyDevice..
  *
  * @return a YFunction object allowing you to drive the function.
  */
@@ -4057,7 +4058,8 @@ static const char* hexArray = "0123456789ABCDEF";
  * you are certain that the matching device is plugged, make sure that you did
  * call registerHub() at application initialization time.
  *
- * @param func : a string that uniquely characterizes the sensor
+ * @param func : a string that uniquely characterizes the sensor, for instance
+ *         MyDevice..
  *
  * @return a YSensor object allowing you to drive the sensor.
  */
@@ -8260,7 +8262,7 @@ static const char* hexArray = "0123456789ABCDEF";
     _nextidx = [NSMutableArray array];
     _nexttim = [NSMutableArray array];
 //--- (end of generated code: YConsolidatedDataSet attributes initialization)
-    [self _init: startTime :endTime :sensorList];
+    [self imm_init: startTime :endTime :sensorList];
     return self;
 }
 
@@ -8276,7 +8278,7 @@ static const char* hexArray = "0123456789ABCDEF";
 //--- (end of generated code: YConsolidatedDataSet private methods implementation)
 
 //--- (generated code: YConsolidatedDataSet public methods implementation)
--(int) _init:(double)startt :(double)endt :(NSMutableArray*)sensorList
+-(int) imm_init:(double)startt :(double)endt :(NSMutableArray*)sensorList
 {
     _start = startt;
     _end = endt;
@@ -8836,7 +8838,8 @@ static const char* hexArray = "0123456789ABCDEF";
  * you are certain that the matching device is plugged, make sure that you did
  * call registerHub() at application initialization time.
  *
- * @param func : a string that uniquely characterizes the data logger
+ * @param func : a string that uniquely characterizes the data logger, for instance
+ *         LIGHTMK3.dataLogger.
  *
  * @return a YDataLogger object allowing you to drive the data logger.
  */

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_steppermotor.m 33715 2018-12-14 14:21:27Z seb $
+ *  $Id: yocto_steppermotor.m 37827 2019-10-25 13:07:48Z mvuilleu $
  *
  *  Implements the high-level API for StepperMotor functions
  *
@@ -767,7 +767,8 @@
  * you are certain that the matching device is plugged, make sure that you did
  * call registerHub() at application initialization time.
  *
- * @param func : a string that uniquely characterizes the stepper motor
+ * @param func : a string that uniquely characterizes the stepper motor, for instance
+ *         MyDevice.stepperMotor1.
  *
  * @return a YStepperMotor object allowing you to drive the stepper motor.
  */

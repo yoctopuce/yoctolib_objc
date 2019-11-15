@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_altitude.m 37619 2019-10-11 11:52:42Z mvuilleu $
+ *  $Id: yocto_altitude.m 37827 2019-10-25 13:07:48Z mvuilleu $
  *
  *  Implements the high-level API for Altitude functions
  *
@@ -215,7 +215,8 @@
  * you are certain that the matching device is plugged, make sure that you did
  * call registerHub() at application initialization time.
  *
- * @param func : a string that uniquely characterizes the altimeter
+ * @param func : a string that uniquely characterizes the altimeter, for instance
+ *         YGNSSMK1.altitude.
  *
  * @return a YAltitude object allowing you to drive the altimeter.
  */

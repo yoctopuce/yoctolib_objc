@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_wakeupmonitor.m 37000 2019-09-03 06:40:17Z mvuilleu $
+ *  $Id: yocto_wakeupmonitor.m 37827 2019-10-25 13:07:48Z mvuilleu $
  *
  *  Implements the high-level API for WakeUpMonitor functions
  *
@@ -347,7 +347,8 @@
  * you are certain that the matching device is plugged, make sure that you did
  * call registerHub() at application initialization time.
  *
- * @param func : a string that uniquely characterizes the monitor
+ * @param func : a string that uniquely characterizes the monitor, for instance
+ *         YHUBWLN3.wakeUpMonitor.
  *
  * @return a YWakeUpMonitor object allowing you to drive the monitor.
  */

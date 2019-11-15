@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_carbondioxide.h 33715 2018-12-14 14:21:27Z seb $
+ *  $Id: yocto_carbondioxide.h 38030 2019-11-04 17:56:01Z mvuilleu $
  *
  *  Declares yFindCarbonDioxide(), the high-level API for CarbonDioxide functions
  *
@@ -45,7 +45,7 @@ CF_EXTERN_C_BEGIN
 //--- (YCarbonDioxide globals)
 typedef void (*YCarbonDioxideValueCallback)(YCarbonDioxide *func, NSString *functionValue);
 typedef void (*YCarbonDioxideTimedReportCallback)(YCarbonDioxide *func, YMeasure *measure);
-#define Y_ABCPERIOD_INVALID             YAPI_INVALID_INT
+#define Y_ABCPERIOD_INVALID             YAPI_INVALID_UINT
 #define Y_COMMAND_INVALID               YAPI_INVALID_STRING
 //--- (end of YCarbonDioxide globals)
 
@@ -53,8 +53,9 @@ typedef void (*YCarbonDioxideTimedReportCallback)(YCarbonDioxide *func, YMeasure
 /**
  * YCarbonDioxide Class: CarbonDioxide function interface
  *
- * The Yoctopuce class YCarbonDioxide allows you to read and configure Yoctopuce CO2
- * sensors. It inherits from YSensor class the core functions to read measurements,
+ * The YCarbonDioxide class allows you to read and configure Yoctopuce CO2
+ * sensors, for instance using a Yocto-CO2-V2. It inherits from YSensor class the core functions to
+ * read measurements,
  * to register callback functions,  to access the autonomous datalogger.
  * This class adds the ability to perform manual calibration if required.
  */
@@ -138,7 +139,8 @@ typedef void (*YCarbonDioxideTimedReportCallback)(YCarbonDioxide *func, YMeasure
  * you are certain that the matching device is plugged, make sure that you did
  * call registerHub() at application initialization time.
  *
- * @param func : a string that uniquely characterizes the CO2 sensor
+ * @param func : a string that uniquely characterizes the CO2 sensor, for instance
+ *         YCO2MK02.carbonDioxide.
  *
  * @return a YCarbonDioxide object allowing you to drive the CO2 sensor.
  */
@@ -262,7 +264,8 @@ typedef void (*YCarbonDioxideTimedReportCallback)(YCarbonDioxide *func, YMeasure
  * you are certain that the matching device is plugged, make sure that you did
  * call registerHub() at application initialization time.
  *
- * @param func : a string that uniquely characterizes the CO2 sensor
+ * @param func : a string that uniquely characterizes the CO2 sensor, for instance
+ *         YCO2MK02.carbonDioxide.
  *
  * @return a YCarbonDioxide object allowing you to drive the CO2 sensor.
  */

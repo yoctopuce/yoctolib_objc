@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_pwminput.h 37149 2019-09-12 21:24:53Z mvuilleu $
+ *  $Id: yocto_pwminput.h 37827 2019-10-25 13:07:48Z mvuilleu $
  *
  *  Declares yFindPwmInput(), the high-level API for PwmInput functions
  *
@@ -74,8 +74,9 @@ typedef enum {
 /**
  * YPwmInput Class: PwmInput function interface
  *
- * The Yoctopuce class YPwmInput allows you to read and configure Yoctopuce PWM
- * sensors. It inherits from YSensor class the core functions to read measurements,
+ * The YPwmInput class allows you to read and configure Yoctopuce PWM
+ * sensors, for instance using a Yocto-PWM-Rx. It inherits from YSensor class the core functions to
+ * read measurements,
  * to register callback functions, to access the autonomous datalogger.
  * This class adds the ability to configure the signal parameter used to transmit
  * information: the duty cycle, the frequency or the pulse width.
@@ -279,7 +280,8 @@ typedef enum {
  * you are certain that the matching device is plugged, make sure that you did
  * call registerHub() at application initialization time.
  *
- * @param func : a string that uniquely characterizes the PWM input
+ * @param func : a string that uniquely characterizes the PWM input, for instance
+ *         YPWMRX01.pwmInput1.
  *
  * @return a YPwmInput object allowing you to drive the PWM input.
  */
@@ -374,7 +376,8 @@ typedef enum {
  * you are certain that the matching device is plugged, make sure that you did
  * call registerHub() at application initialization time.
  *
- * @param func : a string that uniquely characterizes the PWM input
+ * @param func : a string that uniquely characterizes the PWM input, for instance
+ *         YPWMRX01.pwmInput1.
  *
  * @return a YPwmInput object allowing you to drive the PWM input.
  */

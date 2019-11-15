@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_wireless.h 34651 2019-03-15 17:21:54Z seb $
+ * $Id: yocto_wireless.h 37827 2019-10-25 13:07:48Z mvuilleu $
  *
  * Declares yFindWireless(), the high-level API for Wireless functions
  *
@@ -142,8 +142,9 @@ typedef enum {
 /**
  * YWireless Class: Wireless function interface
  *
- * YWireless functions provides control over wireless network parameters
- * and status for devices that are wireless-enabled.
+ * The YWireless class provides control over wireless network parameters
+ * and status for devices that are wireless-enabled, for instance using a YoctoHub-Wireless-g, a
+ * YoctoHub-Wireless-SR or a YoctoHub-Wireless.
  */
 @interface YWireless : YFunction
 //--- (end of generated code: YWireless class start)
@@ -281,7 +282,8 @@ typedef enum {
  * you are certain that the matching device is plugged, make sure that you did
  * call registerHub() at application initialization time.
  *
- * @param func : a string that uniquely characterizes the wireless lan interface
+ * @param func : a string that uniquely characterizes the wireless lan interface, for instance
+ *         YHUBWLN3.wireless.
  *
  * @return a YWireless object allowing you to drive the wireless lan interface.
  */
@@ -433,7 +435,8 @@ typedef enum {
  * you are certain that the matching device is plugged, make sure that you did
  * call registerHub() at application initialization time.
  *
- * @param func : a string that uniquely characterizes the wireless lan interface
+ * @param func : a string that uniquely characterizes the wireless lan interface, for instance
+ *         YHUBWLN3.wireless.
  *
  * @return a YWireless object allowing you to drive the wireless lan interface.
  */

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_voc.h 32906 2018-11-02 10:18:15Z seb $
+ *  $Id: yocto_voc.h 37827 2019-10-25 13:07:48Z mvuilleu $
  *
  *  Declares yFindVoc(), the high-level API for Voc functions
  *
@@ -51,8 +51,9 @@ typedef void (*YVocTimedReportCallback)(YVoc *func, YMeasure *measure);
 /**
  * YVoc Class: Voc function interface
  *
- * The Yoctopuce class YVoc allows you to read and configure Yoctopuce Volatile Organic
- * Compound sensors. It inherits from YSensor class the core functions to read measurements,
+ * The YVoc class allows you to read and configure Yoctopuce Volatile Organic
+ * Compound sensors, for instance using a Yocto-VOC-V3. It inherits from YSensor class the core
+ * functions to read measurements,
  * to register callback functions, to access the autonomous datalogger.
  */
 @interface YVoc : YSensor
@@ -98,7 +99,8 @@ typedef void (*YVocTimedReportCallback)(YVoc *func, YMeasure *measure);
  * you are certain that the matching device is plugged, make sure that you did
  * call registerHub() at application initialization time.
  *
- * @param func : a string that uniquely characterizes the Volatile Organic Compound sensor
+ * @param func : a string that uniquely characterizes the Volatile Organic Compound sensor, for instance
+ *         YVOCMK03.voc.
  *
  * @return a YVoc object allowing you to drive the Volatile Organic Compound sensor.
  */
@@ -184,7 +186,8 @@ typedef void (*YVocTimedReportCallback)(YVoc *func, YMeasure *measure);
  * you are certain that the matching device is plugged, make sure that you did
  * call registerHub() at application initialization time.
  *
- * @param func : a string that uniquely characterizes the Volatile Organic Compound sensor
+ * @param func : a string that uniquely characterizes the Volatile Organic Compound sensor, for instance
+ *         YVOCMK03.voc.
  *
  * @return a YVoc object allowing you to drive the Volatile Organic Compound sensor.
  */

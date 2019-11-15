@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_anbutton.h 32906 2018-11-02 10:18:15Z seb $
+ *  $Id: yocto_anbutton.h 37827 2019-10-25 13:07:48Z mvuilleu $
  *
  *  Declares yFindAnButton(), the high-level API for AnButton functions
  *
@@ -75,7 +75,9 @@ typedef enum {
 /**
  * YAnButton Class: AnButton function interface
  *
- * Yoctopuce application programming interface allows you to measure the state
+ * The YAnButton class allows you to access simple resistive inputs on Yoctopuce
+ * devices, for instance using a Yocto-Knob, a Yocto-MaxiDisplay, a Yocto-Buzzer or a
+ * Yocto-MaxiDisplay-G. Such inputs can be used to measure the state
  * of a simple button as well as to read an analog potentiometer (variable resistance).
  * This can be use for instance with a continuous rotating knob, a throttle grip
  * or a joystick. The module is capable to calibrate itself on min and max values,
@@ -334,7 +336,8 @@ typedef enum {
  * you are certain that the matching device is plugged, make sure that you did
  * call registerHub() at application initialization time.
  *
- * @param func : a string that uniquely characterizes the analog input
+ * @param func : a string that uniquely characterizes the analog input, for instance
+ *         YBUTTON1.anButton1.
  *
  * @return a YAnButton object allowing you to drive the analog input.
  */
@@ -414,7 +417,8 @@ typedef enum {
  * you are certain that the matching device is plugged, make sure that you did
  * call registerHub() at application initialization time.
  *
- * @param func : a string that uniquely characterizes the analog input
+ * @param func : a string that uniquely characterizes the analog input, for instance
+ *         YBUTTON1.anButton1.
  *
  * @return a YAnButton object allowing you to drive the analog input.
  */

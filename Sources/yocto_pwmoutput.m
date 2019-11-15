@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_pwmoutput.m 37619 2019-10-11 11:52:42Z mvuilleu $
+ *  $Id: yocto_pwmoutput.m 37827 2019-10-25 13:07:48Z mvuilleu $
  *
  *  Implements the high-level API for PwmOutput functions
  *
@@ -502,7 +502,8 @@
  * you are certain that the matching device is plugged, make sure that you did
  * call registerHub() at application initialization time.
  *
- * @param func : a string that uniquely characterizes the PWM
+ * @param func : a string that uniquely characterizes the PWM, for instance
+ *         YPWMTX01.pwmOutput1.
  *
  * @return a YPwmOutput object allowing you to drive the PWM.
  */

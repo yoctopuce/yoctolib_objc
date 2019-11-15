@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_temperature.h 35465 2019-05-16 14:40:41Z seb $
+ *  $Id: yocto_temperature.h 37827 2019-10-25 13:07:48Z mvuilleu $
  *
  *  Declares yFindTemperature(), the high-level API for Temperature functions
  *
@@ -77,8 +77,9 @@ typedef enum {
 /**
  * YTemperature Class: Temperature function interface
  *
- * The Yoctopuce class YTemperature allows you to read and configure Yoctopuce temperature
- * sensors. It inherits from YSensor class the core functions to read measurements, to
+ * The YTemperature class allows you to read and configure Yoctopuce temperature
+ * sensors, for instance using a Yocto-Meteo-V2, a Yocto-Thermocouple, a Yocto-PT100 or a
+ * Yocto-Temperature. It inherits from YSensor class the core functions to read measurements, to
  * register callback functions, to access the autonomous datalogger.
  * This class adds the ability to configure some specific parameters for some
  * sensors (connection type, temperature mapping table).
@@ -217,7 +218,8 @@ typedef enum {
  * you are certain that the matching device is plugged, make sure that you did
  * call registerHub() at application initialization time.
  *
- * @param func : a string that uniquely characterizes the temperature sensor
+ * @param func : a string that uniquely characterizes the temperature sensor, for instance
+ *         METEOMK2.temperature.
  *
  * @return a YTemperature object allowing you to drive the temperature sensor.
  */
@@ -354,7 +356,8 @@ typedef enum {
  * you are certain that the matching device is plugged, make sure that you did
  * call registerHub() at application initialization time.
  *
- * @param func : a string that uniquely characterizes the temperature sensor
+ * @param func : a string that uniquely characterizes the temperature sensor, for instance
+ *         METEOMK2.temperature.
  *
  * @return a YTemperature object allowing you to drive the temperature sensor.
  */

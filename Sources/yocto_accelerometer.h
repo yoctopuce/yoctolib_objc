@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_accelerometer.h 37619 2019-10-11 11:52:42Z mvuilleu $
+ *  $Id: yocto_accelerometer.h 38030 2019-11-04 17:56:01Z mvuilleu $
  *
  *  Declares yFindAccelerometer(), the high-level API for Accelerometer functions
  *
@@ -53,7 +53,7 @@ typedef enum {
     Y_GRAVITYCANCELLATION_INVALID = -1,
 } Y_GRAVITYCANCELLATION_enum;
 #endif
-#define Y_BANDWIDTH_INVALID             YAPI_INVALID_INT
+#define Y_BANDWIDTH_INVALID             YAPI_INVALID_UINT
 #define Y_XVALUE_INVALID                YAPI_INVALID_DOUBLE
 #define Y_YVALUE_INVALID                YAPI_INVALID_DOUBLE
 #define Y_ZVALUE_INVALID                YAPI_INVALID_DOUBLE
@@ -63,15 +63,10 @@ typedef enum {
 /**
  * YAccelerometer Class: Accelerometer function interface
  *
- * The YSensor class is the parent class for all Yoctopuce sensors. It can be
- * used to read the current value and unit of any sensor, read the min/max
- * value, configure autonomous recording frequency and access recorded data.
- * It also provide a function to register a callback invoked each time the
- * observed value changes, or at a predefined interval. Using this class rather
- * than a specific subclass makes it possible to create generic applications
- * that work with any Yoctopuce sensor, even those that do not yet exist.
- * Note: The YAnButton class is the only analog input which does not inherit
- * from YSensor.
+ * The YAccelerometer class allows you to read and configure Yoctopuce acceleration
+ * sensors, for instance using a Yocto-3D-V2. It inherits from YSensor class the core functions to
+ * read measurements,
+ * to register callback functions, to access the autonomous datalogger.
  */
 @interface YAccelerometer : YSensor
 //--- (end of YAccelerometer class start)
@@ -187,7 +182,8 @@ typedef enum {
  * you are certain that the matching device is plugged, make sure that you did
  * call registerHub() at application initialization time.
  *
- * @param func : a string that uniquely characterizes the accelerometer
+ * @param func : a string that uniquely characterizes the accelerometer, for instance
+ *         Y3DMK002.accelerometer.
  *
  * @return a YAccelerometer object allowing you to drive the accelerometer.
  */
@@ -273,7 +269,8 @@ typedef enum {
  * you are certain that the matching device is plugged, make sure that you did
  * call registerHub() at application initialization time.
  *
- * @param func : a string that uniquely characterizes the accelerometer
+ * @param func : a string that uniquely characterizes the accelerometer, for instance
+ *         Y3DMK002.accelerometer.
  *
  * @return a YAccelerometer object allowing you to drive the accelerometer.
  */

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_magnetometer.h 37619 2019-10-11 11:52:42Z mvuilleu $
+ *  $Id: yocto_magnetometer.h 38030 2019-11-04 17:56:01Z mvuilleu $
  *
  *  Declares yFindMagnetometer(), the high-level API for Magnetometer functions
  *
@@ -45,7 +45,7 @@ CF_EXTERN_C_BEGIN
 //--- (YMagnetometer globals)
 typedef void (*YMagnetometerValueCallback)(YMagnetometer *func, NSString *functionValue);
 typedef void (*YMagnetometerTimedReportCallback)(YMagnetometer *func, YMeasure *measure);
-#define Y_BANDWIDTH_INVALID             YAPI_INVALID_INT
+#define Y_BANDWIDTH_INVALID             YAPI_INVALID_UINT
 #define Y_XVALUE_INVALID                YAPI_INVALID_DOUBLE
 #define Y_YVALUE_INVALID                YAPI_INVALID_DOUBLE
 #define Y_ZVALUE_INVALID                YAPI_INVALID_DOUBLE
@@ -55,7 +55,7 @@ typedef void (*YMagnetometerTimedReportCallback)(YMagnetometer *func, YMeasure *
 /**
  * YMagnetometer Class: Magnetometer function interface
  *
- * The YSensor class is the parent class for all Yoctopuce sensors. It can be
+ * The YSensor class is the parent class for all Yoctopuce sensor types. It can be
  * used to read the current value and unit of any sensor, read the min/max
  * value, configure autonomous recording frequency and access recorded data.
  * It also provide a function to register a callback invoked each time the
@@ -174,7 +174,8 @@ typedef void (*YMagnetometerTimedReportCallback)(YMagnetometer *func, YMeasure *
  * you are certain that the matching device is plugged, make sure that you did
  * call registerHub() at application initialization time.
  *
- * @param func : a string that uniquely characterizes the magnetometer
+ * @param func : a string that uniquely characterizes the magnetometer, for instance
+ *         Y3DMK002.magnetometer.
  *
  * @return a YMagnetometer object allowing you to drive the magnetometer.
  */
@@ -260,7 +261,8 @@ typedef void (*YMagnetometerTimedReportCallback)(YMagnetometer *func, YMeasure *
  * you are certain that the matching device is plugged, make sure that you did
  * call registerHub() at application initialization time.
  *
- * @param func : a string that uniquely characterizes the magnetometer
+ * @param func : a string that uniquely characterizes the magnetometer, for instance
+ *         Y3DMK002.magnetometer.
  *
  * @return a YMagnetometer object allowing you to drive the magnetometer.
  */

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_voltageoutput.h 33715 2018-12-14 14:21:27Z seb $
+ *  $Id: yocto_voltageoutput.h 37827 2019-10-25 13:07:48Z mvuilleu $
  *
  *  Declares yFindVoltageOutput(), the high-level API for VoltageOutput functions
  *
@@ -53,7 +53,7 @@ typedef void (*YVoltageOutputValueCallback)(YVoltageOutput *func, NSString *func
 /**
  * YVoltageOutput Class: VoltageOutput function interface
  *
- * The Yoctopuce application programming interface allows you to change the value of the voltage output.
+ * The YVoltageOutput class allows you to drive a voltage output, for instance using a Yocto-0-10V-Tx.
  */
 @interface YVoltageOutput : YFunction
 //--- (end of YVoltageOutput class start)
@@ -154,7 +154,8 @@ typedef void (*YVoltageOutputValueCallback)(YVoltageOutput *func, NSString *func
  * you are certain that the matching device is plugged, make sure that you did
  * call registerHub() at application initialization time.
  *
- * @param func : a string that uniquely characterizes the voltage output
+ * @param func : a string that uniquely characterizes the voltage output, for instance
+ *         TX010V01.voltageOutput1.
  *
  * @return a YVoltageOutput object allowing you to drive the voltage output.
  */
@@ -237,7 +238,8 @@ typedef void (*YVoltageOutputValueCallback)(YVoltageOutput *func, NSString *func
  * you are certain that the matching device is plugged, make sure that you did
  * call registerHub() at application initialization time.
  *
- * @param func : a string that uniquely characterizes the voltage output
+ * @param func : a string that uniquely characterizes the voltage output, for instance
+ *         TX010V01.voltageOutput1.
  *
  * @return a YVoltageOutput object allowing you to drive the voltage output.
  */

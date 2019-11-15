@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_servo.m 32610 2018-10-10 06:52:20Z seb $
+ *  $Id: yocto_servo.m 37827 2019-10-25 13:07:48Z mvuilleu $
  *
  *  Implements the high-level API for Servo functions
  *
@@ -476,7 +476,8 @@
  * you are certain that the matching device is plugged, make sure that you did
  * call registerHub() at application initialization time.
  *
- * @param func : a string that uniquely characterizes the servo
+ * @param func : a string that uniquely characterizes the servo, for instance
+ *         SERVORC1.servo1.
  *
  * @return a YServo object allowing you to drive the servo.
  */

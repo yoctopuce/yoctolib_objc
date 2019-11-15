@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_arithmeticsensor.h 35698 2019-06-05 17:25:12Z mvuilleu $
+ *  $Id: yocto_arithmeticsensor.h 37827 2019-10-25 13:07:48Z mvuilleu $
  *
  *  Declares yFindArithmeticSensor(), the high-level API for ArithmeticSensor functions
  *
@@ -53,8 +53,10 @@ typedef void (*YArithmeticSensorTimedReportCallback)(YArithmeticSensor *func, YM
 /**
  * YArithmeticSensor Class: ArithmeticSensor function interface
  *
- * The YArithmeticSensor class can produce measurements computed using an arithmetic
- * formula based on one or more measured signals and temperature measurements.
+ * The YArithmeticSensor class allows some Yoctopuce devices to compute in real-time
+ * values based on an arithmetic formula involving one or more measured signals as
+ * well as the temperature. This functionality is only available on specific
+ * Yoctopuce devices, for instance using a Yocto-MaxiMicroVolt-Rx.
  */
 @interface YArithmeticSensor : YSensor
 //--- (end of YArithmeticSensor class start)
@@ -133,7 +135,8 @@ typedef void (*YArithmeticSensorTimedReportCallback)(YArithmeticSensor *func, YM
  * you are certain that the matching device is plugged, make sure that you did
  * call registerHub() at application initialization time.
  *
- * @param func : a string that uniquely characterizes the arithmetic sensor
+ * @param func : a string that uniquely characterizes the arithmetic sensor, for instance
+ *         RXUVOLT1.arithmeticSensor1.
  *
  * @return a YArithmeticSensor object allowing you to drive the arithmetic sensor.
  */
@@ -278,7 +281,8 @@ typedef void (*YArithmeticSensorTimedReportCallback)(YArithmeticSensor *func, YM
  * you are certain that the matching device is plugged, make sure that you did
  * call registerHub() at application initialization time.
  *
- * @param func : a string that uniquely characterizes the arithmetic sensor
+ * @param func : a string that uniquely characterizes the arithmetic sensor, for instance
+ *         RXUVOLT1.arithmeticSensor1.
  *
  * @return a YArithmeticSensor object allowing you to drive the arithmetic sensor.
  */

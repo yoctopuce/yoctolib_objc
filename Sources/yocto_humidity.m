@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_humidity.m 32610 2018-10-10 06:52:20Z seb $
+ *  $Id: yocto_humidity.m 37827 2019-10-25 13:07:48Z mvuilleu $
  *
  *  Implements the high-level API for Humidity functions
  *
@@ -184,7 +184,8 @@
  * you are certain that the matching device is plugged, make sure that you did
  * call registerHub() at application initialization time.
  *
- * @param func : a string that uniquely characterizes the humidity sensor
+ * @param func : a string that uniquely characterizes the humidity sensor, for instance
+ *         METEOMK2.humidity.
  *
  * @return a YHumidity object allowing you to drive the humidity sensor.
  */

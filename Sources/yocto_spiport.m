@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_spiport.m 37141 2019-09-12 12:37:10Z mvuilleu $
+ *  $Id: yocto_spiport.m 37827 2019-10-25 13:07:48Z mvuilleu $
  *
  *  Implements the high-level API for SpiPort functions
  *
@@ -727,7 +727,8 @@
  * you are certain that the matching device is plugged, make sure that you did
  * call registerHub() at application initialization time.
  *
- * @param func : a string that uniquely characterizes the SPI port
+ * @param func : a string that uniquely characterizes the SPI port, for instance
+ *         YSPIMK01.spiPort.
  *
  * @return a YSpiPort object allowing you to drive the SPI port.
  */

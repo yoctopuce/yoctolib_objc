@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_files.h 34651 2019-03-15 17:21:54Z seb $
+ * $Id: yocto_files.h 37827 2019-10-25 13:07:48Z mvuilleu $
  *
  * Declares yFindFiles(), the high-level API for Files functions
  *
@@ -111,10 +111,11 @@ typedef void (*YFilesValueCallback)(YFiles *func, NSString *functionValue);
 /**
  * YFiles Class: Files function interface
  *
- * The filesystem interface makes it possible to store files
- * on some devices, for instance to design a custom web UI
- * (for networked devices) or to add fonts (on display
- * devices).
+ * The YFiles class is used to access the filesystem embedded on
+ * some Yoctopuce devices, for instance using a YoctoHub-Ethernet, a Yocto-Color-V2, a
+ * YoctoHub-Wireless-g or a Yocto-RS232. This filesystem makes it
+ * possible for instance to design a custom web UI
+ * (for networked devices) or to add fonts (on display devices).
  */
 @interface YFiles : YFunction
 //--- (end of generated code: YFiles class start)
@@ -180,7 +181,8 @@ typedef void (*YFilesValueCallback)(YFiles *func, NSString *functionValue);
  * you are certain that the matching device is plugged, make sure that you did
  * call registerHub() at application initialization time.
  *
- * @param func : a string that uniquely characterizes the filesystem
+ * @param func : a string that uniquely characterizes the filesystem, for instance
+ *         YHUBETH1.files.
  *
  * @return a YFiles object allowing you to drive the filesystem.
  */
@@ -329,7 +331,8 @@ typedef void (*YFilesValueCallback)(YFiles *func, NSString *functionValue);
  * you are certain that the matching device is plugged, make sure that you did
  * call registerHub() at application initialization time.
  *
- * @param func : a string that uniquely characterizes the filesystem
+ * @param func : a string that uniquely characterizes the filesystem, for instance
+ *         YHUBETH1.files.
  *
  * @return a YFiles object allowing you to drive the filesystem.
  */

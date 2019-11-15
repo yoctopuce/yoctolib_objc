@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_arithmeticsensor.m 35698 2019-06-05 17:25:12Z mvuilleu $
+ *  $Id: yocto_arithmeticsensor.m 37827 2019-10-25 13:07:48Z mvuilleu $
  *
  *  Implements the high-level API for ArithmeticSensor functions
  *
@@ -192,7 +192,8 @@
  * you are certain that the matching device is plugged, make sure that you did
  * call registerHub() at application initialization time.
  *
- * @param func : a string that uniquely characterizes the arithmetic sensor
+ * @param func : a string that uniquely characterizes the arithmetic sensor, for instance
+ *         RXUVOLT1.arithmeticSensor1.
  *
  * @return a YArithmeticSensor object allowing you to drive the arithmetic sensor.
  */

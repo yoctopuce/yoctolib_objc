@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_magnetometer.m 37619 2019-10-11 11:52:42Z mvuilleu $
+ *  $Id: yocto_magnetometer.m 37827 2019-10-25 13:07:48Z mvuilleu $
  *
  *  Implements the high-level API for Magnetometer functions
  *
@@ -244,7 +244,8 @@
  * you are certain that the matching device is plugged, make sure that you did
  * call registerHub() at application initialization time.
  *
- * @param func : a string that uniquely characterizes the magnetometer
+ * @param func : a string that uniquely characterizes the magnetometer, for instance
+ *         Y3DMK002.magnetometer.
  *
  * @return a YMagnetometer object allowing you to drive the magnetometer.
  */

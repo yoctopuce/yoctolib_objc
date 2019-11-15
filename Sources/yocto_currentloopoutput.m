@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_currentloopoutput.m 33715 2018-12-14 14:21:27Z seb $
+ *  $Id: yocto_currentloopoutput.m 37827 2019-10-25 13:07:48Z mvuilleu $
  *
  *  Implements the high-level API for CurrentLoopOutput functions
  *
@@ -271,7 +271,8 @@
  * you are certain that the matching device is plugged, make sure that you did
  * call registerHub() at application initialization time.
  *
- * @param func : a string that uniquely characterizes the 4-20mA output
+ * @param func : a string that uniquely characterizes the 4-20mA output, for instance
+ *         TX420MA1.currentLoopOutput.
  *
  * @return a YCurrentLoopOutput object allowing you to drive the 4-20mA output.
  */

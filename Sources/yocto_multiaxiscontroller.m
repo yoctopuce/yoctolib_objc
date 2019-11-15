@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_multiaxiscontroller.m 32610 2018-10-10 06:52:20Z seb $
+ *  $Id: yocto_multiaxiscontroller.m 37827 2019-10-25 13:07:48Z mvuilleu $
  *
  *  Implements the high-level API for MultiAxisController functions
  *
@@ -217,7 +217,8 @@
  * you are certain that the matching device is plugged, make sure that you did
  * call registerHub() at application initialization time.
  *
- * @param func : a string that uniquely characterizes the multi-axis controller
+ * @param func : a string that uniquely characterizes the multi-axis controller, for instance
+ *         MyDevice.multiAxisController.
  *
  * @return a YMultiAxisController object allowing you to drive the multi-axis controller.
  */

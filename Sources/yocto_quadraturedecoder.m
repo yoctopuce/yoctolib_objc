@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_quadraturedecoder.m 37619 2019-10-11 11:52:42Z mvuilleu $
+ *  $Id: yocto_quadraturedecoder.m 37827 2019-10-25 13:07:48Z mvuilleu $
  *
  *  Implements the high-level API for QuadratureDecoder functions
  *
@@ -203,7 +203,8 @@
  * you are certain that the matching device is plugged, make sure that you did
  * call registerHub() at application initialization time.
  *
- * @param func : a string that uniquely characterizes the quadrature decoder
+ * @param func : a string that uniquely characterizes the quadrature decoder, for instance
+ *         YPWMRX01.quadratureDecoder.
  *
  * @return a YQuadratureDecoder object allowing you to drive the quadrature decoder.
  */

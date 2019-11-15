@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_motor.m 37619 2019-10-11 11:52:42Z mvuilleu $
+ *  $Id: yocto_motor.m 37827 2019-10-25 13:07:48Z mvuilleu $
  *
  *  Implements the high-level API for Motor functions
  *
@@ -332,6 +332,15 @@
 {
     return [self get_cutOffVoltage];
 }
+/**
+ * Returns the current threshold (in mA) above which the controller automatically
+ * switches to error state. A zero value means that there is no limit.
+ *
+ * @return an integer corresponding to the current threshold (in mA) above which the controller automatically
+ *         switches to error state
+ *
+ * On failure, throws an exception or returns Y_OVERCURRENTLIMIT_INVALID.
+ */
 -(int) get_overCurrentLimit
 {
     int res;
@@ -581,7 +590,8 @@
  * you are certain that the matching device is plugged, make sure that you did
  * call registerHub() at application initialization time.
  *
- * @param func : a string that uniquely characterizes the motor
+ * @param func : a string that uniquely characterizes the motor, for instance
+ *         MOTORCTL.motor.
  *
  * @return a YMotor object allowing you to drive the motor.
  */
