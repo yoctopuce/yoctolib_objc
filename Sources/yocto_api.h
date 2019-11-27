@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.h 38137 2019-11-14 10:23:36Z seb $
+ * $Id: yocto_api.h 38510 2019-11-26 15:36:38Z mvuilleu $
  *
  * High-level programming interface, common to all modules
  *
@@ -62,7 +62,7 @@
 
 extern NSMutableDictionary* YAPI_YFunctions;
 
-#define YOCTO_API_REVISION          "38168"
+#define YOCTO_API_REVISION          "38532"
 
 // yInitAPI argument
 #define Y_DETECT_NONE           0
@@ -3521,7 +3521,7 @@ YSensor* yFirstSensor(void);
  * YDataLogger Class: DataLogger function interface
  *
  * A non-volatile memory for storing ongoing measured data is available on most Yoctopuce
- * sensors, for instance using a Yocto-Light-V3, a Yocto-Meteo-V2, a Yocto-Watt or a Yocto-3D-V2.
+ * sensors, for instance using a Yocto-3D-V2, a Yocto-Light-V3, a Yocto-Meteo-V2 or a Yocto-Watt.
  * Recording can happen automatically, without requiring a permanent
  * connection to a computer.
  * The YDataLogger class controls the global parameters of the internal data
@@ -3716,7 +3716,7 @@ YSensor* yFirstSensor(void);
  * call registerHub() at application initialization time.
  *
  * @param func : a string that uniquely characterizes the data logger, for instance
- *         LIGHTMK3.dataLogger.
+ *         Y3DMK002.dataLogger.
  *
  * @return a YDataLogger object allowing you to drive the data logger.
  */
@@ -3814,7 +3814,7 @@ YSensor* yFirstSensor(void);
  * call registerHub() at application initialization time.
  *
  * @param func : a string that uniquely characterizes the data logger, for instance
- *         LIGHTMK3.dataLogger.
+ *         Y3DMK002.dataLogger.
  *
  * @return a YDataLogger object allowing you to drive the data logger.
  */

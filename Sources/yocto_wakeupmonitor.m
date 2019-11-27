@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_wakeupmonitor.m 37827 2019-10-25 13:07:48Z mvuilleu $
+ *  $Id: yocto_wakeupmonitor.m 38510 2019-11-26 15:36:38Z mvuilleu $
  *
  *  Implements the high-level API for WakeUpMonitor functions
  *
@@ -348,7 +348,7 @@
  * call registerHub() at application initialization time.
  *
  * @param func : a string that uniquely characterizes the monitor, for instance
- *         YHUBWLN3.wakeUpMonitor.
+ *         YHUBGSM3.wakeUpMonitor.
  *
  * @return a YWakeUpMonitor object allowing you to drive the monitor.
  */

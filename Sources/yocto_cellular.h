@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_cellular.h 37827 2019-10-25 13:07:48Z mvuilleu $
+ * $Id: yocto_cellular.h 38510 2019-11-26 15:36:38Z mvuilleu $
  *
  * Declares yFindCellular(), the high-level API for Cellular functions
  *
@@ -72,18 +72,53 @@ CF_EXTERN_C_BEGIN
 //--- (generated code: YCellRecord private methods declaration)
 //--- (end of generated code: YCellRecord private methods declaration)
 //--- (generated code: YCellRecord public methods declaration)
+/**
+ * Returns the name of the the cell operator.
+ *
+ * @return a string with the name of the the cell operator.
+ */
 -(NSString*)     get_cellOperator;
 
+/**
+ * Returns the Mobile Country Code (MCC).
+ *
+ * @return the Mobile Country Code (MCC).
+ */
 -(int)     get_mobileCountryCode;
 
+/**
+ * Returns the Mobile Network Code (MNC).
+ *
+ * @return the Mobile Network Code (MNC).
+ */
 -(int)     get_mobileNetworkCode;
 
+/**
+ * Returns the Location Area Code (LAC).
+ *
+ * @return the Location Area Code (LAC).
+ */
 -(int)     get_locationAreaCode;
 
+/**
+ * Returns the Cell Id.
+ *
+ * @return the Cell Id.
+ */
 -(int)     get_cellId;
 
+/**
+ * Returns the signal strength.
+ *
+ * @return the signal strength.
+ */
 -(int)     get_signalStrength;
 
+/**
+ * Returns the Timing Advance (TA).
+ *
+ * @return the Timing Advance (TA).
+ */
 -(int)     get_timingAdvance;
 
 
@@ -146,8 +181,8 @@ typedef enum {
  * YCellular Class: Cellular function interface
  *
  * The YCellular class provides control over cellular network parameters
- * and status for devices that are GSM-enabled, for instance using a YoctoHub-GSM-3G-NA, a
- * YoctoHub-GSM-3G-EU or a YoctoHub-GSM-2G.
+ * and status for devices that are GSM-enabled, for instance using a YoctoHub-GSM-2G, a
+ * YoctoHub-GSM-3G-EU or a YoctoHub-GSM-3G-NA.
  */
 @interface YCellular : YFunction
 //--- (end of generated code: YCellular class start)
@@ -526,7 +561,7 @@ typedef enum {
  * call registerHub() at application initialization time.
  *
  * @param func : a string that uniquely characterizes the cellular interface, for instance
- *         YHUBGSM4.cellular.
+ *         YHUBGSM1.cellular.
  *
  * @return a YCellular object allowing you to drive the cellular interface.
  */
@@ -670,7 +705,7 @@ typedef enum {
  * call registerHub() at application initialization time.
  *
  * @param func : a string that uniquely characterizes the cellular interface, for instance
- *         YHUBGSM4.cellular.
+ *         YHUBGSM1.cellular.
  *
  * @return a YCellular object allowing you to drive the cellular interface.
  */

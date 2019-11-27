@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_genericsensor.m 37827 2019-10-25 13:07:48Z mvuilleu $
+ *  $Id: yocto_genericsensor.m 38510 2019-11-26 15:36:38Z mvuilleu $
  *
  *  Implements the high-level API for GenericSensor functions
  *
@@ -489,7 +489,7 @@
  * call registerHub() at application initialization time.
  *
  * @param func : a string that uniquely characterizes the generic sensor, for instance
- *         RX420MA1.genericSensor1.
+ *         RX010V01.genericSensor1.
  *
  * @return a YGenericSensor object allowing you to drive the generic sensor.
  */

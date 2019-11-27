@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_pressure.h 37827 2019-10-25 13:07:48Z mvuilleu $
+ *  $Id: yocto_pressure.h 38510 2019-11-26 15:36:38Z mvuilleu $
  *
  *  Declares yFindPressure(), the high-level API for Pressure functions
  *
@@ -52,8 +52,8 @@ typedef void (*YPressureTimedReportCallback)(YPressure *func, YMeasure *measure)
  * YPressure Class: Pressure function interface
  *
  * The YPressure class allows you to read and configure Yoctopuce pressure
- * sensors, for instance using a Yocto-Meteo-V2, a Yocto-Pressure, a Yocto-CO2-V2 or a
- * Yocto-Altimeter-V2. It inherits from YSensor class the core functions to read measurements,
+ * sensors, for instance using a Yocto-Altimeter-V2, a Yocto-CO2-V2, a Yocto-Meteo-V2 or a
+ * Yocto-Pressure. It inherits from YSensor class the core functions to read measurements,
  * to register callback functions, to access the autonomous datalogger.
  */
 @interface YPressure : YSensor
@@ -100,7 +100,7 @@ typedef void (*YPressureTimedReportCallback)(YPressure *func, YMeasure *measure)
  * call registerHub() at application initialization time.
  *
  * @param func : a string that uniquely characterizes the pressure sensor, for instance
- *         METEOMK2.pressure.
+ *         YALTIMK2.pressure.
  *
  * @return a YPressure object allowing you to drive the pressure sensor.
  */
@@ -187,7 +187,7 @@ typedef void (*YPressureTimedReportCallback)(YPressure *func, YMeasure *measure)
  * call registerHub() at application initialization time.
  *
  * @param func : a string that uniquely characterizes the pressure sensor, for instance
- *         METEOMK2.pressure.
+ *         YALTIMK2.pressure.
  *
  * @return a YPressure object allowing you to drive the pressure sensor.
  */

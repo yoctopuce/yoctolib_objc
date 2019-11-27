@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_gps.m 37827 2019-10-25 13:07:48Z mvuilleu $
+ *  $Id: yocto_gps.m 38462 2019-11-25 17:14:30Z seb $
  *
  *  Implements the high-level API for Gps functions
  *
@@ -55,6 +55,8 @@
 //--- (YGps attributes initialization)
     _isFixed = Y_ISFIXED_INVALID;
     _satCount = Y_SATCOUNT_INVALID;
+    _satPerConst = Y_SATPERCONST_INVALID;
+    _gpsRefreshRate = Y_GPSREFRESHRATE_INVALID;
     _coordSystem = Y_COORDSYSTEM_INVALID;
     _constellation = Y_CONSTELLATION_INVALID;
     _latitude = Y_LATITUDE_INVALID;
@@ -100,6 +102,16 @@
     if(!strcmp(j->token, "satCount")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
         _satCount =  atol(j->token);
+        return 1;
+    }
+    if(!strcmp(j->token, "satPerConst")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _satPerConst =  atol(j->token);
+        return 1;
+    }
+    if(!strcmp(j->token, "gpsRefreshRate")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _gpsRefreshRate =  floor(atof(j->token) * 1000.0 / 65536.0 + 0.5) / 1000.0;
         return 1;
     }
     if(!strcmp(j->token, "coordSystem")) {
@@ -200,9 +212,9 @@
     return [self get_isFixed];
 }
 /**
- * Returns the count of visible satellites.
+ * Returns the total count of satellites used to compute GPS position.
  *
- * @return an integer corresponding to the count of visible satellites
+ * @return an integer corresponding to the total count of satellites used to compute GPS position
  *
  * On failure, throws an exception or returns Y_SATCOUNT_INVALID.
  */
@@ -222,6 +234,58 @@
 -(s64) satCount
 {
     return [self get_satCount];
+}
+/**
+ * Returns the count of visible satellites per constellation encoded
+ * on a 32 bit integer: bits 0..5: GPS satellites count,  bits 6..11 : Glonass, bits 12..17 : Galileo.
+ * this value is refreshed every 5 seconds only.
+ *
+ * @return an integer corresponding to the count of visible satellites per constellation encoded
+ *         on a 32 bit integer: bits 0.
+ *
+ * On failure, throws an exception or returns Y_SATPERCONST_INVALID.
+ */
+-(s64) get_satPerConst
+{
+    s64 res;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
+            return Y_SATPERCONST_INVALID;
+        }
+    }
+    res = _satPerConst;
+    return res;
+}
+
+
+-(s64) satPerConst
+{
+    return [self get_satPerConst];
+}
+/**
+ * Returns effective GPS data refresh frequency.
+ * this value is refreshed every 5 seconds only.
+ *
+ * @return a floating point number corresponding to effective GPS data refresh frequency
+ *
+ * On failure, throws an exception or returns Y_GPSREFRESHRATE_INVALID.
+ */
+-(double) get_gpsRefreshRate
+{
+    double res;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
+            return Y_GPSREFRESHRATE_INVALID;
+        }
+    }
+    res = _gpsRefreshRate;
+    return res;
+}
+
+
+-(double) gpsRefreshRate
+{
+    return [self get_gpsRefreshRate];
 }
 /**
  * Returns the representation system used for positioning data.
@@ -275,9 +339,9 @@
  * Returns the the satellites constellation used to compute
  * positioning data.
  *
- * @return a value among Y_CONSTELLATION_GPS, Y_CONSTELLATION_GLONASS, Y_CONSTELLATION_GALLILEO,
- * Y_CONSTELLATION_GNSS, Y_CONSTELLATION_GPS_GLONASS, Y_CONSTELLATION_GPS_GALLILEO and
- * Y_CONSTELLATION_GLONASS_GALLELIO corresponding to the the satellites constellation used to compute
+ * @return a value among Y_CONSTELLATION_GNSS, Y_CONSTELLATION_GPS, Y_CONSTELLATION_GLONASS,
+ * Y_CONSTELLATION_GALILEO, Y_CONSTELLATION_GPS_GLONASS, Y_CONSTELLATION_GPS_GALILEO and
+ * Y_CONSTELLATION_GLONASS_GALILEO corresponding to the the satellites constellation used to compute
  *         positioning data
  *
  * On failure, throws an exception or returns Y_CONSTELLATION_INVALID.
@@ -302,13 +366,12 @@
 
 /**
  * Changes the satellites constellation used to compute
- * positioning data. Possible  constellations are GPS, Glonass, Galileo ,
- * GNSS ( = GPS + Glonass + Galileo) and the 3 possible pairs. This seeting has effect on Yocto-GPS rev A.
+ * positioning data. Possible  constellations are GNSS ( = all supported constellations),
+ * GPS, Glonass, Galileo , and the 3 possible pairs. This setting has  no effect on Yocto-GPS (V1).
  *
- * @param newval : a value among Y_CONSTELLATION_GPS, Y_CONSTELLATION_GLONASS,
- * Y_CONSTELLATION_GALLILEO, Y_CONSTELLATION_GNSS, Y_CONSTELLATION_GPS_GLONASS,
- * Y_CONSTELLATION_GPS_GALLILEO and Y_CONSTELLATION_GLONASS_GALLELIO corresponding to the satellites
- * constellation used to compute
+ * @param newval : a value among Y_CONSTELLATION_GNSS, Y_CONSTELLATION_GPS, Y_CONSTELLATION_GLONASS,
+ * Y_CONSTELLATION_GALILEO, Y_CONSTELLATION_GPS_GLONASS, Y_CONSTELLATION_GPS_GALILEO and
+ * Y_CONSTELLATION_GLONASS_GALILEO corresponding to the satellites constellation used to compute
  *         positioning data
  *
  * @return YAPI_SUCCESS if the call succeeds.

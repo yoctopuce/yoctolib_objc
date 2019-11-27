@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_serialport.m 37827 2019-10-25 13:07:48Z mvuilleu $
+ * $Id: yocto_serialport.m 38239 2019-11-20 11:36:26Z seb $
  *
  * Implements the high-level API for SerialPort functions
  *
@@ -103,16 +103,31 @@
 //--- (end of generated code: YSnoopingRecord private methods implementation)
 
 //--- (generated code: YSnoopingRecord public methods implementation)
+/**
+ * Returns the elapsed time, in ms, since the beginning of the preceding message.
+ *
+ * @return the elapsed time, in ms, since the beginning of the preceding message.
+ */
 -(int) get_time
 {
     return _tim;
 }
 
+/**
+ * Returns the message direction (RX=0 , TX=1) .
+ *
+ * @return the message direction (RX=0 , TX=1) .
+ */
 -(int) get_direction
 {
     return _dir;
 }
 
+/**
+ * Returns the message content.
+ *
+ * @return the message content.
+ */
 -(NSString*) get_message
 {
     return _msg;

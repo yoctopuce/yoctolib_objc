@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_voltage.h 37827 2019-10-25 13:07:48Z mvuilleu $
+ *  $Id: yocto_voltage.h 38510 2019-11-26 15:36:38Z mvuilleu $
  *
  *  Declares yFindVoltage(), the high-level API for Voltage functions
  *
@@ -60,7 +60,7 @@ typedef enum {
  * YVoltage Class: Voltage function interface
  *
  * The YVoltage class allows you to read and configure Yoctopuce voltage
- * sensors, for instance using a Yocto-Watt, a Yocto-Volt or a Yocto-Motor-DC. It inherits from
+ * sensors, for instance using a Yocto-Motor-DC, a Yocto-Volt or a Yocto-Watt. It inherits from
  * YSensor class the core functions to read measurements,
  * to register callback functions, to access the autonomous datalogger.
  */
@@ -138,7 +138,7 @@ typedef enum {
  * call registerHub() at application initialization time.
  *
  * @param func : a string that uniquely characterizes the voltage sensor, for instance
- *         YWATTMK1.voltage1.
+ *         MOTORCTL.voltage.
  *
  * @return a YVoltage object allowing you to drive the voltage sensor.
  */
@@ -225,7 +225,7 @@ typedef enum {
  * call registerHub() at application initialization time.
  *
  * @param func : a string that uniquely characterizes the voltage sensor, for instance
- *         YWATTMK1.voltage1.
+ *         MOTORCTL.voltage.
  *
  * @return a YVoltage object allowing you to drive the voltage sensor.
  */
