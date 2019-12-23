@@ -64,7 +64,8 @@ int main(int argc, const char * argv[])
       NSMutableArray *toSend = [NSMutableArray arrayWithCapacity:1];
       [toSend addObject:[NSNumber numberWithUnsignedChar:0x05]];
       NSMutableArray *received = [i2cPort i2cSendAndReceiveArray:0x1f :toSend :2];
-      short int tempReg = ([[received objectAtIndex:0] unsignedCharValue] << 8) + [[received objectAtIndex:1] unsignedCharValue];
+      short int tempReg = ([[received objectAtIndex:0] unsignedCharValue] << 8) + [[received
+                          objectAtIndex:1] unsignedCharValue];
       if (tempReg & 0x1000) {
         tempReg |= 0xf000;    // perform sign extension
       } else {

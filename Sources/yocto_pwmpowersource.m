@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_pwmpowersource.m 37827 2019-10-25 13:07:48Z mvuilleu $
+ *  $Id: yocto_pwmpowersource.m 38899 2019-12-20 17:21:03Z mvuilleu $
  *
  *  Implements the high-level API for PwmPowerSource functions
  *
@@ -133,7 +133,7 @@
     return [self _setAttr:@"powerMode" :rest_val];
 }
 /**
- * Retrieves a voltage source for a given identifier.
+ * Retrieves a PWM generator power source for a given identifier.
  * The identifier can be specified using several formats:
  * <ul>
  * <li>FunctionLogicalName</li>
@@ -143,11 +143,11 @@
  * <li>ModuleLogicalName.FunctionLogicalName</li>
  * </ul>
  *
- * This function does not require that the voltage source is online at the time
+ * This function does not require that the PWM generator power source is online at the time
  * it is invoked. The returned object is nevertheless valid.
- * Use the method YPwmPowerSource.isOnline() to test if the voltage source is
+ * Use the method YPwmPowerSource.isOnline() to test if the PWM generator power source is
  * indeed online at a given time. In case of ambiguity when looking for
- * a voltage source by logical name, no error is notified: the first instance
+ * a PWM generator power source by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
  *
@@ -155,10 +155,10 @@
  * you are certain that the matching device is plugged, make sure that you did
  * call registerHub() at application initialization time.
  *
- * @param func : a string that uniquely characterizes the voltage source, for instance
+ * @param func : a string that uniquely characterizes the PWM generator power source, for instance
  *         YPWMTX01.pwmPowerSource.
  *
- * @return a YPwmPowerSource object allowing you to drive the voltage source.
+ * @return a YPwmPowerSource object allowing you to drive the PWM generator power source.
  */
 +(YPwmPowerSource*) FindPwmPowerSource:(NSString*)func
 {

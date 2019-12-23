@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_serialport.m 38239 2019-11-20 11:36:26Z seb $
+ * $Id: yocto_serialport.m 38692 2019-12-06 07:17:49Z mvuilleu $
  *
  * Implements the high-level API for SerialPort functions
  *
@@ -160,6 +160,8 @@
     _lastMsg = Y_LASTMSG_INVALID;
     _currentJob = Y_CURRENTJOB_INVALID;
     _startupJob = Y_STARTUPJOB_INVALID;
+    _jobMaxTask = Y_JOBMAXTASK_INVALID;
+    _jobMaxSize = Y_JOBMAXSIZE_INVALID;
     _command = Y_COMMAND_INVALID;
     _protocol = Y_PROTOCOL_INVALID;
     _voltageLevel = Y_VOLTAGELEVEL_INVALID;
@@ -237,6 +239,16 @@
        ARC_release(_startupJob);
         _startupJob =  [self _parseString:j];
         ARC_retain(_startupJob);
+        return 1;
+    }
+    if(!strcmp(j->token, "jobMaxTask")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _jobMaxTask =  atoi(j->token);
+        return 1;
+    }
+    if(!strcmp(j->token, "jobMaxSize")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _jobMaxSize =  atoi(j->token);
         return 1;
     }
     if(!strcmp(j->token, "command")) {
@@ -503,6 +515,54 @@
     NSString* rest_val;
     rest_val = newval;
     return [self _setAttr:@"startupJob" :rest_val];
+}
+/**
+ * Returns the maximum number of tasks in a job that the device can handle.
+ *
+ * @return an integer corresponding to the maximum number of tasks in a job that the device can handle
+ *
+ * On failure, throws an exception or returns Y_JOBMAXTASK_INVALID.
+ */
+-(int) get_jobMaxTask
+{
+    int res;
+    if (_cacheExpiration == 0) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
+            return Y_JOBMAXTASK_INVALID;
+        }
+    }
+    res = _jobMaxTask;
+    return res;
+}
+
+
+-(int) jobMaxTask
+{
+    return [self get_jobMaxTask];
+}
+/**
+ * Returns maximum size allowed for job files.
+ *
+ * @return an integer corresponding to maximum size allowed for job files
+ *
+ * On failure, throws an exception or returns Y_JOBMAXSIZE_INVALID.
+ */
+-(int) get_jobMaxSize
+{
+    int res;
+    if (_cacheExpiration == 0) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
+            return Y_JOBMAXSIZE_INVALID;
+        }
+    }
+    res = _jobMaxSize;
+    return res;
+}
+
+
+-(int) jobMaxSize
+{
+    return [self get_jobMaxSize];
 }
 -(NSString*) get_command
 {

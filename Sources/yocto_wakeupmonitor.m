@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_wakeupmonitor.m 38510 2019-11-26 15:36:38Z mvuilleu $
+ *  $Id: yocto_wakeupmonitor.m 38899 2019-12-20 17:21:03Z mvuilleu $
  *
  *  Implements the high-level API for WakeUpMonitor functions
  *
@@ -325,7 +325,7 @@
     return [self get_rtcTime];
 }
 /**
- * Retrieves a monitor for a given identifier.
+ * Retrieves a wake-up monitor for a given identifier.
  * The identifier can be specified using several formats:
  * <ul>
  * <li>FunctionLogicalName</li>
@@ -335,11 +335,11 @@
  * <li>ModuleLogicalName.FunctionLogicalName</li>
  * </ul>
  *
- * This function does not require that the monitor is online at the time
+ * This function does not require that the wake-up monitor is online at the time
  * it is invoked. The returned object is nevertheless valid.
- * Use the method YWakeUpMonitor.isOnline() to test if the monitor is
+ * Use the method YWakeUpMonitor.isOnline() to test if the wake-up monitor is
  * indeed online at a given time. In case of ambiguity when looking for
- * a monitor by logical name, no error is notified: the first instance
+ * a wake-up monitor by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
  *
@@ -347,10 +347,10 @@
  * you are certain that the matching device is plugged, make sure that you did
  * call registerHub() at application initialization time.
  *
- * @param func : a string that uniquely characterizes the monitor, for instance
+ * @param func : a string that uniquely characterizes the wake-up monitor, for instance
  *         YHUBGSM3.wakeUpMonitor.
  *
- * @return a YWakeUpMonitor object allowing you to drive the monitor.
+ * @return a YWakeUpMonitor object allowing you to drive the wake-up monitor.
  */
 +(YWakeUpMonitor*) FindWakeUpMonitor:(NSString*)func
 {

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_gps.m 38462 2019-11-25 17:14:30Z seb $
+ *  $Id: yocto_gps.m 38899 2019-12-20 17:21:03Z mvuilleu $
  *
  *  Implements the high-level API for Gps functions
  *
@@ -664,7 +664,7 @@
     return [self _setAttr:@"command" :rest_val];
 }
 /**
- * Retrieves a GPS for a given identifier.
+ * Retrieves a geolocalization module for a given identifier.
  * The identifier can be specified using several formats:
  * <ul>
  * <li>FunctionLogicalName</li>
@@ -674,11 +674,11 @@
  * <li>ModuleLogicalName.FunctionLogicalName</li>
  * </ul>
  *
- * This function does not require that the GPS is online at the time
+ * This function does not require that the geolocalization module is online at the time
  * it is invoked. The returned object is nevertheless valid.
- * Use the method YGps.isOnline() to test if the GPS is
+ * Use the method YGps.isOnline() to test if the geolocalization module is
  * indeed online at a given time. In case of ambiguity when looking for
- * a GPS by logical name, no error is notified: the first instance
+ * a geolocalization module by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
  *
@@ -686,10 +686,10 @@
  * you are certain that the matching device is plugged, make sure that you did
  * call registerHub() at application initialization time.
  *
- * @param func : a string that uniquely characterizes the GPS, for instance
+ * @param func : a string that uniquely characterizes the geolocalization module, for instance
  *         YGNSSMK1.gps.
  *
- * @return a YGps object allowing you to drive the GPS.
+ * @return a YGps object allowing you to drive the geolocalization module.
  */
 +(YGps*) FindGps:(NSString*)func
 {

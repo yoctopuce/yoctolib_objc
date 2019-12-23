@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_hubport.m 37827 2019-10-25 13:07:48Z mvuilleu $
+ *  $Id: yocto_hubport.m 38899 2019-12-20 17:21:03Z mvuilleu $
  *
  *  Implements the high-level API for HubPort functions
  *
@@ -93,9 +93,9 @@
 //--- (end of YHubPort private methods implementation)
 //--- (YHubPort public methods implementation)
 /**
- * Returns true if the Yocto-hub port is powered, false otherwise.
+ * Returns true if the YoctoHub port is powered, false otherwise.
  *
- * @return either Y_ENABLED_FALSE or Y_ENABLED_TRUE, according to true if the Yocto-hub port is
+ * @return either Y_ENABLED_FALSE or Y_ENABLED_TRUE, according to true if the YoctoHub port is
  * powered, false otherwise
  *
  * On failure, throws an exception or returns Y_ENABLED_INVALID.
@@ -119,10 +119,10 @@
 }
 
 /**
- * Changes the activation of the Yocto-hub port. If the port is enabled, the
+ * Changes the activation of the YoctoHub port. If the port is enabled, the
  * connected module is powered. Otherwise, port power is shut down.
  *
- * @param newval : either Y_ENABLED_FALSE or Y_ENABLED_TRUE, according to the activation of the Yocto-hub port
+ * @param newval : either Y_ENABLED_FALSE or Y_ENABLED_TRUE, according to the activation of the YoctoHub port
  *
  * @return YAPI_SUCCESS if the call succeeds.
  *
@@ -139,10 +139,10 @@
     return [self _setAttr:@"enabled" :rest_val];
 }
 /**
- * Returns the current state of the Yocto-hub port.
+ * Returns the current state of the YoctoHub port.
  *
  * @return a value among Y_PORTSTATE_OFF, Y_PORTSTATE_OVRLD, Y_PORTSTATE_ON, Y_PORTSTATE_RUN and
- * Y_PORTSTATE_PROG corresponding to the current state of the Yocto-hub port
+ * Y_PORTSTATE_PROG corresponding to the current state of the YoctoHub port
  *
  * On failure, throws an exception or returns Y_PORTSTATE_INVALID.
  */
@@ -164,11 +164,11 @@
     return [self get_portState];
 }
 /**
- * Returns the current baud rate used by this Yocto-hub port, in kbps.
+ * Returns the current baud rate used by this YoctoHub port, in kbps.
  * The default value is 1000 kbps, but a slower rate may be used if communication
  * problems are encountered.
  *
- * @return an integer corresponding to the current baud rate used by this Yocto-hub port, in kbps
+ * @return an integer corresponding to the current baud rate used by this YoctoHub port, in kbps
  *
  * On failure, throws an exception or returns Y_BAUDRATE_INVALID.
  */
@@ -190,7 +190,7 @@
     return [self get_baudRate];
 }
 /**
- * Retrieves a Yocto-hub port for a given identifier.
+ * Retrieves a YoctoHub slave port for a given identifier.
  * The identifier can be specified using several formats:
  * <ul>
  * <li>FunctionLogicalName</li>
@@ -200,11 +200,11 @@
  * <li>ModuleLogicalName.FunctionLogicalName</li>
  * </ul>
  *
- * This function does not require that the Yocto-hub port is online at the time
+ * This function does not require that the YoctoHub slave port is online at the time
  * it is invoked. The returned object is nevertheless valid.
- * Use the method YHubPort.isOnline() to test if the Yocto-hub port is
+ * Use the method YHubPort.isOnline() to test if the YoctoHub slave port is
  * indeed online at a given time. In case of ambiguity when looking for
- * a Yocto-hub port by logical name, no error is notified: the first instance
+ * a YoctoHub slave port by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
  *
@@ -212,10 +212,10 @@
  * you are certain that the matching device is plugged, make sure that you did
  * call registerHub() at application initialization time.
  *
- * @param func : a string that uniquely characterizes the Yocto-hub port, for instance
+ * @param func : a string that uniquely characterizes the YoctoHub slave port, for instance
  *         YHUBETH1.hubPort1.
  *
- * @return a YHubPort object allowing you to drive the Yocto-hub port.
+ * @return a YHubPort object allowing you to drive the YoctoHub slave port.
  */
 +(YHubPort*) FindHubPort:(NSString*)func
 {

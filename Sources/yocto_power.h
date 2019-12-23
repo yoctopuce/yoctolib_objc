@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_power.h 37827 2019-10-25 13:07:48Z mvuilleu $
+ *  $Id: yocto_power.h 38899 2019-12-20 17:21:03Z mvuilleu $
  *
  *  Declares yFindPower(), the high-level API for Power functions
  *
@@ -52,12 +52,11 @@ typedef void (*YPowerTimedReportCallback)(YPower *func, YMeasure *measure);
 
 //--- (YPower class start)
 /**
- * YPower Class: Power function interface
+ * YPower Class: electrical power sensor control interface, available for instance in the Yocto-Watt
  *
- * The YPower class allows you to read and configure Yoctopuce power
- * sensors, for instance using a Yocto-Watt. It inherits from YSensor class the core functions to read
- * measurements,
- * to register callback functions, to access the autonomous datalogger.
+ * The YPower class allows you to read and configure Yoctopuce electrical power sensors.
+ * It inherits from YSensor class the core functions to read measurements,
+ * to register callback functions, and to access the autonomous datalogger.
  * This class adds the ability to access the energy counter and the power factor.
  */
 @interface YPower : YSensor

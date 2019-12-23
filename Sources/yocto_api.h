@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.h 38510 2019-11-26 15:36:38Z mvuilleu $
+ * $Id: yocto_api.h 38913 2019-12-20 18:59:49Z mvuilleu $
  *
  * High-level programming interface, common to all modules
  *
@@ -62,7 +62,7 @@
 
 extern NSMutableDictionary* YAPI_YFunctions;
 
-#define YOCTO_API_REVISION          "38545"
+#define YOCTO_API_REVISION          "38914"
 
 // yInitAPI argument
 #define Y_DETECT_NONE           0
@@ -309,7 +309,7 @@ int _ystrpos(NSString* haystack, NSString* needle);
 
 //--- (generated code: YAPIContext class start)
 /**
- * YAPIContext Class: Control interface for the firmware update process
+ * YAPIContext Class: Yoctopuce I/O context configuration.
  *
  *
  */
@@ -353,8 +353,8 @@ int _ystrpos(NSString* haystack, NSString* needle);
  * Modifies the network connection delay for yRegisterHub() and yUpdateDeviceList().
  * This delay impacts only the YoctoHubs and VirtualHub
  * which are accessible through the network. By default, this delay is of 20000 milliseconds,
- * but depending or you network you may want to change this delay.
- * For example if your network infrastructure uses a GSM connection.
+ * but depending or you network you may want to change this delay,
+ * gor example if your network infrastructure is based on a GSM connection.
  *
  * @param networkMsTimeout : the network connection delay in milliseconds.
  * @noreturn
@@ -365,8 +365,8 @@ int _ystrpos(NSString* haystack, NSString* needle);
  * Returns the network connection delay for yRegisterHub() and yUpdateDeviceList().
  * This delay impacts only the YoctoHubs and VirtualHub
  * which are accessible through the network. By default, this delay is of 20000 milliseconds,
- * but depending or you network you may want to change this delay.
- * For example if your network infrastructure uses a GSM connection.
+ * but depending or you network you may want to change this delay,
+ * for example if your network infrastructure is based on a GSM connection.
  *
  * @return the network connection delay in milliseconds.
  */
@@ -606,8 +606,8 @@ int _ystrpos(NSString* haystack, NSString* needle);
  +(YRETCODE)    RegisterHub:(NSString *) rooturl :(NSError**) error;
 
 /**
- * Fault-tolerant alternative to RegisterHub(). This function has the same
- * purpose and same arguments as RegisterHub(), but does not trigger
+ * Fault-tolerant alternative to yRegisterHub(). This function has the same
+ * purpose and same arguments as yRegisterHub(), but does not trigger
  * an error when the selected hub is not available at the time of the function call.
  * This makes it possible to register a network hub independently of the current
  * connectivity, and to try to contact it only when a device is actively needed.
@@ -633,7 +633,7 @@ int _ystrpos(NSString* haystack, NSString* needle);
 
 /**
  * Test if the hub is reachable. This method do not register the hub, it only test if the
- * hub is usable. The url parameter follow the same convention as the RegisterHub
+ * hub is usable. The url parameter follow the same convention as the yRegisterHub
  * method. This method is useful to verify the authentication parameters for a hub. It
  * is possible to force this method to return after mstimeout milliseconds.
  *
@@ -767,8 +767,8 @@ int _ystrpos(NSString* haystack, NSString* needle);
  * Modifies the network connection delay for yRegisterHub() and yUpdateDeviceList().
  * This delay impacts only the YoctoHubs and VirtualHub
  * which are accessible through the network. By default, this delay is of 20000 milliseconds,
- * but depending or you network you may want to change this delay.
- * For example if your network infrastructure uses a GSM connection.
+ * but depending or you network you may want to change this delay,
+ * gor example if your network infrastructure is based on a GSM connection.
  *
  * @param networkMsTimeout : the network connection delay in milliseconds.
  * @noreturn
@@ -779,8 +779,8 @@ int _ystrpos(NSString* haystack, NSString* needle);
  * Returns the network connection delay for yRegisterHub() and yUpdateDeviceList().
  * This delay impacts only the YoctoHubs and VirtualHub
  * which are accessible through the network. By default, this delay is of 20000 milliseconds,
- * but depending or you network you may want to change this delay.
- * For example if your network infrastructure uses a GSM connection.
+ * but depending or you network you may want to change this delay,
+ * for example if your network infrastructure is based on a GSM connection.
  *
  * @return the network connection delay in milliseconds.
  */
@@ -1299,7 +1299,7 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
 
 //--- (generated code: YModule class start)
 /**
- * YModule Class: Module control interface
+ * YModule Class: Global parameters control interface for all Yoctopuce devices
  *
  * The YModule class can be used with all Yoctopuce USB devices.
  * It can be used to control the module global parameters, and
@@ -1916,7 +1916,7 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
 
 //--- (generated code: YSensor class start)
 /**
- * YSensor Class: Sensor function interface
+ * YSensor Class: Sensor function interface.
  *
  * The YSensor class is the parent class for all Yoctopuce sensor types. It can be
  * used to read the current value and unit of any sensor, read the min/max
@@ -2268,11 +2268,11 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
 -(bool)     isSensorReady;
 
 /**
- * Returns the YDatalogger object of the device hosting the sensor. This method returns an object of
- * class YDatalogger that can control global parameters of the data logger. The returned object
+ * Returns the YDatalogger object of the device hosting the sensor. This method returns an object
+ * that can control global parameters of the data logger. The returned object
  * should not be freed.
  *
- * @return an YDataLogger object or nil on error.
+ * @return an YDatalogger object, or nil on error.
  */
 -(YDataLogger*)     get_dataLogger;
 
@@ -2293,16 +2293,16 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
 -(int)     stopDataLogger;
 
 /**
- * Retrieves a DataSet object holding historical data for this
+ * Retrieves a YDataSet object holding historical data for this
  * sensor, for a specified time interval. The measures will be
  * retrieved from the data logger, which must have been turned
- * on at the desired time. See the documentation of the DataSet
+ * on at the desired time. See the documentation of the YDataSet
  * class for information on how to get an overview of the
  * recorded data, and how to load progressively a large set
  * of measures from the data logger.
  *
  * This function only works if the device uses a recent firmware,
- * as DataSet objects are not supported by firmwares older than
+ * as YDataSet objects are not supported by firmwares older than
  * version 13000.
  *
  * @param startTime : the start of the desired measure time interval,
@@ -2412,11 +2412,11 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
 
 //--- (generated code: YFirmwareUpdate class start)
 /**
- * YFirmwareUpdate Class: Control interface for the firmware update process
+ * YFirmwareUpdate Class: Firmware update process control interface, returned by module.updateFirmware method.
  *
  * The YFirmwareUpdate class let you control the firmware update of a Yoctopuce
- * module. This class should not be instantiate directly, instead the method
- * updateFirmware should be called to get an instance of YFirmwareUpdate.
+ * module. This class should not be instantiate directly, but instances should be retrieved
+ * using the YModule method module.updateFirmware.
  */
 @interface YFirmwareUpdate : NSObject
 //--- (end of generated code: YFirmwareUpdate class start)
@@ -2511,12 +2511,12 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
 /**
  * YDataStream Class: Unformatted data sequence
  *
- * YDataStream objects represent bare recorded measure sequences,
+ * DataStream objects represent bare recorded measure sequences,
  * exactly as found within the data logger present on Yoctopuce
  * sensors.
  *
- * In most cases, it is not necessary to use YDataStream objects
- * directly, as the YDataSet objects (returned by the
+ * In most cases, it is not necessary to use DataStream objects
+ * directly, as the DataSet objects (returned by the
  * get_recordedData() method from sensors and the
  * get_dataSets() method from the data logger) provide
  * a more convenient interface.
@@ -2762,11 +2762,13 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
 
 //--- (generated code: YMeasure class start)
 /**
- * YMeasure Class: Measured value
+ * YMeasure Class: Measured value, returned in particular by the methods of the YDataSet class.
  *
  * YMeasure objects are used within the API to represent
  * a value measured at a specified time. These objects are
- * used in particular in conjunction with the YDataSet class.
+ * used in particular in conjunction with the YDataSet class,
+ * but also for sensors periodic timed reports
+ * (see sensor.registerTimedReportCallback).
  */
 @interface YMeasure : NSObject
 //--- (end of generated code: YMeasure class start)
@@ -2794,7 +2796,7 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
  * (Unix timestamp). When the recording rate is higher then 1 sample
  * per second, the timestamp may have a fractional part.
  *
- * @return an floating point number corresponding to the number of seconds
+ * @return a floating point number corresponding to the number of seconds
  *         between the Jan 1, 1970 UTC and the beginning of this measure.
  */
 -(double)     get_startTimeUTC;
@@ -2804,7 +2806,7 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
  * (Unix timestamp). When the recording rate is higher than 1 sample
  * per second, the timestamp may have a fractional part.
  *
- * @return an floating point number corresponding to the number of seconds
+ * @return a floating point number corresponding to the number of seconds
  *         between the Jan 1, 1970 UTC and the end of this measure.
  */
 -(double)     get_endTimeUTC;
@@ -2843,12 +2845,12 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
 
 //--- (generated code: YDataSet class start)
 /**
- * YDataSet Class: Recorded data sequence
+ * YDataSet Class: Recorded data sequence, as returned by sensor.get_recordedData()
  *
  * YDataSet objects make it possible to retrieve a set of recorded measures
  * for a given sensor and a specified time interval. They can be used
  * to load data points with a progress report. When the YDataSet object is
- * instantiated by the get_recordedData()  function, no data is
+ * instantiated by the sensor.get_recordedData()  function, no data is
  * yet loaded from the module. It is only when the loadMore()
  * method is called over and over than data will be effectively loaded
  * from the dataLogger.
@@ -2858,7 +2860,7 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
  * once. Measures themselves are available using function get_measures()
  * when loaded by subsequent calls to loadMore().
  *
- * This class can only be used on devices that use a recent firmware,
+ * This class can only be used on devices that use a relatively recent firmware,
  * as YDataSet objects are not supported by firmwares older than version 13000.
  */
 @interface YDataSet : NSObject
@@ -2932,14 +2934,14 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
 
 /**
  * Returns the start time of the dataset, relative to the Jan 1, 1970.
- * When the YDataSet is created, the start time is the value passed
+ * When the YDataSet object is created, the start time is the value passed
  * in parameter to the get_dataSet() function. After the
  * very first call to loadMore(), the start time is updated
  * to reflect the timestamp of the first measure actually found in the
  * dataLogger within the specified range.
  *
  * <b>DEPRECATED</b>: This method has been replaced by get_summary()
- * which contain more precise informations on the YDataSet.
+ * which contain more precise informations.
  *
  * @return an unsigned number corresponding to the number of seconds
  *         between the Jan 1, 1970 and the beginning of this data
@@ -2951,15 +2953,14 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
 
 /**
  * Returns the end time of the dataset, relative to the Jan 1, 1970.
- * When the YDataSet is created, the end time is the value passed
+ * When the YDataSet object is created, the end time is the value passed
  * in parameter to the get_dataSet() function. After the
  * very first call to loadMore(), the end time is updated
  * to reflect the timestamp of the last measure actually found in the
  * dataLogger within the specified range.
  *
  * <b>DEPRECATED</b>: This method has been replaced by get_summary()
- * which contain more precise informations on the YDataSet.
- *
+ * which contain more precise informations.
  *
  * @return an unsigned number corresponding to the number of seconds
  *         between the Jan 1, 1970 and the end of this data
@@ -2992,7 +2993,7 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
 
 /**
  * Returns an YMeasure object which summarizes the whole
- * DataSet. In includes the following information:
+ * YDataSet. In includes the following information:
  * - the start of a time interval
  * - the end of a time interval
  * - the minimal value observed during the time interval
@@ -3075,7 +3076,7 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
 
 //--- (generated code: YConsolidatedDataSet class start)
 /**
- * YConsolidatedDataSet Class: Cross-sensor consolidated data sequence
+ * YConsolidatedDataSet Class: Cross-sensor consolidated data sequence.
  *
  * YConsolidatedDataSet objects make it possible to retrieve a set of
  * recorded measures from multiple sensors, for a specified time interval.
@@ -3107,7 +3108,32 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
 -(int)     imm_init:(double)startt :(double)endt :(NSMutableArray*)sensorList;
 
 /**
- * Extracts the next data record from the dataLogger of all sensors linked to this
+ * Returns an object holding historical data for multiple
+ * sensors, for a specified time interval.
+ * The measures will be retrieved from the data logger, which must have been turned
+ * on at the desired time. The resulting object makes it possible to load progressively
+ * a large set of measures from multiple sensors, consolidating data on the fly
+ * to align records based on measurement timestamps.
+ *
+ * @param sensorNames : array of logical names or hardware identifiers of the sensors
+ *         for which data must be loaded from their data logger.
+ * @param startTime : the start of the desired measure time interval,
+ *         as a Unix timestamp, i.e. the number of seconds since
+ *         January 1, 1970 UTC. The special value 0 can be used
+ *         to include any measure, without initial limit.
+ * @param endTime : the end of the desired measure time interval,
+ *         as a Unix timestamp, i.e. the number of seconds since
+ *         January 1, 1970 UTC. The special value 0 can be used
+ *         to include any measure, without ending limit.
+ *
+ * @return an instance of YConsolidatedDataSet, providing access to
+ *         consolidated historical data. Records can be loaded progressively
+ *         using the YConsolidatedDataSet.nextRecord() method.
+ */
++(YConsolidatedDataSet*)     Init:(NSMutableArray*)sensorNames :(double)startTime :(double)endTime;
+
+/**
+ * Extracts the next data record from the data logger of all sensors linked to this
  * object.
  *
  * @param datarec : array of floating point numbers, that will be filled by the
@@ -3243,8 +3269,8 @@ void yEnableExceptions(void);
 YRETCODE yRegisterHub(NSString * url, NSError** errmsg);
 
 /**
- * Fault-tolerant alternative to RegisterHub(). This function has the same
- * purpose and same arguments as RegisterHub(), but does not trigger
+ * Fault-tolerant alternative to yRegisterHub(). This function has the same
+ * purpose and same arguments as yRegisterHub(), but does not trigger
  * an error when the selected hub is not available at the time of the function call.
  * This makes it possible to register a network hub independently of the current
  * connectivity, and to try to contact it only when a device is actively needed.
@@ -3518,11 +3544,10 @@ YSensor* yFirstSensor(void);
 
 //--- (generated code: YDataLogger class start)
 /**
- * YDataLogger Class: DataLogger function interface
+ * YDataLogger Class: DataLogger control interface, available on most Yoctopuce sensors.
  *
  * A non-volatile memory for storing ongoing measured data is available on most Yoctopuce
- * sensors, for instance using a Yocto-3D-V2, a Yocto-Light-V3, a Yocto-Meteo-V2 or a Yocto-Watt.
- * Recording can happen automatically, without requiring a permanent
+ * sensors. Recording can happen automatically, without requiring a permanent
  * connection to a computer.
  * The YDataLogger class controls the global parameters of the internal data
  * logger. Recording control (start/stop) as well as data retreival is done at

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_dualpower.m 37827 2019-10-25 13:07:48Z mvuilleu $
+ *  $Id: yocto_dualpower.m 38913 2019-12-20 18:59:49Z mvuilleu $
  *
  *  Implements the high-level API for DualPower functions
  *
@@ -190,7 +190,7 @@
     return [self get_extVoltage];
 }
 /**
- * Retrieves a dual power control for a given identifier.
+ * Retrieves a dual power switch for a given identifier.
  * The identifier can be specified using several formats:
  * <ul>
  * <li>FunctionLogicalName</li>
@@ -200,11 +200,11 @@
  * <li>ModuleLogicalName.FunctionLogicalName</li>
  * </ul>
  *
- * This function does not require that the power control is online at the time
+ * This function does not require that the dual power switch is online at the time
  * it is invoked. The returned object is nevertheless valid.
- * Use the method YDualPower.isOnline() to test if the power control is
+ * Use the method YDualPower.isOnline() to test if the dual power switch is
  * indeed online at a given time. In case of ambiguity when looking for
- * a dual power control by logical name, no error is notified: the first instance
+ * a dual power switch by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
  *
@@ -212,10 +212,10 @@
  * you are certain that the matching device is plugged, make sure that you did
  * call registerHub() at application initialization time.
  *
- * @param func : a string that uniquely characterizes the power control, for instance
+ * @param func : a string that uniquely characterizes the dual power switch, for instance
  *         SERVORC1.dualPower.
  *
- * @return a YDualPower object allowing you to drive the power control.
+ * @return a YDualPower object allowing you to drive the dual power switch.
  */
 +(YDualPower*) FindDualPower:(NSString*)func
 {

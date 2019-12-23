@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_watchdog.m 37827 2019-10-25 13:07:48Z mvuilleu $
+ *  $Id: yocto_watchdog.m 38676 2019-12-03 15:52:14Z mvuilleu $
  *
  *  Implements the high-level API for Watchdog functions
  *
@@ -207,12 +207,12 @@
     return [self _setAttr:@"state" :rest_val];
 }
 /**
- * Returns the state of the watchdog at device startup (A for the idle position, B for the active
- * position, UNCHANGED for no change).
+ * Returns the state of the watchdog at device startup (A for the idle position,
+ * B for the active position, UNCHANGED to leave the relay state as is).
  *
  * @return a value among Y_STATEATPOWERON_UNCHANGED, Y_STATEATPOWERON_A and Y_STATEATPOWERON_B
- * corresponding to the state of the watchdog at device startup (A for the idle position, B for the
- * active position, UNCHANGED for no change)
+ * corresponding to the state of the watchdog at device startup (A for the idle position,
+ *         B for the active position, UNCHANGED to leave the relay state as is)
  *
  * On failure, throws an exception or returns Y_STATEATPOWERON_INVALID.
  */
@@ -236,13 +236,13 @@
 
 /**
  * Changes the state of the watchdog at device startup (A for the idle position,
- * B for the active position, UNCHANGED for no modification).
+ * B for the active position, UNCHANGED to leave the relay state as is).
  * Remember to call the matching module saveToFlash()
  * method, otherwise this call will have no effect.
  *
  * @param newval : a value among Y_STATEATPOWERON_UNCHANGED, Y_STATEATPOWERON_A and Y_STATEATPOWERON_B
  * corresponding to the state of the watchdog at device startup (A for the idle position,
- *         B for the active position, UNCHANGED for no modification)
+ *         B for the active position, UNCHANGED to leave the relay state as is)
  *
  * @return YAPI_SUCCESS if the call succeeds.
  *
@@ -259,10 +259,10 @@
     return [self _setAttr:@"stateAtPowerOn" :rest_val];
 }
 /**
- * Returns the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state
+ * Returns the maximum time (ms) allowed for the watchdog to stay in state
  * A before automatically switching back in to B state. Zero means no time limit.
  *
- * @return an integer corresponding to the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state
+ * @return an integer corresponding to the maximum time (ms) allowed for the watchdog to stay in state
  *         A before automatically switching back in to B state
  *
  * On failure, throws an exception or returns Y_MAXTIMEONSTATEA_INVALID.
@@ -286,12 +286,12 @@
 }
 
 /**
- * Changes the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state A
+ * Changes the maximum time (ms) allowed for the watchdog to stay in state A
  * before automatically switching back in to B state. Use zero for no time limit.
  * Remember to call the saveToFlash()
  * method of the module if the modification must be kept.
  *
- * @param newval : an integer corresponding to the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state A
+ * @param newval : an integer corresponding to the maximum time (ms) allowed for the watchdog to stay in state A
  *         before automatically switching back in to B state
  *
  * @return YAPI_SUCCESS if the call succeeds.
@@ -309,7 +309,7 @@
     return [self _setAttr:@"maxTimeOnStateA" :rest_val];
 }
 /**
- * Retourne the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state B
+ * Retourne the maximum time (ms) allowed for the watchdog to stay in state B
  * before automatically switching back in to A state. Zero means no time limit.
  *
  * @return an integer
@@ -335,13 +335,13 @@
 }
 
 /**
- * Changes the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state B before
+ * Changes the maximum time (ms) allowed for the watchdog to stay in state B before
  * automatically switching back in to A state. Use zero for no time limit.
  * Remember to call the saveToFlash()
  * method of the module if the modification must be kept.
  *
- * @param newval : an integer corresponding to the maximum time (ms) allowed for $THEFUNCTIONS$ to
- * stay in state B before
+ * @param newval : an integer corresponding to the maximum time (ms) allowed for the watchdog to stay
+ * in state B before
  *         automatically switching back in to A state
  *
  * @return YAPI_SUCCESS if the call succeeds.

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_realtimeclock.m 38510 2019-11-26 15:36:38Z mvuilleu $
+ *  $Id: yocto_realtimeclock.m 38899 2019-12-20 17:21:03Z mvuilleu $
  *
  *  Implements the high-level API for RealTimeClock functions
  *
@@ -244,7 +244,7 @@
     return [self get_timeSet];
 }
 /**
- * Retrieves a clock for a given identifier.
+ * Retrieves a real-time clock for a given identifier.
  * The identifier can be specified using several formats:
  * <ul>
  * <li>FunctionLogicalName</li>
@@ -254,11 +254,11 @@
  * <li>ModuleLogicalName.FunctionLogicalName</li>
  * </ul>
  *
- * This function does not require that the clock is online at the time
+ * This function does not require that the real-time clock is online at the time
  * it is invoked. The returned object is nevertheless valid.
- * Use the method YRealTimeClock.isOnline() to test if the clock is
+ * Use the method YRealTimeClock.isOnline() to test if the real-time clock is
  * indeed online at a given time. In case of ambiguity when looking for
- * a clock by logical name, no error is notified: the first instance
+ * a real-time clock by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
  *
@@ -266,10 +266,10 @@
  * you are certain that the matching device is plugged, make sure that you did
  * call registerHub() at application initialization time.
  *
- * @param func : a string that uniquely characterizes the clock, for instance
+ * @param func : a string that uniquely characterizes the real-time clock, for instance
  *         YHUBGSM3.realTimeClock.
  *
- * @return a YRealTimeClock object allowing you to drive the clock.
+ * @return a YRealTimeClock object allowing you to drive the real-time clock.
  */
 +(YRealTimeClock*) FindRealTimeClock:(NSString*)func
 {

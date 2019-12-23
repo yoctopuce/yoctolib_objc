@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_colorledcluster.h 37827 2019-10-25 13:07:48Z mvuilleu $
+ *  $Id: yocto_colorledcluster.h 38899 2019-12-20 17:21:03Z mvuilleu $
  *
  *  Declares yFindColorLedCluster(), the high-level API for ColorLedCluster functions
  *
@@ -61,11 +61,11 @@ typedef enum {
 
 //--- (YColorLedCluster class start)
 /**
- * YColorLedCluster Class: ColorLedCluster function interface
+ * YColorLedCluster Class: RGB LED cluster control interface, available for instance in the Yocto-Color-V2
  *
  * The YColorLedCluster class allows you to drive a
- * color LED cluster, for instance using a Yocto-Color-V2. Unlike the ColorLed class, the ColorLedCluster
- * allows to handle several LEDs at one. Color changes can be done using RGB
+ * color LED cluster. Unlike the ColorLed class, the YColorLedCluster
+ * class allows to handle several LEDs at once. Color changes can be done using RGB
  * coordinates as well as HSL coordinates.
  * The module performs all conversions form RGB to HSL automatically. It is then
  * self-evident to turn on a LED with a given hue and to progressively vary its

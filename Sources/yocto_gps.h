@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_gps.h 38462 2019-11-25 17:14:30Z seb $
+ *  $Id: yocto_gps.h 38899 2019-12-20 17:21:03Z mvuilleu $
  *
  *  Declares yFindGps(), the high-level API for Gps functions
  *
@@ -91,10 +91,10 @@ typedef enum {
 
 //--- (YGps class start)
 /**
- * YGps Class: GPS function interface
+ * YGps Class: Geolocalization control interface (GPS, GNSS, ...), available for instance in the Yocto-GPS
  *
  * The YGps class allows you to retrieve positioning
- * data from a GPS sensor, for instance using a Yocto-GPS. This class can provides
+ * data from a GPS/GNSS sensor. This class can provides
  * complete positioning information. However, if you
  * wish to define callbacks on position changes or record
  * the position in the datalogger, you
@@ -373,7 +373,7 @@ typedef enum {
 -(int)     setCommand:(NSString*) newval;
 
 /**
- * Retrieves a GPS for a given identifier.
+ * Retrieves a geolocalization module for a given identifier.
  * The identifier can be specified using several formats:
  * <ul>
  * <li>FunctionLogicalName</li>
@@ -383,11 +383,11 @@ typedef enum {
  * <li>ModuleLogicalName.FunctionLogicalName</li>
  * </ul>
  *
- * This function does not require that the GPS is online at the time
+ * This function does not require that the geolocalization module is online at the time
  * it is invoked. The returned object is nevertheless valid.
- * Use the method YGps.isOnline() to test if the GPS is
+ * Use the method YGps.isOnline() to test if the geolocalization module is
  * indeed online at a given time. In case of ambiguity when looking for
- * a GPS by logical name, no error is notified: the first instance
+ * a geolocalization module by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
  *
@@ -395,10 +395,10 @@ typedef enum {
  * you are certain that the matching device is plugged, make sure that you did
  * call registerHub() at application initialization time.
  *
- * @param func : a string that uniquely characterizes the GPS, for instance
+ * @param func : a string that uniquely characterizes the geolocalization module, for instance
  *         YGNSSMK1.gps.
  *
- * @return a YGps object allowing you to drive the GPS.
+ * @return a YGps object allowing you to drive the geolocalization module.
  */
 +(YGps*)     FindGps:(NSString*)func;
 
@@ -419,23 +419,23 @@ typedef enum {
 
 
 /**
- * Continues the enumeration of GPS started using yFirstGps().
- * Caution: You can't make any assumption about the returned GPS order.
- * If you want to find a specific a GPS, use Gps.findGps()
+ * Continues the enumeration of geolocalization modules started using yFirstGps().
+ * Caution: You can't make any assumption about the returned geolocalization modules order.
+ * If you want to find a specific a geolocalization module, use Gps.findGps()
  * and a hardwareID or a logical name.
  *
  * @return a pointer to a YGps object, corresponding to
- *         a GPS currently online, or a nil pointer
- *         if there are no more GPS to enumerate.
+ *         a geolocalization module currently online, or a nil pointer
+ *         if there are no more geolocalization modules to enumerate.
  */
 -(YGps*) nextGps;
 /**
- * Starts the enumeration of GPS currently accessible.
+ * Starts the enumeration of geolocalization modules currently accessible.
  * Use the method YGps.nextGps() to iterate on
- * next GPS.
+ * next geolocalization modules.
  *
  * @return a pointer to a YGps object, corresponding to
- *         the first GPS currently online, or a nil pointer
+ *         the first geolocalization module currently online, or a nil pointer
  *         if there are none.
  */
 +(YGps*) FirstGps;
@@ -445,7 +445,7 @@ typedef enum {
 
 //--- (YGps functions declaration)
 /**
- * Retrieves a GPS for a given identifier.
+ * Retrieves a geolocalization module for a given identifier.
  * The identifier can be specified using several formats:
  * <ul>
  * <li>FunctionLogicalName</li>
@@ -455,11 +455,11 @@ typedef enum {
  * <li>ModuleLogicalName.FunctionLogicalName</li>
  * </ul>
  *
- * This function does not require that the GPS is online at the time
+ * This function does not require that the geolocalization module is online at the time
  * it is invoked. The returned object is nevertheless valid.
- * Use the method YGps.isOnline() to test if the GPS is
+ * Use the method YGps.isOnline() to test if the geolocalization module is
  * indeed online at a given time. In case of ambiguity when looking for
- * a GPS by logical name, no error is notified: the first instance
+ * a geolocalization module by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
  *
@@ -467,19 +467,19 @@ typedef enum {
  * you are certain that the matching device is plugged, make sure that you did
  * call registerHub() at application initialization time.
  *
- * @param func : a string that uniquely characterizes the GPS, for instance
+ * @param func : a string that uniquely characterizes the geolocalization module, for instance
  *         YGNSSMK1.gps.
  *
- * @return a YGps object allowing you to drive the GPS.
+ * @return a YGps object allowing you to drive the geolocalization module.
  */
 YGps* yFindGps(NSString* func);
 /**
- * Starts the enumeration of GPS currently accessible.
+ * Starts the enumeration of geolocalization modules currently accessible.
  * Use the method YGps.nextGps() to iterate on
- * next GPS.
+ * next geolocalization modules.
  *
  * @return a pointer to a YGps object, corresponding to
- *         the first GPS currently online, or a nil pointer
+ *         the first geolocalization module currently online, or a nil pointer
  *         if there are none.
  */
 YGps* yFirstGps(void);

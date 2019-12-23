@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_buzzer.h 37827 2019-10-25 13:07:48Z mvuilleu $
+ *  $Id: yocto_buzzer.h 38899 2019-12-20 17:21:03Z mvuilleu $
  *
  *  Declares yFindBuzzer(), the high-level API for Buzzer functions
  *
@@ -54,9 +54,9 @@ typedef void (*YBuzzerValueCallback)(YBuzzer *func, NSString *functionValue);
 
 //--- (YBuzzer class start)
 /**
- * YBuzzer Class: Buzzer function interface
+ * YBuzzer Class: buzzer control interface, available for instance in the Yocto-Buzzer
  *
- * The YBuzzer class allows you to drive a buzzer, for instance using a Yocto-Buzzer. You can
+ * The YBuzzer class allows you to drive a buzzer. You can
  * choose the frequency and the volume at which the buzzer must sound.
  * You can also pre-program a play sequence.
  */

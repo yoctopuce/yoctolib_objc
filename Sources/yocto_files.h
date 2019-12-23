@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_files.h 38510 2019-11-26 15:36:38Z mvuilleu $
+ * $Id: yocto_files.h 38913 2019-12-20 18:59:49Z mvuilleu $
  *
  * Declares yFindFiles(), the high-level API for Files functions
  *
@@ -56,7 +56,7 @@ typedef void (*YFilesValueCallback)(YFiles *func, NSString *functionValue);
 
 //--- (generated code: YFileRecord class start)
 /**
- * YFileRecord Class: Description of a file on the device filesystem
+ * YFileRecord Class: Description of a file on the device filesystem, returned by files.get_list
  *
  * YFileRecord objects are used to describe a file that is stored on a Yoctopuce device.
  * These objects are used in particular in conjunction with the YFiles class.
@@ -109,11 +109,11 @@ typedef void (*YFilesValueCallback)(YFiles *func, NSString *functionValue);
 
 //--- (generated code: YFiles class start)
 /**
- * YFiles Class: Files function interface
+ * YFiles Class: filesystem control interface, available for instance in the Yocto-Color-V2, the
+ * Yocto-RS232, the YoctoHub-Ethernet or the YoctoHub-Wireless-g
  *
  * The YFiles class is used to access the filesystem embedded on
- * some Yoctopuce devices, for instance using a Yocto-Color-V2, a Yocto-RS232, a YoctoHub-Ethernet or
- * a YoctoHub-Wireless-g. This filesystem makes it
+ * some Yoctopuce devices. This filesystem makes it
  * possible for instance to design a custom web UI
  * (for networked devices) or to add fonts (on display devices).
  */

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_serialport.h 38510 2019-11-26 15:36:38Z mvuilleu $
+ * $Id: yocto_serialport.h 38899 2019-12-20 17:21:03Z mvuilleu $
  *
  * Declares yFindSerialPort(), the high-level API for SerialPort functions
  *
@@ -66,6 +66,8 @@ typedef enum {
 #define Y_LASTMSG_INVALID               YAPI_INVALID_STRING
 #define Y_CURRENTJOB_INVALID            YAPI_INVALID_STRING
 #define Y_STARTUPJOB_INVALID            YAPI_INVALID_STRING
+#define Y_JOBMAXTASK_INVALID            YAPI_INVALID_UINT
+#define Y_JOBMAXSIZE_INVALID            YAPI_INVALID_UINT
 #define Y_COMMAND_INVALID               YAPI_INVALID_STRING
 #define Y_PROTOCOL_INVALID              YAPI_INVALID_STRING
 #define Y_SERIALMODE_INVALID            YAPI_INVALID_STRING
@@ -80,7 +82,7 @@ typedef enum {
 
 //--- (generated code: YSnoopingRecord class start)
 /**
- * YSnoopingRecord Class: Description of a message intercepted
+ * YSnoopingRecord Class: Intercepted message description, returned by serialPort.snoopMessages method
  *
  *
  */
@@ -132,10 +134,10 @@ typedef enum {
 
 //--- (generated code: YSerialPort class start)
 /**
- * YSerialPort Class: SerialPort function interface
+ * YSerialPort Class: serial port control interface, available for instance in the Yocto-RS232, the
+ * Yocto-RS485-V2 or the Yocto-Serial
  *
- * The YSerialPort class allows you to fully drive a Yoctopuce serial port, for instance using a
- * Yocto-RS232, a Yocto-RS485-V2 or a Yocto-Serial.
+ * The YSerialPort class allows you to fully drive a Yoctopuce serial port.
  * It can be used to send and receive data, and to configure communication
  * parameters (baud rate, bit count, parity, flow control and protocol).
  * Note that Yoctopuce serial ports are not exposed as virtual COM ports.
@@ -154,6 +156,8 @@ typedef enum {
     NSString*       _lastMsg;
     NSString*       _currentJob;
     NSString*       _startupJob;
+    int             _jobMaxTask;
+    int             _jobMaxSize;
     NSString*       _command;
     NSString*       _protocol;
     Y_VOLTAGELEVEL_enum _voltageLevel;
@@ -288,6 +292,28 @@ typedef enum {
 -(int)     set_startupJob:(NSString*) newval;
 -(int)     setStartupJob:(NSString*) newval;
 
+/**
+ * Returns the maximum number of tasks in a job that the device can handle.
+ *
+ * @return an integer corresponding to the maximum number of tasks in a job that the device can handle
+ *
+ * On failure, throws an exception or returns Y_JOBMAXTASK_INVALID.
+ */
+-(int)     get_jobMaxTask;
+
+
+-(int) jobMaxTask;
+/**
+ * Returns maximum size allowed for job files.
+ *
+ * @return an integer corresponding to maximum size allowed for job files
+ *
+ * On failure, throws an exception or returns Y_JOBMAXSIZE_INVALID.
+ */
+-(int)     get_jobMaxSize;
+
+
+-(int) jobMaxSize;
 -(NSString*)     get_command;
 
 

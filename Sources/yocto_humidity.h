@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_humidity.h 38510 2019-11-26 15:36:38Z mvuilleu $
+ *  $Id: yocto_humidity.h 38899 2019-12-20 17:21:03Z mvuilleu $
  *
  *  Declares yFindHumidity(), the high-level API for Humidity functions
  *
@@ -51,12 +51,12 @@ typedef void (*YHumidityTimedReportCallback)(YHumidity *func, YMeasure *measure)
 
 //--- (YHumidity class start)
 /**
- * YHumidity Class: Humidity function interface
+ * YHumidity Class: humidity sensor control interface, available for instance in the Yocto-CO2-V2, the
+ * Yocto-Meteo-V2 or the Yocto-VOC-V3
  *
- * The YHumidity class allows you to read and configure Yoctopuce humidity
- * sensors, for instance using a Yocto-CO2-V2, a Yocto-Meteo-V2 or a Yocto-VOC-V3. It inherits from
- * YSensor class the core functions to read measurements,
- * to register callback functions, to access the autonomous datalogger.
+ * The YHumidity class allows you to read and configure Yoctopuce humidity sensors.
+ * It inherits from YSensor class the core functions to read measurements,
+ * to register callback functions, and to access the autonomous datalogger.
  */
 @interface YHumidity : YSensor
 //--- (end of YHumidity class start)

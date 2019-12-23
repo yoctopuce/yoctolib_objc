@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_poweroutput.m 38510 2019-11-26 15:36:38Z mvuilleu $
+ *  $Id: yocto_poweroutput.m 38913 2019-12-20 18:59:49Z mvuilleu $
  *
  *  Implements the high-level API for PowerOutput functions
  *
@@ -130,7 +130,7 @@
     return [self _setAttr:@"voltage" :rest_val];
 }
 /**
- * Retrieves a dual power  output control for a given identifier.
+ * Retrieves a power output for a given identifier.
  * The identifier can be specified using several formats:
  * <ul>
  * <li>FunctionLogicalName</li>
@@ -140,11 +140,11 @@
  * <li>ModuleLogicalName.FunctionLogicalName</li>
  * </ul>
  *
- * This function does not require that the power output control is online at the time
+ * This function does not require that the power output is online at the time
  * it is invoked. The returned object is nevertheless valid.
- * Use the method YPowerOutput.isOnline() to test if the power output control is
+ * Use the method YPowerOutput.isOnline() to test if the power output is
  * indeed online at a given time. In case of ambiguity when looking for
- * a dual power  output control by logical name, no error is notified: the first instance
+ * a power output by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
  *
@@ -152,10 +152,10 @@
  * you are certain that the matching device is plugged, make sure that you did
  * call registerHub() at application initialization time.
  *
- * @param func : a string that uniquely characterizes the power output control, for instance
+ * @param func : a string that uniquely characterizes the power output, for instance
  *         YI2CMK01.powerOutput.
  *
- * @return a YPowerOutput object allowing you to drive the power output control.
+ * @return a YPowerOutput object allowing you to drive the power output.
  */
 +(YPowerOutput*) FindPowerOutput:(NSString*)func
 {

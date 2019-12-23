@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_i2cport.h 37827 2019-10-25 13:07:48Z mvuilleu $
+ *  $Id: yocto_i2cport.h 38913 2019-12-20 18:59:49Z mvuilleu $
  *
  *  Declares yFindI2cPort(), the high-level API for I2cPort functions
  *
@@ -61,6 +61,8 @@ typedef enum {
 #define Y_LASTMSG_INVALID               YAPI_INVALID_STRING
 #define Y_CURRENTJOB_INVALID            YAPI_INVALID_STRING
 #define Y_STARTUPJOB_INVALID            YAPI_INVALID_STRING
+#define Y_JOBMAXTASK_INVALID            YAPI_INVALID_UINT
+#define Y_JOBMAXSIZE_INVALID            YAPI_INVALID_UINT
 #define Y_COMMAND_INVALID               YAPI_INVALID_STRING
 #define Y_PROTOCOL_INVALID              YAPI_INVALID_STRING
 #define Y_I2CMODE_INVALID               YAPI_INVALID_STRING
@@ -68,9 +70,9 @@ typedef enum {
 
 //--- (YI2cPort class start)
 /**
- * YI2cPort Class: I2C Port function interface
+ * YI2cPort Class: I2C port control interface, available for instance in the Yocto-I2C
  *
- * The YI2cPort classe allows you to fully drive a Yoctopuce I2C port, for instance using a Yocto-I2C.
+ * The YI2cPort classe allows you to fully drive a Yoctopuce I2C port.
  * It can be used to send and receive data, and to configure communication
  * parameters (baud rate, etc).
  * Note that Yoctopuce I2C ports are not exposed as virtual COM ports.
@@ -89,6 +91,8 @@ typedef enum {
     NSString*       _lastMsg;
     NSString*       _currentJob;
     NSString*       _startupJob;
+    int             _jobMaxTask;
+    int             _jobMaxSize;
     NSString*       _command;
     NSString*       _protocol;
     Y_I2CVOLTAGELEVEL_enum _i2cVoltageLevel;
@@ -225,6 +229,28 @@ typedef enum {
 -(int)     set_startupJob:(NSString*) newval;
 -(int)     setStartupJob:(NSString*) newval;
 
+/**
+ * Returns the maximum number of tasks in a job that the device can handle.
+ *
+ * @return an integer corresponding to the maximum number of tasks in a job that the device can handle
+ *
+ * On failure, throws an exception or returns Y_JOBMAXTASK_INVALID.
+ */
+-(int)     get_jobMaxTask;
+
+
+-(int) jobMaxTask;
+/**
+ * Returns maximum size allowed for job files.
+ *
+ * @return an integer corresponding to maximum size allowed for job files
+ *
+ * On failure, throws an exception or returns Y_JOBMAXSIZE_INVALID.
+ */
+-(int)     get_jobMaxSize;
+
+
+-(int) jobMaxSize;
 -(NSString*)     get_command;
 
 

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_gyro.h 38030 2019-11-04 17:56:01Z mvuilleu $
+ * $Id: yocto_gyro.h 38899 2019-12-20 17:21:03Z mvuilleu $
  *
  * Declares yFindGyro(), the high-level API for Gyro functions
  *
@@ -50,14 +50,14 @@ typedef void (*YQtTimedReportCallback)(YQt *func, YMeasure *measure);
 
 //--- (generated code: YQt class start)
 /**
- * YQt Class: Quaternion interface
+ * YQt Class: Base interface to access quaternion components, available for instance in the Yocto-3D-V2
  *
- * The YQt class provides direct access to the 3D attitude estimation provided by Yoctopuce
- * inertial sensors, for instance using a Yocto-3D-V2. The four instances of YQt provide direct access
- * to the individual
- * quaternion components representing the orientation.
- * It is usually not needed to use the YQt class directly, as the
- * YGyro class provides a more convenient higher-level interface.
+ * The YQt class provides direct access to the 3D attitude estimation
+ * provided by Yoctopuce inertial sensors. The four instances of YQt
+ * provide direct access to the individual quaternion components representing the
+ * orientation. It is usually not needed to use the YQt class
+ * directly, as the YGyro class provides a more convenient higher-level
+ * interface.
  */
 @interface YQt : YSensor
 //--- (end of generated code: YQt class start)
@@ -223,12 +223,14 @@ typedef void(*YAnglesCallback)(YGyro *yGyro, double roll, double pitch, double h
 
 //--- (generated code: YGyro class start)
 /**
- * YGyro Class: Gyroscope function interface
+ * YGyro Class: gyroscope control interface, available for instance in the Yocto-3D-V2
  *
- * The YGyro class allows you to read and configure Yoctopuce angular velocity
- * sensors, for instance using a Yocto-3D-V2. It inherits from YSensor class the core functions to
- * read measurements,
- * to register callback functions, to access the autonomous datalogger.
+ * The YGyro class allows you to read and configure Yoctopuce gyroscopes.
+ * It inherits from YSensor class the core functions to read measurements,
+ * to register callback functions, and to access the autonomous datalogger.
+ * This class adds the possibility to access x, y and z components of the rotation
+ * vector separately, as well as the possibility to deal with quaternion-based
+ * orientation estimates.
  */
 @interface YGyro : YSensor
 //--- (end of generated code: YGyro class start)

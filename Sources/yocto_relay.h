@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_relay.h 38510 2019-11-26 15:36:38Z mvuilleu $
+ *  $Id: yocto_relay.h 38899 2019-12-20 17:21:03Z mvuilleu $
  *
  *  Declares yFindRelay(), the high-level API for Relay functions
  *
@@ -86,12 +86,12 @@ typedef struct _YDelayedPulse {
 
 //--- (YRelay class start)
 /**
- * YRelay Class: Relay function interface
+ * YRelay Class: relay control interface, available for instance in the Yocto-MaxiCoupler-V2, the
+ * Yocto-MaxiPowerRelay, the Yocto-PowerRelay-V3 or the Yocto-Relay
  *
- * The YRelay class allows you to drive a Yoctopuce Relay, for instance using a Yocto-MaxiCoupler-V2,
- * a Yocto-MaxiPowerRelay, a Yocto-PowerRelay-V3 or a Yocto-Relay.
- * It can be used to simply switch the relay, but also to automatically generate short pulses of
- * determined duration.
+ * The YRelay class allows you to drive a Yoctopuce relay or optocoupled output.
+ * It can be used to simply switch the output on or off, but also to automatically generate short
+ * pulses of determined duration.
  * On devices with two output for each relay (double throw), the two outputs are named A and B,
  * with output A corresponding to the idle position (normally closed) and the output B corresponding to the
  * active state (normally open).
@@ -150,12 +150,12 @@ typedef struct _YDelayedPulse {
 -(int)     setState:(Y_STATE_enum) newval;
 
 /**
- * Returns the state of the relays at device startup (A for the idle position, B for the active
- * position, UNCHANGED for no change).
+ * Returns the state of the relays at device startup (A for the idle position,
+ * B for the active position, UNCHANGED to leave the relay state as is).
  *
  * @return a value among Y_STATEATPOWERON_UNCHANGED, Y_STATEATPOWERON_A and Y_STATEATPOWERON_B
- * corresponding to the state of the relays at device startup (A for the idle position, B for the
- * active position, UNCHANGED for no change)
+ * corresponding to the state of the relays at device startup (A for the idle position,
+ *         B for the active position, UNCHANGED to leave the relay state as is)
  *
  * On failure, throws an exception or returns Y_STATEATPOWERON_INVALID.
  */
@@ -165,13 +165,13 @@ typedef struct _YDelayedPulse {
 -(Y_STATEATPOWERON_enum) stateAtPowerOn;
 /**
  * Changes the state of the relays at device startup (A for the idle position,
- * B for the active position, UNCHANGED for no modification).
+ * B for the active position, UNCHANGED to leave the relay state as is).
  * Remember to call the matching module saveToFlash()
  * method, otherwise this call will have no effect.
  *
  * @param newval : a value among Y_STATEATPOWERON_UNCHANGED, Y_STATEATPOWERON_A and Y_STATEATPOWERON_B
  * corresponding to the state of the relays at device startup (A for the idle position,
- *         B for the active position, UNCHANGED for no modification)
+ *         B for the active position, UNCHANGED to leave the relay state as is)
  *
  * @return YAPI_SUCCESS if the call succeeds.
  *
@@ -181,10 +181,10 @@ typedef struct _YDelayedPulse {
 -(int)     setStateAtPowerOn:(Y_STATEATPOWERON_enum) newval;
 
 /**
- * Returns the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state
+ * Returns the maximum time (ms) allowed for the relay to stay in state
  * A before automatically switching back in to B state. Zero means no time limit.
  *
- * @return an integer corresponding to the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state
+ * @return an integer corresponding to the maximum time (ms) allowed for the relay to stay in state
  *         A before automatically switching back in to B state
  *
  * On failure, throws an exception or returns Y_MAXTIMEONSTATEA_INVALID.
@@ -194,12 +194,12 @@ typedef struct _YDelayedPulse {
 
 -(s64) maxTimeOnStateA;
 /**
- * Changes the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state A
+ * Changes the maximum time (ms) allowed for the relay to stay in state A
  * before automatically switching back in to B state. Use zero for no time limit.
  * Remember to call the saveToFlash()
  * method of the module if the modification must be kept.
  *
- * @param newval : an integer corresponding to the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state A
+ * @param newval : an integer corresponding to the maximum time (ms) allowed for the relay to stay in state A
  *         before automatically switching back in to B state
  *
  * @return YAPI_SUCCESS if the call succeeds.
@@ -210,7 +210,7 @@ typedef struct _YDelayedPulse {
 -(int)     setMaxTimeOnStateA:(s64) newval;
 
 /**
- * Retourne the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state B
+ * Retourne the maximum time (ms) allowed for the relay to stay in state B
  * before automatically switching back in to A state. Zero means no time limit.
  *
  * @return an integer
@@ -222,13 +222,13 @@ typedef struct _YDelayedPulse {
 
 -(s64) maxTimeOnStateB;
 /**
- * Changes the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state B before
+ * Changes the maximum time (ms) allowed for the relay to stay in state B before
  * automatically switching back in to A state. Use zero for no time limit.
  * Remember to call the saveToFlash()
  * method of the module if the modification must be kept.
  *
- * @param newval : an integer corresponding to the maximum time (ms) allowed for $THEFUNCTIONS$ to
- * stay in state B before
+ * @param newval : an integer corresponding to the maximum time (ms) allowed for the relay to stay in
+ * state B before
  *         automatically switching back in to A state
  *
  * @return YAPI_SUCCESS if the call succeeds.

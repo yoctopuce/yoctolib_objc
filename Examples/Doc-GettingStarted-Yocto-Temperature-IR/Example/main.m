@@ -51,7 +51,7 @@ int main(int argc, const char * argv[])
     tsensor = [YTemperature FindTemperature:[target stringByAppendingString:
                @".temperature1"]];
     tsensor2 = [YTemperature FindTemperature:[target stringByAppendingString:
-               @".temperature2"]];
+                @".temperature2"]];
 
     while(1) {
       if(![tsensor isOnline]) {

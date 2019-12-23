@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_longitude.h 37827 2019-10-25 13:07:48Z mvuilleu $
+ *  $Id: yocto_longitude.h 38899 2019-12-20 17:21:03Z mvuilleu $
  *
  *  Declares yFindLongitude(), the high-level API for Longitude functions
  *
@@ -49,12 +49,11 @@ typedef void (*YLongitudeTimedReportCallback)(YLongitude *func, YMeasure *measur
 
 //--- (YLongitude class start)
 /**
- * YLongitude Class: Longitude function interface
+ * YLongitude Class: longitude sensor control interface, available for instance in the Yocto-GPS
  *
- * The YLongitude class allows you to read the longitude from Yoctopuce
- * geolocation sensors, for instance using a Yocto-GPS. It inherits from the YSensor class the core functions to
- * read measurements, register callback functions, access the autonomous
- * datalogger.
+ * The YLongitude class allows you to read and configure Yoctopuce longitude sensors.
+ * It inherits from YSensor class the core functions to read measurements,
+ * to register callback functions, and to access the autonomous datalogger.
  */
 @interface YLongitude : YSensor
 //--- (end of YLongitude class start)

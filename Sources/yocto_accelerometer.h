@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_accelerometer.h 38030 2019-11-04 17:56:01Z mvuilleu $
+ *  $Id: yocto_accelerometer.h 38899 2019-12-20 17:21:03Z mvuilleu $
  *
  *  Declares yFindAccelerometer(), the high-level API for Accelerometer functions
  *
@@ -61,12 +61,13 @@ typedef enum {
 
 //--- (YAccelerometer class start)
 /**
- * YAccelerometer Class: Accelerometer function interface
+ * YAccelerometer Class: accelerometer control interface, available for instance in the Yocto-3D-V2
  *
- * The YAccelerometer class allows you to read and configure Yoctopuce acceleration
- * sensors, for instance using a Yocto-3D-V2. It inherits from YSensor class the core functions to
- * read measurements,
- * to register callback functions, to access the autonomous datalogger.
+ * The YAccelerometer class allows you to read and configure Yoctopuce accelerometers.
+ * It inherits from YSensor class the core functions to read measurements,
+ * to register callback functions, and to access the autonomous datalogger.
+ * This class adds the possibility to access x, y and z components of the acceleration
+ * vector separately.
  */
 @interface YAccelerometer : YSensor
 //--- (end of YAccelerometer class start)

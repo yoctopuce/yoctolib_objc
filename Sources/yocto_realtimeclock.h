@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_realtimeclock.h 38510 2019-11-26 15:36:38Z mvuilleu $
+ *  $Id: yocto_realtimeclock.h 38899 2019-12-20 17:21:03Z mvuilleu $
  *
  *  Declares yFindRealTimeClock(), the high-level API for RealTimeClock functions
  *
@@ -59,11 +59,11 @@ typedef enum {
 
 //--- (YRealTimeClock class start)
 /**
- * YRealTimeClock Class: Real Time Clock function interface
+ * YRealTimeClock Class: real-time clock control interface, available for instance in the
+ * YoctoHub-GSM-3G-EU, the YoctoHub-GSM-3G-NA, the YoctoHub-Wireless-SR or the YoctoHub-Wireless-g
  *
  * The YRealTimeClock class provide access to the embedded real-time clock available on some Yoctopuce
- * devices, for instance using a YoctoHub-GSM-3G-EU, a YoctoHub-GSM-3G-NA, a YoctoHub-Wireless-SR or a
- * YoctoHub-Wireless-g. It can provide current date and time, even after a power outage
+ * devices. It can provide current date and time, even after a power outage
  * lasting several days. It is the base for automated wake-up functions provided by the WakeUpScheduler.
  * The current time may represent a local time as well as an UTC time, but no automatic time change
  * will occur to account for daylight saving time.
@@ -165,7 +165,7 @@ typedef enum {
 
 -(Y_TIMESET_enum) timeSet;
 /**
- * Retrieves a clock for a given identifier.
+ * Retrieves a real-time clock for a given identifier.
  * The identifier can be specified using several formats:
  * <ul>
  * <li>FunctionLogicalName</li>
@@ -175,11 +175,11 @@ typedef enum {
  * <li>ModuleLogicalName.FunctionLogicalName</li>
  * </ul>
  *
- * This function does not require that the clock is online at the time
+ * This function does not require that the real-time clock is online at the time
  * it is invoked. The returned object is nevertheless valid.
- * Use the method YRealTimeClock.isOnline() to test if the clock is
+ * Use the method YRealTimeClock.isOnline() to test if the real-time clock is
  * indeed online at a given time. In case of ambiguity when looking for
- * a clock by logical name, no error is notified: the first instance
+ * a real-time clock by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
  *
@@ -187,10 +187,10 @@ typedef enum {
  * you are certain that the matching device is plugged, make sure that you did
  * call registerHub() at application initialization time.
  *
- * @param func : a string that uniquely characterizes the clock, for instance
+ * @param func : a string that uniquely characterizes the real-time clock, for instance
  *         YHUBGSM3.realTimeClock.
  *
- * @return a YRealTimeClock object allowing you to drive the clock.
+ * @return a YRealTimeClock object allowing you to drive the real-time clock.
  */
 +(YRealTimeClock*)     FindRealTimeClock:(NSString*)func;
 
@@ -211,23 +211,23 @@ typedef enum {
 
 
 /**
- * Continues the enumeration of clocks started using yFirstRealTimeClock().
- * Caution: You can't make any assumption about the returned clocks order.
- * If you want to find a specific a clock, use RealTimeClock.findRealTimeClock()
+ * Continues the enumeration of real-time clocks started using yFirstRealTimeClock().
+ * Caution: You can't make any assumption about the returned real-time clocks order.
+ * If you want to find a specific a real-time clock, use RealTimeClock.findRealTimeClock()
  * and a hardwareID or a logical name.
  *
  * @return a pointer to a YRealTimeClock object, corresponding to
- *         a clock currently online, or a nil pointer
- *         if there are no more clocks to enumerate.
+ *         a real-time clock currently online, or a nil pointer
+ *         if there are no more real-time clocks to enumerate.
  */
 -(YRealTimeClock*) nextRealTimeClock;
 /**
- * Starts the enumeration of clocks currently accessible.
+ * Starts the enumeration of real-time clocks currently accessible.
  * Use the method YRealTimeClock.nextRealTimeClock() to iterate on
- * next clocks.
+ * next real-time clocks.
  *
  * @return a pointer to a YRealTimeClock object, corresponding to
- *         the first clock currently online, or a nil pointer
+ *         the first real-time clock currently online, or a nil pointer
  *         if there are none.
  */
 +(YRealTimeClock*) FirstRealTimeClock;
@@ -237,7 +237,7 @@ typedef enum {
 
 //--- (YRealTimeClock functions declaration)
 /**
- * Retrieves a clock for a given identifier.
+ * Retrieves a real-time clock for a given identifier.
  * The identifier can be specified using several formats:
  * <ul>
  * <li>FunctionLogicalName</li>
@@ -247,11 +247,11 @@ typedef enum {
  * <li>ModuleLogicalName.FunctionLogicalName</li>
  * </ul>
  *
- * This function does not require that the clock is online at the time
+ * This function does not require that the real-time clock is online at the time
  * it is invoked. The returned object is nevertheless valid.
- * Use the method YRealTimeClock.isOnline() to test if the clock is
+ * Use the method YRealTimeClock.isOnline() to test if the real-time clock is
  * indeed online at a given time. In case of ambiguity when looking for
- * a clock by logical name, no error is notified: the first instance
+ * a real-time clock by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
  *
@@ -259,19 +259,19 @@ typedef enum {
  * you are certain that the matching device is plugged, make sure that you did
  * call registerHub() at application initialization time.
  *
- * @param func : a string that uniquely characterizes the clock, for instance
+ * @param func : a string that uniquely characterizes the real-time clock, for instance
  *         YHUBGSM3.realTimeClock.
  *
- * @return a YRealTimeClock object allowing you to drive the clock.
+ * @return a YRealTimeClock object allowing you to drive the real-time clock.
  */
 YRealTimeClock* yFindRealTimeClock(NSString* func);
 /**
- * Starts the enumeration of clocks currently accessible.
+ * Starts the enumeration of real-time clocks currently accessible.
  * Use the method YRealTimeClock.nextRealTimeClock() to iterate on
- * next clocks.
+ * next real-time clocks.
  *
  * @return a pointer to a YRealTimeClock object, corresponding to
- *         the first clock currently online, or a nil pointer
+ *         the first real-time clock currently online, or a nil pointer
  *         if there are none.
  */
 YRealTimeClock* yFirstRealTimeClock(void);

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_voltageoutput.h 37827 2019-10-25 13:07:48Z mvuilleu $
+ *  $Id: yocto_voltageoutput.h 38899 2019-12-20 17:21:03Z mvuilleu $
  *
  *  Declares yFindVoltageOutput(), the high-level API for VoltageOutput functions
  *
@@ -51,9 +51,9 @@ typedef void (*YVoltageOutputValueCallback)(YVoltageOutput *func, NSString *func
 
 //--- (YVoltageOutput class start)
 /**
- * YVoltageOutput Class: VoltageOutput function interface
+ * YVoltageOutput Class: voltage output control interface, available for instance in the Yocto-0-10V-Tx
  *
- * The YVoltageOutput class allows you to drive a voltage output, for instance using a Yocto-0-10V-Tx.
+ * The YVoltageOutput class allows you to drive a voltage output.
  */
 @interface YVoltageOutput : YFunction
 //--- (end of YVoltageOutput class start)

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_audioout.h 37827 2019-10-25 13:07:48Z mvuilleu $
+ *  $Id: yocto_audioout.h 38899 2019-12-20 17:21:03Z mvuilleu $
  *
  *  Declares yFindAudioOut(), the high-level API for AudioOut functions
  *
@@ -60,9 +60,9 @@ typedef enum {
 
 //--- (YAudioOut class start)
 /**
- * YAudioOut Class: AudioOut function interface
+ * YAudioOut Class: audio output control interface
  *
- * The YAudioOut class allows you to configure the volume of an audio outout.
+ * The YAudioOut class allows you to configure the volume of an audio output.
  */
 @interface YAudioOut : YFunction
 //--- (end of YAudioOut class start)

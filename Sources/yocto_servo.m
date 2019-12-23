@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_servo.m 37827 2019-10-25 13:07:48Z mvuilleu $
+ *  $Id: yocto_servo.m 38899 2019-12-20 17:21:03Z mvuilleu $
  *
  *  Implements the high-level API for Servo functions
  *
@@ -174,9 +174,9 @@
     return [self _setAttr:@"position" :rest_val];
 }
 /**
- * Returns the state of the servos.
+ * Returns the state of the RC servo motors.
  *
- * @return either Y_ENABLED_FALSE or Y_ENABLED_TRUE, according to the state of the servos
+ * @return either Y_ENABLED_FALSE or Y_ENABLED_TRUE, according to the state of the RC servo motors
  *
  * On failure, throws an exception or returns Y_ENABLED_INVALID.
  */
@@ -199,7 +199,7 @@
 }
 
 /**
- * Stops or starts the servo.
+ * Stops or starts the RC servo motor.
  *
  * @param newval : either Y_ENABLED_FALSE or Y_ENABLED_TRUE
  *
@@ -454,7 +454,7 @@
     return [self _setAttr:@"enabledAtPowerOn" :rest_val];
 }
 /**
- * Retrieves a servo for a given identifier.
+ * Retrieves a RC servo motor for a given identifier.
  * The identifier can be specified using several formats:
  * <ul>
  * <li>FunctionLogicalName</li>
@@ -464,11 +464,11 @@
  * <li>ModuleLogicalName.FunctionLogicalName</li>
  * </ul>
  *
- * This function does not require that the servo is online at the time
+ * This function does not require that the RC servo motor is online at the time
  * it is invoked. The returned object is nevertheless valid.
- * Use the method YServo.isOnline() to test if the servo is
+ * Use the method YServo.isOnline() to test if the RC servo motor is
  * indeed online at a given time. In case of ambiguity when looking for
- * a servo by logical name, no error is notified: the first instance
+ * a RC servo motor by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
  *
@@ -476,10 +476,10 @@
  * you are certain that the matching device is plugged, make sure that you did
  * call registerHub() at application initialization time.
  *
- * @param func : a string that uniquely characterizes the servo, for instance
+ * @param func : a string that uniquely characterizes the RC servo motor, for instance
  *         SERVORC1.servo1.
  *
- * @return a YServo object allowing you to drive the servo.
+ * @return a YServo object allowing you to drive the RC servo motor.
  */
 +(YServo*) FindServo:(NSString*)func
 {
