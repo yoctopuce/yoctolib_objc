@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_groundspeed.h 38899 2019-12-20 17:21:03Z mvuilleu $
+ *  $Id: yocto_groundspeed.h 39658 2020-03-12 15:36:29Z seb $
  *
  *  Declares yFindGroundSpeed(), the high-level API for GroundSpeed functions
  *
@@ -49,7 +49,7 @@ typedef void (*YGroundSpeedTimedReportCallback)(YGroundSpeed *func, YMeasure *me
 
 //--- (YGroundSpeed class start)
 /**
- * YGroundSpeed Class: ground speed sensor control interface, available for instance in the Yocto-GPS
+ * YGroundSpeed Class: ground speed sensor control interface, available for instance in the Yocto-GPS-V2
  *
  * The YGroundSpeed class allows you to read and configure Yoctopuce ground speed sensors.
  * It inherits from YSensor class the core functions to read measurements,
@@ -99,7 +99,7 @@ typedef void (*YGroundSpeedTimedReportCallback)(YGroundSpeed *func, YMeasure *me
  * call registerHub() at application initialization time.
  *
  * @param func : a string that uniquely characterizes the ground speed sensor, for instance
- *         YGNSSMK1.groundSpeed.
+ *         YGNSSMK2.groundSpeed.
  *
  * @return a YGroundSpeed object allowing you to drive the ground speed sensor.
  */
@@ -186,7 +186,7 @@ typedef void (*YGroundSpeedTimedReportCallback)(YGroundSpeed *func, YMeasure *me
  * call registerHub() at application initialization time.
  *
  * @param func : a string that uniquely characterizes the ground speed sensor, for instance
- *         YGNSSMK1.groundSpeed.
+ *         YGNSSMK2.groundSpeed.
  *
  * @return a YGroundSpeed object allowing you to drive the ground speed sensor.
  */

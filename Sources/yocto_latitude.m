@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_latitude.m 37827 2019-10-25 13:07:48Z mvuilleu $
+ *  $Id: yocto_latitude.m 39658 2020-03-12 15:36:29Z seb $
  *
  *  Implements the high-level API for Latitude functions
  *
@@ -99,7 +99,7 @@
  * call registerHub() at application initialization time.
  *
  * @param func : a string that uniquely characterizes the latitude sensor, for instance
- *         YGNSSMK1.latitude.
+ *         YGNSSMK2.latitude.
  *
  * @return a YLatitude object allowing you to drive the latitude sensor.
  */

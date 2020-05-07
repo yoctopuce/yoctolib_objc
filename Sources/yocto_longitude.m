@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_longitude.m 37827 2019-10-25 13:07:48Z mvuilleu $
+ *  $Id: yocto_longitude.m 39658 2020-03-12 15:36:29Z seb $
  *
  *  Implements the high-level API for Longitude functions
  *
@@ -99,7 +99,7 @@
  * call registerHub() at application initialization time.
  *
  * @param func : a string that uniquely characterizes the longitude sensor, for instance
- *         YGNSSMK1.longitude.
+ *         YGNSSMK2.longitude.
  *
  * @return a YLongitude object allowing you to drive the longitude sensor.
  */

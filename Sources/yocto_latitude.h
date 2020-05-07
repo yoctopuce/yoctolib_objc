@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_latitude.h 38899 2019-12-20 17:21:03Z mvuilleu $
+ *  $Id: yocto_latitude.h 39658 2020-03-12 15:36:29Z seb $
  *
  *  Declares yFindLatitude(), the high-level API for Latitude functions
  *
@@ -49,7 +49,7 @@ typedef void (*YLatitudeTimedReportCallback)(YLatitude *func, YMeasure *measure)
 
 //--- (YLatitude class start)
 /**
- * YLatitude Class: latitude sensor control interface, available for instance in the Yocto-GPS
+ * YLatitude Class: latitude sensor control interface, available for instance in the Yocto-GPS-V2
  *
  * The YLatitude class allows you to read and configure Yoctopuce latitude sensors.
  * It inherits from YSensor class the core functions to read measurements,
@@ -99,7 +99,7 @@ typedef void (*YLatitudeTimedReportCallback)(YLatitude *func, YMeasure *measure)
  * call registerHub() at application initialization time.
  *
  * @param func : a string that uniquely characterizes the latitude sensor, for instance
- *         YGNSSMK1.latitude.
+ *         YGNSSMK2.latitude.
  *
  * @return a YLatitude object allowing you to drive the latitude sensor.
  */
@@ -186,7 +186,7 @@ typedef void (*YLatitudeTimedReportCallback)(YLatitude *func, YMeasure *measure)
  * call registerHub() at application initialization time.
  *
  * @param func : a string that uniquely characterizes the latitude sensor, for instance
- *         YGNSSMK1.latitude.
+ *         YGNSSMK2.latitude.
  *
  * @return a YLatitude object allowing you to drive the latitude sensor.
  */

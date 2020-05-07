@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_serialport.h 38899 2019-12-20 17:21:03Z mvuilleu $
+ * $Id: yocto_serialport.h 39333 2020-01-30 10:05:40Z mvuilleu $
  *
  * Declares yFindSerialPort(), the high-level API for SerialPort functions
  *
@@ -558,6 +558,21 @@ typedef enum {
  * On failure, throws an exception or returns an empty string.
  */
 -(NSString*)     queryLine:(NSString*)query :(int)maxWait;
+
+/**
+ * Sends a binary message to the serial port, and reads the reply, if any.
+ * This function is intended to be used when the serial port is configured for
+ * Frame-based protocol.
+ *
+ * @param hexString : the message to send, coded in hexadecimal
+ * @param maxWait : the maximum number of milliseconds to wait for a reply.
+ *
+ * @return the next frame received after sending the message, as a hex string.
+ *         Additional frames can be obtained by calling readHex or readMessages.
+ *
+ * On failure, throws an exception or returns an empty string.
+ */
+-(NSString*)     queryHex:(NSString*)hexString :(int)maxWait;
 
 /**
  * Saves the job definition string (JSON data) into a job file.

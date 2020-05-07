@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_network.h 38899 2019-12-20 17:21:03Z mvuilleu $
+ *  $Id: yocto_network.h 39573 2020-03-10 17:20:22Z seb $
  *
  *  Declares yFindNetwork(), the high-level API for Network functions
  *
@@ -87,6 +87,7 @@ typedef enum {
     Y_CALLBACKENCODING_MQTT = 9,
     Y_CALLBACKENCODING_YOCTO_API_JZON = 10,
     Y_CALLBACKENCODING_PRTG = 11,
+    Y_CALLBACKENCODING_INFLUXDB_V2 = 12,
     Y_CALLBACKENCODING_INVALID = -1,
 } Y_CALLBACKENCODING_enum;
 #endif
@@ -568,8 +569,9 @@ typedef enum {
  * @return a value among Y_CALLBACKENCODING_FORM, Y_CALLBACKENCODING_JSON,
  * Y_CALLBACKENCODING_JSON_ARRAY, Y_CALLBACKENCODING_CSV, Y_CALLBACKENCODING_YOCTO_API,
  * Y_CALLBACKENCODING_JSON_NUM, Y_CALLBACKENCODING_EMONCMS, Y_CALLBACKENCODING_AZURE,
- * Y_CALLBACKENCODING_INFLUXDB, Y_CALLBACKENCODING_MQTT, Y_CALLBACKENCODING_YOCTO_API_JZON and
- * Y_CALLBACKENCODING_PRTG corresponding to the encoding standard to use for representing notification values
+ * Y_CALLBACKENCODING_INFLUXDB, Y_CALLBACKENCODING_MQTT, Y_CALLBACKENCODING_YOCTO_API_JZON,
+ * Y_CALLBACKENCODING_PRTG and Y_CALLBACKENCODING_INFLUXDB_V2 corresponding to the encoding standard
+ * to use for representing notification values
  *
  * On failure, throws an exception or returns Y_CALLBACKENCODING_INVALID.
  */
@@ -585,8 +587,9 @@ typedef enum {
  * @param newval : a value among Y_CALLBACKENCODING_FORM, Y_CALLBACKENCODING_JSON,
  * Y_CALLBACKENCODING_JSON_ARRAY, Y_CALLBACKENCODING_CSV, Y_CALLBACKENCODING_YOCTO_API,
  * Y_CALLBACKENCODING_JSON_NUM, Y_CALLBACKENCODING_EMONCMS, Y_CALLBACKENCODING_AZURE,
- * Y_CALLBACKENCODING_INFLUXDB, Y_CALLBACKENCODING_MQTT, Y_CALLBACKENCODING_YOCTO_API_JZON and
- * Y_CALLBACKENCODING_PRTG corresponding to the encoding standard to use for representing notification values
+ * Y_CALLBACKENCODING_INFLUXDB, Y_CALLBACKENCODING_MQTT, Y_CALLBACKENCODING_YOCTO_API_JZON,
+ * Y_CALLBACKENCODING_PRTG and Y_CALLBACKENCODING_INFLUXDB_V2 corresponding to the encoding standard
+ * to use for representing notification values
  *
  * @return YAPI_SUCCESS if the call succeeds.
  *

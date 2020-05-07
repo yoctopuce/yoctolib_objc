@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_cellular.m 38687 2019-12-04 18:22:46Z mvuilleu $
+ * $Id: yocto_cellular.m 40298 2020-05-05 08:37:49Z seb $
  *
  * Implements the high-level API for Cellular functions
  *
@@ -176,6 +176,7 @@
     _imsi = Y_IMSI_INVALID;
     _message = Y_MESSAGE_INVALID;
     _pin = Y_PIN_INVALID;
+    _radioConfig = Y_RADIOCONFIG_INVALID;
     _lockedOperator = Y_LOCKEDOPERATOR_INVALID;
     _airplaneMode = Y_AIRPLANEMODE_INVALID;
     _enableData = Y_ENABLEDATA_INVALID;
@@ -203,6 +204,8 @@
     _message = nil;
     ARC_release(_pin);
     _pin = nil;
+    ARC_release(_radioConfig);
+    _radioConfig = nil;
     ARC_release(_lockedOperator);
     _lockedOperator = nil;
     ARC_release(_apn);
@@ -261,6 +264,13 @@
        ARC_release(_pin);
         _pin =  [self _parseString:j];
         ARC_retain(_pin);
+        return 1;
+    }
+    if(!strcmp(j->token, "radioConfig")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+       ARC_release(_radioConfig);
+        _radioConfig =  [self _parseString:j];
+        ARC_retain(_radioConfig);
         return 1;
     }
     if(!strcmp(j->token, "lockedOperator")) {
@@ -397,7 +407,7 @@
  * Active cellular connection type.
  *
  * @return a value among Y_CELLTYPE_GPRS, Y_CELLTYPE_EGPRS, Y_CELLTYPE_WCDMA, Y_CELLTYPE_HSDPA,
- * Y_CELLTYPE_NONE and Y_CELLTYPE_CDMA
+ * Y_CELLTYPE_NONE, Y_CELLTYPE_CDMA, Y_CELLTYPE_LTE_M, Y_CELLTYPE_NB_IOT and Y_CELLTYPE_EC_GSM_IOT
  *
  * On failure, throws an exception or returns Y_CELLTYPE_INVALID.
  */
@@ -419,13 +429,13 @@
     return [self get_cellType];
 }
 /**
- * Returns an opaque string if a PIN code has been configured in the device to access
- * the SIM card, or an empty string if none has been configured or if the code provided
- * was rejected by the SIM card.
+ * Returns the International Mobile Subscriber Identity (MSI) that uniquely identifies
+ * the SIM card. The first 3 digits represent the mobile country code (MCC), which
+ * is followed by the mobile network code (MNC), either 2-digit (European standard)
+ * or 3-digit (North American standard)
  *
- * @return a string corresponding to an opaque string if a PIN code has been configured in the device to access
- *         the SIM card, or an empty string if none has been configured or if the code provided
- *         was rejected by the SIM card
+ * @return a string corresponding to the International Mobile Subscriber Identity (MSI) that uniquely identifies
+ *         the SIM card
  *
  * On failure, throws an exception or returns Y_IMSI_INVALID.
  */
@@ -527,6 +537,62 @@
     NSString* rest_val;
     rest_val = newval;
     return [self _setAttr:@"pin" :rest_val];
+}
+/**
+ * Returns the type of protocol used over the serial line, as a string.
+ * Possible values are "Line" for ASCII messages separated by CR and/or LF,
+ * "Frame:[timeout]ms" for binary messages separated by a delay time,
+ * "Char" for a continuous ASCII stream or
+ * "Byte" for a continuous binary stream.
+ *
+ * @return a string corresponding to the type of protocol used over the serial line, as a string
+ *
+ * On failure, throws an exception or returns Y_RADIOCONFIG_INVALID.
+ */
+-(NSString*) get_radioConfig
+{
+    NSString* res;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
+            return Y_RADIOCONFIG_INVALID;
+        }
+    }
+    res = _radioConfig;
+    return res;
+}
+
+
+-(NSString*) radioConfig
+{
+    return [self get_radioConfig];
+}
+
+/**
+ * Changes the type of protocol used over the serial line.
+ * Possible values are "Line" for ASCII messages separated by CR and/or LF,
+ * "Frame:[timeout]ms" for binary messages separated by a delay time,
+ * "Char" for a continuous ASCII stream or
+ * "Byte" for a continuous binary stream.
+ * The suffix "/[wait]ms" can be added to reduce the transmit rate so that there
+ * is always at lest the specified number of milliseconds between each bytes sent.
+ * Remember to call the saveToFlash() method of the module if the
+ * modification must be kept.
+ *
+ * @param newval : a string corresponding to the type of protocol used over the serial line
+ *
+ * @return YAPI_SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) set_radioConfig:(NSString*) newval
+{
+    return [self setRadioConfig:newval];
+}
+-(int) setRadioConfig:(NSString*) newval
+{
+    NSString* rest_val;
+    rest_val = newval;
+    return [self _setAttr:@"radioConfig" :rest_val];
 }
 /**
  * Returns the name of the only cell operator to use if automatic choice is disabled,

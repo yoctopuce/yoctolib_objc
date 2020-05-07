@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_altitude.h 38899 2019-12-20 17:21:03Z mvuilleu $
+ *  $Id: yocto_altitude.h 39658 2020-03-12 15:36:29Z seb $
  *
  *  Declares yFindAltitude(), the high-level API for Altitude functions
  *
@@ -51,7 +51,8 @@ typedef void (*YAltitudeTimedReportCallback)(YAltitude *func, YMeasure *measure)
 
 //--- (YAltitude class start)
 /**
- * YAltitude Class: altimeter control interface, available for instance in the Yocto-Altimeter-V2 or the Yocto-GPS
+ * YAltitude Class: altimeter control interface, available for instance in the Yocto-Altimeter-V2 or
+ * the Yocto-GPS-V2
  *
  * The YAltitude class allows you to read and configure Yoctopuce altimeters.
  * It inherits from YSensor class the core functions to read measurements,

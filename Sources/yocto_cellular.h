@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_cellular.h 38899 2019-12-20 17:21:03Z mvuilleu $
+ * $Id: yocto_cellular.h 40284 2020-05-04 13:41:50Z seb $
  *
  * Declares yFindCellular(), the high-level API for Cellular functions
  *
@@ -147,6 +147,9 @@ typedef enum {
     Y_CELLTYPE_HSDPA = 3,
     Y_CELLTYPE_NONE = 4,
     Y_CELLTYPE_CDMA = 5,
+    Y_CELLTYPE_LTE_M = 6,
+    Y_CELLTYPE_NB_IOT = 7,
+    Y_CELLTYPE_EC_GSM_IOT = 8,
     Y_CELLTYPE_INVALID = -1,
 } Y_CELLTYPE_enum;
 #endif
@@ -174,6 +177,7 @@ typedef enum {
 #define Y_IMSI_INVALID                  YAPI_INVALID_STRING
 #define Y_MESSAGE_INVALID               YAPI_INVALID_STRING
 #define Y_PIN_INVALID                   YAPI_INVALID_STRING
+#define Y_RADIOCONFIG_INVALID           YAPI_INVALID_STRING
 #define Y_LOCKEDOPERATOR_INVALID        YAPI_INVALID_STRING
 #define Y_APN_INVALID                   YAPI_INVALID_STRING
 #define Y_APNSECRET_INVALID             YAPI_INVALID_STRING
@@ -204,6 +208,7 @@ typedef enum {
     NSString*       _imsi;
     NSString*       _message;
     NSString*       _pin;
+    NSString*       _radioConfig;
     NSString*       _lockedOperator;
     Y_AIRPLANEMODE_enum _airplaneMode;
     Y_ENABLEDATA_enum _enableData;
@@ -263,7 +268,7 @@ typedef enum {
  * Active cellular connection type.
  *
  * @return a value among Y_CELLTYPE_GPRS, Y_CELLTYPE_EGPRS, Y_CELLTYPE_WCDMA, Y_CELLTYPE_HSDPA,
- * Y_CELLTYPE_NONE and Y_CELLTYPE_CDMA
+ * Y_CELLTYPE_NONE, Y_CELLTYPE_CDMA, Y_CELLTYPE_LTE_M, Y_CELLTYPE_NB_IOT and Y_CELLTYPE_EC_GSM_IOT
  *
  * On failure, throws an exception or returns Y_CELLTYPE_INVALID.
  */
@@ -272,13 +277,13 @@ typedef enum {
 
 -(Y_CELLTYPE_enum) cellType;
 /**
- * Returns an opaque string if a PIN code has been configured in the device to access
- * the SIM card, or an empty string if none has been configured or if the code provided
- * was rejected by the SIM card.
+ * Returns the International Mobile Subscriber Identity (MSI) that uniquely identifies
+ * the SIM card. The first 3 digits represent the mobile country code (MCC), which
+ * is followed by the mobile network code (MNC), either 2-digit (European standard)
+ * or 3-digit (North American standard)
  *
- * @return a string corresponding to an opaque string if a PIN code has been configured in the device to access
- *         the SIM card, or an empty string if none has been configured or if the code provided
- *         was rejected by the SIM card
+ * @return a string corresponding to the International Mobile Subscriber Identity (MSI) that uniquely identifies
+ *         the SIM card
  *
  * On failure, throws an exception or returns Y_IMSI_INVALID.
  */
@@ -333,6 +338,41 @@ typedef enum {
  */
 -(int)     set_pin:(NSString*) newval;
 -(int)     setPin:(NSString*) newval;
+
+/**
+ * Returns the type of protocol used over the serial line, as a string.
+ * Possible values are "Line" for ASCII messages separated by CR and/or LF,
+ * "Frame:[timeout]ms" for binary messages separated by a delay time,
+ * "Char" for a continuous ASCII stream or
+ * "Byte" for a continuous binary stream.
+ *
+ * @return a string corresponding to the type of protocol used over the serial line, as a string
+ *
+ * On failure, throws an exception or returns Y_RADIOCONFIG_INVALID.
+ */
+-(NSString*)     get_radioConfig;
+
+
+-(NSString*) radioConfig;
+/**
+ * Changes the type of protocol used over the serial line.
+ * Possible values are "Line" for ASCII messages separated by CR and/or LF,
+ * "Frame:[timeout]ms" for binary messages separated by a delay time,
+ * "Char" for a continuous ASCII stream or
+ * "Byte" for a continuous binary stream.
+ * The suffix "/[wait]ms" can be added to reduce the transmit rate so that there
+ * is always at lest the specified number of milliseconds between each bytes sent.
+ * Remember to call the saveToFlash() method of the module if the
+ * modification must be kept.
+ *
+ * @param newval : a string corresponding to the type of protocol used over the serial line
+ *
+ * @return YAPI_SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     set_radioConfig:(NSString*) newval;
+-(int)     setRadioConfig:(NSString*) newval;
 
 /**
  * Returns the name of the only cell operator to use if automatic choice is disabled,

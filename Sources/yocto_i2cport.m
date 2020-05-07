@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_i2cport.m 38934 2019-12-23 09:29:53Z seb $
+ *  $Id: yocto_i2cport.m 39333 2020-01-30 10:05:40Z mvuilleu $
  *
  *  Implements the high-level API for I2cPort functions
  *
@@ -890,6 +890,44 @@
     NSString* res;
 
     url = [NSString stringWithFormat:@"rxmsg.json?len=1&maxw=%d&cmd=!%@", maxWait,[self _escapeAttr:query]];
+    msgbin = [self _download:url];
+    msgarr = [self _json_get_array:msgbin];
+    msglen = (int)[msgarr count];
+    if (msglen == 0) {
+        return @"";
+    }
+    // last element of array is the new position
+    msglen = msglen - 1;
+    _rxptr = [[msgarr objectAtIndex:msglen] intValue];
+    if (msglen == 0) {
+        return @"";
+    }
+    res = [self _json_get_string:[NSMutableData dataWithData:[[msgarr objectAtIndex:0] dataUsingEncoding:NSISOLatin1StringEncoding]]];
+    return res;
+}
+
+/**
+ * Sends a binary message to the serial port, and reads the reply, if any.
+ * This function is intended to be used when the serial port is configured for
+ * Frame-based protocol.
+ *
+ * @param hexString : the message to send, coded in hexadecimal
+ * @param maxWait : the maximum number of milliseconds to wait for a reply.
+ *
+ * @return the next frame received after sending the message, as a hex string.
+ *         Additional frames can be obtained by calling readHex or readMessages.
+ *
+ * On failure, throws an exception or returns an empty string.
+ */
+-(NSString*) queryHex:(NSString*)hexString :(int)maxWait
+{
+    NSString* url;
+    NSMutableData* msgbin;
+    NSMutableArray* msgarr = [NSMutableArray array];
+    int msglen;
+    NSString* res;
+
+    url = [NSString stringWithFormat:@"rxmsg.json?len=1&maxw=%d&cmd=$%@", maxWait,hexString];
     msgbin = [self _download:url];
     msgarr = [self _json_get_array:msgbin];
     msglen = (int)[msgarr count];

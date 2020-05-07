@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_gps.m 38899 2019-12-20 17:21:03Z mvuilleu $
+ *  $Id: yocto_gps.m 39658 2020-03-12 15:36:29Z seb $
  *
  *  Implements the high-level API for Gps functions
  *
@@ -687,7 +687,7 @@
  * call registerHub() at application initialization time.
  *
  * @param func : a string that uniquely characterizes the geolocalization module, for instance
- *         YGNSSMK1.gps.
+ *         YGNSSMK2.gps.
  *
  * @return a YGps object allowing you to drive the geolocalization module.
  */
