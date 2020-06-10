@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.m 38914 2019-12-20 19:14:33Z mvuilleu $
+ * $Id: yocto_api.m 40903 2020-06-10 07:32:15Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -1057,10 +1057,22 @@ static const char* hexArray = "0123456789ABCDEF";
 }
 
 /**
- * Frees dynamically allocated memory blocks used by the Yoctopuce library.
- * It is generally not required to call this function, unless you
- * want to free all dynamically allocated memory blocks in order to
- * track a memory leak for instance.
+ * Waits for all pending communications with Yoctopuce devices to be
+ * completed then frees dynamically allocated resources used by
+ * the Yoctopuce library.
+ *
+ * From an operating system standpoint, it is generally not required to call
+ * this function since the OS will automatically free allocated resources
+ * once your program is completed. However there are two situations when
+ * you may really want to use that function:
+ *
+ * - Free all dynamically allocated memory blocks in order to
+ * track a memory leak.
+ *
+ * - Send commands to devices right before the end
+ * of the program. Since commands are sent in an asynchronous way
+ * the program could exit before all commands are effectively sent.
+ *
  * You should not call any other library function after calling
  * yFreeAPI(), or your program will crash.
  */
@@ -2511,7 +2523,7 @@ static const char* hexArray = "0123456789ABCDEF";
         }
         if (j.depth == depth ) {
             NSRange range;
-            while (*last == ',' || *last == '\n'){
+            while (*last == ',' || *last == '\n' || *last == '\r'){
                 last++;
             }
             range.location = last - json_cstr;
@@ -2562,6 +2574,10 @@ static const char* hexArray = "0123456789ABCDEF";
     char *p = buffer;
     int decoded_len;
 
+    if (len== 0) {
+        return @"";
+    }
+    
     if (len >= 127){
         p = (char*) malloc(len + 1);
 
@@ -5675,6 +5691,9 @@ static const char* hexArray = "0123456789ABCDEF";
     NSString* json_api;
     NSString* json_files;
     NSString* json_extra;
+    int fuperror;
+    int globalres;
+    fuperror = 0;
     json = ARC_sendAutorelease([[NSString alloc] initWithData:settings encoding:NSISOLatin1StringEncoding]);
     json_api = [self _get_json_path:json :@"api"];
     if ([json_api isEqualToString:@""]) {
@@ -5701,11 +5720,17 @@ static const char* hexArray = "0123456789ABCDEF";
             name = [self _decode_json_string:name];
             data = [self _get_json_path:_each :@"data"];
             data = [self _decode_json_string:data];
-            [self _upload:name :[YAPI _hexStr2Bin:data]];
+            if ([name isEqualToString:@""]) {
+                fuperror = fuperror + 1;
+            } else {
+                [self _upload:name :[YAPI _hexStr2Bin:data]];
+            }
         }
     }
     // Apply settings a second time for file-dependent settings and dynamic sensor nodes
-    return [self set_allSettings:[NSMutableData dataWithData:[json_api dataUsingEncoding:NSISOLatin1StringEncoding]]];
+    globalres = [self set_allSettings:[NSMutableData dataWithData:[json_api dataUsingEncoding:NSISOLatin1StringEncoding]]];
+    if (!(fuperror == 0)) {[self _throw: YAPI_IO_ERROR: @"Error during file upload"]; return YAPI_IO_ERROR;}
+    return globalres;
 }
 
 /**
@@ -9054,10 +9079,22 @@ YRETCODE yInitAPI(int mode, NSError** errmsg)
 
 
 /**
- * Frees dynamically allocated memory blocks used by the Yoctopuce library.
- * It is generally not required to call this function, unless you
- * want to free all dynamically allocated memory blocks in order to
- * track a memory leak for instance.
+ * Waits for all pending communications with Yoctopuce devices to be
+ * completed then frees dynamically allocated resources used by
+ * the Yoctopuce library.
+ *
+ * From an operating system standpoint, it is generally not required to call
+ * this function since the OS will automatically free allocated resources
+ * once your program is completed. However there are two situations when
+ * you may really want to use that function:
+ *
+ * - Free all dynamically allocated memory blocks in order to
+ * track a memory leak.
+ *
+ * - Send commands to devices right before the end
+ * of the program. Since commands are sent in an asynchronous way
+ * the program could exit before all commands are effectively sent.
+ *
  * You should not call any other library function after calling
  * yFreeAPI(), or your program will crash.
  */

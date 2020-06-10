@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.h 38913 2019-12-20 18:59:49Z mvuilleu $
+ * $Id: yocto_api.h 40549 2020-05-14 15:54:55Z mvuilleu $
  *
  * High-level programming interface, common to all modules
  *
@@ -62,7 +62,7 @@
 
 extern NSMutableDictionary* YAPI_YFunctions;
 
-#define YOCTO_API_REVISION          "40411"
+#define YOCTO_API_REVISION          "40924"
 
 // yInitAPI argument
 #define Y_DETECT_NONE           0
@@ -478,10 +478,22 @@ int _ystrpos(NSString* haystack, NSString* needle);
  +(YRETCODE)    InitAPI :(int)mode :(NSError**)errmsg;
 
 /**
- * Frees dynamically allocated memory blocks used by the Yoctopuce library.
- * It is generally not required to call this function, unless you
- * want to free all dynamically allocated memory blocks in order to
- * track a memory leak for instance.
+ * Waits for all pending communications with Yoctopuce devices to be
+ * completed then frees dynamically allocated resources used by
+ * the Yoctopuce library.
+ *
+ * From an operating system standpoint, it is generally not required to call
+ * this function since the OS will automatically free allocated resources
+ * once your program is completed. However there are two situations when
+ * you may really want to use that function:
+ *
+ * - Free all dynamically allocated memory blocks in order to
+ * track a memory leak.
+ *
+ * - Send commands to devices right before the end
+ * of the program. Since commands are sent in an asynchronous way
+ * the program could exit before all commands are effectively sent.
+ *
  * You should not call any other library function after calling
  * yFreeAPI(), or your program will crash.
  */
@@ -3176,10 +3188,22 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
 YRETCODE yInitAPI(int mode, NSError** errmsg);
 
 /**
- * Frees dynamically allocated memory blocks used by the Yoctopuce library.
- * It is generally not required to call this function, unless you
- * want to free all dynamically allocated memory blocks in order to
- * track a memory leak for instance.
+ * Waits for all pending communications with Yoctopuce devices to be
+ * completed then frees dynamically allocated resources used by
+ * the Yoctopuce library.
+ *
+ * From an operating system standpoint, it is generally not required to call
+ * this function since the OS will automatically free allocated resources
+ * once your program is completed. However there are two situations when
+ * you may really want to use that function:
+ *
+ * - Free all dynamically allocated memory blocks in order to
+ * track a memory leak.
+ *
+ * - Send commands to devices right before the end
+ * of the program. Since commands are sent in an asynchronous way
+ * the program could exit before all commands are effectively sent.
+ *
  * You should not call any other library function after calling
  * yFreeAPI(), or your program will crash.
  */
