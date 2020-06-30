@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_relay.m 39434 2020-02-25 08:53:55Z seb $
+ *  $Id: yocto_relay.m 41109 2020-06-29 12:40:42Z seb $
  *
  *  Implements the high-level API for Relay functions
  *
@@ -530,7 +530,7 @@
  * call registerHub() at application initialization time.
  *
  * @param func : a string that uniquely characterizes the relay, for instance
- *         MXCOUPL2.relay1.
+ *         YLTCHRL1.relay1.
  *
  * @return a YRelay object allowing you to drive the relay.
  */

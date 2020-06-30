@@ -6,7 +6,7 @@
 
 
 xcode4:
-	xcodebuild
+	xcodebuild -UseModernBuildSystem=NO -UseModernBuildSystem=NO
 
 clean:
 	@rm -rf  build
