@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_relay.h 41109 2020-06-29 12:40:42Z seb $
+ *  $Id: yocto_relay.h 41625 2020-08-31 07:09:39Z seb $
  *
  *  Declares yFindRelay(), the high-level API for Relay functions
  *
@@ -39,6 +39,7 @@
 
 #include "yocto_api.h"
 CF_EXTERN_C_BEGIN
+NS_ASSUME_NONNULL_BEGIN
 
 @class YRelay;
 
@@ -365,7 +366,7 @@ typedef struct _YDelayedPulse {
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerValueCallback:(YRelayValueCallback)callback;
+-(int)     registerValueCallback:(YRelayValueCallback _Nullable)callback;
 
 -(int)     _invokeValueCallback:(NSString*)value;
 
@@ -389,7 +390,8 @@ typedef struct _YDelayedPulse {
  *         a relay currently online, or a nil pointer
  *         if there are no more relays to enumerate.
  */
--(YRelay*) nextRelay;
+-(nullable YRelay*) nextRelay
+NS_SWIFT_NAME(nextRelay());
 /**
  * Starts the enumeration of relays currently accessible.
  * Use the method YRelay.nextRelay() to iterate on
@@ -399,7 +401,8 @@ typedef struct _YDelayedPulse {
  *         the first relay currently online, or a nil pointer
  *         if there are none.
  */
-+(YRelay*) FirstRelay;
++(nullable YRelay*) FirstRelay
+NS_SWIFT_NAME(FirstRelay());
 //--- (end of YRelay public methods declaration)
 
 @end
@@ -446,5 +449,6 @@ YRelay* yFindRelay(NSString* func);
 YRelay* yFirstRelay(void);
 
 //--- (end of YRelay functions declaration)
+NS_ASSUME_NONNULL_END
 CF_EXTERN_C_END
 

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_wakeupmonitor.h 39434 2020-02-25 08:53:55Z seb $
+ *  $Id: yocto_wakeupmonitor.h 41625 2020-08-31 07:09:39Z seb $
  *
  *  Declares yFindWakeUpMonitor(), the high-level API for WakeUpMonitor functions
  *
@@ -39,6 +39,7 @@
 
 #include "yocto_api.h"
 CF_EXTERN_C_BEGIN
+NS_ASSUME_NONNULL_BEGIN
 
 @class YWakeUpMonitor;
 
@@ -248,7 +249,7 @@ typedef enum {
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerValueCallback:(YWakeUpMonitorValueCallback)callback;
+-(int)     registerValueCallback:(YWakeUpMonitorValueCallback _Nullable)callback;
 
 -(int)     _invokeValueCallback:(NSString*)value;
 
@@ -316,7 +317,8 @@ typedef enum {
  *         a wake-up monitor currently online, or a nil pointer
  *         if there are no more wake-up monitors to enumerate.
  */
--(YWakeUpMonitor*) nextWakeUpMonitor;
+-(nullable YWakeUpMonitor*) nextWakeUpMonitor
+NS_SWIFT_NAME(nextWakeUpMonitor());
 /**
  * Starts the enumeration of wake-up monitors currently accessible.
  * Use the method YWakeUpMonitor.nextWakeUpMonitor() to iterate on
@@ -326,7 +328,8 @@ typedef enum {
  *         the first wake-up monitor currently online, or a nil pointer
  *         if there are none.
  */
-+(YWakeUpMonitor*) FirstWakeUpMonitor;
++(nullable YWakeUpMonitor*) FirstWakeUpMonitor
+NS_SWIFT_NAME(FirstWakeUpMonitor());
 //--- (end of YWakeUpMonitor public methods declaration)
 
 @end
@@ -373,5 +376,6 @@ YWakeUpMonitor* yFindWakeUpMonitor(NSString* func);
 YWakeUpMonitor* yFirstWakeUpMonitor(void);
 
 //--- (end of YWakeUpMonitor functions declaration)
+NS_ASSUME_NONNULL_END
 CF_EXTERN_C_END
 

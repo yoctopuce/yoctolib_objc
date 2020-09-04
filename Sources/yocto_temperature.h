@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_temperature.h 39648 2020-03-12 13:56:10Z mvuilleu $
+ *  $Id: yocto_temperature.h 41625 2020-08-31 07:09:39Z seb $
  *
  *  Declares yFindTemperature(), the high-level API for Temperature functions
  *
@@ -39,6 +39,7 @@
 
 #include "yocto_api.h"
 CF_EXTERN_C_BEGIN
+NS_ASSUME_NONNULL_BEGIN
 
 @class YTemperature;
 
@@ -237,7 +238,7 @@ typedef enum {
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerValueCallback:(YTemperatureValueCallback)callback;
+-(int)     registerValueCallback:(YTemperatureValueCallback _Nullable)callback;
 
 -(int)     _invokeValueCallback:(NSString*)value;
 
@@ -252,7 +253,7 @@ typedef enum {
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerTimedReportCallback:(YTemperatureTimedReportCallback)callback;
+-(int)     registerTimedReportCallback:(YTemperatureTimedReportCallback _Nullable)callback;
 
 -(int)     _invokeTimedReportCallback:(YMeasure*)value;
 
@@ -318,7 +319,8 @@ typedef enum {
  *         a temperature sensor currently online, or a nil pointer
  *         if there are no more temperature sensors to enumerate.
  */
--(YTemperature*) nextTemperature;
+-(nullable YTemperature*) nextTemperature
+NS_SWIFT_NAME(nextTemperature());
 /**
  * Starts the enumeration of temperature sensors currently accessible.
  * Use the method YTemperature.nextTemperature() to iterate on
@@ -328,7 +330,8 @@ typedef enum {
  *         the first temperature sensor currently online, or a nil pointer
  *         if there are none.
  */
-+(YTemperature*) FirstTemperature;
++(nullable YTemperature*) FirstTemperature
+NS_SWIFT_NAME(FirstTemperature());
 //--- (end of YTemperature public methods declaration)
 
 @end
@@ -375,5 +378,6 @@ YTemperature* yFindTemperature(NSString* func);
 YTemperature* yFirstTemperature(void);
 
 //--- (end of YTemperature functions declaration)
+NS_ASSUME_NONNULL_END
 CF_EXTERN_C_END
 

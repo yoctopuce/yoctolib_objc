@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_servo.m 38899 2019-12-20 17:21:03Z mvuilleu $
+ *  $Id: yocto_servo.m 41625 2020-08-31 07:09:39Z seb $
  *
  *  Implements the high-level API for Servo functions
  *
@@ -503,7 +503,7 @@
  *         the new advertised value.
  * @noreturn
  */
--(int) registerValueCallback:(YServoValueCallback)callback
+-(int) registerValueCallback:(YServoValueCallback _Nullable)callback
 {
     NSString* val;
     if (callback != NULL) {

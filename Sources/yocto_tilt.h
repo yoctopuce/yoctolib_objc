@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_tilt.h 38899 2019-12-20 17:21:03Z mvuilleu $
+ *  $Id: yocto_tilt.h 41625 2020-08-31 07:09:39Z seb $
  *
  *  Declares yFindTilt(), the high-level API for Tilt functions
  *
@@ -39,6 +39,7 @@
 
 #include "yocto_api.h"
 CF_EXTERN_C_BEGIN
+NS_ASSUME_NONNULL_BEGIN
 
 @class YTilt;
 
@@ -164,7 +165,7 @@ typedef enum {
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerValueCallback:(YTiltValueCallback)callback;
+-(int)     registerValueCallback:(YTiltValueCallback _Nullable)callback;
 
 -(int)     _invokeValueCallback:(NSString*)value;
 
@@ -179,7 +180,7 @@ typedef enum {
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerTimedReportCallback:(YTiltTimedReportCallback)callback;
+-(int)     registerTimedReportCallback:(YTiltTimedReportCallback _Nullable)callback;
 
 -(int)     _invokeTimedReportCallback:(YMeasure*)value;
 
@@ -194,7 +195,8 @@ typedef enum {
  *         a tilt sensor currently online, or a nil pointer
  *         if there are no more tilt sensors to enumerate.
  */
--(YTilt*) nextTilt;
+-(nullable YTilt*) nextTilt
+NS_SWIFT_NAME(nextTilt());
 /**
  * Starts the enumeration of tilt sensors currently accessible.
  * Use the method YTilt.nextTilt() to iterate on
@@ -204,7 +206,8 @@ typedef enum {
  *         the first tilt sensor currently online, or a nil pointer
  *         if there are none.
  */
-+(YTilt*) FirstTilt;
++(nullable YTilt*) FirstTilt
+NS_SWIFT_NAME(FirstTilt());
 //--- (end of YTilt public methods declaration)
 
 @end
@@ -251,5 +254,6 @@ YTilt* yFindTilt(NSString* func);
 YTilt* yFirstTilt(void);
 
 //--- (end of YTilt functions declaration)
+NS_ASSUME_NONNULL_END
 CF_EXTERN_C_END
 

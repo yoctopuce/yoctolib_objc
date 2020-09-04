@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_poweroutput.m 38913 2019-12-20 18:59:49Z mvuilleu $
+ *  $Id: yocto_poweroutput.m 41625 2020-08-31 07:09:39Z seb $
  *
  *  Implements the high-level API for PowerOutput functions
  *
@@ -179,7 +179,7 @@
  *         the new advertised value.
  * @noreturn
  */
--(int) registerValueCallback:(YPowerOutputValueCallback)callback
+-(int) registerValueCallback:(YPowerOutputValueCallback _Nullable)callback
 {
     NSString* val;
     if (callback != NULL) {

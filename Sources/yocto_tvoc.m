@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_tvoc.m 37827 2019-10-25 13:07:48Z mvuilleu $
+ *  $Id: yocto_tvoc.m 41625 2020-08-31 07:09:39Z seb $
  *
  *  Implements the high-level API for Tvoc functions
  *
@@ -125,7 +125,7 @@
  *         the new advertised value.
  * @noreturn
  */
--(int) registerValueCallback:(YTvocValueCallback)callback
+-(int) registerValueCallback:(YTvocValueCallback _Nullable)callback
 {
     NSString* val;
     if (callback != NULL) {
@@ -165,7 +165,7 @@
  *         the new advertised value.
  * @noreturn
  */
--(int) registerTimedReportCallback:(YTvocTimedReportCallback)callback
+-(int) registerTimedReportCallback:(YTvocTimedReportCallback _Nullable)callback
 {
     YSensor* sensor;
     sensor = self;

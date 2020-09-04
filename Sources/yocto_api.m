@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.m 40903 2020-06-10 07:32:15Z seb $
+ * $Id: yocto_api.m 41625 2020-08-31 07:09:39Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -2841,7 +2841,7 @@ static const char* hexArray = "0123456789ABCDEF";
  *         the new advertised value.
  * @noreturn
  */
--(int) registerValueCallback:(YFunctionValueCallback)callback
+-(int) registerValueCallback:(YFunctionValueCallback _Nullable)callback
 {
     NSString* val;
     if (callback != NULL) {
@@ -4101,7 +4101,7 @@ static const char* hexArray = "0123456789ABCDEF";
  *         the new advertised value.
  * @noreturn
  */
--(int) registerValueCallback:(YSensorValueCallback)callback
+-(int) registerValueCallback:(YSensorValueCallback _Nullable)callback
 {
     NSString* val;
     if (callback != NULL) {
@@ -4370,7 +4370,7 @@ static const char* hexArray = "0123456789ABCDEF";
  *         the new advertised value.
  * @noreturn
  */
--(int) registerTimedReportCallback:(YSensorTimedReportCallback)callback
+-(int) registerTimedReportCallback:(YSensorTimedReportCallback _Nullable)callback
 {
     YSensor* sensor;
     sensor = self;
@@ -5285,7 +5285,7 @@ static const char* hexArray = "0123456789ABCDEF";
  *         the new advertised value.
  * @noreturn
  */
--(int) registerValueCallback:(YModuleValueCallback)callback
+-(int) registerValueCallback:(YModuleValueCallback _Nullable)callback
 {
     NSString* val;
     if (callback != NULL) {
@@ -5405,7 +5405,7 @@ static const char* hexArray = "0123456789ABCDEF";
  *         arguments: the module object that emitted the log message, and the character string containing the log.
  *         On failure, throws an exception or returns a negative error code.
  */
--(int) registerLogCallback:(YModuleLogCallback)callback
+-(int) registerLogCallback:(YModuleLogCallback _Nullable)callback
 {
     NSString* serial;
 
@@ -5430,7 +5430,7 @@ static const char* hexArray = "0123456789ABCDEF";
  * @param callback : a procedure taking a YModule parameter, or nil
  *         to unregister a previously registered  callback.
  */
--(int) registerConfigChangeCallback:(YModuleConfigChangeCallback)callback
+-(int) registerConfigChangeCallback:(YModuleConfigChangeCallback _Nullable)callback
 {
     if (callback != NULL) {
         [YModule _updateModuleCallbackList:self :YES];
@@ -5457,7 +5457,7 @@ static const char* hexArray = "0123456789ABCDEF";
  * @param callback : The callback function to call, or nil to unregister a
  *         previously registered callback.
  */
--(int) registerBeaconCallback:(YModuleBeaconCallback)callback
+-(int) registerBeaconCallback:(YModuleBeaconCallback _Nullable)callback
 {
     if (callback != NULL) {
         [YModule _updateModuleCallbackList:self :YES];
@@ -8907,7 +8907,7 @@ static const char* hexArray = "0123456789ABCDEF";
  * call registerHub() at application initialization time.
  *
  * @param func : a string that uniquely characterizes the data logger, for instance
- *         Y3DMK002.dataLogger.
+ *         LIGHTMK3.dataLogger.
  *
  * @return a YDataLogger object allowing you to drive the data logger.
  */
@@ -8933,7 +8933,7 @@ static const char* hexArray = "0123456789ABCDEF";
  *         the new advertised value.
  * @noreturn
  */
--(int) registerValueCallback:(YDataLoggerValueCallback)callback
+-(int) registerValueCallback:(YDataLoggerValueCallback _Nullable)callback
 {
     NSString* val;
     if (callback != NULL) {

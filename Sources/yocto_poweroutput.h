@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_poweroutput.h 38913 2019-12-20 18:59:49Z mvuilleu $
+ *  $Id: yocto_poweroutput.h 41625 2020-08-31 07:09:39Z seb $
  *
  *  Declares yFindPowerOutput(), the high-level API for PowerOutput functions
  *
@@ -39,6 +39,7 @@
 
 #include "yocto_api.h"
 CF_EXTERN_C_BEGIN
+NS_ASSUME_NONNULL_BEGIN
 
 @class YPowerOutput;
 
@@ -154,7 +155,7 @@ typedef enum {
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerValueCallback:(YPowerOutputValueCallback)callback;
+-(int)     registerValueCallback:(YPowerOutputValueCallback _Nullable)callback;
 
 -(int)     _invokeValueCallback:(NSString*)value;
 
@@ -169,7 +170,8 @@ typedef enum {
  *         a power output currently online, or a nil pointer
  *         if there are no more power output to enumerate.
  */
--(YPowerOutput*) nextPowerOutput;
+-(nullable YPowerOutput*) nextPowerOutput
+NS_SWIFT_NAME(nextPowerOutput());
 /**
  * Starts the enumeration of power output currently accessible.
  * Use the method YPowerOutput.nextPowerOutput() to iterate on
@@ -179,7 +181,8 @@ typedef enum {
  *         the first power output currently online, or a nil pointer
  *         if there are none.
  */
-+(YPowerOutput*) FirstPowerOutput;
++(nullable YPowerOutput*) FirstPowerOutput
+NS_SWIFT_NAME(FirstPowerOutput());
 //--- (end of YPowerOutput public methods declaration)
 
 @end
@@ -226,5 +229,6 @@ YPowerOutput* yFindPowerOutput(NSString* func);
 YPowerOutput* yFirstPowerOutput(void);
 
 //--- (end of YPowerOutput functions declaration)
+NS_ASSUME_NONNULL_END
 CF_EXTERN_C_END
 

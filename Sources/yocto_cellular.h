@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_cellular.h 40284 2020-05-04 13:41:50Z seb $
+ * $Id: yocto_cellular.h 41776 2020-09-04 07:55:05Z seb $
  *
  * Declares yFindCellular(), the high-level API for Cellular functions
  *
@@ -39,7 +39,7 @@
 
 #include "yocto_api.h"
 CF_EXTERN_C_BEGIN
-
+NS_ASSUME_NONNULL_BEGIN
 @class YCellRecord;
 @class YCellular;
 
@@ -626,7 +626,7 @@ typedef enum {
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerValueCallback:(YCellularValueCallback)callback;
+-(int)     registerValueCallback:(YCellularValueCallback _Nullable)callback;
 
 -(int)     _invokeValueCallback:(NSString*)value;
 
@@ -702,6 +702,17 @@ typedef enum {
  */
 -(NSMutableArray*)     quickCellSurvey;
 
+-(NSString*)     imm_decodePLMN:(NSString*)mccmnc;
+
+/**
+ * Returns the cell operator brand for a given MCC/MNC pair.
+ *
+ * @param mccmnc : a string starting with a MCC code followed by a MNC code,
+ *
+ * @return a string containing the corresponding cell operator brand name.
+ */
+-(NSString*)     decodePLMN:(NSString*)mccmnc;
+
 
 /**
  * Continues the enumeration of cellular interfaces started using yFirstCellular().
@@ -713,7 +724,8 @@ typedef enum {
  *         a cellular interface currently online, or a nil pointer
  *         if there are no more cellular interfaces to enumerate.
  */
--(YCellular*) nextCellular;
+-(nullable YCellular*) nextCellular
+NS_SWIFT_NAME(nextCellular());
 /**
  * Starts the enumeration of cellular interfaces currently accessible.
  * Use the method YCellular.nextCellular() to iterate on
@@ -723,7 +735,8 @@ typedef enum {
  *         the first cellular interface currently online, or a nil pointer
  *         if there are none.
  */
-+(YCellular*) FirstCellular;
++(nullable YCellular*) FirstCellular
+NS_SWIFT_NAME(FirstCellular());
 //--- (end of generated code: YCellular public methods declaration)
 
 @end
@@ -770,5 +783,6 @@ YCellular* yFindCellular(NSString* func);
 YCellular* yFirstCellular(void);
 
 //--- (end of generated code: YCellular functions declaration)
+NS_ASSUME_NONNULL_END
 CF_EXTERN_C_END
 

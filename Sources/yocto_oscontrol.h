@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_oscontrol.h 38899 2019-12-20 17:21:03Z mvuilleu $
+ *  $Id: yocto_oscontrol.h 41625 2020-08-31 07:09:39Z seb $
  *
  *  Declares yFindOsControl(), the high-level API for OsControl functions
  *
@@ -39,6 +39,7 @@
 
 #include "yocto_api.h"
 CF_EXTERN_C_BEGIN
+NS_ASSUME_NONNULL_BEGIN
 
 @class YOsControl;
 
@@ -132,7 +133,7 @@ typedef void (*YOsControlValueCallback)(YOsControl *func, NSString *functionValu
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerValueCallback:(YOsControlValueCallback)callback;
+-(int)     registerValueCallback:(YOsControlValueCallback _Nullable)callback;
 
 -(int)     _invokeValueCallback:(NSString*)value;
 
@@ -158,7 +159,8 @@ typedef void (*YOsControlValueCallback)(YOsControl *func, NSString *functionValu
  *         OS control currently online, or a nil pointer
  *         if there are no more OS control to enumerate.
  */
--(YOsControl*) nextOsControl;
+-(nullable YOsControl*) nextOsControl
+NS_SWIFT_NAME(nextOsControl());
 /**
  * Starts the enumeration of OS control currently accessible.
  * Use the method YOsControl.nextOsControl() to iterate on
@@ -168,7 +170,8 @@ typedef void (*YOsControlValueCallback)(YOsControl *func, NSString *functionValu
  *         the first OS control currently online, or a nil pointer
  *         if there are none.
  */
-+(YOsControl*) FirstOsControl;
++(nullable YOsControl*) FirstOsControl
+NS_SWIFT_NAME(FirstOsControl());
 //--- (end of YOsControl public methods declaration)
 
 @end
@@ -215,5 +218,6 @@ YOsControl* yFindOsControl(NSString* func);
 YOsControl* yFirstOsControl(void);
 
 //--- (end of YOsControl functions declaration)
+NS_ASSUME_NONNULL_END
 CF_EXTERN_C_END
 

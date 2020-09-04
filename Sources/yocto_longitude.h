@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_longitude.h 39658 2020-03-12 15:36:29Z seb $
+ *  $Id: yocto_longitude.h 41625 2020-08-31 07:09:39Z seb $
  *
  *  Declares yFindLongitude(), the high-level API for Longitude functions
  *
@@ -39,6 +39,7 @@
 
 #include "yocto_api.h"
 CF_EXTERN_C_BEGIN
+NS_ASSUME_NONNULL_BEGIN
 
 @class YLongitude;
 
@@ -116,7 +117,7 @@ typedef void (*YLongitudeTimedReportCallback)(YLongitude *func, YMeasure *measur
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerValueCallback:(YLongitudeValueCallback)callback;
+-(int)     registerValueCallback:(YLongitudeValueCallback _Nullable)callback;
 
 -(int)     _invokeValueCallback:(NSString*)value;
 
@@ -131,7 +132,7 @@ typedef void (*YLongitudeTimedReportCallback)(YLongitude *func, YMeasure *measur
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerTimedReportCallback:(YLongitudeTimedReportCallback)callback;
+-(int)     registerTimedReportCallback:(YLongitudeTimedReportCallback _Nullable)callback;
 
 -(int)     _invokeTimedReportCallback:(YMeasure*)value;
 
@@ -146,7 +147,8 @@ typedef void (*YLongitudeTimedReportCallback)(YLongitude *func, YMeasure *measur
  *         a longitude sensor currently online, or a nil pointer
  *         if there are no more longitude sensors to enumerate.
  */
--(YLongitude*) nextLongitude;
+-(nullable YLongitude*) nextLongitude
+NS_SWIFT_NAME(nextLongitude());
 /**
  * Starts the enumeration of longitude sensors currently accessible.
  * Use the method YLongitude.nextLongitude() to iterate on
@@ -156,7 +158,8 @@ typedef void (*YLongitudeTimedReportCallback)(YLongitude *func, YMeasure *measur
  *         the first longitude sensor currently online, or a nil pointer
  *         if there are none.
  */
-+(YLongitude*) FirstLongitude;
++(nullable YLongitude*) FirstLongitude
+NS_SWIFT_NAME(FirstLongitude());
 //--- (end of YLongitude public methods declaration)
 
 @end
@@ -203,5 +206,6 @@ YLongitude* yFindLongitude(NSString* func);
 YLongitude* yFirstLongitude(void);
 
 //--- (end of YLongitude functions declaration)
+NS_ASSUME_NONNULL_END
 CF_EXTERN_C_END
 

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_multicellweighscale.h 41108 2020-06-29 12:29:07Z seb $
+ *  $Id: yocto_multicellweighscale.h 41625 2020-08-31 07:09:39Z seb $
  *
  *  Declares yFindMultiCellWeighScale(), the high-level API for MultiCellWeighScale functions
  *
@@ -39,6 +39,7 @@
 
 #include "yocto_api.h"
 CF_EXTERN_C_BEGIN
+NS_ASSUME_NONNULL_BEGIN
 
 @class YMultiCellWeighScale;
 
@@ -344,7 +345,7 @@ typedef enum {
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerValueCallback:(YMultiCellWeighScaleValueCallback)callback;
+-(int)     registerValueCallback:(YMultiCellWeighScaleValueCallback _Nullable)callback;
 
 -(int)     _invokeValueCallback:(NSString*)value;
 
@@ -359,7 +360,7 @@ typedef enum {
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerTimedReportCallback:(YMultiCellWeighScaleTimedReportCallback)callback;
+-(int)     registerTimedReportCallback:(YMultiCellWeighScaleTimedReportCallback _Nullable)callback;
 
 -(int)     _invokeTimedReportCallback:(YMeasure*)value;
 
@@ -399,7 +400,8 @@ typedef enum {
  *         a multi-cell weighing scale sensor currently online, or a nil pointer
  *         if there are no more multi-cell weighing scale sensors to enumerate.
  */
--(YMultiCellWeighScale*) nextMultiCellWeighScale;
+-(nullable YMultiCellWeighScale*) nextMultiCellWeighScale
+NS_SWIFT_NAME(nextMultiCellWeighScale());
 /**
  * Starts the enumeration of multi-cell weighing scale sensors currently accessible.
  * Use the method YMultiCellWeighScale.nextMultiCellWeighScale() to iterate on
@@ -409,7 +411,8 @@ typedef enum {
  *         the first multi-cell weighing scale sensor currently online, or a nil pointer
  *         if there are none.
  */
-+(YMultiCellWeighScale*) FirstMultiCellWeighScale;
++(nullable YMultiCellWeighScale*) FirstMultiCellWeighScale
+NS_SWIFT_NAME(FirstMultiCellWeighScale());
 //--- (end of YMultiCellWeighScale public methods declaration)
 
 @end
@@ -456,5 +459,6 @@ YMultiCellWeighScale* yFindMultiCellWeighScale(NSString* func);
 YMultiCellWeighScale* yFirstMultiCellWeighScale(void);
 
 //--- (end of YMultiCellWeighScale functions declaration)
+NS_ASSUME_NONNULL_END
 CF_EXTERN_C_END
 

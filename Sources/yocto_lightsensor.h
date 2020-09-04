@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_lightsensor.h 38899 2019-12-20 17:21:03Z mvuilleu $
+ *  $Id: yocto_lightsensor.h 41625 2020-08-31 07:09:39Z seb $
  *
  *  Declares yFindLightSensor(), the high-level API for LightSensor functions
  *
@@ -39,6 +39,7 @@
 
 #include "yocto_api.h"
 CF_EXTERN_C_BEGIN
+NS_ASSUME_NONNULL_BEGIN
 
 @class YLightSensor;
 
@@ -181,7 +182,7 @@ typedef enum {
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerValueCallback:(YLightSensorValueCallback)callback;
+-(int)     registerValueCallback:(YLightSensorValueCallback _Nullable)callback;
 
 -(int)     _invokeValueCallback:(NSString*)value;
 
@@ -196,7 +197,7 @@ typedef enum {
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerTimedReportCallback:(YLightSensorTimedReportCallback)callback;
+-(int)     registerTimedReportCallback:(YLightSensorTimedReportCallback _Nullable)callback;
 
 -(int)     _invokeTimedReportCallback:(YMeasure*)value;
 
@@ -211,7 +212,8 @@ typedef enum {
  *         a light sensor currently online, or a nil pointer
  *         if there are no more light sensors to enumerate.
  */
--(YLightSensor*) nextLightSensor;
+-(nullable YLightSensor*) nextLightSensor
+NS_SWIFT_NAME(nextLightSensor());
 /**
  * Starts the enumeration of light sensors currently accessible.
  * Use the method YLightSensor.nextLightSensor() to iterate on
@@ -221,7 +223,8 @@ typedef enum {
  *         the first light sensor currently online, or a nil pointer
  *         if there are none.
  */
-+(YLightSensor*) FirstLightSensor;
++(nullable YLightSensor*) FirstLightSensor
+NS_SWIFT_NAME(FirstLightSensor());
 //--- (end of YLightSensor public methods declaration)
 
 @end
@@ -268,5 +271,6 @@ YLightSensor* yFindLightSensor(NSString* func);
 YLightSensor* yFirstLightSensor(void);
 
 //--- (end of YLightSensor functions declaration)
+NS_ASSUME_NONNULL_END
 CF_EXTERN_C_END
 

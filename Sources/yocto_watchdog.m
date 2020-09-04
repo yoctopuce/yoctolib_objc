@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_watchdog.m 38676 2019-12-03 15:52:14Z mvuilleu $
+ *  $Id: yocto_watchdog.m 41625 2020-08-31 07:09:39Z seb $
  *
  *  Implements the high-level API for Watchdog functions
  *
@@ -780,7 +780,7 @@
  *         the new advertised value.
  * @noreturn
  */
--(int) registerValueCallback:(YWatchdogValueCallback)callback
+-(int) registerValueCallback:(YWatchdogValueCallback _Nullable)callback
 {
     NSString* val;
     if (callback != NULL) {

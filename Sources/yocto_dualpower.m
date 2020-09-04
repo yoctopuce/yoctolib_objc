@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_dualpower.m 38913 2019-12-20 18:59:49Z mvuilleu $
+ *  $Id: yocto_dualpower.m 41625 2020-08-31 07:09:39Z seb $
  *
  *  Implements the high-level API for DualPower functions
  *
@@ -239,7 +239,7 @@
  *         the new advertised value.
  * @noreturn
  */
--(int) registerValueCallback:(YDualPowerValueCallback)callback
+-(int) registerValueCallback:(YDualPowerValueCallback _Nullable)callback
 {
     NSString* val;
     if (callback != NULL) {

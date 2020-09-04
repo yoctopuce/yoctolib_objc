@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_multisenscontroller.h 38899 2019-12-20 17:21:03Z mvuilleu $
+ *  $Id: yocto_multisenscontroller.h 41625 2020-08-31 07:09:39Z seb $
  *
  *  Declares yFindMultiSensController(), the high-level API for MultiSensController functions
  *
@@ -39,6 +39,7 @@
 
 #include "yocto_api.h"
 CF_EXTERN_C_BEGIN
+NS_ASSUME_NONNULL_BEGIN
 
 @class YMultiSensController;
 
@@ -201,7 +202,7 @@ typedef enum {
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerValueCallback:(YMultiSensControllerValueCallback)callback;
+-(int)     registerValueCallback:(YMultiSensControllerValueCallback _Nullable)callback;
 
 -(int)     _invokeValueCallback:(NSString*)value;
 
@@ -232,7 +233,8 @@ typedef enum {
  *         a multi-sensor controller currently online, or a nil pointer
  *         if there are no more multi-sensor controllers to enumerate.
  */
--(YMultiSensController*) nextMultiSensController;
+-(nullable YMultiSensController*) nextMultiSensController
+NS_SWIFT_NAME(nextMultiSensController());
 /**
  * Starts the enumeration of multi-sensor controllers currently accessible.
  * Use the method YMultiSensController.nextMultiSensController() to iterate on
@@ -242,7 +244,8 @@ typedef enum {
  *         the first multi-sensor controller currently online, or a nil pointer
  *         if there are none.
  */
-+(YMultiSensController*) FirstMultiSensController;
++(nullable YMultiSensController*) FirstMultiSensController
+NS_SWIFT_NAME(FirstMultiSensController());
 //--- (end of YMultiSensController public methods declaration)
 
 @end
@@ -289,5 +292,6 @@ YMultiSensController* yFindMultiSensController(NSString* func);
 YMultiSensController* yFirstMultiSensController(void);
 
 //--- (end of YMultiSensController functions declaration)
+NS_ASSUME_NONNULL_END
 CF_EXTERN_C_END
 

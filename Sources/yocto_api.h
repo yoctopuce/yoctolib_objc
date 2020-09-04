@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.h 40549 2020-05-14 15:54:55Z mvuilleu $
+ * $Id: yocto_api.h 41776 2020-09-04 07:55:05Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -60,9 +60,9 @@
 #define STR_y2oc(c_str)          [NSString stringWithCString:c_str encoding:NSISOLatin1StringEncoding]
 #define STR_oc2y(objective_str)  [objective_str cStringUsingEncoding:NSISOLatin1StringEncoding]
 
-extern NSMutableDictionary* YAPI_YFunctions;
+//extern NSMutableDictionary* YAPI_YFunctions;
 
-#define YOCTO_API_REVISION          "41115"
+#define YOCTO_API_REVISION          "41779"
 
 // yInitAPI argument
 #define Y_DETECT_NONE           0
@@ -83,6 +83,8 @@ extern NSMutableDictionary* YAPI_YFunctions;
 @class YFirmwareUpdate;
 @class YDataLogger;
 @class YAPIContext;
+
+NS_ASSUME_NONNULL_BEGIN
 
 /// prototype of log callback
 typedef void    (*yLogCallback)(NSString * log);
@@ -453,7 +455,9 @@ int _ystrpos(NSString* haystack, NSString* needle);
  *
  * @return a character string describing the library version.
  */
-+(NSString*)    GetAPIVersion;
++(NSString*)    GetAPIVersion
+NS_SWIFT_NAME(GetAPIVersion());
+
 
 /**
  * Initializes the Yoctopuce programming library explicitly.
@@ -475,7 +479,8 @@ int _ystrpos(NSString* haystack, NSString* needle);
  *
  * On failure, throws an exception or returns a negative error code.
  */
- +(YRETCODE)    InitAPI :(int)mode :(NSError**)errmsg;
+ +(YRETCODE)    InitAPI :(int)mode :(NSError**)errmsg
+NS_SWIFT_NAME(InitAPI(_:_:));
 
 /**
  * Waits for all pending communications with Yoctopuce devices to be
@@ -497,7 +502,8 @@ int _ystrpos(NSString* haystack, NSString* needle);
  * You should not call any other library function after calling
  * yFreeAPI(), or your program will crash.
  */
- +(void)        FreeAPI;
+ +(void)        FreeAPI
+NS_SWIFT_NAME(FreeAPI());
 
 /**
  * Disables the use of exceptions to report runtime errors.
@@ -505,7 +511,8 @@ int _ystrpos(NSString* haystack, NSString* needle);
  * error value which depends on its type and which is documented in
  * this reference manual.
  */
- +(void)        DisableExceptions;
+ +(void)        DisableExceptions
+NS_SWIFT_NAME(DisableExceptions());
 
 /**
  * Re-enables the use of exceptions for runtime error handling.
@@ -514,7 +521,8 @@ int _ystrpos(NSString* haystack, NSString* needle);
  * it  either fires the debugger or aborts (i.e. crash) the program.
  * On failure, throws an exception or returns a negative error code.
  */
- +(void)        EnableExceptions;
+ +(void)        EnableExceptions
+NS_SWIFT_NAME(EnableExceptions());
 
 /**
  * Registers a log callback function. This callback will be called each time
@@ -523,7 +531,8 @@ int _ystrpos(NSString* haystack, NSString* needle);
  * @param logfun : a procedure taking a string parameter, or nil
  *         to unregister a previously registered  callback.
  */
- +(void)        RegisterLogFunction:(yLogCallback) logfun;
+ +(void)        RegisterLogFunction:(yLogCallback) logfun
+NS_SWIFT_NAME(RegisterLogFunction(_:));
 
 /**
  * Register a callback function, to be called each time
@@ -533,7 +542,8 @@ int _ystrpos(NSString* haystack, NSString* needle);
  * @param arrivalCallback : a procedure taking a YModule parameter, or nil
  *         to unregister a previously registered  callback.
  */
- +(void)        RegisterDeviceArrivalCallback:(yDeviceUpdateCallback) arrivalCallback;
+ +(void)        RegisterDeviceArrivalCallback:(yDeviceUpdateCallback) arrivalCallback
+NS_SWIFT_NAME(RegisterDeviceArrivalCallback(_:));
 
 /**
  * (Objective-C only) Register an object that must follow the protocol YDeviceHotPlug. The methods
@@ -543,7 +553,8 @@ int _ystrpos(NSString* haystack, NSString* needle);
  * @param object : an object that must follow the protocol YAPIDelegate, or nil
  *         to unregister a previously registered  object.
  */
- +(void)        SetDelegate:(id)object;
+ +(void)        SetDelegate:(id)object
+NS_SWIFT_NAME(SetDelegate(_:));
 
 
 /**
@@ -554,9 +565,11 @@ int _ystrpos(NSString* haystack, NSString* needle);
  * @param removalCallback : a procedure taking a YModule parameter, or nil
  *         to unregister a previously registered  callback.
  */
- +(void)        RegisterDeviceRemovalCallback:(yDeviceUpdateCallback) removalCallback;
+ +(void)        RegisterDeviceRemovalCallback:(yDeviceUpdateCallback) removalCallback
+NS_SWIFT_NAME(RegisterDeviceRemovalCallback(_:));
 
- +(void)        RegisterDeviceChangeCallback:(yDeviceUpdateCallback) removalCallback;
+ +(void)        RegisterDeviceChangeCallback:(yDeviceUpdateCallback) removalCallback
+NS_SWIFT_NAME(RegisterDeviceChangeCallback(_:));
 
 /**
  * Register a callback function, to be called each time an Network Hub send
@@ -568,7 +581,8 @@ int _ystrpos(NSString* haystack, NSString* needle);
  * @param hubDiscoveryCallback : a procedure taking two string parameter, the serial
  *         number and the hub URL. Use nil to unregister a previously registered  callback.
  */
- +(void)        RegisterHubDiscoveryCallback:(YHubDiscoveryCallback) hubDiscoveryCallback;
+ +(void)        RegisterHubDiscoveryCallback:(YHubDiscoveryCallback) hubDiscoveryCallback
+NS_SWIFT_NAME(RegisterHubDiscoveryCallback(_:));
 
 
 /**
@@ -615,8 +629,8 @@ int _ystrpos(NSString* haystack, NSString* needle);
  *
  * On failure, throws an exception or returns a negative error code.
  */
- +(YRETCODE)    RegisterHub:(NSString *) rooturl :(NSError**) error;
-
+ +(YRETCODE)    RegisterHub:(NSString *) url :(NSError**) errmsg
+NS_SWIFT_NAME(RegisterHub(_:_:));
 /**
  * Fault-tolerant alternative to yRegisterHub(). This function has the same
  * purpose and same arguments as yRegisterHub(), but does not trigger
@@ -632,7 +646,8 @@ int _ystrpos(NSString* haystack, NSString* needle);
  *
  * On failure, throws an exception or returns a negative error code.
  */
-+(YRETCODE)         PreregisterHub:(NSString*) rooturl :(NSError**) error;
++(YRETCODE)         PreregisterHub:(NSString*) url :(NSError**) errmsg
+NS_SWIFT_NAME(PreregisterHub(_:_:));
 
 /**
  * Setup the Yoctopuce library to no more use modules connected on a previously
@@ -641,7 +656,8 @@ int _ystrpos(NSString* haystack, NSString* needle);
  * @param url : a string containing either "usb" or the
  *         root URL of the hub to monitor
  */
-+(void)         UnregisterHub:(NSString*) rooturl;
++(void)         UnregisterHub:(NSString*) url
+NS_SWIFT_NAME(UnregisterHub(_:));
 
 /**
  * Test if the hub is reachable. This method do not register the hub, it only test if the
@@ -658,7 +674,8 @@ int _ystrpos(NSString* haystack, NSString* needle);
  *
  * On failure returns a negative error code.
  */
-+(YRETCODE)         TestHub:(NSString*) rooturl :(int)mstimeout :(NSError**) error;
++(YRETCODE)         TestHub:(NSString*) url :(int)mstimeout :(NSError**) errmsg
+NS_SWIFT_NAME(TestHub(_:_:));
 
 /**
  * Triggers a (re)detection of connected Yoctopuce modules.
@@ -677,7 +694,8 @@ int _ystrpos(NSString* haystack, NSString* needle);
  *
  * On failure, throws an exception or returns a negative error code.
  */
- +(YRETCODE)    UpdateDeviceList:(NSError**) error;
+ +(YRETCODE)    UpdateDeviceList:(NSError**) errmsg
+NS_SWIFT_NAME(UpdateDeviceList(_:));
 
 /**
  * Maintains the device-to-library communication channel.
@@ -696,7 +714,8 @@ int _ystrpos(NSString* haystack, NSString* needle);
  *
  * On failure, throws an exception or returns a negative error code.
  */
- +(YRETCODE)    HandleEvents:(NSError**) error;
+ +(YRETCODE)    HandleEvents:(NSError**) errmsg
+NS_SWIFT_NAME(HandleEvents(_:));
 
 /**
  * Pauses the execution flow for a specified duration.
@@ -717,7 +736,8 @@ int _ystrpos(NSString* haystack, NSString* needle);
  *
  * On failure, throws an exception or returns a negative error code.
  */
- +(YRETCODE)    Sleep:(unsigned)ms_duration :(NSError**)error;
+ +(YRETCODE)    Sleep:(unsigned)ms_duration :(NSError**)errmsg
+NS_SWIFT_NAME(Sleep(_:_:));
 
 /**
  * Force a hub discovery, if a callback as been registered with yRegisterHubDiscoveryCallback it
@@ -728,7 +748,8 @@ int _ystrpos(NSString* haystack, NSString* needle);
  * @return YAPI_SUCCESS when the call succeeds.
  *         On failure, throws an exception or returns a negative error code.
  */
- +(YRETCODE)    TriggerHubDiscovery:(NSError**) error;
+ +(YRETCODE)    TriggerHubDiscovery:(NSError**) errmsg
+NS_SWIFT_NAME(TriggerHubDiscovery(_:));
 
 /**
  * Returns the current value of a monotone millisecond-based time counter.
@@ -737,7 +758,8 @@ int _ystrpos(NSString* haystack, NSString* needle);
  *
  * @return a long integer corresponding to the millisecond counter.
  */
- +(u64)         GetTickCount;
+ +(u64)         GetTickCount
+NS_SWIFT_NAME(GetTickCount());
 
 /**
  * Checks if a given string is valid as logical name for a module or a function.
@@ -750,7 +772,8 @@ int _ystrpos(NSString* haystack, NSString* needle);
  *
  * @return true if the name is valid, false otherwise.
  */
- +(BOOL)        CheckLogicalName:(NSString * const) name;
+ +(BOOL)        CheckLogicalName:(NSString * const) name
+NS_SWIFT_NAME(CheckLogicalName(_:));
 
 //--- (generated code: YAPIContext yapiwrapper declaration)
 /**
@@ -826,27 +849,28 @@ int _ystrpos(NSString* haystack, NSString* needle);
 
 //--- (end of generated code: YAPIContext yapiwrapper declaration)
 @end
+//NS_ASSUME_NONNULL_END
 
 // Wrappers to yapi low-level API
 @interface YapiWrapper : NSObject
 // Wrappers to yapi low-level API
-+(u16)         getAPIVersion:(NSString**)version :(NSString**) subversion;
++(u16)         getAPIVersion:(NSString * _Nullable * _Nonnull)version :(NSString * _Nullable * _Nonnull) subversion;
 +(YDEV_DESCR)  getDevice:(NSString * const)device_str :(NSError**) error;
-+(int)         getAllDevices:(NSMutableArray**) buffer :(NSError**) error;
++(int)         getAllDevices:(NSMutableArray * _Nullable * _Nonnull) buffer :(NSError**) error;
 +(YRETCODE)    getDeviceInfo:(YDEV_DESCR) devdesc :(yDeviceSt*) infos :(NSError**) error;
 +(YFUN_DESCR)  getFunction:(NSString * const)class_str :(NSString * const)function_str :(NSError**) error;
-+(int)         getFunctionsByClass:(NSString * const)class_str :(YFUN_DESCR) prevfundesc :(NSMutableArray **) buffer :(NSError**) error;
-+(int)         getFunctionsByDevice:(YDEV_DESCR) devdesc :(YFUN_DESCR) prevfundesc :(NSMutableArray **) buffer :(NSError**) error;
++(int)         getFunctionsByClass:(NSString * const)class_str :(YFUN_DESCR) prevfundesc :(NSMutableArray * _Nullable * _Nullable) buffer :(NSError**) error;
++(int)         getFunctionsByDevice:(YDEV_DESCR) devdesc :(YFUN_DESCR) prevfundesc :(NSMutableArray * _Nullable * _Nullable) buffer :(NSError**) error;
 +(YDEV_DESCR)  getDeviceByFunction:(YFUN_DESCR) fundesc :(NSError**) error;
-+(YRETCODE)    getFunctionInfo:(YFUN_DESCR)fundesc :(YDEV_DESCR*) devdescr :(NSString**) serial :(NSString**) funcId :(NSString**) funcName :(NSString**) funcVal :(NSError**) error;
-+(YRETCODE)    getFunctionInfoEx:(YFUN_DESCR)fundesc :(YDEV_DESCR*) devdescr :(NSString**) serial :(NSString**) funcId :(NSString**) baseType :(NSString**) funcName :(NSString**) funcVal :(NSError**) error;
++(YRETCODE)    getFunctionInfo:(YFUN_DESCR)fundesc :(YDEV_DESCR*_Nullable) devdescr :(NSString * _Nullable * _Nullable) serial :(NSString * _Nullable * _Nullable) funcId :(NSString* _Nullable * _Nullable) funcName :(NSString* _Nullable * _Nullable) funcVal :(NSError**) error;
++(YRETCODE)    getFunctionInfoEx:(YFUN_DESCR)fundesc :(YDEV_DESCR*) devdescr :(NSString * _Nullable * _Nullable) serial :(NSString* _Nullable * _Nullable) funcId :(NSString* _Nullable * _Nullable) baseType :(NSString* _Nullable * _Nullable) funcName :(NSString* _Nullable * _Nullable) funcVal :(NSError**) error;
 +(YRETCODE)    updateDeviceList:(bool) forceupdate :(NSError**)error;
 +(YRETCODE)    handleEvents:(NSError**) error;
 
 @end
 
 
-
+//NS_ASSUME_NONNULL_BEGIN
 //
 // YDevice Class (used internally)
 //
@@ -879,11 +903,11 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
 -(id)           initWithDeviceDescriptor:(YDEV_DESCR)devdesc;
 +(YDevice*)     getDevice:(YDEV_DESCR)devdescr;
 +(void)         PlugDevice:(YDEV_DESCR)devdescr;
--(YRETCODE)     HTTPRequestAsync:(NSString*)request :(HTTPRequestCallback)callback :(NSMutableDictionary*)context :(NSError**)error;
--(YRETCODE)     HTTPRequest:(NSString*)request :(NSMutableData**)buffer :(NSError**)error;
--(YRETCODE)     requestAPI:(NSString**)apires :(NSError**)error;
+-(YRETCODE)     HTTPRequestAsync:(NSString*)request :(nullable HTTPRequestCallback)callback :(nullable NSMutableDictionary*)context :(NSError**)error;
+-(YRETCODE)     HTTPRequest:(NSString*)request :(NSMutableData* _Nullable * _Nonnull)buffer :(NSError**)error;
+-(YRETCODE)     requestAPI:(NSString * _Nullable * _Nonnull)apires :(NSError**)error;
 -(void)         clearCache;
--(YRETCODE)     getFunctions:(NSArray**)functions :(NSError**)error;
+-(YRETCODE)     getFunctions:(NSArray * _Nullable * _Nonnull)functions :(NSError**)error;
 @end
 
 //--- (generated code: YFunction class start)
@@ -937,10 +961,10 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
 -(YRETCODE)    _getDescriptor:(YFUN_DESCR*)fundescr :(NSError**)error;
 
 // Method used to retrieve our device object (may trigger a hub scan)
--(YRETCODE)    _getDevice:(YDevice**) dev :(NSError**)error;
+-(YRETCODE)    _getDevice:(YDevice* _Nullable * _Nonnull) dev :(NSError**)error;
 
 // Method used to find the next instance of our function
--(YRETCODE)    _nextFunction:(NSString**) hwId;
+-(YRETCODE)    _nextFunction:(NSString* _Nullable * _Nonnull) hwId;
 
 // Function-specific method for parsing JSON output and caching result
 -(int)         _parse:(yJsonStateMachine*) j;
@@ -948,7 +972,7 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
 
 -(NSString*)   _escapeAttr:(NSString*)attr;
 // Method used to change attributes
--(YRETCODE)    _buildSetRequest:(NSString*)changeattr  :(NSString*)changeval :(NSString**)request :(NSError**)error;
+-(YRETCODE)    _buildSetRequest:(NSString*)changeattr  :(NSString*)changeval :(NSString* _Nullable * _Nonnull)request :(NSError**)error;
 // Method used to change attributes
 -(YRETCODE)    _setAttr:(NSString*)attrname :(NSString*)newvalue;
 // Method used to send http request to the device (not the function)
@@ -1061,7 +1085,7 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerValueCallback:(YFunctionValueCallback)callback;
+-(int)     registerValueCallback:(YFunctionValueCallback _Nullable)callback;
 
 -(int)     _invokeValueCallback:(NSString*)value;
 
@@ -1125,11 +1149,13 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
 /**
  * comment from .yc definition
  */
--(YFunction*) nextFunction;
+-(nullable YFunction*) nextFunction
+NS_SWIFT_NAME(nextFunction());
 /**
  * comment from .yc definition
  */
-+(YFunction*) FirstFunction;
++(nullable YFunction*) FirstFunction
+NS_SWIFT_NAME(FirstFunction());
 //--- (end of generated code: YFunction public methods declaration)
 
 /**
@@ -1343,7 +1369,7 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
 
 
 // Method used to retrieve details of the nth function of our device
--(YRETCODE)        _getFunction:(int) idx  :(NSString**)serial  :(NSString**)funcId :(NSString**)baseType :(NSString**)funcName :(NSString**)funcVal :(NSError**)error;
+-(YRETCODE)        _getFunction:(int) idx  :(NSString* _Nullable * _Nullable)serial  :(NSString* _Nullable * _Nullable)funcId :(NSString* _Nullable * _Nullable)baseType :(NSString* _Nullable * _Nullable)funcName :(NSString* _Nullable * _Nullable)funcVal :(NSError**)error;
 
 +(void) _updateModuleCallbackList:(YModule*)func :(BOOL)add;
 
@@ -1620,7 +1646,7 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerValueCallback:(YModuleValueCallback)callback;
+-(int)     registerValueCallback:(YModuleValueCallback _Nullable)callback;
 
 -(int)     _invokeValueCallback:(NSString*)value;
 
@@ -1679,7 +1705,7 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
  *         arguments: the module object that emitted the log message, and the character string containing the log.
  *         On failure, throws an exception or returns a negative error code.
  */
--(int)     registerLogCallback:(YModuleLogCallback)callback;
+-(int)     registerLogCallback:(YModuleLogCallback _Nullable)callback;
 
 -(YModuleLogCallback)     get_logCallback;
 
@@ -1690,7 +1716,7 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
  * @param callback : a procedure taking a YModule parameter, or nil
  *         to unregister a previously registered  callback.
  */
--(int)     registerConfigChangeCallback:(YModuleConfigChangeCallback)callback;
+-(int)     registerConfigChangeCallback:(YModuleConfigChangeCallback _Nullable)callback;
 
 -(int)     _invokeConfigChangeCallback;
 
@@ -1702,7 +1728,7 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
  * @param callback : The callback function to call, or nil to unregister a
  *         previously registered callback.
  */
--(int)     registerBeaconCallback:(YModuleBeaconCallback)callback;
+-(int)     registerBeaconCallback:(YModuleBeaconCallback _Nullable)callback;
 
 -(int)     _invokeBeaconCallback:(int)beaconState;
 
@@ -1910,7 +1936,8 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
  *         the next module found, or a nil pointer
  *         if there are no more modules to enumerate.
  */
--(YModule*) nextModule;
+-(nullable YModule*) nextModule
+NS_SWIFT_NAME(nextModule());
 /**
  * Starts the enumeration of modules currently accessible.
  * Use the method YModule.nextModule() to iterate on the
@@ -1920,7 +1947,8 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
  *         the first module currently online, or a nil pointer
  *         if there are none.
  */
-+(YModule*) FirstModule;
++(nullable YModule*) FirstModule
+NS_SWIFT_NAME(FirstModule());
 //--- (end of generated code: YModule public methods declaration)
 
 @end
@@ -2263,7 +2291,7 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerValueCallback:(YSensorValueCallback)callback;
+-(int)     registerValueCallback:(YSensorValueCallback _Nullable)callback;
 
 -(int)     _invokeValueCallback:(NSString*)value;
 
@@ -2343,7 +2371,7 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerTimedReportCallback:(YSensorTimedReportCallback)callback;
+-(int)     registerTimedReportCallback:(YSensorTimedReportCallback _Nullable)callback;
 
 -(int)     _invokeTimedReportCallback:(YMeasure*)value;
 
@@ -2406,7 +2434,8 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
  *         a sensor currently online, or a nil pointer
  *         if there are no more sensors to enumerate.
  */
--(YSensor*) nextSensor;
+-(nullable YSensor*) nextSensor
+NS_SWIFT_NAME(nextSensor());
 /**
  * Starts the enumeration of sensors currently accessible.
  * Use the method YSensor.nextSensor() to iterate on
@@ -2416,7 +2445,8 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
  *         the first sensor currently online, or a nil pointer
  *         if there are none.
  */
-+(YSensor*) FirstSensor;
++(nullable YSensor*) FirstSensor
+NS_SWIFT_NAME(FirstSensor());
 //--- (end of generated code: YSensor public methods declaration)
 
 @end
@@ -3596,7 +3626,7 @@ YSensor* yFirstSensor(void);
 // Constructor is protected, use yFindDataLogger factory function to instantiate
 -(id)    initWith:(NSString*) func;
 
--(int) _getData:(unsigned)runIdx  :(unsigned)timeIdx :(NSString**) buffer :(yJsonStateMachine*) j;
+-(int) _getData:(unsigned)runIdx  :(unsigned)timeIdx :(NSString* _Nullable * _Nonnull) buffer :(yJsonStateMachine*) j;
 
 //--- (generated code: YDataLogger private methods declaration)
 // Function-specific method for parsing of JSON output and caching result
@@ -3765,7 +3795,7 @@ YSensor* yFirstSensor(void);
  * call registerHub() at application initialization time.
  *
  * @param func : a string that uniquely characterizes the data logger, for instance
- *         Y3DMK002.dataLogger.
+ *         LIGHTMK3.dataLogger.
  *
  * @return a YDataLogger object allowing you to drive the data logger.
  */
@@ -3782,7 +3812,7 @@ YSensor* yFirstSensor(void);
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerValueCallback:(YDataLoggerValueCallback)callback;
+-(int)     registerValueCallback:(YDataLoggerValueCallback _Nullable)callback;
 
 -(int)     _invokeValueCallback:(NSString*)value;
 
@@ -3823,7 +3853,8 @@ YSensor* yFirstSensor(void);
  *         a data logger currently online, or a nil pointer
  *         if there are no more data loggers to enumerate.
  */
--(YDataLogger*) nextDataLogger;
+-(nullable YDataLogger*) nextDataLogger
+NS_SWIFT_NAME(nextDataLogger());
 /**
  * Starts the enumeration of data loggers currently accessible.
  * Use the method YDataLogger.nextDataLogger() to iterate on
@@ -3833,7 +3864,8 @@ YSensor* yFirstSensor(void);
  *         the first data logger currently online, or a nil pointer
  *         if there are none.
  */
-+(YDataLogger*) FirstDataLogger;
++(nullable YDataLogger*) FirstDataLogger
+NS_SWIFT_NAME(FirstDataLogger());
 //--- (end of generated code: YDataLogger public methods declaration)
 
 @end
@@ -3863,7 +3895,7 @@ YSensor* yFirstSensor(void);
  * call registerHub() at application initialization time.
  *
  * @param func : a string that uniquely characterizes the data logger, for instance
- *         Y3DMK002.dataLogger.
+ *         LIGHTMK3.dataLogger.
  *
  * @return a YDataLogger object allowing you to drive the data logger.
  */
@@ -3883,3 +3915,4 @@ YDataLogger* yFirstDataLogger(void);
 CF_EXTERN_C_END
 
 
+NS_ASSUME_NONNULL_END

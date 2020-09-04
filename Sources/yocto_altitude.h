@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_altitude.h 39658 2020-03-12 15:36:29Z seb $
+ *  $Id: yocto_altitude.h 41625 2020-08-31 07:09:39Z seb $
  *
  *  Declares yFindAltitude(), the high-level API for Altitude functions
  *
@@ -39,6 +39,7 @@
 
 #include "yocto_api.h"
 CF_EXTERN_C_BEGIN
+NS_ASSUME_NONNULL_BEGIN
 
 @class YAltitude;
 
@@ -182,7 +183,7 @@ typedef void (*YAltitudeTimedReportCallback)(YAltitude *func, YMeasure *measure)
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerValueCallback:(YAltitudeValueCallback)callback;
+-(int)     registerValueCallback:(YAltitudeValueCallback _Nullable)callback;
 
 -(int)     _invokeValueCallback:(NSString*)value;
 
@@ -197,7 +198,7 @@ typedef void (*YAltitudeTimedReportCallback)(YAltitude *func, YMeasure *measure)
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerTimedReportCallback:(YAltitudeTimedReportCallback)callback;
+-(int)     registerTimedReportCallback:(YAltitudeTimedReportCallback _Nullable)callback;
 
 -(int)     _invokeTimedReportCallback:(YMeasure*)value;
 
@@ -212,7 +213,8 @@ typedef void (*YAltitudeTimedReportCallback)(YAltitude *func, YMeasure *measure)
  *         an altimeter currently online, or a nil pointer
  *         if there are no more altimeters to enumerate.
  */
--(YAltitude*) nextAltitude;
+-(nullable YAltitude*) nextAltitude
+NS_SWIFT_NAME(nextAltitude());
 /**
  * Starts the enumeration of altimeters currently accessible.
  * Use the method YAltitude.nextAltitude() to iterate on
@@ -222,7 +224,8 @@ typedef void (*YAltitudeTimedReportCallback)(YAltitude *func, YMeasure *measure)
  *         the first altimeter currently online, or a nil pointer
  *         if there are none.
  */
-+(YAltitude*) FirstAltitude;
++(nullable YAltitude*) FirstAltitude
+NS_SWIFT_NAME(FirstAltitude());
 //--- (end of YAltitude public methods declaration)
 
 @end
@@ -269,5 +272,6 @@ YAltitude* yFindAltitude(NSString* func);
 YAltitude* yFirstAltitude(void);
 
 //--- (end of YAltitude functions declaration)
+NS_ASSUME_NONNULL_END
 CF_EXTERN_C_END
 

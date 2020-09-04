@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_messagebox.h 38913 2019-12-20 18:59:49Z mvuilleu $
+ * $Id: yocto_messagebox.h 41625 2020-08-31 07:09:39Z seb $
  *
  * Declares yFindMessageBox(), the high-level API for MessageBox functions
  *
@@ -39,7 +39,7 @@
 
 #include "yocto_api.h"
 CF_EXTERN_C_BEGIN
-
+NS_ASSUME_NONNULL_BEGIN
 @class YSms;
 @class YMessageBox;
 
@@ -394,7 +394,7 @@ typedef void (*YMessageBoxValueCallback)(YMessageBox *func, NSString *functionVa
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerValueCallback:(YMessageBoxValueCallback)callback;
+-(int)     registerValueCallback:(YMessageBoxValueCallback _Nullable)callback;
 
 -(int)     _invokeValueCallback:(NSString*)value;
 
@@ -493,7 +493,8 @@ typedef void (*YMessageBoxValueCallback)(YMessageBox *func, NSString *functionVa
  *         a SMS message box interface currently online, or a nil pointer
  *         if there are no more SMS message box interfaces to enumerate.
  */
--(YMessageBox*) nextMessageBox;
+-(nullable YMessageBox*) nextMessageBox
+NS_SWIFT_NAME(nextMessageBox());
 /**
  * Starts the enumeration of SMS message box interfaces currently accessible.
  * Use the method YMessageBox.nextMessageBox() to iterate on
@@ -503,7 +504,8 @@ typedef void (*YMessageBoxValueCallback)(YMessageBox *func, NSString *functionVa
  *         the first SMS message box interface currently online, or a nil pointer
  *         if there are none.
  */
-+(YMessageBox*) FirstMessageBox;
++(nullable YMessageBox*) FirstMessageBox
+NS_SWIFT_NAME(FirstMessageBox());
 //--- (end of generated code: YMessageBox public methods declaration)
 
 @end
@@ -550,5 +552,6 @@ YMessageBox* yFindMessageBox(NSString* func);
 YMessageBox* yFirstMessageBox(void);
 
 //--- (end of generated code: YMessageBox functions declaration)
+NS_ASSUME_NONNULL_END
 CF_EXTERN_C_END
 

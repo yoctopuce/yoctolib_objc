@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_bluetoothlink.m 38899 2019-12-20 17:21:03Z mvuilleu $
+ *  $Id: yocto_bluetoothlink.m 41625 2020-08-31 07:09:39Z seb $
  *
  *  Implements the high-level API for BluetoothLink functions
  *
@@ -562,7 +562,7 @@
  *         the new advertised value.
  * @noreturn
  */
--(int) registerValueCallback:(YBluetoothLinkValueCallback)callback
+-(int) registerValueCallback:(YBluetoothLinkValueCallback _Nullable)callback
 {
     NSString* val;
     if (callback != NULL) {

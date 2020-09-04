@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_serialport.m 40298 2020-05-05 08:37:49Z seb $
+ * $Id: yocto_serialport.m 41625 2020-08-31 07:09:39Z seb $
  *
  * Implements the high-level API for SerialPort functions
  *
@@ -114,9 +114,9 @@
 }
 
 /**
- * Returns the message direction (RX=0 , TX=1) .
+ * Returns the message direction (RX=0, TX=1).
  *
- * @return the message direction (RX=0 , TX=1) .
+ * @return the message direction (RX=0, TX=1).
  */
 -(int) get_direction
 {
@@ -595,6 +595,7 @@
 /**
  * Returns the type of protocol used over the serial line, as a string.
  * Possible values are "Line" for ASCII messages separated by CR and/or LF,
+ * "StxEtx" for ASCII messages delimited by STX/ETX codes,
  * "Frame:[timeout]ms" for binary messages separated by a delay time,
  * "Modbus-ASCII" for MODBUS messages in ASCII mode,
  * "Modbus-RTU" for MODBUS messages in RTU mode,
@@ -628,6 +629,7 @@
 /**
  * Changes the type of protocol used over the serial line.
  * Possible values are "Line" for ASCII messages separated by CR and/or LF,
+ * "StxEtx" for ASCII messages delimited by STX/ETX codes,
  * "Frame:[timeout]ms" for binary messages separated by a delay time,
  * "Modbus-ASCII" for MODBUS messages in ASCII mode,
  * "Modbus-RTU" for MODBUS messages in RTU mode,
@@ -818,7 +820,7 @@
  *         the new advertised value.
  * @noreturn
  */
--(int) registerValueCallback:(YSerialPortValueCallback)callback
+-(int) registerValueCallback:(YSerialPortValueCallback _Nullable)callback
 {
     NSString* val;
     if (callback != NULL) {
@@ -1584,6 +1586,24 @@
         idx = idx + 1;
     }
     return res;
+}
+
+/**
+ * Sends an ASCII string to the serial port, preceeded with an STX code and
+ * followed by an ETX code.
+ *
+ * @param text : the text string to send
+ *
+ * @return YAPI_SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) writeStxEtx:(NSString*)text
+{
+    NSMutableData* buff;
+    buff = [NSMutableData dataWithData:[[NSString stringWithFormat:@"%c%@%c", 2, text,3] dataUsingEncoding:NSISOLatin1StringEncoding]];
+    // send string using file upload
+    return [self _upload:@"txdata" :buff];
 }
 
 /**

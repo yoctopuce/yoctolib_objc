@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_wireless.h 38899 2019-12-20 17:21:03Z mvuilleu $
+ * $Id: yocto_wireless.h 41625 2020-08-31 07:09:39Z seb $
  *
  * Declares yFindWireless(), the high-level API for Wireless functions
  *
@@ -39,6 +39,7 @@
 
 #include "yocto_api.h"
 CF_EXTERN_C_BEGIN
+NS_ASSUME_NONNULL_BEGIN
 @class YWireless;
 //--- (generated code: YWireless globals)
 typedef void (*YWirelessValueCallback)(YWireless *func, NSString *functionValue);
@@ -302,7 +303,7 @@ typedef enum {
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerValueCallback:(YWirelessValueCallback)callback;
+-(int)     registerValueCallback:(YWirelessValueCallback _Nullable)callback;
 
 -(int)     _invokeValueCallback:(NSString*)value;
 
@@ -403,7 +404,8 @@ typedef enum {
  *         a wireless LAN interface currently online, or a nil pointer
  *         if there are no more wireless LAN interfaces to enumerate.
  */
--(YWireless*) nextWireless;
+-(nullable YWireless*) nextWireless
+NS_SWIFT_NAME(nextWireless());
 /**
  * Starts the enumeration of wireless LAN interfaces currently accessible.
  * Use the method YWireless.nextWireless() to iterate on
@@ -413,7 +415,8 @@ typedef enum {
  *         the first wireless LAN interface currently online, or a nil pointer
  *         if there are none.
  */
-+(YWireless*) FirstWireless;
++(nullable YWireless*) FirstWireless
+NS_SWIFT_NAME(FirstWireless());
 //--- (end of generated code: YWireless public methods declaration)
 
 @end
@@ -460,5 +463,6 @@ YWireless* yFindWireless(NSString* func);
 YWireless* yFirstWireless(void);
 
 //--- (end of generated code: YWireless functions declaration)
+NS_ASSUME_NONNULL_END
 CF_EXTERN_C_END
 

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_display.h 38899 2019-12-20 17:21:03Z mvuilleu $
+ * $Id: yocto_display.h 41625 2020-08-31 07:09:39Z seb $
  *
  * Declares yFindDisplay(), the high-level API for Display functions
  *
@@ -39,6 +39,7 @@
 
 #import "yocto_api.h"
 CF_EXTERN_C_BEGIN
+NS_ASSUME_NONNULL_BEGIN
 @class YDisplay;
 
 //--- (generated code: YDisplayLayer globals)
@@ -828,7 +829,7 @@ typedef enum {
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerValueCallback:(YDisplayValueCallback)callback;
+-(int)     registerValueCallback:(YDisplayValueCallback _Nullable)callback;
 
 -(int)     _invokeValueCallback:(NSString*)value;
 
@@ -976,7 +977,8 @@ typedef enum {
  *         a display currently online, or a nil pointer
  *         if there are no more displays to enumerate.
  */
--(YDisplay*) nextDisplay;
+-(nullable YDisplay*) nextDisplay
+NS_SWIFT_NAME(nextDisplay());
 /**
  * Starts the enumeration of displays currently accessible.
  * Use the method YDisplay.nextDisplay() to iterate on
@@ -986,7 +988,8 @@ typedef enum {
  *         the first display currently online, or a nil pointer
  *         if there are none.
  */
-+(YDisplay*) FirstDisplay;
++(nullable YDisplay*) FirstDisplay
+NS_SWIFT_NAME(FirstDisplay());
 //--- (end of generated code: YDisplay public methods declaration)
 
 
@@ -1035,5 +1038,6 @@ YDisplay* yFindDisplay(NSString* func);
 YDisplay* yFirstDisplay(void);
 
 //--- (end of generated code: YDisplay functions declaration)
+NS_ASSUME_NONNULL_END
 CF_EXTERN_C_END
 

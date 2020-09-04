@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_spiport.m 40298 2020-05-05 08:37:49Z seb $
+ *  $Id: yocto_spiport.m 41625 2020-08-31 07:09:39Z seb $
  *
  *  Implements the high-level API for SpiPort functions
  *
@@ -42,6 +42,99 @@
 #include "yapi/yjson.h"
 #include "yapi/yapi.h"
 
+@implementation YSpiSnoopingRecord
+
+
+-(id)   initWith:(NSString *)json_str
+{
+    yJsonStateMachine j;
+    if(!(self = [super init]))
+        return nil;
+//--- (generated code: YSpiSnoopingRecord attributes initialization)
+    _tim = 0;
+    _dir = 0;
+//--- (end of generated code: YSpiSnoopingRecord attributes initialization)
+
+    // Parse JSON data
+    j.src = STR_oc2y(json_str);
+    j.end = j.src + strlen(j.src);
+    j.st = YJSON_START;
+    if(yJsonParse(&j) != YJSON_PARSE_AVAIL || j.st != YJSON_PARSE_STRUCT) {
+        return self;
+    }
+    while(yJsonParse(&j) == YJSON_PARSE_AVAIL && j.st == YJSON_PARSE_MEMBNAME) {
+        if (!strcmp(j.token, "m")) {
+            if (yJsonParse(&j) != YJSON_PARSE_AVAIL) {
+                return self;
+            }
+            _dir = (j.token[0] == '<' ? 1 : 0);
+            _msg = STR_y2oc(j.token+1);
+            while(j.next == YJSON_PARSE_STRINGCONT && yJsonParse(&j) == YJSON_PARSE_AVAIL) {
+                _msg =[_msg stringByAppendingString: STR_y2oc(j.token)];
+                ARC_retain(_msg);
+            }
+        } else if(!strcmp(j.token, "t")) {
+            if (yJsonParse(&j) != YJSON_PARSE_AVAIL) {
+                return self;
+            }
+            _tim = atoi(j.token);;
+        } else {
+            yJsonSkip(&j, 1);
+        }
+    }
+    return self;
+}
+
+
+// destructor
+-(void)  dealloc
+{
+//--- (generated code: YSpiSnoopingRecord cleanup)
+    ARC_dealloc(super);
+//--- (end of generated code: YSpiSnoopingRecord cleanup)
+}
+
+//--- (generated code: YSpiSnoopingRecord private methods implementation)
+
+//--- (end of generated code: YSpiSnoopingRecord private methods implementation)
+
+//--- (generated code: YSpiSnoopingRecord public methods implementation)
+/**
+ * Returns the elapsed time, in ms, since the beginning of the preceding message.
+ *
+ * @return the elapsed time, in ms, since the beginning of the preceding message.
+ */
+-(int) get_time
+{
+    return _tim;
+}
+
+/**
+ * Returns the message direction (RX=0, TX=1).
+ *
+ * @return the message direction (RX=0, TX=1).
+ */
+-(int) get_direction
+{
+    return _dir;
+}
+
+/**
+ * Returns the message content.
+ *
+ * @return the message content.
+ */
+-(NSString*) get_message
+{
+    return _msg;
+}
+
+//--- (end of generated code: YSpiSnoopingRecord public methods implementation)
+
+@end
+//--- (generated code: YSpiSnoopingRecord functions)
+//--- (end of generated code: YSpiSnoopingRecord functions)
+
 
 
 @implementation YSpiPort
@@ -52,7 +145,7 @@
    if(!(self = [super initWith:func]))
           return nil;
     _className = @"SpiPort";
-//--- (YSpiPort attributes initialization)
+//--- (generated code: YSpiPort attributes initialization)
     _rxCount = Y_RXCOUNT_INVALID;
     _txCount = Y_TXCOUNT_INVALID;
     _errCount = Y_ERRCOUNT_INVALID;
@@ -72,15 +165,15 @@
     _valueCallbackSpiPort = NULL;
     _rxptr = 0;
     _rxbuffptr = 0;
-//--- (end of YSpiPort attributes initialization)
+//--- (end of generated code: YSpiPort attributes initialization)
     return self;
 }
-//--- (YSpiPort yapiwrapper)
-//--- (end of YSpiPort yapiwrapper)
+//--- (generated code: YSpiPort yapiwrapper)
+//--- (end of generated code: YSpiPort yapiwrapper)
 // destructor
 -(void)  dealloc
 {
-//--- (YSpiPort cleanup)
+//--- (generated code: YSpiPort cleanup)
     ARC_release(_lastMsg);
     _lastMsg = nil;
     ARC_release(_currentJob);
@@ -94,9 +187,9 @@
     ARC_release(_spiMode);
     _spiMode = nil;
     ARC_dealloc(super);
-//--- (end of YSpiPort cleanup)
+//--- (end of generated code: YSpiPort cleanup)
 }
-//--- (YSpiPort private methods implementation)
+//--- (generated code: YSpiPort private methods implementation)
 
 -(int) _parseAttr:(yJsonStateMachine*) j
 {
@@ -194,8 +287,8 @@
     }
     return [super _parseAttr:j];
 }
-//--- (end of YSpiPort private methods implementation)
-//--- (YSpiPort public methods implementation)
+//--- (end of generated code: YSpiPort private methods implementation)
+//--- (generated code: YSpiPort public methods implementation)
 /**
  * Returns the total number of bytes received since last reset.
  *
@@ -814,7 +907,7 @@
  *         the new advertised value.
  * @noreturn
  */
--(int) registerValueCallback:(YSpiPortValueCallback)callback
+-(int) registerValueCallback:(YSpiPortValueCallback _Nullable)callback
 {
     NSString* val;
     if (callback != NULL) {
@@ -1520,6 +1613,46 @@
     return [self sendCommand:[NSString stringWithFormat:@"S%d",val]];
 }
 
+/**
+ * Retrieves messages (both direction) in the SPI port buffer, starting at current position.
+ *
+ * If no message is found, the search waits for one up to the specified maximum timeout
+ * (in milliseconds).
+ *
+ * @param maxWait : the maximum number of milliseconds to wait for a message if none is found
+ *         in the receive buffer.
+ *
+ * @return an array of YSpiSnoopingRecord objects containing the messages found, if any.
+ *
+ * On failure, throws an exception or returns an empty array.
+ */
+-(NSMutableArray*) snoopMessages:(int)maxWait
+{
+    NSString* url;
+    NSMutableData* msgbin;
+    NSMutableArray* msgarr = [NSMutableArray array];
+    int msglen;
+    NSMutableArray* res = [NSMutableArray array];
+    int idx;
+
+    url = [NSString stringWithFormat:@"rxmsg.json?pos=%d&maxw=%d&t=0", _rxptr,maxWait];
+    msgbin = [self _download:url];
+    msgarr = [self _json_get_array:msgbin];
+    msglen = (int)[msgarr count];
+    if (msglen == 0) {
+        return res;
+    }
+    // last element of array is the new position
+    msglen = msglen - 1;
+    _rxptr = [[msgarr objectAtIndex:msglen] intValue];
+    idx = 0;
+    while (idx < msglen) {
+        [res addObject:ARC_sendAutorelease([[YSpiSnoopingRecord alloc] initWith:[msgarr objectAtIndex:idx]])];
+        idx = idx + 1;
+    }
+    return res;
+}
+
 
 -(YSpiPort*)   nextSpiPort
 {
@@ -1546,10 +1679,10 @@
     return nil;
 }
 
-//--- (end of YSpiPort public methods implementation)
+//--- (end of generated code: YSpiPort public methods implementation)
 
 @end
-//--- (YSpiPort functions)
+//--- (generated code: YSpiPort functions)
 
 YSpiPort *yFindSpiPort(NSString* func)
 {
@@ -1561,4 +1694,4 @@ YSpiPort *yFirstSpiPort(void)
     return [YSpiPort FirstSpiPort];
 }
 
-//--- (end of YSpiPort functions)
+//--- (end of generated code: YSpiPort functions)

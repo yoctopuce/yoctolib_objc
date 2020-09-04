@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_gyro.m 37827 2019-10-25 13:07:48Z mvuilleu $
+ * $Id: yocto_gyro.m 41625 2020-08-31 07:09:39Z seb $
  *
  * Implements the high-level API for Gyro functions
  *
@@ -123,7 +123,7 @@
  *         the new advertised value.
  * @noreturn
  */
--(int) registerValueCallback:(YQtValueCallback)callback
+-(int) registerValueCallback:(YQtValueCallback _Nullable)callback
 {
     NSString* val;
     if (callback != NULL) {
@@ -163,7 +163,7 @@
  *         the new advertised value.
  * @noreturn
  */
--(int) registerTimedReportCallback:(YQtTimedReportCallback)callback
+-(int) registerTimedReportCallback:(YQtTimedReportCallback _Nullable)callback
 {
     YSensor* sensor;
     sensor = self;
@@ -479,7 +479,7 @@ static void yInternalGyroCallback(YQt *obj, NSString *value)
  *         the new advertised value.
  * @noreturn
  */
--(int) registerValueCallback:(YGyroValueCallback)callback
+-(int) registerValueCallback:(YGyroValueCallback _Nullable)callback
 {
     NSString* val;
     if (callback != NULL) {
@@ -519,7 +519,7 @@ static void yInternalGyroCallback(YQt *obj, NSString *value)
  *         the new advertised value.
  * @noreturn
  */
--(int) registerTimedReportCallback:(YGyroTimedReportCallback)callback
+-(int) registerTimedReportCallback:(YGyroTimedReportCallback _Nullable)callback
 {
     YSensor* sensor;
     sensor = self;
@@ -747,7 +747,7 @@ static void yInternalGyroCallback(YQt *obj, NSString *value)
  *         (as floating-point numbers).
  * @noreturn
  */
--(int) registerQuaternionCallback:(YQuatCallback)callback
+-(int) registerQuaternionCallback:(YQuatCallback _Nullable)callback
 {
     _quatCallback = callback;
     if (callback != NULL) {
@@ -788,7 +788,7 @@ static void yInternalGyroCallback(YQt *obj, NSString *value)
  *         in degrees (as floating-point numbers).
  * @noreturn
  */
--(int) registerAnglesCallback:(YAnglesCallback)callback
+-(int) registerAnglesCallback:(YAnglesCallback _Nullable)callback
 {
     _anglesCallback = callback;
     if (callback != NULL) {

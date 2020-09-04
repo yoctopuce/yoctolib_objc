@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_pwminput.h 38899 2019-12-20 17:21:03Z mvuilleu $
+ *  $Id: yocto_pwminput.h 41625 2020-08-31 07:09:39Z seb $
  *
  *  Declares yFindPwmInput(), the high-level API for PwmInput functions
  *
@@ -39,6 +39,7 @@
 
 #include "yocto_api.h"
 CF_EXTERN_C_BEGIN
+NS_ASSUME_NONNULL_BEGIN
 
 @class YPwmInput;
 
@@ -58,6 +59,7 @@ typedef enum {
     Y_PWMREPORTMODE_PWM_STATE = 7,
     Y_PWMREPORTMODE_PWM_FREQ_CPS = 8,
     Y_PWMREPORTMODE_PWM_FREQ_CPM = 9,
+    Y_PWMREPORTMODE_PWM_PERIODCOUNT = 10,
     Y_PWMREPORTMODE_INVALID = -1,
 } Y_PWMREPORTMODE_enum;
 #endif
@@ -68,6 +70,8 @@ typedef enum {
 #define Y_PULSECOUNTER_INVALID          YAPI_INVALID_LONG
 #define Y_PULSETIMER_INVALID            YAPI_INVALID_LONG
 #define Y_DEBOUNCEPERIOD_INVALID        YAPI_INVALID_UINT
+#define Y_BANDWIDTH_INVALID             YAPI_INVALID_UINT
+#define Y_EDGESPERPERIOD_INVALID        YAPI_INVALID_UINT
 //--- (end of YPwmInput globals)
 
 //--- (YPwmInput class start)
@@ -93,6 +97,8 @@ typedef enum {
     s64             _pulseTimer;
     Y_PWMREPORTMODE_enum _pwmReportMode;
     int             _debouncePeriod;
+    int             _bandwidth;
+    int             _edgesPerPeriod;
     YPwmInputValueCallback _valueCallbackPwmInput;
     YPwmInputTimedReportCallback _timedReportCallbackPwmInput;
 //--- (end of YPwmInput attributes declaration)
@@ -203,8 +209,9 @@ typedef enum {
  * @return a value among Y_PWMREPORTMODE_PWM_DUTYCYCLE, Y_PWMREPORTMODE_PWM_FREQUENCY,
  * Y_PWMREPORTMODE_PWM_PULSEDURATION, Y_PWMREPORTMODE_PWM_EDGECOUNT, Y_PWMREPORTMODE_PWM_PULSECOUNT,
  * Y_PWMREPORTMODE_PWM_CPS, Y_PWMREPORTMODE_PWM_CPM, Y_PWMREPORTMODE_PWM_STATE,
- * Y_PWMREPORTMODE_PWM_FREQ_CPS and Y_PWMREPORTMODE_PWM_FREQ_CPM corresponding to the parameter
- * (frequency/duty cycle, pulse width, edges count) returned by the get_currentValue function and callbacks
+ * Y_PWMREPORTMODE_PWM_FREQ_CPS, Y_PWMREPORTMODE_PWM_FREQ_CPM and Y_PWMREPORTMODE_PWM_PERIODCOUNT
+ * corresponding to the parameter (frequency/duty cycle, pulse width, edges count) returned by the
+ * get_currentValue function and callbacks
  *
  * On failure, throws an exception or returns Y_PWMREPORTMODE_INVALID.
  */
@@ -222,8 +229,9 @@ typedef enum {
  * @param newval : a value among Y_PWMREPORTMODE_PWM_DUTYCYCLE, Y_PWMREPORTMODE_PWM_FREQUENCY,
  * Y_PWMREPORTMODE_PWM_PULSEDURATION, Y_PWMREPORTMODE_PWM_EDGECOUNT, Y_PWMREPORTMODE_PWM_PULSECOUNT,
  * Y_PWMREPORTMODE_PWM_CPS, Y_PWMREPORTMODE_PWM_CPM, Y_PWMREPORTMODE_PWM_STATE,
- * Y_PWMREPORTMODE_PWM_FREQ_CPS and Y_PWMREPORTMODE_PWM_FREQ_CPM corresponding to the  parameter  type
- * (frequency/duty cycle, pulse width, or edge count) returned by the get_currentValue function and callbacks
+ * Y_PWMREPORTMODE_PWM_FREQ_CPS, Y_PWMREPORTMODE_PWM_FREQ_CPM and Y_PWMREPORTMODE_PWM_PERIODCOUNT
+ * corresponding to the  parameter  type (frequency/duty cycle, pulse width, or edge count) returned
+ * by the get_currentValue function and callbacks
  *
  * @return YAPI_SUCCESS if the call succeeds.
  *
@@ -256,6 +264,45 @@ typedef enum {
 -(int)     set_debouncePeriod:(int) newval;
 -(int)     setDebouncePeriod:(int) newval;
 
+/**
+ * Returns the input signal sampling rate, in kHz.
+ *
+ * @return an integer corresponding to the input signal sampling rate, in kHz
+ *
+ * On failure, throws an exception or returns Y_BANDWIDTH_INVALID.
+ */
+-(int)     get_bandwidth;
+
+
+-(int) bandwidth;
+/**
+ * Changes the input signal sampling rate, measured in kHz.
+ * A lower sampling frequency can be used to hide hide-frequency bounce effects,
+ * for instance on electromechanical contacts, but limits the measure resolution.
+ * Remember to call the saveToFlash()
+ * method of the module if the modification must be kept.
+ *
+ * @param newval : an integer corresponding to the input signal sampling rate, measured in kHz
+ *
+ * @return YAPI_SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     set_bandwidth:(int) newval;
+-(int)     setBandwidth:(int) newval;
+
+/**
+ * Returns the number of edges detected per preiod. For a clean PWM signal, this should be exactly two,
+ * but in cas the signal is created by a mechanical contact with bounces, it can get higher.
+ *
+ * @return an integer corresponding to the number of edges detected per preiod
+ *
+ * On failure, throws an exception or returns Y_EDGESPERPERIOD_INVALID.
+ */
+-(int)     get_edgesPerPeriod;
+
+
+-(int) edgesPerPeriod;
 /**
  * Retrieves a PWM input for a given identifier.
  * The identifier can be specified using several formats:
@@ -297,7 +344,7 @@ typedef enum {
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerValueCallback:(YPwmInputValueCallback)callback;
+-(int)     registerValueCallback:(YPwmInputValueCallback _Nullable)callback;
 
 -(int)     _invokeValueCallback:(NSString*)value;
 
@@ -312,7 +359,7 @@ typedef enum {
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerTimedReportCallback:(YPwmInputTimedReportCallback)callback;
+-(int)     registerTimedReportCallback:(YPwmInputTimedReportCallback _Nullable)callback;
 
 -(int)     _invokeTimedReportCallback:(YMeasure*)value;
 
@@ -336,7 +383,8 @@ typedef enum {
  *         a PWM input currently online, or a nil pointer
  *         if there are no more PWM inputs to enumerate.
  */
--(YPwmInput*) nextPwmInput;
+-(nullable YPwmInput*) nextPwmInput
+NS_SWIFT_NAME(nextPwmInput());
 /**
  * Starts the enumeration of PWM inputs currently accessible.
  * Use the method YPwmInput.nextPwmInput() to iterate on
@@ -346,7 +394,8 @@ typedef enum {
  *         the first PWM input currently online, or a nil pointer
  *         if there are none.
  */
-+(YPwmInput*) FirstPwmInput;
++(nullable YPwmInput*) FirstPwmInput
+NS_SWIFT_NAME(FirstPwmInput());
 //--- (end of YPwmInput public methods declaration)
 
 @end
@@ -393,5 +442,6 @@ YPwmInput* yFindPwmInput(NSString* func);
 YPwmInput* yFirstPwmInput(void);
 
 //--- (end of YPwmInput functions declaration)
+NS_ASSUME_NONNULL_END
 CF_EXTERN_C_END
 

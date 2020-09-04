@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_buzzer.h 41109 2020-06-29 12:40:42Z seb $
+ *  $Id: yocto_buzzer.h 41625 2020-08-31 07:09:39Z seb $
  *
  *  Declares yFindBuzzer(), the high-level API for Buzzer functions
  *
@@ -39,6 +39,7 @@
 
 #include "yocto_api.h"
 CF_EXTERN_C_BEGIN
+NS_ASSUME_NONNULL_BEGIN
 
 @class YBuzzer;
 
@@ -216,7 +217,7 @@ typedef void (*YBuzzerValueCallback)(YBuzzer *func, NSString *functionValue);
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerValueCallback:(YBuzzerValueCallback)callback;
+-(int)     registerValueCallback:(YBuzzerValueCallback _Nullable)callback;
 
 -(int)     _invokeValueCallback:(NSString*)value;
 
@@ -383,7 +384,8 @@ typedef void (*YBuzzerValueCallback)(YBuzzer *func, NSString *functionValue);
  *         a buzzer currently online, or a nil pointer
  *         if there are no more buzzers to enumerate.
  */
--(YBuzzer*) nextBuzzer;
+-(nullable YBuzzer*) nextBuzzer
+NS_SWIFT_NAME(nextBuzzer());
 /**
  * Starts the enumeration of buzzers currently accessible.
  * Use the method YBuzzer.nextBuzzer() to iterate on
@@ -393,7 +395,8 @@ typedef void (*YBuzzerValueCallback)(YBuzzer *func, NSString *functionValue);
  *         the first buzzer currently online, or a nil pointer
  *         if there are none.
  */
-+(YBuzzer*) FirstBuzzer;
++(nullable YBuzzer*) FirstBuzzer
+NS_SWIFT_NAME(FirstBuzzer());
 //--- (end of YBuzzer public methods declaration)
 
 @end
@@ -440,5 +443,6 @@ YBuzzer* yFindBuzzer(NSString* func);
 YBuzzer* yFirstBuzzer(void);
 
 //--- (end of YBuzzer functions declaration)
+NS_ASSUME_NONNULL_END
 CF_EXTERN_C_END
 

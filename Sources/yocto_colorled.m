@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_colorled.m 37827 2019-10-25 13:07:48Z mvuilleu $
+ *  $Id: yocto_colorled.m 41625 2020-08-31 07:09:39Z seb $
  *
  *  Implements the high-level API for ColorLed functions
  *
@@ -536,7 +536,7 @@
  *         the new advertised value.
  * @noreturn
  */
--(int) registerValueCallback:(YColorLedValueCallback)callback
+-(int) registerValueCallback:(YColorLedValueCallback _Nullable)callback
 {
     NSString* val;
     if (callback != NULL) {

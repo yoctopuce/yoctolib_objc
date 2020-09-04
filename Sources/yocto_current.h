@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_current.h 38899 2019-12-20 17:21:03Z mvuilleu $
+ *  $Id: yocto_current.h 41625 2020-08-31 07:09:39Z seb $
  *
  *  Declares yFindCurrent(), the high-level API for Current functions
  *
@@ -39,6 +39,7 @@
 
 #include "yocto_api.h"
 CF_EXTERN_C_BEGIN
+NS_ASSUME_NONNULL_BEGIN
 
 @class YCurrent;
 
@@ -155,7 +156,7 @@ typedef enum {
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerValueCallback:(YCurrentValueCallback)callback;
+-(int)     registerValueCallback:(YCurrentValueCallback _Nullable)callback;
 
 -(int)     _invokeValueCallback:(NSString*)value;
 
@@ -170,7 +171,7 @@ typedef enum {
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerTimedReportCallback:(YCurrentTimedReportCallback)callback;
+-(int)     registerTimedReportCallback:(YCurrentTimedReportCallback _Nullable)callback;
 
 -(int)     _invokeTimedReportCallback:(YMeasure*)value;
 
@@ -185,7 +186,8 @@ typedef enum {
  *         a current sensor currently online, or a nil pointer
  *         if there are no more current sensors to enumerate.
  */
--(YCurrent*) nextCurrent;
+-(nullable YCurrent*) nextCurrent
+NS_SWIFT_NAME(nextCurrent());
 /**
  * Starts the enumeration of current sensors currently accessible.
  * Use the method YCurrent.nextCurrent() to iterate on
@@ -195,7 +197,8 @@ typedef enum {
  *         the first current sensor currently online, or a nil pointer
  *         if there are none.
  */
-+(YCurrent*) FirstCurrent;
++(nullable YCurrent*) FirstCurrent
+NS_SWIFT_NAME(FirstCurrent());
 //--- (end of YCurrent public methods declaration)
 
 @end
@@ -242,5 +245,6 @@ YCurrent* yFindCurrent(NSString* func);
 YCurrent* yFirstCurrent(void);
 
 //--- (end of YCurrent functions declaration)
+NS_ASSUME_NONNULL_END
 CF_EXTERN_C_END
 

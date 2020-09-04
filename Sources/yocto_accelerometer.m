@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_accelerometer.m 37827 2019-10-25 13:07:48Z mvuilleu $
+ *  $Id: yocto_accelerometer.m 41625 2020-08-31 07:09:39Z seb $
  *
  *  Implements the high-level API for Accelerometer functions
  *
@@ -302,7 +302,7 @@
  *         the new advertised value.
  * @noreturn
  */
--(int) registerValueCallback:(YAccelerometerValueCallback)callback
+-(int) registerValueCallback:(YAccelerometerValueCallback _Nullable)callback
 {
     NSString* val;
     if (callback != NULL) {
@@ -342,7 +342,7 @@
  *         the new advertised value.
  * @noreturn
  */
--(int) registerTimedReportCallback:(YAccelerometerTimedReportCallback)callback
+-(int) registerTimedReportCallback:(YAccelerometerTimedReportCallback _Nullable)callback
 {
     YSensor* sensor;
     sensor = self;

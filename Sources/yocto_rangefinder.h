@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_rangefinder.h 38899 2019-12-20 17:21:03Z mvuilleu $
+ *  $Id: yocto_rangefinder.h 41625 2020-08-31 07:09:39Z seb $
  *
  *  Declares yFindRangeFinder(), the high-level API for RangeFinder functions
  *
@@ -39,6 +39,7 @@
 
 #include "yocto_api.h"
 CF_EXTERN_C_BEGIN
+NS_ASSUME_NONNULL_BEGIN
 
 @class YRangeFinder;
 
@@ -251,7 +252,7 @@ typedef enum {
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerValueCallback:(YRangeFinderValueCallback)callback;
+-(int)     registerValueCallback:(YRangeFinderValueCallback _Nullable)callback;
 
 -(int)     _invokeValueCallback:(NSString*)value;
 
@@ -266,7 +267,7 @@ typedef enum {
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerTimedReportCallback:(YRangeFinderTimedReportCallback)callback;
+-(int)     registerTimedReportCallback:(YRangeFinderTimedReportCallback _Nullable)callback;
 
 -(int)     _invokeTimedReportCallback:(YMeasure*)value;
 
@@ -351,7 +352,8 @@ typedef enum {
  *         a range finder currently online, or a nil pointer
  *         if there are no more range finders to enumerate.
  */
--(YRangeFinder*) nextRangeFinder;
+-(nullable YRangeFinder*) nextRangeFinder
+NS_SWIFT_NAME(nextRangeFinder());
 /**
  * Starts the enumeration of range finders currently accessible.
  * Use the method YRangeFinder.nextRangeFinder() to iterate on
@@ -361,7 +363,8 @@ typedef enum {
  *         the first range finder currently online, or a nil pointer
  *         if there are none.
  */
-+(YRangeFinder*) FirstRangeFinder;
++(nullable YRangeFinder*) FirstRangeFinder
+NS_SWIFT_NAME(FirstRangeFinder());
 //--- (end of YRangeFinder public methods declaration)
 
 @end
@@ -408,5 +411,6 @@ YRangeFinder* yFindRangeFinder(NSString* func);
 YRangeFinder* yFirstRangeFinder(void);
 
 //--- (end of YRangeFinder functions declaration)
+NS_ASSUME_NONNULL_END
 CF_EXTERN_C_END
 

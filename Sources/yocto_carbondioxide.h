@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_carbondioxide.h 38899 2019-12-20 17:21:03Z mvuilleu $
+ *  $Id: yocto_carbondioxide.h 41625 2020-08-31 07:09:39Z seb $
  *
  *  Declares yFindCarbonDioxide(), the high-level API for CarbonDioxide functions
  *
@@ -39,6 +39,7 @@
 
 #include "yocto_api.h"
 CF_EXTERN_C_BEGIN
+NS_ASSUME_NONNULL_BEGIN
 
 @class YCarbonDioxide;
 
@@ -156,7 +157,7 @@ typedef void (*YCarbonDioxideTimedReportCallback)(YCarbonDioxide *func, YMeasure
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerValueCallback:(YCarbonDioxideValueCallback)callback;
+-(int)     registerValueCallback:(YCarbonDioxideValueCallback _Nullable)callback;
 
 -(int)     _invokeValueCallback:(NSString*)value;
 
@@ -171,7 +172,7 @@ typedef void (*YCarbonDioxideTimedReportCallback)(YCarbonDioxide *func, YMeasure
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerTimedReportCallback:(YCarbonDioxideTimedReportCallback)callback;
+-(int)     registerTimedReportCallback:(YCarbonDioxideTimedReportCallback _Nullable)callback;
 
 -(int)     _invokeTimedReportCallback:(YMeasure*)value;
 
@@ -224,7 +225,8 @@ typedef void (*YCarbonDioxideTimedReportCallback)(YCarbonDioxide *func, YMeasure
  *         a CO2 sensor currently online, or a nil pointer
  *         if there are no more CO2 sensors to enumerate.
  */
--(YCarbonDioxide*) nextCarbonDioxide;
+-(nullable YCarbonDioxide*) nextCarbonDioxide
+NS_SWIFT_NAME(nextCarbonDioxide());
 /**
  * Starts the enumeration of CO2 sensors currently accessible.
  * Use the method YCarbonDioxide.nextCarbonDioxide() to iterate on
@@ -234,7 +236,8 @@ typedef void (*YCarbonDioxideTimedReportCallback)(YCarbonDioxide *func, YMeasure
  *         the first CO2 sensor currently online, or a nil pointer
  *         if there are none.
  */
-+(YCarbonDioxide*) FirstCarbonDioxide;
++(nullable YCarbonDioxide*) FirstCarbonDioxide
+NS_SWIFT_NAME(FirstCarbonDioxide());
 //--- (end of YCarbonDioxide public methods declaration)
 
 @end
@@ -281,5 +284,6 @@ YCarbonDioxide* yFindCarbonDioxide(NSString* func);
 YCarbonDioxide* yFirstCarbonDioxide(void);
 
 //--- (end of YCarbonDioxide functions declaration)
+NS_ASSUME_NONNULL_END
 CF_EXTERN_C_END
 

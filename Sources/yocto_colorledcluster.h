@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_colorledcluster.h 41109 2020-06-29 12:40:42Z seb $
+ *  $Id: yocto_colorledcluster.h 41625 2020-08-31 07:09:39Z seb $
  *
  *  Declares yFindColorLedCluster(), the high-level API for ColorLedCluster functions
  *
@@ -39,6 +39,7 @@
 
 #include "yocto_api.h"
 CF_EXTERN_C_BEGIN
+NS_ASSUME_NONNULL_BEGIN
 
 @class YColorLedCluster;
 
@@ -230,7 +231,7 @@ typedef enum {
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerValueCallback:(YColorLedClusterValueCallback)callback;
+-(int)     registerValueCallback:(YColorLedClusterValueCallback _Nullable)callback;
 
 -(int)     _invokeValueCallback:(NSString*)value;
 
@@ -789,7 +790,8 @@ typedef enum {
  *         a RGB LED cluster currently online, or a nil pointer
  *         if there are no more RGB LED clusters to enumerate.
  */
--(YColorLedCluster*) nextColorLedCluster;
+-(nullable YColorLedCluster*) nextColorLedCluster
+NS_SWIFT_NAME(nextColorLedCluster());
 /**
  * Starts the enumeration of RGB LED clusters currently accessible.
  * Use the method YColorLedCluster.nextColorLedCluster() to iterate on
@@ -799,7 +801,8 @@ typedef enum {
  *         the first RGB LED cluster currently online, or a nil pointer
  *         if there are none.
  */
-+(YColorLedCluster*) FirstColorLedCluster;
++(nullable YColorLedCluster*) FirstColorLedCluster
+NS_SWIFT_NAME(FirstColorLedCluster());
 //--- (end of YColorLedCluster public methods declaration)
 
 @end
@@ -846,5 +849,6 @@ YColorLedCluster* yFindColorLedCluster(NSString* func);
 YColorLedCluster* yFirstColorLedCluster(void);
 
 //--- (end of YColorLedCluster functions declaration)
+NS_ASSUME_NONNULL_END
 CF_EXTERN_C_END
 

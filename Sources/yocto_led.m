@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_led.m 38899 2019-12-20 17:21:03Z mvuilleu $
+ *  $Id: yocto_led.m 41625 2020-08-31 07:09:39Z seb $
  *
  *  Implements the high-level API for Led functions
  *
@@ -277,7 +277,7 @@
  *         the new advertised value.
  * @noreturn
  */
--(int) registerValueCallback:(YLedValueCallback)callback
+-(int) registerValueCallback:(YLedValueCallback _Nullable)callback
 {
     NSString* val;
     if (callback != NULL) {

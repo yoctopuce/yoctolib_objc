@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yapi.c 41062 2020-06-25 10:16:20Z seb $
+ * $Id: yapi.c 41371 2020-08-11 07:46:11Z seb $
  *
  * Implementation of public entry points to the low-level API
  *
@@ -1676,14 +1676,11 @@ static int yNetHubEnum(HubSt* hub, int forceupdate, char* errmsg)
             if (errmsg) {
                 YSPRINTF(errmsg, YOCTO_ERRMSG_LEN, "hub %s is not reachable", hub->name);
             }
-            return YAPI_IO_ERROR;
+            res = YAPI_IO_ERROR;
         } else {
             // the hub does not send ping notification -> we will to a request and potentially
             // get a tcp timeout if the hub is not reachable
-            res = yNetHubEnumEx(hub, &enus, errmsg);
-            if (YISERR(res)) {
-                return res;
-            }
+            res = yNetHubEnumEx(hub, &enus, errmsg);       
         }
     } else {
         // if the hub is optional we will not trigger an error but
@@ -1695,6 +1692,7 @@ static int yNetHubEnum(HubSt* hub, int forceupdate, char* errmsg)
                 dbglog("error with hub %s : %s\n",hub->name,errmsg);
             }
         }
+        res = YAPI_SUCCESS;
     }
 
     for (i = 0; i < enus.nbKnownDevices; i++) {
@@ -1707,7 +1705,7 @@ static int yNetHubEnum(HubSt* hub, int forceupdate, char* errmsg)
     } else {
         hub->devListExpires = yapiGetTickCount() + 500;
     }
-    return YAPI_SUCCESS;
+    return res;
 }
 
 

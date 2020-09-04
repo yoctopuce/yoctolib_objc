@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_pwmoutput.h 38913 2019-12-20 18:59:49Z mvuilleu $
+ *  $Id: yocto_pwmoutput.h 41625 2020-08-31 07:09:39Z seb $
  *
  *  Declares yFindPwmOutput(), the high-level API for PwmOutput functions
  *
@@ -39,6 +39,7 @@
 
 #include "yocto_api.h"
 CF_EXTERN_C_BEGIN
+NS_ASSUME_NONNULL_BEGIN
 
 @class YPwmOutput;
 
@@ -329,7 +330,7 @@ typedef enum {
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerValueCallback:(YPwmOutputValueCallback)callback;
+-(int)     registerValueCallback:(YPwmOutputValueCallback _Nullable)callback;
 
 -(int)     _invokeValueCallback:(NSString*)value;
 
@@ -446,7 +447,8 @@ typedef enum {
  *         a PWM generator currently online, or a nil pointer
  *         if there are no more PWM generators to enumerate.
  */
--(YPwmOutput*) nextPwmOutput;
+-(nullable YPwmOutput*) nextPwmOutput
+NS_SWIFT_NAME(nextPwmOutput());
 /**
  * Starts the enumeration of PWM generators currently accessible.
  * Use the method YPwmOutput.nextPwmOutput() to iterate on
@@ -456,7 +458,8 @@ typedef enum {
  *         the first PWM generator currently online, or a nil pointer
  *         if there are none.
  */
-+(YPwmOutput*) FirstPwmOutput;
++(nullable YPwmOutput*) FirstPwmOutput
+NS_SWIFT_NAME(FirstPwmOutput());
 //--- (end of YPwmOutput public methods declaration)
 
 @end
@@ -503,5 +506,6 @@ YPwmOutput* yFindPwmOutput(NSString* func);
 YPwmOutput* yFirstPwmOutput(void);
 
 //--- (end of YPwmOutput functions declaration)
+NS_ASSUME_NONNULL_END
 CF_EXTERN_C_END
 

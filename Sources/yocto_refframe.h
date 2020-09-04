@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_refframe.h 38899 2019-12-20 17:21:03Z mvuilleu $
+ *  $Id: yocto_refframe.h 41625 2020-08-31 07:09:39Z seb $
  *
  *  Declares yFindRefFrame(), the high-level API for RefFrame functions
  *
@@ -39,6 +39,7 @@
 
 #include "yocto_api.h"
 CF_EXTERN_C_BEGIN
+NS_ASSUME_NONNULL_BEGIN
 
 @class YRefFrame;
 
@@ -257,7 +258,7 @@ typedef enum {
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerValueCallback:(YRefFrameValueCallback)callback;
+-(int)     registerValueCallback:(YRefFrameValueCallback _Nullable)callback;
 
 -(int)     _invokeValueCallback:(NSString*)value;
 
@@ -458,7 +459,8 @@ typedef enum {
  *         a reference frame currently online, or a nil pointer
  *         if there are no more reference frames to enumerate.
  */
--(YRefFrame*) nextRefFrame;
+-(nullable YRefFrame*) nextRefFrame
+NS_SWIFT_NAME(nextRefFrame());
 /**
  * Starts the enumeration of reference frames currently accessible.
  * Use the method YRefFrame.nextRefFrame() to iterate on
@@ -468,7 +470,8 @@ typedef enum {
  *         the first reference frame currently online, or a nil pointer
  *         if there are none.
  */
-+(YRefFrame*) FirstRefFrame;
++(nullable YRefFrame*) FirstRefFrame
+NS_SWIFT_NAME(FirstRefFrame());
 //--- (end of YRefFrame public methods declaration)
 
 @end
@@ -515,5 +518,6 @@ YRefFrame* yFindRefFrame(NSString* func);
 YRefFrame* yFirstRefFrame(void);
 
 //--- (end of YRefFrame functions declaration)
+NS_ASSUME_NONNULL_END
 CF_EXTERN_C_END
 

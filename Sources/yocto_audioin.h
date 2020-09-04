@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_audioin.h 38899 2019-12-20 17:21:03Z mvuilleu $
+ *  $Id: yocto_audioin.h 41625 2020-08-31 07:09:39Z seb $
  *
  *  Declares yFindAudioIn(), the high-level API for AudioIn functions
  *
@@ -39,6 +39,7 @@
 
 #include "yocto_api.h"
 CF_EXTERN_C_BEGIN
+NS_ASSUME_NONNULL_BEGIN
 
 @class YAudioIn;
 
@@ -214,7 +215,7 @@ typedef enum {
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerValueCallback:(YAudioInValueCallback)callback;
+-(int)     registerValueCallback:(YAudioInValueCallback _Nullable)callback;
 
 -(int)     _invokeValueCallback:(NSString*)value;
 
@@ -229,7 +230,8 @@ typedef enum {
  *         an audio input currently online, or a nil pointer
  *         if there are no more audio inputs to enumerate.
  */
--(YAudioIn*) nextAudioIn;
+-(nullable YAudioIn*) nextAudioIn
+NS_SWIFT_NAME(nextAudioIn());
 /**
  * Starts the enumeration of audio inputs currently accessible.
  * Use the method YAudioIn.nextAudioIn() to iterate on
@@ -239,7 +241,8 @@ typedef enum {
  *         the first audio input currently online, or a nil pointer
  *         if there are none.
  */
-+(YAudioIn*) FirstAudioIn;
++(nullable YAudioIn*) FirstAudioIn
+NS_SWIFT_NAME(FirstAudioIn());
 //--- (end of YAudioIn public methods declaration)
 
 @end
@@ -286,5 +289,6 @@ YAudioIn* yFindAudioIn(NSString* func);
 YAudioIn* yFirstAudioIn(void);
 
 //--- (end of YAudioIn functions declaration)
+NS_ASSUME_NONNULL_END
 CF_EXTERN_C_END
 

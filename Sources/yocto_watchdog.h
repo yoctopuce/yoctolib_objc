@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_watchdog.h 38899 2019-12-20 17:21:03Z mvuilleu $
+ *  $Id: yocto_watchdog.h 41625 2020-08-31 07:09:39Z seb $
  *
  *  Declares yFindWatchdog(), the high-level API for Watchdog functions
  *
@@ -39,6 +39,7 @@
 
 #include "yocto_api.h"
 CF_EXTERN_C_BEGIN
+NS_ASSUME_NONNULL_BEGIN
 
 @class YWatchdog;
 
@@ -499,7 +500,7 @@ typedef enum {
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerValueCallback:(YWatchdogValueCallback)callback;
+-(int)     registerValueCallback:(YWatchdogValueCallback _Nullable)callback;
 
 -(int)     _invokeValueCallback:(NSString*)value;
 
@@ -523,7 +524,8 @@ typedef enum {
  *         a watchdog currently online, or a nil pointer
  *         if there are no more watchdog to enumerate.
  */
--(YWatchdog*) nextWatchdog;
+-(nullable YWatchdog*) nextWatchdog
+NS_SWIFT_NAME(nextWatchdog());
 /**
  * Starts the enumeration of watchdog currently accessible.
  * Use the method YWatchdog.nextWatchdog() to iterate on
@@ -533,7 +535,8 @@ typedef enum {
  *         the first watchdog currently online, or a nil pointer
  *         if there are none.
  */
-+(YWatchdog*) FirstWatchdog;
++(nullable YWatchdog*) FirstWatchdog
+NS_SWIFT_NAME(FirstWatchdog());
 //--- (end of YWatchdog public methods declaration)
 
 @end
@@ -580,5 +583,6 @@ YWatchdog* yFindWatchdog(NSString* func);
 YWatchdog* yFirstWatchdog(void);
 
 //--- (end of YWatchdog functions declaration)
+NS_ASSUME_NONNULL_END
 CF_EXTERN_C_END
 

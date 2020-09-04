@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_quadraturedecoder.h 38899 2019-12-20 17:21:03Z mvuilleu $
+ *  $Id: yocto_quadraturedecoder.h 41625 2020-08-31 07:09:39Z seb $
  *
  *  Declares yFindQuadratureDecoder(), the high-level API for QuadratureDecoder functions
  *
@@ -39,6 +39,7 @@
 
 #include "yocto_api.h"
 CF_EXTERN_C_BEGIN
+NS_ASSUME_NONNULL_BEGIN
 
 @class YQuadratureDecoder;
 
@@ -178,7 +179,7 @@ typedef enum {
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerValueCallback:(YQuadratureDecoderValueCallback)callback;
+-(int)     registerValueCallback:(YQuadratureDecoderValueCallback _Nullable)callback;
 
 -(int)     _invokeValueCallback:(NSString*)value;
 
@@ -193,7 +194,7 @@ typedef enum {
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerTimedReportCallback:(YQuadratureDecoderTimedReportCallback)callback;
+-(int)     registerTimedReportCallback:(YQuadratureDecoderTimedReportCallback _Nullable)callback;
 
 -(int)     _invokeTimedReportCallback:(YMeasure*)value;
 
@@ -208,7 +209,8 @@ typedef enum {
  *         a quadrature decoder currently online, or a nil pointer
  *         if there are no more quadrature decoders to enumerate.
  */
--(YQuadratureDecoder*) nextQuadratureDecoder;
+-(nullable YQuadratureDecoder*) nextQuadratureDecoder
+NS_SWIFT_NAME(nextQuadratureDecoder());
 /**
  * Starts the enumeration of quadrature decoders currently accessible.
  * Use the method YQuadratureDecoder.nextQuadratureDecoder() to iterate on
@@ -218,7 +220,8 @@ typedef enum {
  *         the first quadrature decoder currently online, or a nil pointer
  *         if there are none.
  */
-+(YQuadratureDecoder*) FirstQuadratureDecoder;
++(nullable YQuadratureDecoder*) FirstQuadratureDecoder
+NS_SWIFT_NAME(FirstQuadratureDecoder());
 //--- (end of YQuadratureDecoder public methods declaration)
 
 @end
@@ -265,5 +268,6 @@ YQuadratureDecoder* yFindQuadratureDecoder(NSString* func);
 YQuadratureDecoder* yFirstQuadratureDecoder(void);
 
 //--- (end of YQuadratureDecoder functions declaration)
+NS_ASSUME_NONNULL_END
 CF_EXTERN_C_END
 

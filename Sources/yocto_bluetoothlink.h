@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_bluetoothlink.h 38899 2019-12-20 17:21:03Z mvuilleu $
+ *  $Id: yocto_bluetoothlink.h 41625 2020-08-31 07:09:39Z seb $
  *
  *  Declares yFindBluetoothLink(), the high-level API for BluetoothLink functions
  *
@@ -39,6 +39,7 @@
 
 #include "yocto_api.h"
 CF_EXTERN_C_BEGIN
+NS_ASSUME_NONNULL_BEGIN
 
 @class YBluetoothLink;
 
@@ -331,7 +332,7 @@ typedef enum {
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerValueCallback:(YBluetoothLinkValueCallback)callback;
+-(int)     registerValueCallback:(YBluetoothLinkValueCallback _Nullable)callback;
 
 -(int)     _invokeValueCallback:(NSString*)value;
 
@@ -364,7 +365,8 @@ typedef enum {
  *         a Bluetooth sound controller currently online, or a nil pointer
  *         if there are no more Bluetooth sound controllers to enumerate.
  */
--(YBluetoothLink*) nextBluetoothLink;
+-(nullable YBluetoothLink*) nextBluetoothLink
+NS_SWIFT_NAME(nextBluetoothLink());
 /**
  * Starts the enumeration of Bluetooth sound controllers currently accessible.
  * Use the method YBluetoothLink.nextBluetoothLink() to iterate on
@@ -374,7 +376,8 @@ typedef enum {
  *         the first Bluetooth sound controller currently online, or a nil pointer
  *         if there are none.
  */
-+(YBluetoothLink*) FirstBluetoothLink;
++(nullable YBluetoothLink*) FirstBluetoothLink
+NS_SWIFT_NAME(FirstBluetoothLink());
 //--- (end of YBluetoothLink public methods declaration)
 
 @end
@@ -421,5 +424,6 @@ YBluetoothLink* yFindBluetoothLink(NSString* func);
 YBluetoothLink* yFirstBluetoothLink(void);
 
 //--- (end of YBluetoothLink functions declaration)
+NS_ASSUME_NONNULL_END
 CF_EXTERN_C_END
 

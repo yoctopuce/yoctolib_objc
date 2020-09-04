@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_weighscale.m 41112 2020-06-29 13:21:58Z seb $
+ *  $Id: yocto_weighscale.m 41625 2020-08-31 07:09:39Z seb $
  *
  *  Implements the high-level API for WeighScale functions
  *
@@ -504,7 +504,7 @@
  *         the new advertised value.
  * @noreturn
  */
--(int) registerValueCallback:(YWeighScaleValueCallback)callback
+-(int) registerValueCallback:(YWeighScaleValueCallback _Nullable)callback
 {
     NSString* val;
     if (callback != NULL) {
@@ -544,7 +544,7 @@
  *         the new advertised value.
  * @noreturn
  */
--(int) registerTimedReportCallback:(YWeighScaleTimedReportCallback)callback
+-(int) registerTimedReportCallback:(YWeighScaleTimedReportCallback _Nullable)callback
 {
     YSensor* sensor;
     sensor = self;

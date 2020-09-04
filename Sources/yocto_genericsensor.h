@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_genericsensor.h 41109 2020-06-29 12:40:42Z seb $
+ *  $Id: yocto_genericsensor.h 41625 2020-08-31 07:09:39Z seb $
  *
  *  Declares yFindGenericSensor(), the high-level API for GenericSensor functions
  *
@@ -39,6 +39,7 @@
 
 #include "yocto_api.h"
 CF_EXTERN_C_BEGIN
+NS_ASSUME_NONNULL_BEGIN
 
 @class YGenericSensor;
 
@@ -347,7 +348,7 @@ typedef enum {
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerValueCallback:(YGenericSensorValueCallback)callback;
+-(int)     registerValueCallback:(YGenericSensorValueCallback _Nullable)callback;
 
 -(int)     _invokeValueCallback:(NSString*)value;
 
@@ -362,7 +363,7 @@ typedef enum {
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerTimedReportCallback:(YGenericSensorTimedReportCallback)callback;
+-(int)     registerTimedReportCallback:(YGenericSensorTimedReportCallback _Nullable)callback;
 
 -(int)     _invokeTimedReportCallback:(YMeasure*)value;
 
@@ -388,7 +389,8 @@ typedef enum {
  *         a generic sensor currently online, or a nil pointer
  *         if there are no more generic sensors to enumerate.
  */
--(YGenericSensor*) nextGenericSensor;
+-(nullable YGenericSensor*) nextGenericSensor
+NS_SWIFT_NAME(nextGenericSensor());
 /**
  * Starts the enumeration of generic sensors currently accessible.
  * Use the method YGenericSensor.nextGenericSensor() to iterate on
@@ -398,7 +400,8 @@ typedef enum {
  *         the first generic sensor currently online, or a nil pointer
  *         if there are none.
  */
-+(YGenericSensor*) FirstGenericSensor;
++(nullable YGenericSensor*) FirstGenericSensor
+NS_SWIFT_NAME(FirstGenericSensor());
 //--- (end of YGenericSensor public methods declaration)
 
 @end
@@ -445,5 +448,6 @@ YGenericSensor* yFindGenericSensor(NSString* func);
 YGenericSensor* yFirstGenericSensor(void);
 
 //--- (end of YGenericSensor functions declaration)
+NS_ASSUME_NONNULL_END
 CF_EXTERN_C_END
 

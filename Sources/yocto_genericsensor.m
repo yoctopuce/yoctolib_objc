@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_genericsensor.m 38510 2019-11-26 15:36:38Z mvuilleu $
+ *  $Id: yocto_genericsensor.m 41625 2020-08-31 07:09:39Z seb $
  *
  *  Implements the high-level API for GenericSensor functions
  *
@@ -515,7 +515,7 @@
  *         the new advertised value.
  * @noreturn
  */
--(int) registerValueCallback:(YGenericSensorValueCallback)callback
+-(int) registerValueCallback:(YGenericSensorValueCallback _Nullable)callback
 {
     NSString* val;
     if (callback != NULL) {
@@ -555,7 +555,7 @@
  *         the new advertised value.
  * @noreturn
  */
--(int) registerTimedReportCallback:(YGenericSensorTimedReportCallback)callback
+-(int) registerTimedReportCallback:(YGenericSensorTimedReportCallback _Nullable)callback
 {
     YSensor* sensor;
     sensor = self;

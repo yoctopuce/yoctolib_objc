@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_voltageoutput.m 37827 2019-10-25 13:07:48Z mvuilleu $
+ *  $Id: yocto_voltageoutput.m 41625 2020-08-31 07:09:39Z seb $
  *
  *  Implements the high-level API for VoltageOutput functions
  *
@@ -263,7 +263,7 @@
  *         the new advertised value.
  * @noreturn
  */
--(int) registerValueCallback:(YVoltageOutputValueCallback)callback
+-(int) registerValueCallback:(YVoltageOutputValueCallback _Nullable)callback
 {
     NSString* val;
     if (callback != NULL) {

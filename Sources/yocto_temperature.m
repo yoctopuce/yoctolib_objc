@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_temperature.m 39648 2020-03-12 13:56:10Z mvuilleu $
+ *  $Id: yocto_temperature.m 41625 2020-08-31 07:09:39Z seb $
  *
  *  Implements the high-level API for Temperature functions
  *
@@ -320,7 +320,7 @@
  *         the new advertised value.
  * @noreturn
  */
--(int) registerValueCallback:(YTemperatureValueCallback)callback
+-(int) registerValueCallback:(YTemperatureValueCallback _Nullable)callback
 {
     NSString* val;
     if (callback != NULL) {
@@ -360,7 +360,7 @@
  *         the new advertised value.
  * @noreturn
  */
--(int) registerTimedReportCallback:(YTemperatureTimedReportCallback)callback
+-(int) registerTimedReportCallback:(YTemperatureTimedReportCallback _Nullable)callback
 {
     YSensor* sensor;
     sensor = self;

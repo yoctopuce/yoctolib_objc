@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_groundspeed.h 39658 2020-03-12 15:36:29Z seb $
+ *  $Id: yocto_groundspeed.h 41625 2020-08-31 07:09:39Z seb $
  *
  *  Declares yFindGroundSpeed(), the high-level API for GroundSpeed functions
  *
@@ -39,6 +39,7 @@
 
 #include "yocto_api.h"
 CF_EXTERN_C_BEGIN
+NS_ASSUME_NONNULL_BEGIN
 
 @class YGroundSpeed;
 
@@ -116,7 +117,7 @@ typedef void (*YGroundSpeedTimedReportCallback)(YGroundSpeed *func, YMeasure *me
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerValueCallback:(YGroundSpeedValueCallback)callback;
+-(int)     registerValueCallback:(YGroundSpeedValueCallback _Nullable)callback;
 
 -(int)     _invokeValueCallback:(NSString*)value;
 
@@ -131,7 +132,7 @@ typedef void (*YGroundSpeedTimedReportCallback)(YGroundSpeed *func, YMeasure *me
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerTimedReportCallback:(YGroundSpeedTimedReportCallback)callback;
+-(int)     registerTimedReportCallback:(YGroundSpeedTimedReportCallback _Nullable)callback;
 
 -(int)     _invokeTimedReportCallback:(YMeasure*)value;
 
@@ -146,7 +147,8 @@ typedef void (*YGroundSpeedTimedReportCallback)(YGroundSpeed *func, YMeasure *me
  *         a ground speed sensor currently online, or a nil pointer
  *         if there are no more ground speed sensors to enumerate.
  */
--(YGroundSpeed*) nextGroundSpeed;
+-(nullable YGroundSpeed*) nextGroundSpeed
+NS_SWIFT_NAME(nextGroundSpeed());
 /**
  * Starts the enumeration of ground speed sensors currently accessible.
  * Use the method YGroundSpeed.nextGroundSpeed() to iterate on
@@ -156,7 +158,8 @@ typedef void (*YGroundSpeedTimedReportCallback)(YGroundSpeed *func, YMeasure *me
  *         the first ground speed sensor currently online, or a nil pointer
  *         if there are none.
  */
-+(YGroundSpeed*) FirstGroundSpeed;
++(nullable YGroundSpeed*) FirstGroundSpeed
+NS_SWIFT_NAME(FirstGroundSpeed());
 //--- (end of YGroundSpeed public methods declaration)
 
 @end
@@ -203,5 +206,6 @@ YGroundSpeed* yFindGroundSpeed(NSString* func);
 YGroundSpeed* yFirstGroundSpeed(void);
 
 //--- (end of YGroundSpeed functions declaration)
+NS_ASSUME_NONNULL_END
 CF_EXTERN_C_END
 

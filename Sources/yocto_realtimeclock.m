@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_realtimeclock.m 38899 2019-12-20 17:21:03Z mvuilleu $
+ *  $Id: yocto_realtimeclock.m 41625 2020-08-31 07:09:39Z seb $
  *
  *  Implements the high-level API for RealTimeClock functions
  *
@@ -293,7 +293,7 @@
  *         the new advertised value.
  * @noreturn
  */
--(int) registerValueCallback:(YRealTimeClockValueCallback)callback
+-(int) registerValueCallback:(YRealTimeClockValueCallback _Nullable)callback
 {
     NSString* val;
     if (callback != NULL) {

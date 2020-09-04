@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_compass.m 38899 2019-12-20 17:21:03Z mvuilleu $
+ *  $Id: yocto_compass.m 41625 2020-08-31 07:09:39Z seb $
  *
  *  Implements the high-level API for Compass functions
  *
@@ -231,7 +231,7 @@
  *         the new advertised value.
  * @noreturn
  */
--(int) registerValueCallback:(YCompassValueCallback)callback
+-(int) registerValueCallback:(YCompassValueCallback _Nullable)callback
 {
     NSString* val;
     if (callback != NULL) {
@@ -271,7 +271,7 @@
  *         the new advertised value.
  * @noreturn
  */
--(int) registerTimedReportCallback:(YCompassTimedReportCallback)callback
+-(int) registerTimedReportCallback:(YCompassTimedReportCallback _Nullable)callback
 {
     YSensor* sensor;
     sensor = self;

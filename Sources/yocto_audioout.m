@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_audioout.m 37827 2019-10-25 13:07:48Z mvuilleu $
+ *  $Id: yocto_audioout.m 41625 2020-08-31 07:09:39Z seb $
  *
  *  Implements the high-level API for AudioOut functions
  *
@@ -324,7 +324,7 @@
  *         the new advertised value.
  * @noreturn
  */
--(int) registerValueCallback:(YAudioOutValueCallback)callback
+-(int) registerValueCallback:(YAudioOutValueCallback _Nullable)callback
 {
     NSString* val;
     if (callback != NULL) {

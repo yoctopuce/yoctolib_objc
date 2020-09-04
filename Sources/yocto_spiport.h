@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_spiport.h 39333 2020-01-30 10:05:40Z mvuilleu $
+ *  $Id: yocto_spiport.h 41625 2020-08-31 07:09:39Z seb $
  *
  *  Declares yFindSpiPort(), the high-level API for SpiPort functions
  *
@@ -39,10 +39,11 @@
 
 #include "yocto_api.h"
 CF_EXTERN_C_BEGIN
+NS_ASSUME_NONNULL_BEGIN
 
 @class YSpiPort;
 
-//--- (YSpiPort globals)
+//--- (generated code: YSpiPort globals)
 typedef void (*YSpiPortValueCallback)(YSpiPort *func, NSString *functionValue);
 #ifndef _Y_VOLTAGELEVEL_ENUM
 #define _Y_VOLTAGELEVEL_ENUM
@@ -87,9 +88,66 @@ typedef enum {
 #define Y_COMMAND_INVALID               YAPI_INVALID_STRING
 #define Y_PROTOCOL_INVALID              YAPI_INVALID_STRING
 #define Y_SPIMODE_INVALID               YAPI_INVALID_STRING
-//--- (end of YSpiPort globals)
+//--- (end of generated code: YSpiPort globals)
 
-//--- (YSpiPort class start)
+//--- (generated code: YSpiSnoopingRecord globals)
+//--- (end of generated code: YSpiSnoopingRecord globals)
+
+
+
+
+//--- (generated code: YSpiSnoopingRecord class start)
+/**
+ * YSpiSnoopingRecord Class: Intercepted SPI message description, returned by spiPort.snoopMessages method
+ *
+ *
+ */
+@interface YSpiSnoopingRecord : NSObject
+//--- (end of generated code: YSpiSnoopingRecord class start)
+{
+@protected
+//--- (generated code: YSpiSnoopingRecord attributes declaration)
+    int             _tim;
+    int             _dir;
+    NSString*       _msg;
+//--- (end of generated code: YSpiSnoopingRecord attributes declaration)
+}
+
+-(id)   initWith:(NSString *)json_str;
+
+//--- (generated code: YSpiSnoopingRecord private methods declaration)
+//--- (end of generated code: YSpiSnoopingRecord private methods declaration)
+//--- (generated code: YSpiSnoopingRecord public methods declaration)
+/**
+ * Returns the elapsed time, in ms, since the beginning of the preceding message.
+ *
+ * @return the elapsed time, in ms, since the beginning of the preceding message.
+ */
+-(int)     get_time;
+
+/**
+ * Returns the message direction (RX=0, TX=1).
+ *
+ * @return the message direction (RX=0, TX=1).
+ */
+-(int)     get_direction;
+
+/**
+ * Returns the message content.
+ *
+ * @return the message content.
+ */
+-(NSString*)     get_message;
+
+
+//--- (end of generated code: YSpiSnoopingRecord public methods declaration)
+
+@end
+
+//--- (generated code: YSpiSnoopingRecord functions declaration)
+//--- (end of generated code: YSpiSnoopingRecord functions declaration)
+
+//--- (generated code: YSpiPort class start)
 /**
  * YSpiPort Class: SPI port control interface, available for instance in the Yocto-SPI
  *
@@ -100,10 +158,10 @@ typedef enum {
  * They are meant to be used in the same way as all Yoctopuce devices.
  */
 @interface YSpiPort : YFunction
-//--- (end of YSpiPort class start)
+//--- (end of generated code: YSpiPort class start)
 {
 @protected
-//--- (YSpiPort attributes declaration)
+//--- (generated code: YSpiPort attributes declaration)
     int             _rxCount;
     int             _txCount;
     int             _errCount;
@@ -124,19 +182,19 @@ typedef enum {
     int             _rxptr;
     NSMutableData*  _rxbuff;
     int             _rxbuffptr;
-//--- (end of YSpiPort attributes declaration)
+//--- (end of generated code: YSpiPort attributes declaration)
 }
 // Constructor is protected, use yFindSpiPort factory function to instantiate
 -(id)    initWith:(NSString*) func;
 
-//--- (YSpiPort private methods declaration)
+//--- (generated code: YSpiPort private methods declaration)
 // Function-specific method for parsing of JSON output and caching result
 -(int)             _parseAttr:(yJsonStateMachine*) j;
 
-//--- (end of YSpiPort private methods declaration)
-//--- (YSpiPort yapiwrapper declaration)
-//--- (end of YSpiPort yapiwrapper declaration)
-//--- (YSpiPort public methods declaration)
+//--- (end of generated code: YSpiPort private methods declaration)
+//--- (generated code: YSpiPort yapiwrapper declaration)
+//--- (end of generated code: YSpiPort yapiwrapper declaration)
+//--- (generated code: YSpiPort public methods declaration)
 /**
  * Returns the total number of bytes received since last reset.
  *
@@ -474,7 +532,7 @@ typedef enum {
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerValueCallback:(YSpiPortValueCallback)callback;
+-(int)     registerValueCallback:(YSpiPortValueCallback _Nullable)callback;
 
 -(int)     _invokeValueCallback:(NSString*)value;
 
@@ -749,6 +807,21 @@ typedef enum {
  */
 -(int)     set_SS:(int)val;
 
+/**
+ * Retrieves messages (both direction) in the SPI port buffer, starting at current position.
+ *
+ * If no message is found, the search waits for one up to the specified maximum timeout
+ * (in milliseconds).
+ *
+ * @param maxWait : the maximum number of milliseconds to wait for a message if none is found
+ *         in the receive buffer.
+ *
+ * @return an array of YSpiSnoopingRecord objects containing the messages found, if any.
+ *
+ * On failure, throws an exception or returns an empty array.
+ */
+-(NSMutableArray*)     snoopMessages:(int)maxWait;
+
 
 /**
  * Continues the enumeration of SPI ports started using yFirstSpiPort().
@@ -760,7 +833,8 @@ typedef enum {
  *         a SPI port currently online, or a nil pointer
  *         if there are no more SPI ports to enumerate.
  */
--(YSpiPort*) nextSpiPort;
+-(nullable YSpiPort*) nextSpiPort
+NS_SWIFT_NAME(nextSpiPort());
 /**
  * Starts the enumeration of SPI ports currently accessible.
  * Use the method YSpiPort.nextSpiPort() to iterate on
@@ -770,12 +844,13 @@ typedef enum {
  *         the first SPI port currently online, or a nil pointer
  *         if there are none.
  */
-+(YSpiPort*) FirstSpiPort;
-//--- (end of YSpiPort public methods declaration)
++(nullable YSpiPort*) FirstSpiPort
+NS_SWIFT_NAME(FirstSpiPort());
+//--- (end of generated code: YSpiPort public methods declaration)
 
 @end
 
-//--- (YSpiPort functions declaration)
+//--- (generated code: YSpiPort functions declaration)
 /**
  * Retrieves a SPI port for a given identifier.
  * The identifier can be specified using several formats:
@@ -816,6 +891,7 @@ YSpiPort* yFindSpiPort(NSString* func);
  */
 YSpiPort* yFirstSpiPort(void);
 
-//--- (end of YSpiPort functions declaration)
+//--- (end of generated code: YSpiPort functions declaration)
+NS_ASSUME_NONNULL_END
 CF_EXTERN_C_END
 

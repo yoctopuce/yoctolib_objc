@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_servo.h 38899 2019-12-20 17:21:03Z mvuilleu $
+ *  $Id: yocto_servo.h 41625 2020-08-31 07:09:39Z seb $
  *
  *  Declares yFindServo(), the high-level API for Servo functions
  *
@@ -39,6 +39,7 @@
 
 #include "yocto_api.h"
 CF_EXTERN_C_BEGIN
+NS_ASSUME_NONNULL_BEGIN
 
 @class YServo;
 
@@ -324,7 +325,7 @@ typedef enum {
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerValueCallback:(YServoValueCallback)callback;
+-(int)     registerValueCallback:(YServoValueCallback _Nullable)callback;
 
 -(int)     _invokeValueCallback:(NSString*)value;
 
@@ -339,7 +340,8 @@ typedef enum {
  *         a RC servo motor currently online, or a nil pointer
  *         if there are no more RC servo motors to enumerate.
  */
--(YServo*) nextServo;
+-(nullable YServo*) nextServo
+NS_SWIFT_NAME(nextServo());
 /**
  * Starts the enumeration of RC servo motors currently accessible.
  * Use the method YServo.nextServo() to iterate on
@@ -349,7 +351,8 @@ typedef enum {
  *         the first RC servo motor currently online, or a nil pointer
  *         if there are none.
  */
-+(YServo*) FirstServo;
++(nullable YServo*) FirstServo
+NS_SWIFT_NAME(FirstServo());
 //--- (end of YServo public methods declaration)
 
 @end
@@ -396,5 +399,6 @@ YServo* yFindServo(NSString* func);
 YServo* yFirstServo(void);
 
 //--- (end of YServo functions declaration)
+NS_ASSUME_NONNULL_END
 CF_EXTERN_C_END
 

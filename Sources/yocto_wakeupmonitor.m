@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_wakeupmonitor.m 38899 2019-12-20 17:21:03Z mvuilleu $
+ *  $Id: yocto_wakeupmonitor.m 41625 2020-08-31 07:09:39Z seb $
  *
  *  Implements the high-level API for WakeUpMonitor functions
  *
@@ -374,7 +374,7 @@
  *         the new advertised value.
  * @noreturn
  */
--(int) registerValueCallback:(YWakeUpMonitorValueCallback)callback
+-(int) registerValueCallback:(YWakeUpMonitorValueCallback _Nullable)callback
 {
     NSString* val;
     if (callback != NULL) {

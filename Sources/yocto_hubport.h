@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_hubport.h 41109 2020-06-29 12:40:42Z seb $
+ *  $Id: yocto_hubport.h 41625 2020-08-31 07:09:39Z seb $
  *
  *  Declares yFindHubPort(), the high-level API for HubPort functions
  *
@@ -39,6 +39,7 @@
 
 #include "yocto_api.h"
 CF_EXTERN_C_BEGIN
+NS_ASSUME_NONNULL_BEGIN
 
 @class YHubPort;
 
@@ -189,7 +190,7 @@ typedef enum {
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerValueCallback:(YHubPortValueCallback)callback;
+-(int)     registerValueCallback:(YHubPortValueCallback _Nullable)callback;
 
 -(int)     _invokeValueCallback:(NSString*)value;
 
@@ -204,7 +205,8 @@ typedef enum {
  *         a YoctoHub slave port currently online, or a nil pointer
  *         if there are no more YoctoHub slave ports to enumerate.
  */
--(YHubPort*) nextHubPort;
+-(nullable YHubPort*) nextHubPort
+NS_SWIFT_NAME(nextHubPort());
 /**
  * Starts the enumeration of YoctoHub slave ports currently accessible.
  * Use the method YHubPort.nextHubPort() to iterate on
@@ -214,7 +216,8 @@ typedef enum {
  *         the first YoctoHub slave port currently online, or a nil pointer
  *         if there are none.
  */
-+(YHubPort*) FirstHubPort;
++(nullable YHubPort*) FirstHubPort
+NS_SWIFT_NAME(FirstHubPort());
 //--- (end of YHubPort public methods declaration)
 
 @end
@@ -261,5 +264,6 @@ YHubPort* yFindHubPort(NSString* func);
 YHubPort* yFirstHubPort(void);
 
 //--- (end of YHubPort functions declaration)
+NS_ASSUME_NONNULL_END
 CF_EXTERN_C_END
 

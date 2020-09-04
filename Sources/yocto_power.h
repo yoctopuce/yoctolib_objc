@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_power.h 38899 2019-12-20 17:21:03Z mvuilleu $
+ *  $Id: yocto_power.h 41625 2020-08-31 07:09:39Z seb $
  *
  *  Declares yFindPower(), the high-level API for Power functions
  *
@@ -39,6 +39,7 @@
 
 #include "yocto_api.h"
 CF_EXTERN_C_BEGIN
+NS_ASSUME_NONNULL_BEGIN
 
 @class YPower;
 
@@ -47,6 +48,8 @@ typedef void (*YPowerValueCallback)(YPower *func, NSString *functionValue);
 typedef void (*YPowerTimedReportCallback)(YPower *func, YMeasure *measure);
 #define Y_COSPHI_INVALID                YAPI_INVALID_DOUBLE
 #define Y_METER_INVALID                 YAPI_INVALID_DOUBLE
+#define Y_DELIVEREDENERGYMETER_INVALID  YAPI_INVALID_DOUBLE
+#define Y_RECEIVEDENERGYMETER_INVALID   YAPI_INVALID_DOUBLE
 #define Y_METERTIMER_INVALID            YAPI_INVALID_UINT
 //--- (end of YPower globals)
 
@@ -66,6 +69,8 @@ typedef void (*YPowerTimedReportCallback)(YPower *func, YMeasure *measure);
 //--- (YPower attributes declaration)
     double          _cosPhi;
     double          _meter;
+    double          _deliveredEnergyMeter;
+    double          _receivedEnergyMeter;
     int             _meterTimer;
     YPowerValueCallback _valueCallbackPower;
     YPowerTimedReportCallback _timedReportCallbackPower;
@@ -99,11 +104,12 @@ typedef void (*YPowerTimedReportCallback)(YPower *func, YMeasure *measure);
 -(int)     setMeter:(double) newval;
 
 /**
- * Returns the energy counter, maintained by the wattmeter by integrating the power consumption over time.
- * Note that this counter is reset at each start of the device.
+ * Returns the energy counter, maintained by the wattmeter by integrating the power consumption over time,
+ * but only when positive. Note that this counter is reset at each start of the device.
  *
  * @return a floating point number corresponding to the energy counter, maintained by the wattmeter by
- * integrating the power consumption over time
+ * integrating the power consumption over time,
+ *         but only when positive
  *
  * On failure, throws an exception or returns Y_METER_INVALID.
  */
@@ -111,6 +117,34 @@ typedef void (*YPowerTimedReportCallback)(YPower *func, YMeasure *measure);
 
 
 -(double) meter;
+/**
+ * Returns the energy counter, maintained by the wattmeter by integrating the power consumption over time,
+ * but only when positive. Note that this counter is reset at each start of the device.
+ *
+ * @return a floating point number corresponding to the energy counter, maintained by the wattmeter by
+ * integrating the power consumption over time,
+ *         but only when positive
+ *
+ * On failure, throws an exception or returns Y_DELIVEREDENERGYMETER_INVALID.
+ */
+-(double)     get_deliveredEnergyMeter;
+
+
+-(double) deliveredEnergyMeter;
+/**
+ * Returns the energy counter, maintained by the wattmeter by integrating the power consumption over time,
+ * but only when negative. Note that this counter is reset at each start of the device.
+ *
+ * @return a floating point number corresponding to the energy counter, maintained by the wattmeter by
+ * integrating the power consumption over time,
+ *         but only when negative
+ *
+ * On failure, throws an exception or returns Y_RECEIVEDENERGYMETER_INVALID.
+ */
+-(double)     get_receivedEnergyMeter;
+
+
+-(double) receivedEnergyMeter;
 /**
  * Returns the elapsed time since last energy counter reset, in seconds.
  *
@@ -163,7 +197,7 @@ typedef void (*YPowerTimedReportCallback)(YPower *func, YMeasure *measure);
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerValueCallback:(YPowerValueCallback)callback;
+-(int)     registerValueCallback:(YPowerValueCallback _Nullable)callback;
 
 -(int)     _invokeValueCallback:(NSString*)value;
 
@@ -178,12 +212,12 @@ typedef void (*YPowerTimedReportCallback)(YPower *func, YMeasure *measure);
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerTimedReportCallback:(YPowerTimedReportCallback)callback;
+-(int)     registerTimedReportCallback:(YPowerTimedReportCallback _Nullable)callback;
 
 -(int)     _invokeTimedReportCallback:(YMeasure*)value;
 
 /**
- * Resets the energy counter.
+ * Resets the energy counters.
  *
  * @return YAPI_SUCCESS if the call succeeds.
  *
@@ -202,7 +236,8 @@ typedef void (*YPowerTimedReportCallback)(YPower *func, YMeasure *measure);
  *         a electrical power sensor currently online, or a nil pointer
  *         if there are no more electrical power sensors to enumerate.
  */
--(YPower*) nextPower;
+-(nullable YPower*) nextPower
+NS_SWIFT_NAME(nextPower());
 /**
  * Starts the enumeration of electrical power sensors currently accessible.
  * Use the method YPower.nextPower() to iterate on
@@ -212,7 +247,8 @@ typedef void (*YPowerTimedReportCallback)(YPower *func, YMeasure *measure);
  *         the first electrical power sensor currently online, or a nil pointer
  *         if there are none.
  */
-+(YPower*) FirstPower;
++(nullable YPower*) FirstPower
+NS_SWIFT_NAME(FirstPower());
 //--- (end of YPower public methods declaration)
 
 @end
@@ -259,5 +295,6 @@ YPower* yFindPower(NSString* func);
 YPower* yFirstPower(void);
 
 //--- (end of YPower functions declaration)
+NS_ASSUME_NONNULL_END
 CF_EXTERN_C_END
 

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_motor.h 38899 2019-12-20 17:21:03Z mvuilleu $
+ *  $Id: yocto_motor.h 41625 2020-08-31 07:09:39Z seb $
  *
  *  Declares yFindMotor(), the high-level API for Motor functions
  *
@@ -39,6 +39,7 @@
 
 #include "yocto_api.h"
 CF_EXTERN_C_BEGIN
+NS_ASSUME_NONNULL_BEGIN
 
 @class YMotor;
 
@@ -393,7 +394,7 @@ typedef enum {
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerValueCallback:(YMotorValueCallback)callback;
+-(int)     registerValueCallback:(YMotorValueCallback _Nullable)callback;
 
 -(int)     _invokeValueCallback:(NSString*)value;
 
@@ -446,7 +447,8 @@ typedef enum {
  *         a motor currently online, or a nil pointer
  *         if there are no more motors to enumerate.
  */
--(YMotor*) nextMotor;
+-(nullable YMotor*) nextMotor
+NS_SWIFT_NAME(nextMotor());
 /**
  * Starts the enumeration of motors currently accessible.
  * Use the method YMotor.nextMotor() to iterate on
@@ -456,7 +458,8 @@ typedef enum {
  *         the first motor currently online, or a nil pointer
  *         if there are none.
  */
-+(YMotor*) FirstMotor;
++(nullable YMotor*) FirstMotor
+NS_SWIFT_NAME(FirstMotor());
 //--- (end of YMotor public methods declaration)
 
 @end
@@ -503,5 +506,6 @@ YMotor* yFindMotor(NSString* func);
 YMotor* yFirstMotor(void);
 
 //--- (end of YMotor functions declaration)
+NS_ASSUME_NONNULL_END
 CF_EXTERN_C_END
 

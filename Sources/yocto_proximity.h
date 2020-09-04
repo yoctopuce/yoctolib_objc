@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_proximity.h 38899 2019-12-20 17:21:03Z mvuilleu $
+ *  $Id: yocto_proximity.h 41625 2020-08-31 07:09:39Z seb $
  *
  *  Declares yFindProximity(), the high-level API for Proximity functions
  *
@@ -39,6 +39,7 @@
 
 #include "yocto_api.h"
 CF_EXTERN_C_BEGIN
+NS_ASSUME_NONNULL_BEGIN
 
 @class YProximity;
 
@@ -378,7 +379,7 @@ typedef enum {
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerValueCallback:(YProximityValueCallback)callback;
+-(int)     registerValueCallback:(YProximityValueCallback _Nullable)callback;
 
 -(int)     _invokeValueCallback:(NSString*)value;
 
@@ -393,7 +394,7 @@ typedef enum {
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerTimedReportCallback:(YProximityTimedReportCallback)callback;
+-(int)     registerTimedReportCallback:(YProximityTimedReportCallback _Nullable)callback;
 
 -(int)     _invokeTimedReportCallback:(YMeasure*)value;
 
@@ -417,7 +418,8 @@ typedef enum {
  *         a proximity sensor currently online, or a nil pointer
  *         if there are no more proximity sensors to enumerate.
  */
--(YProximity*) nextProximity;
+-(nullable YProximity*) nextProximity
+NS_SWIFT_NAME(nextProximity());
 /**
  * Starts the enumeration of proximity sensors currently accessible.
  * Use the method YProximity.nextProximity() to iterate on
@@ -427,7 +429,8 @@ typedef enum {
  *         the first proximity sensor currently online, or a nil pointer
  *         if there are none.
  */
-+(YProximity*) FirstProximity;
++(nullable YProximity*) FirstProximity
+NS_SWIFT_NAME(FirstProximity());
 //--- (end of YProximity public methods declaration)
 
 @end
@@ -474,5 +477,6 @@ YProximity* yFindProximity(NSString* func);
 YProximity* yFirstProximity(void);
 
 //--- (end of YProximity functions declaration)
+NS_ASSUME_NONNULL_END
 CF_EXTERN_C_END
 

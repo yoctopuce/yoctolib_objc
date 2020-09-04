@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_digitalio.h 38899 2019-12-20 17:21:03Z mvuilleu $
+ *  $Id: yocto_digitalio.h 41625 2020-08-31 07:09:39Z seb $
  *
  *  Declares yFindDigitalIO(), the high-level API for DigitalIO functions
  *
@@ -39,6 +39,7 @@
 
 #include "yocto_api.h"
 CF_EXTERN_C_BEGIN
+NS_ASSUME_NONNULL_BEGIN
 
 @class YDigitalIO;
 
@@ -324,7 +325,7 @@ typedef enum {
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerValueCallback:(YDigitalIOValueCallback)callback;
+-(int)     registerValueCallback:(YDigitalIOValueCallback _Nullable)callback;
 
 -(int)     _invokeValueCallback:(NSString*)value;
 
@@ -480,7 +481,8 @@ typedef enum {
  *         a digital IO port currently online, or a nil pointer
  *         if there are no more digital IO ports to enumerate.
  */
--(YDigitalIO*) nextDigitalIO;
+-(nullable YDigitalIO*) nextDigitalIO
+NS_SWIFT_NAME(nextDigitalIO());
 /**
  * Starts the enumeration of digital IO ports currently accessible.
  * Use the method YDigitalIO.nextDigitalIO() to iterate on
@@ -490,7 +492,8 @@ typedef enum {
  *         the first digital IO port currently online, or a nil pointer
  *         if there are none.
  */
-+(YDigitalIO*) FirstDigitalIO;
++(nullable YDigitalIO*) FirstDigitalIO
+NS_SWIFT_NAME(FirstDigitalIO());
 //--- (end of YDigitalIO public methods declaration)
 
 @end
@@ -537,5 +540,6 @@ YDigitalIO* yFindDigitalIO(NSString* func);
 YDigitalIO* yFirstDigitalIO(void);
 
 //--- (end of YDigitalIO functions declaration)
+NS_ASSUME_NONNULL_END
 CF_EXTERN_C_END
 

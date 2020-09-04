@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_compass.h 38899 2019-12-20 17:21:03Z mvuilleu $
+ *  $Id: yocto_compass.h 41625 2020-08-31 07:09:39Z seb $
  *
  *  Declares yFindCompass(), the high-level API for Compass functions
  *
@@ -39,6 +39,7 @@
 
 #include "yocto_api.h"
 CF_EXTERN_C_BEGIN
+NS_ASSUME_NONNULL_BEGIN
 
 @class YCompass;
 
@@ -171,7 +172,7 @@ typedef enum {
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerValueCallback:(YCompassValueCallback)callback;
+-(int)     registerValueCallback:(YCompassValueCallback _Nullable)callback;
 
 -(int)     _invokeValueCallback:(NSString*)value;
 
@@ -186,7 +187,7 @@ typedef enum {
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerTimedReportCallback:(YCompassTimedReportCallback)callback;
+-(int)     registerTimedReportCallback:(YCompassTimedReportCallback _Nullable)callback;
 
 -(int)     _invokeTimedReportCallback:(YMeasure*)value;
 
@@ -201,7 +202,8 @@ typedef enum {
  *         a compass function currently online, or a nil pointer
  *         if there are no more compass functions to enumerate.
  */
--(YCompass*) nextCompass;
+-(nullable YCompass*) nextCompass
+NS_SWIFT_NAME(nextCompass());
 /**
  * Starts the enumeration of compass functions currently accessible.
  * Use the method YCompass.nextCompass() to iterate on
@@ -211,7 +213,8 @@ typedef enum {
  *         the first compass function currently online, or a nil pointer
  *         if there are none.
  */
-+(YCompass*) FirstCompass;
++(nullable YCompass*) FirstCompass
+NS_SWIFT_NAME(FirstCompass());
 //--- (end of YCompass public methods declaration)
 
 @end
@@ -258,5 +261,6 @@ YCompass* yFindCompass(NSString* func);
 YCompass* yFirstCompass(void);
 
 //--- (end of YCompass functions declaration)
+NS_ASSUME_NONNULL_END
 CF_EXTERN_C_END
 

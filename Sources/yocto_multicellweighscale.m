@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_multicellweighscale.m 41108 2020-06-29 12:29:07Z seb $
+ *  $Id: yocto_multicellweighscale.m 41625 2020-08-31 07:09:39Z seb $
  *
  *  Implements the high-level API for MultiCellWeighScale functions
  *
@@ -555,7 +555,7 @@
  *         the new advertised value.
  * @noreturn
  */
--(int) registerValueCallback:(YMultiCellWeighScaleValueCallback)callback
+-(int) registerValueCallback:(YMultiCellWeighScaleValueCallback _Nullable)callback
 {
     NSString* val;
     if (callback != NULL) {
@@ -595,7 +595,7 @@
  *         the new advertised value.
  * @noreturn
  */
--(int) registerTimedReportCallback:(YMultiCellWeighScaleTimedReportCallback)callback
+-(int) registerTimedReportCallback:(YMultiCellWeighScaleTimedReportCallback _Nullable)callback
 {
     YSensor* sensor;
     sensor = self;

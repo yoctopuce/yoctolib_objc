@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_realtimeclock.h 39434 2020-02-25 08:53:55Z seb $
+ *  $Id: yocto_realtimeclock.h 41625 2020-08-31 07:09:39Z seb $
  *
  *  Declares yFindRealTimeClock(), the high-level API for RealTimeClock functions
  *
@@ -39,6 +39,7 @@
 
 #include "yocto_api.h"
 CF_EXTERN_C_BEGIN
+NS_ASSUME_NONNULL_BEGIN
 
 @class YRealTimeClock;
 
@@ -205,7 +206,7 @@ typedef enum {
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerValueCallback:(YRealTimeClockValueCallback)callback;
+-(int)     registerValueCallback:(YRealTimeClockValueCallback _Nullable)callback;
 
 -(int)     _invokeValueCallback:(NSString*)value;
 
@@ -220,7 +221,8 @@ typedef enum {
  *         a real-time clock currently online, or a nil pointer
  *         if there are no more real-time clocks to enumerate.
  */
--(YRealTimeClock*) nextRealTimeClock;
+-(nullable YRealTimeClock*) nextRealTimeClock
+NS_SWIFT_NAME(nextRealTimeClock());
 /**
  * Starts the enumeration of real-time clocks currently accessible.
  * Use the method YRealTimeClock.nextRealTimeClock() to iterate on
@@ -230,7 +232,8 @@ typedef enum {
  *         the first real-time clock currently online, or a nil pointer
  *         if there are none.
  */
-+(YRealTimeClock*) FirstRealTimeClock;
++(nullable YRealTimeClock*) FirstRealTimeClock
+NS_SWIFT_NAME(FirstRealTimeClock());
 //--- (end of YRealTimeClock public methods declaration)
 
 @end
@@ -277,5 +280,6 @@ YRealTimeClock* yFindRealTimeClock(NSString* func);
 YRealTimeClock* yFirstRealTimeClock(void);
 
 //--- (end of YRealTimeClock functions declaration)
+NS_ASSUME_NONNULL_END
 CF_EXTERN_C_END
 

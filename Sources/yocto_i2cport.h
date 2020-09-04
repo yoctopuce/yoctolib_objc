@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_i2cport.h 39333 2020-01-30 10:05:40Z mvuilleu $
+ *  $Id: yocto_i2cport.h 41631 2020-08-31 09:39:23Z seb $
  *
  *  Declares yFindI2cPort(), the high-level API for I2cPort functions
  *
@@ -39,10 +39,11 @@
 
 #include "yocto_api.h"
 CF_EXTERN_C_BEGIN
+NS_ASSUME_NONNULL_BEGIN
 
 @class YI2cPort;
 
-//--- (YI2cPort globals)
+//--- (generated code: YI2cPort globals)
 typedef void (*YI2cPortValueCallback)(YI2cPort *func, NSString *functionValue);
 #ifndef _Y_I2CVOLTAGELEVEL_ENUM
 #define _Y_I2CVOLTAGELEVEL_ENUM
@@ -66,9 +67,66 @@ typedef enum {
 #define Y_COMMAND_INVALID               YAPI_INVALID_STRING
 #define Y_PROTOCOL_INVALID              YAPI_INVALID_STRING
 #define Y_I2CMODE_INVALID               YAPI_INVALID_STRING
-//--- (end of YI2cPort globals)
+//--- (end of generated code: YI2cPort globals)
 
-//--- (YI2cPort class start)
+//--- (generated code: YI2cSnoopingRecord globals)
+//--- (end of generated code: YI2cSnoopingRecord globals)
+
+
+
+
+//--- (generated code: YI2cSnoopingRecord class start)
+/**
+ * YI2cSnoopingRecord Class: Intercepted I2C message description, returned by i2cPort.snoopMessages method
+ *
+ *
+ */
+@interface YI2cSnoopingRecord : NSObject
+//--- (end of generated code: YI2cSnoopingRecord class start)
+{
+@protected
+//--- (generated code: YI2cSnoopingRecord attributes declaration)
+    int             _tim;
+    int             _dir;
+    NSString*       _msg;
+//--- (end of generated code: YI2cSnoopingRecord attributes declaration)
+}
+
+-(id)   initWith:(NSString *)json_str;
+
+//--- (generated code: YI2cSnoopingRecord private methods declaration)
+//--- (end of generated code: YI2cSnoopingRecord private methods declaration)
+//--- (generated code: YI2cSnoopingRecord public methods declaration)
+/**
+ * Returns the elapsed time, in ms, since the beginning of the preceding message.
+ *
+ * @return the elapsed time, in ms, since the beginning of the preceding message.
+ */
+-(int)     get_time;
+
+/**
+ * Returns the message direction (RX=0, TX=1).
+ *
+ * @return the message direction (RX=0, TX=1).
+ */
+-(int)     get_direction;
+
+/**
+ * Returns the message content.
+ *
+ * @return the message content.
+ */
+-(NSString*)     get_message;
+
+
+//--- (end of generated code: YI2cSnoopingRecord public methods declaration)
+
+@end
+
+//--- (generated code: YI2cSnoopingRecord functions declaration)
+//--- (end of generated code: YI2cSnoopingRecord functions declaration)
+
+//--- (generated code: YI2cPort class start)
 /**
  * YI2cPort Class: I2C port control interface, available for instance in the Yocto-I2C
  *
@@ -79,10 +137,10 @@ typedef enum {
  * They are meant to be used in the same way as all Yoctopuce devices.
  */
 @interface YI2cPort : YFunction
-//--- (end of YI2cPort class start)
+//--- (end of generated code: YI2cPort class start)
 {
 @protected
-//--- (YI2cPort attributes declaration)
+//--- (generated code: YI2cPort attributes declaration)
     int             _rxCount;
     int             _txCount;
     int             _errCount;
@@ -101,19 +159,19 @@ typedef enum {
     int             _rxptr;
     NSMutableData*  _rxbuff;
     int             _rxbuffptr;
-//--- (end of YI2cPort attributes declaration)
+//--- (end of generated code: YI2cPort attributes declaration)
 }
 // Constructor is protected, use yFindI2cPort factory function to instantiate
 -(id)    initWith:(NSString*) func;
 
-//--- (YI2cPort private methods declaration)
+//--- (generated code: YI2cPort private methods declaration)
 // Function-specific method for parsing of JSON output and caching result
 -(int)             _parseAttr:(yJsonStateMachine*) j;
 
-//--- (end of YI2cPort private methods declaration)
-//--- (YI2cPort yapiwrapper declaration)
-//--- (end of YI2cPort yapiwrapper declaration)
-//--- (YI2cPort public methods declaration)
+//--- (end of generated code: YI2cPort private methods declaration)
+//--- (generated code: YI2cPort yapiwrapper declaration)
+//--- (end of generated code: YI2cPort yapiwrapper declaration)
+//--- (generated code: YI2cPort public methods declaration)
 /**
  * Returns the total number of bytes received since last reset.
  *
@@ -394,7 +452,7 @@ typedef enum {
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerValueCallback:(YI2cPortValueCallback)callback;
+-(int)     registerValueCallback:(YI2cPortValueCallback _Nullable)callback;
 
 -(int)     _invokeValueCallback:(NSString*)value;
 
@@ -679,6 +737,21 @@ typedef enum {
  */
 -(int)     writeArray:(NSMutableArray*)byteList;
 
+/**
+ * Retrieves messages (both direction) in the I2C port buffer, starting at current position.
+ *
+ * If no message is found, the search waits for one up to the specified maximum timeout
+ * (in milliseconds).
+ *
+ * @param maxWait : the maximum number of milliseconds to wait for a message if none is found
+ *         in the receive buffer.
+ *
+ * @return an array of YI2cSnoopingRecord objects containing the messages found, if any.
+ *
+ * On failure, throws an exception or returns an empty array.
+ */
+-(NSMutableArray*)     snoopMessages:(int)maxWait;
+
 
 /**
  * Continues the enumeration of I2C ports started using yFirstI2cPort().
@@ -690,7 +763,8 @@ typedef enum {
  *         an I2C port currently online, or a nil pointer
  *         if there are no more I2C ports to enumerate.
  */
--(YI2cPort*) nextI2cPort;
+-(nullable YI2cPort*) nextI2cPort
+NS_SWIFT_NAME(nextI2cPort());
 /**
  * Starts the enumeration of I2C ports currently accessible.
  * Use the method YI2cPort.nextI2cPort() to iterate on
@@ -700,12 +774,13 @@ typedef enum {
  *         the first I2C port currently online, or a nil pointer
  *         if there are none.
  */
-+(YI2cPort*) FirstI2cPort;
-//--- (end of YI2cPort public methods declaration)
++(nullable YI2cPort*) FirstI2cPort
+NS_SWIFT_NAME(FirstI2cPort());
+//--- (end of generated code: YI2cPort public methods declaration)
 
 @end
 
-//--- (YI2cPort functions declaration)
+//--- (generated code: YI2cPort functions declaration)
 /**
  * Retrieves an I2C port for a given identifier.
  * The identifier can be specified using several formats:
@@ -746,6 +821,7 @@ YI2cPort* yFindI2cPort(NSString* func);
  */
 YI2cPort* yFirstI2cPort(void);
 
-//--- (end of YI2cPort functions declaration)
+//--- (end of generated code: YI2cPort functions declaration)
+NS_ASSUME_NONNULL_END
 CF_EXTERN_C_END
 

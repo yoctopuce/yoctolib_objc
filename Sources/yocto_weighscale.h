@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_weighscale.h 41112 2020-06-29 13:21:58Z seb $
+ *  $Id: yocto_weighscale.h 41625 2020-08-31 07:09:39Z seb $
  *
  *  Declares yFindWeighScale(), the high-level API for WeighScale functions
  *
@@ -39,6 +39,7 @@
 
 #include "yocto_api.h"
 CF_EXTERN_C_BEGIN
+NS_ASSUME_NONNULL_BEGIN
 
 @class YWeighScale;
 
@@ -318,7 +319,7 @@ typedef enum {
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerValueCallback:(YWeighScaleValueCallback)callback;
+-(int)     registerValueCallback:(YWeighScaleValueCallback _Nullable)callback;
 
 -(int)     _invokeValueCallback:(NSString*)value;
 
@@ -333,7 +334,7 @@ typedef enum {
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerTimedReportCallback:(YWeighScaleTimedReportCallback)callback;
+-(int)     registerTimedReportCallback:(YWeighScaleTimedReportCallback _Nullable)callback;
 
 -(int)     _invokeTimedReportCallback:(YMeasure*)value;
 
@@ -512,7 +513,8 @@ typedef enum {
  *         a weighing scale sensor currently online, or a nil pointer
  *         if there are no more weighing scale sensors to enumerate.
  */
--(YWeighScale*) nextWeighScale;
+-(nullable YWeighScale*) nextWeighScale
+NS_SWIFT_NAME(nextWeighScale());
 /**
  * Starts the enumeration of weighing scale sensors currently accessible.
  * Use the method YWeighScale.nextWeighScale() to iterate on
@@ -522,7 +524,8 @@ typedef enum {
  *         the first weighing scale sensor currently online, or a nil pointer
  *         if there are none.
  */
-+(YWeighScale*) FirstWeighScale;
++(nullable YWeighScale*) FirstWeighScale
+NS_SWIFT_NAME(FirstWeighScale());
 //--- (end of YWeighScale public methods declaration)
 
 @end
@@ -569,5 +572,6 @@ YWeighScale* yFindWeighScale(NSString* func);
 YWeighScale* yFirstWeighScale(void);
 
 //--- (end of YWeighScale functions declaration)
+NS_ASSUME_NONNULL_END
 CF_EXTERN_C_END
 

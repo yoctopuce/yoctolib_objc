@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_daisychain.h 38899 2019-12-20 17:21:03Z mvuilleu $
+ *  $Id: yocto_daisychain.h 41625 2020-08-31 07:09:39Z seb $
  *
  *  Declares yFindDaisyChain(), the high-level API for DaisyChain functions
  *
@@ -39,6 +39,7 @@
 
 #include "yocto_api.h"
 CF_EXTERN_C_BEGIN
+NS_ASSUME_NONNULL_BEGIN
 
 @class YDaisyChain;
 
@@ -181,7 +182,7 @@ typedef enum {
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerValueCallback:(YDaisyChainValueCallback)callback;
+-(int)     registerValueCallback:(YDaisyChainValueCallback _Nullable)callback;
 
 -(int)     _invokeValueCallback:(NSString*)value;
 
@@ -196,7 +197,8 @@ typedef enum {
  *         a module chain currently online, or a nil pointer
  *         if there are no more module chains to enumerate.
  */
--(YDaisyChain*) nextDaisyChain;
+-(nullable YDaisyChain*) nextDaisyChain
+NS_SWIFT_NAME(nextDaisyChain());
 /**
  * Starts the enumeration of module chains currently accessible.
  * Use the method YDaisyChain.nextDaisyChain() to iterate on
@@ -206,7 +208,8 @@ typedef enum {
  *         the first module chain currently online, or a nil pointer
  *         if there are none.
  */
-+(YDaisyChain*) FirstDaisyChain;
++(nullable YDaisyChain*) FirstDaisyChain
+NS_SWIFT_NAME(FirstDaisyChain());
 //--- (end of YDaisyChain public methods declaration)
 
 @end
@@ -253,5 +256,6 @@ YDaisyChain* yFindDaisyChain(NSString* func);
 YDaisyChain* yFirstDaisyChain(void);
 
 //--- (end of YDaisyChain functions declaration)
+NS_ASSUME_NONNULL_END
 CF_EXTERN_C_END
 

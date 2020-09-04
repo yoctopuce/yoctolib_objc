@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_accelerometer.h 38899 2019-12-20 17:21:03Z mvuilleu $
+ *  $Id: yocto_accelerometer.h 41625 2020-08-31 07:09:39Z seb $
  *
  *  Declares yFindAccelerometer(), the high-level API for Accelerometer functions
  *
@@ -39,6 +39,7 @@
 
 #include "yocto_api.h"
 CF_EXTERN_C_BEGIN
+NS_ASSUME_NONNULL_BEGIN
 
 @class YAccelerometer;
 
@@ -201,7 +202,7 @@ typedef enum {
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerValueCallback:(YAccelerometerValueCallback)callback;
+-(int)     registerValueCallback:(YAccelerometerValueCallback _Nullable)callback;
 
 -(int)     _invokeValueCallback:(NSString*)value;
 
@@ -216,7 +217,7 @@ typedef enum {
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerTimedReportCallback:(YAccelerometerTimedReportCallback)callback;
+-(int)     registerTimedReportCallback:(YAccelerometerTimedReportCallback _Nullable)callback;
 
 -(int)     _invokeTimedReportCallback:(YMeasure*)value;
 
@@ -231,7 +232,8 @@ typedef enum {
  *         an accelerometer currently online, or a nil pointer
  *         if there are no more accelerometers to enumerate.
  */
--(YAccelerometer*) nextAccelerometer;
+-(nullable YAccelerometer*) nextAccelerometer
+NS_SWIFT_NAME(nextAccelerometer());
 /**
  * Starts the enumeration of accelerometers currently accessible.
  * Use the method YAccelerometer.nextAccelerometer() to iterate on
@@ -241,7 +243,8 @@ typedef enum {
  *         the first accelerometer currently online, or a nil pointer
  *         if there are none.
  */
-+(YAccelerometer*) FirstAccelerometer;
++(nullable YAccelerometer*) FirstAccelerometer
+NS_SWIFT_NAME(FirstAccelerometer());
 //--- (end of YAccelerometer public methods declaration)
 
 @end
@@ -288,5 +291,6 @@ YAccelerometer* yFindAccelerometer(NSString* func);
 YAccelerometer* yFirstAccelerometer(void);
 
 //--- (end of YAccelerometer functions declaration)
+NS_ASSUME_NONNULL_END
 CF_EXTERN_C_END
 

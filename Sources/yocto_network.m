@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_network.m 39573 2020-03-10 17:20:22Z seb $
+ *  $Id: yocto_network.m 41625 2020-08-31 07:09:39Z seb $
  *
  *  Implements the high-level API for Network functions
  *
@@ -1388,7 +1388,7 @@
  *         the new advertised value.
  * @noreturn
  */
--(int) registerValueCallback:(YNetworkValueCallback)callback
+-(int) registerValueCallback:(YNetworkValueCallback _Nullable)callback
 {
     NSString* val;
     if (callback != NULL) {

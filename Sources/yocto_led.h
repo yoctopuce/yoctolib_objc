@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_led.h 38899 2019-12-20 17:21:03Z mvuilleu $
+ *  $Id: yocto_led.h 41625 2020-08-31 07:09:39Z seb $
  *
  *  Declares yFindLed(), the high-level API for Led functions
  *
@@ -39,6 +39,7 @@
 
 #include "yocto_api.h"
 CF_EXTERN_C_BEGIN
+NS_ASSUME_NONNULL_BEGIN
 
 @class YLed;
 
@@ -210,7 +211,7 @@ typedef enum {
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerValueCallback:(YLedValueCallback)callback;
+-(int)     registerValueCallback:(YLedValueCallback _Nullable)callback;
 
 -(int)     _invokeValueCallback:(NSString*)value;
 
@@ -225,7 +226,8 @@ typedef enum {
  *         a monochrome LED currently online, or a nil pointer
  *         if there are no more monochrome LEDs to enumerate.
  */
--(YLed*) nextLed;
+-(nullable YLed*) nextLed
+NS_SWIFT_NAME(nextLed());
 /**
  * Starts the enumeration of monochrome LEDs currently accessible.
  * Use the method YLed.nextLed() to iterate on
@@ -235,7 +237,8 @@ typedef enum {
  *         the first monochrome LED currently online, or a nil pointer
  *         if there are none.
  */
-+(YLed*) FirstLed;
++(nullable YLed*) FirstLed
+NS_SWIFT_NAME(FirstLed());
 //--- (end of YLed public methods declaration)
 
 @end
@@ -282,5 +285,6 @@ YLed* yFindLed(NSString* func);
 YLed* yFirstLed(void);
 
 //--- (end of YLed functions declaration)
+NS_ASSUME_NONNULL_END
 CF_EXTERN_C_END
 

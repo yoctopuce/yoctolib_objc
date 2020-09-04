@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_anbutton.h 38899 2019-12-20 17:21:03Z mvuilleu $
+ *  $Id: yocto_anbutton.h 41625 2020-08-31 07:09:39Z seb $
  *
  *  Declares yFindAnButton(), the high-level API for AnButton functions
  *
@@ -39,6 +39,7 @@
 
 #include "yocto_api.h"
 CF_EXTERN_C_BEGIN
+NS_ASSUME_NONNULL_BEGIN
 
 @class YAnButton;
 
@@ -354,7 +355,7 @@ typedef enum {
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerValueCallback:(YAnButtonValueCallback)callback;
+-(int)     registerValueCallback:(YAnButtonValueCallback _Nullable)callback;
 
 -(int)     _invokeValueCallback:(NSString*)value;
 
@@ -378,7 +379,8 @@ typedef enum {
  *         an analog input currently online, or a nil pointer
  *         if there are no more analog inputs to enumerate.
  */
--(YAnButton*) nextAnButton;
+-(nullable YAnButton*) nextAnButton
+NS_SWIFT_NAME(nextAnButton());
 /**
  * Starts the enumeration of analog inputs currently accessible.
  * Use the method YAnButton.nextAnButton() to iterate on
@@ -388,7 +390,8 @@ typedef enum {
  *         the first analog input currently online, or a nil pointer
  *         if there are none.
  */
-+(YAnButton*) FirstAnButton;
++(nullable YAnButton*) FirstAnButton
+NS_SWIFT_NAME(FirstAnButton());
 //--- (end of YAnButton public methods declaration)
 
 @end
@@ -435,5 +438,6 @@ YAnButton* yFindAnButton(NSString* func);
 YAnButton* yFirstAnButton(void);
 
 //--- (end of YAnButton functions declaration)
+NS_ASSUME_NONNULL_END
 CF_EXTERN_C_END
 

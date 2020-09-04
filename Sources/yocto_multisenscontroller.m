@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_multisenscontroller.m 37827 2019-10-25 13:07:48Z mvuilleu $
+ *  $Id: yocto_multisenscontroller.m 41625 2020-08-31 07:09:39Z seb $
  *
  *  Implements the high-level API for MultiSensController functions
  *
@@ -300,7 +300,7 @@
  *         the new advertised value.
  * @noreturn
  */
--(int) registerValueCallback:(YMultiSensControllerValueCallback)callback
+-(int) registerValueCallback:(YMultiSensControllerValueCallback _Nullable)callback
 {
     NSString* val;
     if (callback != NULL) {

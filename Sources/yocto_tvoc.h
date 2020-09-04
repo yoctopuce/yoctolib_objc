@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_tvoc.h 38899 2019-12-20 17:21:03Z mvuilleu $
+ *  $Id: yocto_tvoc.h 41625 2020-08-31 07:09:39Z seb $
  *
  *  Declares yFindTvoc(), the high-level API for Tvoc functions
  *
@@ -39,6 +39,7 @@
 
 #include "yocto_api.h"
 CF_EXTERN_C_BEGIN
+NS_ASSUME_NONNULL_BEGIN
 
 @class YTvoc;
 
@@ -117,7 +118,7 @@ typedef void (*YTvocTimedReportCallback)(YTvoc *func, YMeasure *measure);
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerValueCallback:(YTvocValueCallback)callback;
+-(int)     registerValueCallback:(YTvocValueCallback _Nullable)callback;
 
 -(int)     _invokeValueCallback:(NSString*)value;
 
@@ -132,7 +133,7 @@ typedef void (*YTvocTimedReportCallback)(YTvoc *func, YMeasure *measure);
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerTimedReportCallback:(YTvocTimedReportCallback)callback;
+-(int)     registerTimedReportCallback:(YTvocTimedReportCallback _Nullable)callback;
 
 -(int)     _invokeTimedReportCallback:(YMeasure*)value;
 
@@ -147,7 +148,8 @@ typedef void (*YTvocTimedReportCallback)(YTvoc *func, YMeasure *measure);
  *         a Total  Volatile Organic Compound sensor currently online, or a nil pointer
  *         if there are no more Total Volatile Organic Compound sensors to enumerate.
  */
--(YTvoc*) nextTvoc;
+-(nullable YTvoc*) nextTvoc
+NS_SWIFT_NAME(nextTvoc());
 /**
  * Starts the enumeration of Total Volatile Organic Compound sensors currently accessible.
  * Use the method YTvoc.nextTvoc() to iterate on
@@ -157,7 +159,8 @@ typedef void (*YTvocTimedReportCallback)(YTvoc *func, YMeasure *measure);
  *         the first Total Volatile Organic Compound sensor currently online, or a nil pointer
  *         if there are none.
  */
-+(YTvoc*) FirstTvoc;
++(nullable YTvoc*) FirstTvoc
+NS_SWIFT_NAME(FirstTvoc());
 //--- (end of YTvoc public methods declaration)
 
 @end
@@ -204,5 +207,6 @@ YTvoc* yFindTvoc(NSString* func);
 YTvoc* yFirstTvoc(void);
 
 //--- (end of YTvoc functions declaration)
+NS_ASSUME_NONNULL_END
 CF_EXTERN_C_END
 

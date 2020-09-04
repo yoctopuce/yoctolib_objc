@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_pwmpowersource.h 38899 2019-12-20 17:21:03Z mvuilleu $
+ *  $Id: yocto_pwmpowersource.h 41625 2020-08-31 07:09:39Z seb $
  *
  *  Declares yFindPwmPowerSource(), the high-level API for PwmPowerSource functions
  *
@@ -39,6 +39,7 @@
 
 #include "yocto_api.h"
 CF_EXTERN_C_BEGIN
+NS_ASSUME_NONNULL_BEGIN
 
 @class YPwmPowerSource;
 
@@ -155,7 +156,7 @@ typedef enum {
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerValueCallback:(YPwmPowerSourceValueCallback)callback;
+-(int)     registerValueCallback:(YPwmPowerSourceValueCallback _Nullable)callback;
 
 -(int)     _invokeValueCallback:(NSString*)value;
 
@@ -170,7 +171,8 @@ typedef enum {
  *         a PWM generator power source currently online, or a nil pointer
  *         if there are no more PWM generator power sources to enumerate.
  */
--(YPwmPowerSource*) nextPwmPowerSource;
+-(nullable YPwmPowerSource*) nextPwmPowerSource
+NS_SWIFT_NAME(nextPwmPowerSource());
 /**
  * Starts the enumeration of PWM generator power sources currently accessible.
  * Use the method YPwmPowerSource.nextPwmPowerSource() to iterate on
@@ -180,7 +182,8 @@ typedef enum {
  *         the first PWM generator power source currently online, or a nil pointer
  *         if there are none.
  */
-+(YPwmPowerSource*) FirstPwmPowerSource;
++(nullable YPwmPowerSource*) FirstPwmPowerSource
+NS_SWIFT_NAME(FirstPwmPowerSource());
 //--- (end of YPwmPowerSource public methods declaration)
 
 @end
@@ -227,5 +230,6 @@ YPwmPowerSource* yFindPwmPowerSource(NSString* func);
 YPwmPowerSource* yFirstPwmPowerSource(void);
 
 //--- (end of YPwmPowerSource functions declaration)
+NS_ASSUME_NONNULL_END
 CF_EXTERN_C_END
 

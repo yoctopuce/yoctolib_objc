@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_tilt.m 37827 2019-10-25 13:07:48Z mvuilleu $
+ *  $Id: yocto_tilt.m 41625 2020-08-31 07:09:39Z seb $
  *
  *  Implements the high-level API for Tilt functions
  *
@@ -201,7 +201,7 @@
  *         the new advertised value.
  * @noreturn
  */
--(int) registerValueCallback:(YTiltValueCallback)callback
+-(int) registerValueCallback:(YTiltValueCallback _Nullable)callback
 {
     NSString* val;
     if (callback != NULL) {
@@ -241,7 +241,7 @@
  *         the new advertised value.
  * @noreturn
  */
--(int) registerTimedReportCallback:(YTiltTimedReportCallback)callback
+-(int) registerTimedReportCallback:(YTiltTimedReportCallback _Nullable)callback
 {
     YSensor* sensor;
     sensor = self;

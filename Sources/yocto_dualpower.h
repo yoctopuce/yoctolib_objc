@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_dualpower.h 38913 2019-12-20 18:59:49Z mvuilleu $
+ *  $Id: yocto_dualpower.h 41625 2020-08-31 07:09:39Z seb $
  *
  *  Declares yFindDualPower(), the high-level API for DualPower functions
  *
@@ -39,6 +39,7 @@
 
 #include "yocto_api.h"
 CF_EXTERN_C_BEGIN
+NS_ASSUME_NONNULL_BEGIN
 
 @class YDualPower;
 
@@ -189,7 +190,7 @@ typedef enum {
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerValueCallback:(YDualPowerValueCallback)callback;
+-(int)     registerValueCallback:(YDualPowerValueCallback _Nullable)callback;
 
 -(int)     _invokeValueCallback:(NSString*)value;
 
@@ -204,7 +205,8 @@ typedef enum {
  *         a dual power switch currently online, or a nil pointer
  *         if there are no more dual power switches to enumerate.
  */
--(YDualPower*) nextDualPower;
+-(nullable YDualPower*) nextDualPower
+NS_SWIFT_NAME(nextDualPower());
 /**
  * Starts the enumeration of dual power switches currently accessible.
  * Use the method YDualPower.nextDualPower() to iterate on
@@ -214,7 +216,8 @@ typedef enum {
  *         the first dual power switch currently online, or a nil pointer
  *         if there are none.
  */
-+(YDualPower*) FirstDualPower;
++(nullable YDualPower*) FirstDualPower
+NS_SWIFT_NAME(FirstDualPower());
 //--- (end of YDualPower public methods declaration)
 
 @end
@@ -261,5 +264,6 @@ YDualPower* yFindDualPower(NSString* func);
 YDualPower* yFirstDualPower(void);
 
 //--- (end of YDualPower functions declaration)
+NS_ASSUME_NONNULL_END
 CF_EXTERN_C_END
 

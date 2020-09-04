@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_digitalio.m 38510 2019-11-26 15:36:38Z mvuilleu $
+ *  $Id: yocto_digitalio.m 41625 2020-08-31 07:09:39Z seb $
  *
  *  Implements the high-level API for DigitalIO functions
  *
@@ -507,7 +507,7 @@
  *         the new advertised value.
  * @noreturn
  */
--(int) registerValueCallback:(YDigitalIOValueCallback)callback
+-(int) registerValueCallback:(YDigitalIOValueCallback _Nullable)callback
 {
     NSString* val;
     if (callback != NULL) {

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_wakeupschedule.h 39434 2020-02-25 08:53:55Z seb $
+ *  $Id: yocto_wakeupschedule.h 41625 2020-08-31 07:09:39Z seb $
  *
  *  Declares yFindWakeUpSchedule(), the high-level API for WakeUpSchedule functions
  *
@@ -39,6 +39,7 @@
 
 #include "yocto_api.h"
 CF_EXTERN_C_BEGIN
+NS_ASSUME_NONNULL_BEGIN
 
 @class YWakeUpSchedule;
 
@@ -290,7 +291,7 @@ typedef void (*YWakeUpScheduleValueCallback)(YWakeUpSchedule *func, NSString *fu
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerValueCallback:(YWakeUpScheduleValueCallback)callback;
+-(int)     registerValueCallback:(YWakeUpScheduleValueCallback _Nullable)callback;
 
 -(int)     _invokeValueCallback:(NSString*)value;
 
@@ -321,7 +322,8 @@ typedef void (*YWakeUpScheduleValueCallback)(YWakeUpSchedule *func, NSString *fu
  *         a wake up schedule currently online, or a nil pointer
  *         if there are no more wake up schedules to enumerate.
  */
--(YWakeUpSchedule*) nextWakeUpSchedule;
+-(nullable YWakeUpSchedule*) nextWakeUpSchedule
+NS_SWIFT_NAME(nextWakeUpSchedule());
 /**
  * Starts the enumeration of wake up schedules currently accessible.
  * Use the method YWakeUpSchedule.nextWakeUpSchedule() to iterate on
@@ -331,7 +333,8 @@ typedef void (*YWakeUpScheduleValueCallback)(YWakeUpSchedule *func, NSString *fu
  *         the first wake up schedule currently online, or a nil pointer
  *         if there are none.
  */
-+(YWakeUpSchedule*) FirstWakeUpSchedule;
++(nullable YWakeUpSchedule*) FirstWakeUpSchedule
+NS_SWIFT_NAME(FirstWakeUpSchedule());
 //--- (end of YWakeUpSchedule public methods declaration)
 
 @end
@@ -378,5 +381,6 @@ YWakeUpSchedule* yFindWakeUpSchedule(NSString* func);
 YWakeUpSchedule* yFirstWakeUpSchedule(void);
 
 //--- (end of YWakeUpSchedule functions declaration)
+NS_ASSUME_NONNULL_END
 CF_EXTERN_C_END
 

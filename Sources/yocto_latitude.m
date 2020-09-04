@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_latitude.m 39658 2020-03-12 15:36:29Z seb $
+ *  $Id: yocto_latitude.m 41625 2020-08-31 07:09:39Z seb $
  *
  *  Implements the high-level API for Latitude functions
  *
@@ -125,7 +125,7 @@
  *         the new advertised value.
  * @noreturn
  */
--(int) registerValueCallback:(YLatitudeValueCallback)callback
+-(int) registerValueCallback:(YLatitudeValueCallback _Nullable)callback
 {
     NSString* val;
     if (callback != NULL) {
@@ -165,7 +165,7 @@
  *         the new advertised value.
  * @noreturn
  */
--(int) registerTimedReportCallback:(YLatitudeTimedReportCallback)callback
+-(int) registerTimedReportCallback:(YLatitudeTimedReportCallback _Nullable)callback
 {
     YSensor* sensor;
     sensor = self;

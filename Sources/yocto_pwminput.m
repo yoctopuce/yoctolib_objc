@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_pwminput.m 37827 2019-10-25 13:07:48Z mvuilleu $
+ *  $Id: yocto_pwminput.m 41625 2020-08-31 07:09:39Z seb $
  *
  *  Implements the high-level API for PwmInput functions
  *
@@ -61,6 +61,8 @@
     _pulseTimer = Y_PULSETIMER_INVALID;
     _pwmReportMode = Y_PWMREPORTMODE_INVALID;
     _debouncePeriod = Y_DEBOUNCEPERIOD_INVALID;
+    _bandwidth = Y_BANDWIDTH_INVALID;
+    _edgesPerPeriod = Y_EDGESPERPERIOD_INVALID;
     _valueCallbackPwmInput = NULL;
     _timedReportCallbackPwmInput = NULL;
 //--- (end of YPwmInput attributes initialization)
@@ -117,6 +119,16 @@
     if(!strcmp(j->token, "debouncePeriod")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
         _debouncePeriod =  atoi(j->token);
+        return 1;
+    }
+    if(!strcmp(j->token, "bandwidth")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _bandwidth =  atoi(j->token);
+        return 1;
+    }
+    if(!strcmp(j->token, "edgesPerPeriod")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _edgesPerPeriod =  atoi(j->token);
         return 1;
     }
     return [super _parseAttr:j];
@@ -312,8 +324,9 @@
  * @return a value among Y_PWMREPORTMODE_PWM_DUTYCYCLE, Y_PWMREPORTMODE_PWM_FREQUENCY,
  * Y_PWMREPORTMODE_PWM_PULSEDURATION, Y_PWMREPORTMODE_PWM_EDGECOUNT, Y_PWMREPORTMODE_PWM_PULSECOUNT,
  * Y_PWMREPORTMODE_PWM_CPS, Y_PWMREPORTMODE_PWM_CPM, Y_PWMREPORTMODE_PWM_STATE,
- * Y_PWMREPORTMODE_PWM_FREQ_CPS and Y_PWMREPORTMODE_PWM_FREQ_CPM corresponding to the parameter
- * (frequency/duty cycle, pulse width, edges count) returned by the get_currentValue function and callbacks
+ * Y_PWMREPORTMODE_PWM_FREQ_CPS, Y_PWMREPORTMODE_PWM_FREQ_CPM and Y_PWMREPORTMODE_PWM_PERIODCOUNT
+ * corresponding to the parameter (frequency/duty cycle, pulse width, edges count) returned by the
+ * get_currentValue function and callbacks
  *
  * On failure, throws an exception or returns Y_PWMREPORTMODE_INVALID.
  */
@@ -345,8 +358,9 @@
  * @param newval : a value among Y_PWMREPORTMODE_PWM_DUTYCYCLE, Y_PWMREPORTMODE_PWM_FREQUENCY,
  * Y_PWMREPORTMODE_PWM_PULSEDURATION, Y_PWMREPORTMODE_PWM_EDGECOUNT, Y_PWMREPORTMODE_PWM_PULSECOUNT,
  * Y_PWMREPORTMODE_PWM_CPS, Y_PWMREPORTMODE_PWM_CPM, Y_PWMREPORTMODE_PWM_STATE,
- * Y_PWMREPORTMODE_PWM_FREQ_CPS and Y_PWMREPORTMODE_PWM_FREQ_CPM corresponding to the  parameter  type
- * (frequency/duty cycle, pulse width, or edge count) returned by the get_currentValue function and callbacks
+ * Y_PWMREPORTMODE_PWM_FREQ_CPS, Y_PWMREPORTMODE_PWM_FREQ_CPM and Y_PWMREPORTMODE_PWM_PERIODCOUNT
+ * corresponding to the  parameter  type (frequency/duty cycle, pulse width, or edge count) returned
+ * by the get_currentValue function and callbacks
  *
  * @return YAPI_SUCCESS if the call succeeds.
  *
@@ -408,6 +422,79 @@
     return [self _setAttr:@"debouncePeriod" :rest_val];
 }
 /**
+ * Returns the input signal sampling rate, in kHz.
+ *
+ * @return an integer corresponding to the input signal sampling rate, in kHz
+ *
+ * On failure, throws an exception or returns Y_BANDWIDTH_INVALID.
+ */
+-(int) get_bandwidth
+{
+    int res;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
+            return Y_BANDWIDTH_INVALID;
+        }
+    }
+    res = _bandwidth;
+    return res;
+}
+
+
+-(int) bandwidth
+{
+    return [self get_bandwidth];
+}
+
+/**
+ * Changes the input signal sampling rate, measured in kHz.
+ * A lower sampling frequency can be used to hide hide-frequency bounce effects,
+ * for instance on electromechanical contacts, but limits the measure resolution.
+ * Remember to call the saveToFlash()
+ * method of the module if the modification must be kept.
+ *
+ * @param newval : an integer corresponding to the input signal sampling rate, measured in kHz
+ *
+ * @return YAPI_SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) set_bandwidth:(int) newval
+{
+    return [self setBandwidth:newval];
+}
+-(int) setBandwidth:(int) newval
+{
+    NSString* rest_val;
+    rest_val = [NSString stringWithFormat:@"%d", newval];
+    return [self _setAttr:@"bandwidth" :rest_val];
+}
+/**
+ * Returns the number of edges detected per preiod. For a clean PWM signal, this should be exactly two,
+ * but in cas the signal is created by a mechanical contact with bounces, it can get higher.
+ *
+ * @return an integer corresponding to the number of edges detected per preiod
+ *
+ * On failure, throws an exception or returns Y_EDGESPERPERIOD_INVALID.
+ */
+-(int) get_edgesPerPeriod
+{
+    int res;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
+            return Y_EDGESPERPERIOD_INVALID;
+        }
+    }
+    res = _edgesPerPeriod;
+    return res;
+}
+
+
+-(int) edgesPerPeriod
+{
+    return [self get_edgesPerPeriod];
+}
+/**
  * Retrieves a PWM input for a given identifier.
  * The identifier can be specified using several formats:
  * <ul>
@@ -457,7 +544,7 @@
  *         the new advertised value.
  * @noreturn
  */
--(int) registerValueCallback:(YPwmInputValueCallback)callback
+-(int) registerValueCallback:(YPwmInputValueCallback _Nullable)callback
 {
     NSString* val;
     if (callback != NULL) {
@@ -497,7 +584,7 @@
  *         the new advertised value.
  * @noreturn
  */
--(int) registerTimedReportCallback:(YPwmInputTimedReportCallback)callback
+-(int) registerTimedReportCallback:(YPwmInputTimedReportCallback _Nullable)callback
 {
     YSensor* sensor;
     sensor = self;

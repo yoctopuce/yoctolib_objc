@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_arithmeticsensor.h 38899 2019-12-20 17:21:03Z mvuilleu $
+ *  $Id: yocto_arithmeticsensor.h 41625 2020-08-31 07:09:39Z seb $
  *
  *  Declares yFindArithmeticSensor(), the high-level API for ArithmeticSensor functions
  *
@@ -39,6 +39,7 @@
 
 #include "yocto_api.h"
 CF_EXTERN_C_BEGIN
+NS_ASSUME_NONNULL_BEGIN
 
 @class YArithmeticSensor;
 
@@ -154,7 +155,7 @@ typedef void (*YArithmeticSensorTimedReportCallback)(YArithmeticSensor *func, YM
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerValueCallback:(YArithmeticSensorValueCallback)callback;
+-(int)     registerValueCallback:(YArithmeticSensorValueCallback _Nullable)callback;
 
 -(int)     _invokeValueCallback:(NSString*)value;
 
@@ -169,7 +170,7 @@ typedef void (*YArithmeticSensorTimedReportCallback)(YArithmeticSensor *func, YM
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerTimedReportCallback:(YArithmeticSensorTimedReportCallback)callback;
+-(int)     registerTimedReportCallback:(YArithmeticSensorTimedReportCallback _Nullable)callback;
 
 -(int)     _invokeTimedReportCallback:(YMeasure*)value;
 
@@ -243,7 +244,8 @@ typedef void (*YArithmeticSensorTimedReportCallback)(YArithmeticSensor *func, YM
  *         an arithmetic sensor currently online, or a nil pointer
  *         if there are no more arithmetic sensors to enumerate.
  */
--(YArithmeticSensor*) nextArithmeticSensor;
+-(nullable YArithmeticSensor*) nextArithmeticSensor
+NS_SWIFT_NAME(nextArithmeticSensor());
 /**
  * Starts the enumeration of arithmetic sensors currently accessible.
  * Use the method YArithmeticSensor.nextArithmeticSensor() to iterate on
@@ -253,7 +255,8 @@ typedef void (*YArithmeticSensorTimedReportCallback)(YArithmeticSensor *func, YM
  *         the first arithmetic sensor currently online, or a nil pointer
  *         if there are none.
  */
-+(YArithmeticSensor*) FirstArithmeticSensor;
++(nullable YArithmeticSensor*) FirstArithmeticSensor
+NS_SWIFT_NAME(FirstArithmeticSensor());
 //--- (end of YArithmeticSensor public methods declaration)
 
 @end
@@ -300,5 +303,6 @@ YArithmeticSensor* yFindArithmeticSensor(NSString* func);
 YArithmeticSensor* yFirstArithmeticSensor(void);
 
 //--- (end of YArithmeticSensor functions declaration)
+NS_ASSUME_NONNULL_END
 CF_EXTERN_C_END
 

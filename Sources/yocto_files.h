@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_files.h 41109 2020-06-29 12:40:42Z seb $
+ * $Id: yocto_files.h 41625 2020-08-31 07:09:39Z seb $
  *
  * Declares yFindFiles(), the high-level API for Files functions
  *
@@ -39,7 +39,7 @@
 
 #include "yocto_api.h"
 CF_EXTERN_C_BEGIN
-
+NS_ASSUME_NONNULL_BEGIN
 @class YFiles;
 
 //--- (generated code: YFiles globals)
@@ -199,7 +199,7 @@ typedef void (*YFilesValueCallback)(YFiles *func, NSString *functionValue);
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerValueCallback:(YFilesValueCallback)callback;
+-(int)     registerValueCallback:(YFilesValueCallback _Nullable)callback;
 
 -(int)     _invokeValueCallback:(NSString*)value;
 
@@ -292,7 +292,8 @@ typedef void (*YFilesValueCallback)(YFiles *func, NSString *functionValue);
  *         a filesystem currently online, or a nil pointer
  *         if there are no more filesystems to enumerate.
  */
--(YFiles*) nextFiles;
+-(nullable YFiles*) nextFiles
+NS_SWIFT_NAME(nextFiles());
 /**
  * Starts the enumeration of filesystems currently accessible.
  * Use the method YFiles.nextFiles() to iterate on
@@ -302,7 +303,8 @@ typedef void (*YFilesValueCallback)(YFiles *func, NSString *functionValue);
  *         the first filesystem currently online, or a nil pointer
  *         if there are none.
  */
-+(YFiles*) FirstFiles;
++(nullable YFiles*) FirstFiles
+NS_SWIFT_NAME(FirstFiles());
 //--- (end of generated code: YFiles public methods declaration)
 
 @end
@@ -349,5 +351,6 @@ YFiles* yFindFiles(NSString* func);
 YFiles* yFirstFiles(void);
 
 //--- (end of generated code: YFiles functions declaration)
+NS_ASSUME_NONNULL_END
 CF_EXTERN_C_END
 

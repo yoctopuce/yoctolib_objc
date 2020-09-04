@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_humidity.h 38899 2019-12-20 17:21:03Z mvuilleu $
+ *  $Id: yocto_humidity.h 41625 2020-08-31 07:09:39Z seb $
  *
  *  Declares yFindHumidity(), the high-level API for Humidity functions
  *
@@ -39,6 +39,7 @@
 
 #include "yocto_api.h"
 CF_EXTERN_C_BEGIN
+NS_ASSUME_NONNULL_BEGIN
 
 @class YHumidity;
 
@@ -161,7 +162,7 @@ typedef void (*YHumidityTimedReportCallback)(YHumidity *func, YMeasure *measure)
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerValueCallback:(YHumidityValueCallback)callback;
+-(int)     registerValueCallback:(YHumidityValueCallback _Nullable)callback;
 
 -(int)     _invokeValueCallback:(NSString*)value;
 
@@ -176,7 +177,7 @@ typedef void (*YHumidityTimedReportCallback)(YHumidity *func, YMeasure *measure)
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerTimedReportCallback:(YHumidityTimedReportCallback)callback;
+-(int)     registerTimedReportCallback:(YHumidityTimedReportCallback _Nullable)callback;
 
 -(int)     _invokeTimedReportCallback:(YMeasure*)value;
 
@@ -191,7 +192,8 @@ typedef void (*YHumidityTimedReportCallback)(YHumidity *func, YMeasure *measure)
  *         a humidity sensor currently online, or a nil pointer
  *         if there are no more humidity sensors to enumerate.
  */
--(YHumidity*) nextHumidity;
+-(nullable YHumidity*) nextHumidity
+NS_SWIFT_NAME(nextHumidity());
 /**
  * Starts the enumeration of humidity sensors currently accessible.
  * Use the method YHumidity.nextHumidity() to iterate on
@@ -201,7 +203,8 @@ typedef void (*YHumidityTimedReportCallback)(YHumidity *func, YMeasure *measure)
  *         the first humidity sensor currently online, or a nil pointer
  *         if there are none.
  */
-+(YHumidity*) FirstHumidity;
++(nullable YHumidity*) FirstHumidity
+NS_SWIFT_NAME(FirstHumidity());
 //--- (end of YHumidity public methods declaration)
 
 @end
@@ -248,5 +251,6 @@ YHumidity* yFindHumidity(NSString* func);
 YHumidity* yFirstHumidity(void);
 
 //--- (end of YHumidity functions declaration)
+NS_ASSUME_NONNULL_END
 CF_EXTERN_C_END
 

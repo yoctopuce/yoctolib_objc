@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_voltageoutput.h 38899 2019-12-20 17:21:03Z mvuilleu $
+ *  $Id: yocto_voltageoutput.h 41625 2020-08-31 07:09:39Z seb $
  *
  *  Declares yFindVoltageOutput(), the high-level API for VoltageOutput functions
  *
@@ -39,6 +39,7 @@
 
 #include "yocto_api.h"
 CF_EXTERN_C_BEGIN
+NS_ASSUME_NONNULL_BEGIN
 
 @class YVoltageOutput;
 
@@ -172,7 +173,7 @@ typedef void (*YVoltageOutputValueCallback)(YVoltageOutput *func, NSString *func
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerValueCallback:(YVoltageOutputValueCallback)callback;
+-(int)     registerValueCallback:(YVoltageOutputValueCallback _Nullable)callback;
 
 -(int)     _invokeValueCallback:(NSString*)value;
 
@@ -199,7 +200,8 @@ typedef void (*YVoltageOutputValueCallback)(YVoltageOutput *func, NSString *func
  *         a voltage output currently online, or a nil pointer
  *         if there are no more voltage outputs to enumerate.
  */
--(YVoltageOutput*) nextVoltageOutput;
+-(nullable YVoltageOutput*) nextVoltageOutput
+NS_SWIFT_NAME(nextVoltageOutput());
 /**
  * Starts the enumeration of voltage outputs currently accessible.
  * Use the method YVoltageOutput.nextVoltageOutput() to iterate on
@@ -209,7 +211,8 @@ typedef void (*YVoltageOutputValueCallback)(YVoltageOutput *func, NSString *func
  *         the first voltage output currently online, or a nil pointer
  *         if there are none.
  */
-+(YVoltageOutput*) FirstVoltageOutput;
++(nullable YVoltageOutput*) FirstVoltageOutput
+NS_SWIFT_NAME(FirstVoltageOutput());
 //--- (end of YVoltageOutput public methods declaration)
 
 @end
@@ -256,5 +259,6 @@ YVoltageOutput* yFindVoltageOutput(NSString* func);
 YVoltageOutput* yFirstVoltageOutput(void);
 
 //--- (end of YVoltageOutput functions declaration)
+NS_ASSUME_NONNULL_END
 CF_EXTERN_C_END
 

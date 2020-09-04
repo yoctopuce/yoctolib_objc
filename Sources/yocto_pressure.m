@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_pressure.m 38510 2019-11-26 15:36:38Z mvuilleu $
+ *  $Id: yocto_pressure.m 41625 2020-08-31 07:09:39Z seb $
  *
  *  Implements the high-level API for Pressure functions
  *
@@ -125,7 +125,7 @@
  *         the new advertised value.
  * @noreturn
  */
--(int) registerValueCallback:(YPressureValueCallback)callback
+-(int) registerValueCallback:(YPressureValueCallback _Nullable)callback
 {
     NSString* val;
     if (callback != NULL) {
@@ -165,7 +165,7 @@
  *         the new advertised value.
  * @noreturn
  */
--(int) registerTimedReportCallback:(YPressureTimedReportCallback)callback
+-(int) registerTimedReportCallback:(YPressureTimedReportCallback _Nullable)callback
 {
     YSensor* sensor;
     sensor = self;

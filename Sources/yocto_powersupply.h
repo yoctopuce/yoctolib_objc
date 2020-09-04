@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_powersupply.h 38899 2019-12-20 17:21:03Z mvuilleu $
+ *  $Id: yocto_powersupply.h 41625 2020-08-31 07:09:39Z seb $
  *
  *  Declares yFindPowerSupply(), the high-level API for PowerSupply functions
  *
@@ -39,6 +39,7 @@
 
 #include "yocto_api.h"
 CF_EXTERN_C_BEGIN
+NS_ASSUME_NONNULL_BEGIN
 
 @class YPowerSupply;
 
@@ -363,7 +364,7 @@ typedef enum {
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerValueCallback:(YPowerSupplyValueCallback)callback;
+-(int)     registerValueCallback:(YPowerSupplyValueCallback _Nullable)callback;
 
 -(int)     _invokeValueCallback:(NSString*)value;
 
@@ -390,7 +391,8 @@ typedef enum {
  *         a regulated power supply currently online, or a nil pointer
  *         if there are no more regulated power supplies to enumerate.
  */
--(YPowerSupply*) nextPowerSupply;
+-(nullable YPowerSupply*) nextPowerSupply
+NS_SWIFT_NAME(nextPowerSupply());
 /**
  * Starts the enumeration of regulated power supplies currently accessible.
  * Use the method YPowerSupply.nextPowerSupply() to iterate on
@@ -400,7 +402,8 @@ typedef enum {
  *         the first regulated power supply currently online, or a nil pointer
  *         if there are none.
  */
-+(YPowerSupply*) FirstPowerSupply;
++(nullable YPowerSupply*) FirstPowerSupply
+NS_SWIFT_NAME(FirstPowerSupply());
 //--- (end of YPowerSupply public methods declaration)
 
 @end
@@ -447,5 +450,6 @@ YPowerSupply* yFindPowerSupply(NSString* func);
 YPowerSupply* yFirstPowerSupply(void);
 
 //--- (end of YPowerSupply functions declaration)
+NS_ASSUME_NONNULL_END
 CF_EXTERN_C_END
 

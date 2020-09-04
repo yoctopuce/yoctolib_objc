@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_i2cport.m 39333 2020-01-30 10:05:40Z mvuilleu $
+ *  $Id: yocto_i2cport.m 41625 2020-08-31 07:09:39Z seb $
  *
  *  Implements the high-level API for I2cPort functions
  *
@@ -42,6 +42,99 @@
 #include "yapi/yjson.h"
 #include "yapi/yapi.h"
 
+@implementation YI2cSnoopingRecord
+
+
+-(id)   initWith:(NSString *)json_str
+{
+    yJsonStateMachine j;
+    if(!(self = [super init]))
+        return nil;
+//--- (generated code: YI2cSnoopingRecord attributes initialization)
+    _tim = 0;
+    _dir = 0;
+//--- (end of generated code: YI2cSnoopingRecord attributes initialization)
+
+    // Parse JSON data
+    j.src = STR_oc2y(json_str);
+    j.end = j.src + strlen(j.src);
+    j.st = YJSON_START;
+    if(yJsonParse(&j) != YJSON_PARSE_AVAIL || j.st != YJSON_PARSE_STRUCT) {
+        return self;
+    }
+    while(yJsonParse(&j) == YJSON_PARSE_AVAIL && j.st == YJSON_PARSE_MEMBNAME) {
+        if (!strcmp(j.token, "m")) {
+            if (yJsonParse(&j) != YJSON_PARSE_AVAIL) {
+                return self;
+            }
+            _dir = (j.token[0] == '<' ? 1 : 0);
+            _msg = STR_y2oc(j.token+1);
+            while(j.next == YJSON_PARSE_STRINGCONT && yJsonParse(&j) == YJSON_PARSE_AVAIL) {
+                _msg =[_msg stringByAppendingString: STR_y2oc(j.token)];
+                ARC_retain(_msg);
+            }
+        } else if(!strcmp(j.token, "t")) {
+            if (yJsonParse(&j) != YJSON_PARSE_AVAIL) {
+                return self;
+            }
+            _tim = atoi(j.token);;
+        } else {
+            yJsonSkip(&j, 1);
+        }
+    }
+    return self;
+}
+
+
+// destructor
+-(void)  dealloc
+{
+//--- (generated code: YI2cSnoopingRecord cleanup)
+    ARC_dealloc(super);
+//--- (end of generated code: YI2cSnoopingRecord cleanup)
+}
+
+//--- (generated code: YI2cSnoopingRecord private methods implementation)
+
+//--- (end of generated code: YI2cSnoopingRecord private methods implementation)
+
+//--- (generated code: YI2cSnoopingRecord public methods implementation)
+/**
+ * Returns the elapsed time, in ms, since the beginning of the preceding message.
+ *
+ * @return the elapsed time, in ms, since the beginning of the preceding message.
+ */
+-(int) get_time
+{
+    return _tim;
+}
+
+/**
+ * Returns the message direction (RX=0, TX=1).
+ *
+ * @return the message direction (RX=0, TX=1).
+ */
+-(int) get_direction
+{
+    return _dir;
+}
+
+/**
+ * Returns the message content.
+ *
+ * @return the message content.
+ */
+-(NSString*) get_message
+{
+    return _msg;
+}
+
+//--- (end of generated code: YI2cSnoopingRecord public methods implementation)
+
+@end
+//--- (generated code: YI2cSnoopingRecord functions)
+//--- (end of generated code: YI2cSnoopingRecord functions)
+
 
 
 @implementation YI2cPort
@@ -52,7 +145,7 @@
    if(!(self = [super initWith:func]))
           return nil;
     _className = @"I2cPort";
-//--- (YI2cPort attributes initialization)
+//--- (generated code: YI2cPort attributes initialization)
     _rxCount = Y_RXCOUNT_INVALID;
     _txCount = Y_TXCOUNT_INVALID;
     _errCount = Y_ERRCOUNT_INVALID;
@@ -70,15 +163,15 @@
     _valueCallbackI2cPort = NULL;
     _rxptr = 0;
     _rxbuffptr = 0;
-//--- (end of YI2cPort attributes initialization)
+//--- (end of generated code: YI2cPort attributes initialization)
     return self;
 }
-//--- (YI2cPort yapiwrapper)
-//--- (end of YI2cPort yapiwrapper)
+//--- (generated code: YI2cPort yapiwrapper)
+//--- (end of generated code: YI2cPort yapiwrapper)
 // destructor
 -(void)  dealloc
 {
-//--- (YI2cPort cleanup)
+//--- (generated code: YI2cPort cleanup)
     ARC_release(_lastMsg);
     _lastMsg = nil;
     ARC_release(_currentJob);
@@ -92,9 +185,9 @@
     ARC_release(_i2cMode);
     _i2cMode = nil;
     ARC_dealloc(super);
-//--- (end of YI2cPort cleanup)
+//--- (end of generated code: YI2cPort cleanup)
 }
-//--- (YI2cPort private methods implementation)
+//--- (generated code: YI2cPort private methods implementation)
 
 -(int) _parseAttr:(yJsonStateMachine*) j
 {
@@ -182,8 +275,8 @@
     }
     return [super _parseAttr:j];
 }
-//--- (end of YI2cPort private methods implementation)
-//--- (YI2cPort public methods implementation)
+//--- (end of generated code: YI2cPort private methods implementation)
+//--- (generated code: YI2cPort public methods implementation)
 /**
  * Returns the total number of bytes received since last reset.
  *
@@ -703,7 +796,7 @@
  *         the new advertised value.
  * @noreturn
  */
--(int) registerValueCallback:(YI2cPortValueCallback)callback
+-(int) registerValueCallback:(YI2cPortValueCallback _Nullable)callback
 {
     NSString* val;
     if (callback != NULL) {
@@ -1344,6 +1437,46 @@
     return [self writeHex:msg];
 }
 
+/**
+ * Retrieves messages (both direction) in the I2C port buffer, starting at current position.
+ *
+ * If no message is found, the search waits for one up to the specified maximum timeout
+ * (in milliseconds).
+ *
+ * @param maxWait : the maximum number of milliseconds to wait for a message if none is found
+ *         in the receive buffer.
+ *
+ * @return an array of YI2cSnoopingRecord objects containing the messages found, if any.
+ *
+ * On failure, throws an exception or returns an empty array.
+ */
+-(NSMutableArray*) snoopMessages:(int)maxWait
+{
+    NSString* url;
+    NSMutableData* msgbin;
+    NSMutableArray* msgarr = [NSMutableArray array];
+    int msglen;
+    NSMutableArray* res = [NSMutableArray array];
+    int idx;
+
+    url = [NSString stringWithFormat:@"rxmsg.json?pos=%d&maxw=%d&t=0", _rxptr,maxWait];
+    msgbin = [self _download:url];
+    msgarr = [self _json_get_array:msgbin];
+    msglen = (int)[msgarr count];
+    if (msglen == 0) {
+        return res;
+    }
+    // last element of array is the new position
+    msglen = msglen - 1;
+    _rxptr = [[msgarr objectAtIndex:msglen] intValue];
+    idx = 0;
+    while (idx < msglen) {
+        [res addObject:ARC_sendAutorelease([[YI2cSnoopingRecord alloc] initWith:[msgarr objectAtIndex:idx]])];
+        idx = idx + 1;
+    }
+    return res;
+}
+
 
 -(YI2cPort*)   nextI2cPort
 {
@@ -1370,10 +1503,10 @@
     return nil;
 }
 
-//--- (end of YI2cPort public methods implementation)
+//--- (end of generated code: YI2cPort public methods implementation)
 
 @end
-//--- (YI2cPort functions)
+//--- (generated code: YI2cPort functions)
 
 YI2cPort *yFindI2cPort(NSString* func)
 {
@@ -1385,4 +1518,4 @@ YI2cPort *yFirstI2cPort(void)
     return [YI2cPort FirstI2cPort];
 }
 
-//--- (end of YI2cPort functions)
+//--- (end of generated code: YI2cPort functions)

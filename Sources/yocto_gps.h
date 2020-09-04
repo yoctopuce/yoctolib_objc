@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_gps.h 39658 2020-03-12 15:36:29Z seb $
+ *  $Id: yocto_gps.h 41625 2020-08-31 07:09:39Z seb $
  *
  *  Declares yFindGps(), the high-level API for Gps functions
  *
@@ -39,6 +39,7 @@
 
 #include "yocto_api.h"
 CF_EXTERN_C_BEGIN
+NS_ASSUME_NONNULL_BEGIN
 
 @class YGps;
 
@@ -413,7 +414,7 @@ typedef enum {
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerValueCallback:(YGpsValueCallback)callback;
+-(int)     registerValueCallback:(YGpsValueCallback _Nullable)callback;
 
 -(int)     _invokeValueCallback:(NSString*)value;
 
@@ -428,7 +429,8 @@ typedef enum {
  *         a geolocalization module currently online, or a nil pointer
  *         if there are no more geolocalization modules to enumerate.
  */
--(YGps*) nextGps;
+-(nullable YGps*) nextGps
+NS_SWIFT_NAME(nextGps());
 /**
  * Starts the enumeration of geolocalization modules currently accessible.
  * Use the method YGps.nextGps() to iterate on
@@ -438,7 +440,8 @@ typedef enum {
  *         the first geolocalization module currently online, or a nil pointer
  *         if there are none.
  */
-+(YGps*) FirstGps;
++(nullable YGps*) FirstGps
+NS_SWIFT_NAME(FirstGps());
 //--- (end of YGps public methods declaration)
 
 @end
@@ -485,5 +488,6 @@ YGps* yFindGps(NSString* func);
 YGps* yFirstGps(void);
 
 //--- (end of YGps functions declaration)
+NS_ASSUME_NONNULL_END
 CF_EXTERN_C_END
 

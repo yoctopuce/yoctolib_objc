@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_magnetometer.h 38899 2019-12-20 17:21:03Z mvuilleu $
+ *  $Id: yocto_magnetometer.h 41625 2020-08-31 07:09:39Z seb $
  *
  *  Declares yFindMagnetometer(), the high-level API for Magnetometer functions
  *
@@ -39,6 +39,7 @@
 
 #include "yocto_api.h"
 CF_EXTERN_C_BEGIN
+NS_ASSUME_NONNULL_BEGIN
 
 @class YMagnetometer;
 
@@ -192,7 +193,7 @@ typedef void (*YMagnetometerTimedReportCallback)(YMagnetometer *func, YMeasure *
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerValueCallback:(YMagnetometerValueCallback)callback;
+-(int)     registerValueCallback:(YMagnetometerValueCallback _Nullable)callback;
 
 -(int)     _invokeValueCallback:(NSString*)value;
 
@@ -207,7 +208,7 @@ typedef void (*YMagnetometerTimedReportCallback)(YMagnetometer *func, YMeasure *
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerTimedReportCallback:(YMagnetometerTimedReportCallback)callback;
+-(int)     registerTimedReportCallback:(YMagnetometerTimedReportCallback _Nullable)callback;
 
 -(int)     _invokeTimedReportCallback:(YMeasure*)value;
 
@@ -222,7 +223,8 @@ typedef void (*YMagnetometerTimedReportCallback)(YMagnetometer *func, YMeasure *
  *         a magnetometer currently online, or a nil pointer
  *         if there are no more magnetometers to enumerate.
  */
--(YMagnetometer*) nextMagnetometer;
+-(nullable YMagnetometer*) nextMagnetometer
+NS_SWIFT_NAME(nextMagnetometer());
 /**
  * Starts the enumeration of magnetometers currently accessible.
  * Use the method YMagnetometer.nextMagnetometer() to iterate on
@@ -232,7 +234,8 @@ typedef void (*YMagnetometerTimedReportCallback)(YMagnetometer *func, YMeasure *
  *         the first magnetometer currently online, or a nil pointer
  *         if there are none.
  */
-+(YMagnetometer*) FirstMagnetometer;
++(nullable YMagnetometer*) FirstMagnetometer
+NS_SWIFT_NAME(FirstMagnetometer());
 //--- (end of YMagnetometer public methods declaration)
 
 @end
@@ -279,5 +282,6 @@ YMagnetometer* yFindMagnetometer(NSString* func);
 YMagnetometer* yFirstMagnetometer(void);
 
 //--- (end of YMagnetometer functions declaration)
+NS_ASSUME_NONNULL_END
 CF_EXTERN_C_END
 

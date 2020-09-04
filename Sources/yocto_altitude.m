@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_altitude.m 38510 2019-11-26 15:36:38Z mvuilleu $
+ *  $Id: yocto_altitude.m 41625 2020-08-31 07:09:39Z seb $
  *
  *  Implements the high-level API for Altitude functions
  *
@@ -242,7 +242,7 @@
  *         the new advertised value.
  * @noreturn
  */
--(int) registerValueCallback:(YAltitudeValueCallback)callback
+-(int) registerValueCallback:(YAltitudeValueCallback _Nullable)callback
 {
     NSString* val;
     if (callback != NULL) {
@@ -282,7 +282,7 @@
  *         the new advertised value.
  * @noreturn
  */
--(int) registerTimedReportCallback:(YAltitudeTimedReportCallback)callback
+-(int) registerTimedReportCallback:(YAltitudeTimedReportCallback _Nullable)callback
 {
     YSensor* sensor;
     sensor = self;

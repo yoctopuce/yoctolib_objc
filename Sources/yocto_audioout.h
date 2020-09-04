@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_audioout.h 38899 2019-12-20 17:21:03Z mvuilleu $
+ *  $Id: yocto_audioout.h 41625 2020-08-31 07:09:39Z seb $
  *
  *  Declares yFindAudioOut(), the high-level API for AudioOut functions
  *
@@ -39,6 +39,7 @@
 
 #include "yocto_api.h"
 CF_EXTERN_C_BEGIN
+NS_ASSUME_NONNULL_BEGIN
 
 @class YAudioOut;
 
@@ -214,7 +215,7 @@ typedef enum {
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerValueCallback:(YAudioOutValueCallback)callback;
+-(int)     registerValueCallback:(YAudioOutValueCallback _Nullable)callback;
 
 -(int)     _invokeValueCallback:(NSString*)value;
 
@@ -229,7 +230,8 @@ typedef enum {
  *         an audio output currently online, or a nil pointer
  *         if there are no more audio outputs to enumerate.
  */
--(YAudioOut*) nextAudioOut;
+-(nullable YAudioOut*) nextAudioOut
+NS_SWIFT_NAME(nextAudioOut());
 /**
  * Starts the enumeration of audio outputs currently accessible.
  * Use the method YAudioOut.nextAudioOut() to iterate on
@@ -239,7 +241,8 @@ typedef enum {
  *         the first audio output currently online, or a nil pointer
  *         if there are none.
  */
-+(YAudioOut*) FirstAudioOut;
++(nullable YAudioOut*) FirstAudioOut
+NS_SWIFT_NAME(FirstAudioOut());
 //--- (end of YAudioOut public methods declaration)
 
 @end
@@ -286,5 +289,6 @@ YAudioOut* yFindAudioOut(NSString* func);
 YAudioOut* yFirstAudioOut(void);
 
 //--- (end of YAudioOut functions declaration)
+NS_ASSUME_NONNULL_END
 CF_EXTERN_C_END
 

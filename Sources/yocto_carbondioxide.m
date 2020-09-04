@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_carbondioxide.m 37827 2019-10-25 13:07:48Z mvuilleu $
+ *  $Id: yocto_carbondioxide.m 41625 2020-08-31 07:09:39Z seb $
  *
  *  Implements the high-level API for CarbonDioxide functions
  *
@@ -218,7 +218,7 @@
  *         the new advertised value.
  * @noreturn
  */
--(int) registerValueCallback:(YCarbonDioxideValueCallback)callback
+-(int) registerValueCallback:(YCarbonDioxideValueCallback _Nullable)callback
 {
     NSString* val;
     if (callback != NULL) {
@@ -258,7 +258,7 @@
  *         the new advertised value.
  * @noreturn
  */
--(int) registerTimedReportCallback:(YCarbonDioxideTimedReportCallback)callback
+-(int) registerTimedReportCallback:(YCarbonDioxideTimedReportCallback _Nullable)callback
 {
     YSensor* sensor;
     sensor = self;

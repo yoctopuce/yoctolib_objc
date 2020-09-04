@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_network.h 41109 2020-06-29 12:40:42Z seb $
+ *  $Id: yocto_network.h 41625 2020-08-31 07:09:39Z seb $
  *
  *  Declares yFindNetwork(), the high-level API for Network functions
  *
@@ -39,6 +39,7 @@
 
 #include "yocto_api.h"
 CF_EXTERN_C_BEGIN
+NS_ASSUME_NONNULL_BEGIN
 
 @class YNetwork;
 
@@ -800,7 +801,7 @@ typedef enum {
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerValueCallback:(YNetworkValueCallback)callback;
+-(int)     registerValueCallback:(YNetworkValueCallback _Nullable)callback;
 
 -(int)     _invokeValueCallback:(NSString*)value;
 
@@ -896,7 +897,8 @@ typedef enum {
  *         a network interface currently online, or a nil pointer
  *         if there are no more network interfaces to enumerate.
  */
--(YNetwork*) nextNetwork;
+-(nullable YNetwork*) nextNetwork
+NS_SWIFT_NAME(nextNetwork());
 /**
  * Starts the enumeration of network interfaces currently accessible.
  * Use the method YNetwork.nextNetwork() to iterate on
@@ -906,7 +908,8 @@ typedef enum {
  *         the first network interface currently online, or a nil pointer
  *         if there are none.
  */
-+(YNetwork*) FirstNetwork;
++(nullable YNetwork*) FirstNetwork
+NS_SWIFT_NAME(FirstNetwork());
 //--- (end of YNetwork public methods declaration)
 
 @end
@@ -953,5 +956,6 @@ YNetwork* yFindNetwork(NSString* func);
 YNetwork* yFirstNetwork(void);
 
 //--- (end of YNetwork functions declaration)
+NS_ASSUME_NONNULL_END
 CF_EXTERN_C_END
 

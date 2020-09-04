@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_multiaxiscontroller.h 37827 2019-10-25 13:07:48Z mvuilleu $
+ *  $Id: yocto_multiaxiscontroller.h 41625 2020-08-31 07:09:39Z seb $
  *
  *  Declares yFindMultiAxisController(), the high-level API for MultiAxisController functions
  *
@@ -39,6 +39,7 @@
 
 #include "yocto_api.h"
 CF_EXTERN_C_BEGIN
+NS_ASSUME_NONNULL_BEGIN
 
 @class YMultiAxisController;
 
@@ -173,7 +174,7 @@ typedef enum {
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerValueCallback:(YMultiAxisControllerValueCallback)callback;
+-(int)     registerValueCallback:(YMultiAxisControllerValueCallback _Nullable)callback;
 
 -(int)     _invokeValueCallback:(NSString*)value;
 
@@ -268,7 +269,8 @@ typedef enum {
  *         a multi-axis controller currently online, or a nil pointer
  *         if there are no more multi-axis controllers to enumerate.
  */
--(YMultiAxisController*) nextMultiAxisController;
+-(nullable YMultiAxisController*) nextMultiAxisController
+NS_SWIFT_NAME(nextMultiAxisController());
 /**
  * Starts the enumeration of multi-axis controllers currently accessible.
  * Use the method YMultiAxisController.nextMultiAxisController() to iterate on
@@ -278,7 +280,8 @@ typedef enum {
  *         the first multi-axis controller currently online, or a nil pointer
  *         if there are none.
  */
-+(YMultiAxisController*) FirstMultiAxisController;
++(nullable YMultiAxisController*) FirstMultiAxisController
+NS_SWIFT_NAME(FirstMultiAxisController());
 //--- (end of YMultiAxisController public methods declaration)
 
 @end
@@ -325,5 +328,6 @@ YMultiAxisController* yFindMultiAxisController(NSString* func);
 YMultiAxisController* yFirstMultiAxisController(void);
 
 //--- (end of YMultiAxisController functions declaration)
+NS_ASSUME_NONNULL_END
 CF_EXTERN_C_END
 

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_wakeupschedule.m 38510 2019-11-26 15:36:38Z mvuilleu $
+ *  $Id: yocto_wakeupschedule.m 41625 2020-08-31 07:09:39Z seb $
  *
  *  Implements the high-level API for WakeUpSchedule functions
  *
@@ -466,7 +466,7 @@
  *         the new advertised value.
  * @noreturn
  */
--(int) registerValueCallback:(YWakeUpScheduleValueCallback)callback
+-(int) registerValueCallback:(YWakeUpScheduleValueCallback _Nullable)callback
 {
     NSString* val;
     if (callback != NULL) {

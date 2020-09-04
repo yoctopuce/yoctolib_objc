@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_segmenteddisplay.h 38899 2019-12-20 17:21:03Z mvuilleu $
+ *  $Id: yocto_segmenteddisplay.h 41625 2020-08-31 07:09:39Z seb $
  *
  *  Declares yFindSegmentedDisplay(), the high-level API for SegmentedDisplay functions
  *
@@ -39,6 +39,7 @@
 
 #include "yocto_api.h"
 CF_EXTERN_C_BEGIN
+NS_ASSUME_NONNULL_BEGIN
 
 @class YSegmentedDisplay;
 
@@ -155,7 +156,7 @@ typedef enum {
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerValueCallback:(YSegmentedDisplayValueCallback)callback;
+-(int)     registerValueCallback:(YSegmentedDisplayValueCallback _Nullable)callback;
 
 -(int)     _invokeValueCallback:(NSString*)value;
 
@@ -170,7 +171,8 @@ typedef enum {
  *         a segmented display currently online, or a nil pointer
  *         if there are no more segmented displays to enumerate.
  */
--(YSegmentedDisplay*) nextSegmentedDisplay;
+-(nullable YSegmentedDisplay*) nextSegmentedDisplay
+NS_SWIFT_NAME(nextSegmentedDisplay());
 /**
  * Starts the enumeration of segmented displays currently accessible.
  * Use the method YSegmentedDisplay.nextSegmentedDisplay() to iterate on
@@ -180,7 +182,8 @@ typedef enum {
  *         the first segmented display currently online, or a nil pointer
  *         if there are none.
  */
-+(YSegmentedDisplay*) FirstSegmentedDisplay;
++(nullable YSegmentedDisplay*) FirstSegmentedDisplay
+NS_SWIFT_NAME(FirstSegmentedDisplay());
 //--- (end of YSegmentedDisplay public methods declaration)
 
 @end
@@ -227,5 +230,6 @@ YSegmentedDisplay* yFindSegmentedDisplay(NSString* func);
 YSegmentedDisplay* yFirstSegmentedDisplay(void);
 
 //--- (end of YSegmentedDisplay functions declaration)
+NS_ASSUME_NONNULL_END
 CF_EXTERN_C_END
 

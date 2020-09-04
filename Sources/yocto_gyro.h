@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_gyro.h 38899 2019-12-20 17:21:03Z mvuilleu $
+ * $Id: yocto_gyro.h 41625 2020-08-31 07:09:39Z seb $
  *
  * Declares yFindGyro(), the high-level API for Gyro functions
  *
@@ -39,7 +39,7 @@
 
 #include "yocto_api.h"
 CF_EXTERN_C_BEGIN
-
+NS_ASSUME_NONNULL_BEGIN
 
 @class YQt;
 
@@ -118,7 +118,7 @@ typedef void (*YQtTimedReportCallback)(YQt *func, YMeasure *measure);
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerValueCallback:(YQtValueCallback)callback;
+-(int)     registerValueCallback:(YQtValueCallback _Nullable)callback;
 
 -(int)     _invokeValueCallback:(NSString*)value;
 
@@ -133,7 +133,7 @@ typedef void (*YQtTimedReportCallback)(YQt *func, YMeasure *measure);
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerTimedReportCallback:(YQtTimedReportCallback)callback;
+-(int)     registerTimedReportCallback:(YQtTimedReportCallback _Nullable)callback;
 
 -(int)     _invokeTimedReportCallback:(YMeasure*)value;
 
@@ -148,7 +148,8 @@ typedef void (*YQtTimedReportCallback)(YQt *func, YMeasure *measure);
  *         a quaternion component currently online, or a nil pointer
  *         if there are no more quaternion components to enumerate.
  */
--(YQt*) nextQt;
+-(nullable YQt*) nextQt
+NS_SWIFT_NAME(nextQt());
 /**
  * Starts the enumeration of quaternion components currently accessible.
  * Use the method YQt.nextQt() to iterate on
@@ -158,7 +159,8 @@ typedef void (*YQtTimedReportCallback)(YQt *func, YMeasure *measure);
  *         the first quaternion component currently online, or a nil pointer
  *         if there are none.
  */
-+(YQt*) FirstQt;
++(nullable YQt*) FirstQt
+NS_SWIFT_NAME(FirstQt());
 //--- (end of generated code: YQt public methods declaration)
 
 @end
@@ -372,7 +374,7 @@ typedef void(*YAnglesCallback)(YGyro *yGyro, double roll, double pitch, double h
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerValueCallback:(YGyroValueCallback)callback;
+-(int)     registerValueCallback:(YGyroValueCallback _Nullable)callback;
 
 -(int)     _invokeValueCallback:(NSString*)value;
 
@@ -387,7 +389,7 @@ typedef void(*YAnglesCallback)(YGyro *yGyro, double roll, double pitch, double h
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerTimedReportCallback:(YGyroTimedReportCallback)callback;
+-(int)     registerTimedReportCallback:(YGyroTimedReportCallback _Nullable)callback;
 
 -(int)     _invokeTimedReportCallback:(YMeasure*)value;
 
@@ -496,7 +498,7 @@ typedef void(*YAnglesCallback)(YGyro *yGyro, double roll, double pitch, double h
  *         (as floating-point numbers).
  * @noreturn
  */
--(int)     registerQuaternionCallback:(YQuatCallback)callback;
+-(int)     registerQuaternionCallback:(YQuatCallback _Nullable)callback;
 
 /**
  * Registers a callback function that will be invoked each time that the estimated
@@ -513,7 +515,7 @@ typedef void(*YAnglesCallback)(YGyro *yGyro, double roll, double pitch, double h
  *         in degrees (as floating-point numbers).
  * @noreturn
  */
--(int)     registerAnglesCallback:(YAnglesCallback)callback;
+-(int)     registerAnglesCallback:(YAnglesCallback _Nullable)callback;
 
 -(int)     _invokeGyroCallbacks:(int)qtIndex :(double)qtValue;
 
@@ -528,7 +530,8 @@ typedef void(*YAnglesCallback)(YGyro *yGyro, double roll, double pitch, double h
  *         a gyroscope currently online, or a nil pointer
  *         if there are no more gyroscopes to enumerate.
  */
--(YGyro*) nextGyro;
+-(nullable YGyro*) nextGyro
+NS_SWIFT_NAME(nextGyro());
 /**
  * Starts the enumeration of gyroscopes currently accessible.
  * Use the method YGyro.nextGyro() to iterate on
@@ -538,7 +541,8 @@ typedef void(*YAnglesCallback)(YGyro *yGyro, double roll, double pitch, double h
  *         the first gyro currently online, or a nil pointer
  *         if there are none.
  */
-+(YGyro*) FirstGyro;
++(nullable YGyro*) FirstGyro
+NS_SWIFT_NAME(FirstGyro());
 //--- (end of generated code: YGyro public methods declaration)
 
 @end
@@ -585,5 +589,6 @@ YGyro* yFindGyro(NSString* func);
 YGyro* yFirstGyro(void);
 
 //--- (end of generated code: YGyro functions declaration)
+NS_ASSUME_NONNULL_END
 CF_EXTERN_C_END
 

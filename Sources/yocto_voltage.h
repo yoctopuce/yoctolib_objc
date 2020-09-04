@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_voltage.h 38899 2019-12-20 17:21:03Z mvuilleu $
+ *  $Id: yocto_voltage.h 41625 2020-08-31 07:09:39Z seb $
  *
  *  Declares yFindVoltage(), the high-level API for Voltage functions
  *
@@ -39,6 +39,7 @@
 
 #include "yocto_api.h"
 CF_EXTERN_C_BEGIN
+NS_ASSUME_NONNULL_BEGIN
 
 @class YVoltage;
 
@@ -155,7 +156,7 @@ typedef enum {
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerValueCallback:(YVoltageValueCallback)callback;
+-(int)     registerValueCallback:(YVoltageValueCallback _Nullable)callback;
 
 -(int)     _invokeValueCallback:(NSString*)value;
 
@@ -170,7 +171,7 @@ typedef enum {
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerTimedReportCallback:(YVoltageTimedReportCallback)callback;
+-(int)     registerTimedReportCallback:(YVoltageTimedReportCallback _Nullable)callback;
 
 -(int)     _invokeTimedReportCallback:(YMeasure*)value;
 
@@ -185,7 +186,8 @@ typedef enum {
  *         a voltage sensor currently online, or a nil pointer
  *         if there are no more voltage sensors to enumerate.
  */
--(YVoltage*) nextVoltage;
+-(nullable YVoltage*) nextVoltage
+NS_SWIFT_NAME(nextVoltage());
 /**
  * Starts the enumeration of voltage sensors currently accessible.
  * Use the method YVoltage.nextVoltage() to iterate on
@@ -195,7 +197,8 @@ typedef enum {
  *         the first voltage sensor currently online, or a nil pointer
  *         if there are none.
  */
-+(YVoltage*) FirstVoltage;
++(nullable YVoltage*) FirstVoltage
+NS_SWIFT_NAME(FirstVoltage());
 //--- (end of YVoltage public methods declaration)
 
 @end
@@ -242,5 +245,6 @@ YVoltage* yFindVoltage(NSString* func);
 YVoltage* yFirstVoltage(void);
 
 //--- (end of YVoltage functions declaration)
+NS_ASSUME_NONNULL_END
 CF_EXTERN_C_END
 

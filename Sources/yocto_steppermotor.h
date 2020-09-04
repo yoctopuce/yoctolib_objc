@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_steppermotor.h 38899 2019-12-20 17:21:03Z mvuilleu $
+ *  $Id: yocto_steppermotor.h 41625 2020-08-31 07:09:39Z seb $
  *
  *  Declares yFindStepperMotor(), the high-level API for StepperMotor functions
  *
@@ -39,6 +39,7 @@
 
 #include "yocto_api.h"
 CF_EXTERN_C_BEGIN
+NS_ASSUME_NONNULL_BEGIN
 
 @class YStepperMotor;
 
@@ -440,7 +441,7 @@ typedef enum {
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerValueCallback:(YStepperMotorValueCallback)callback;
+-(int)     registerValueCallback:(YStepperMotorValueCallback _Nullable)callback;
 
 -(int)     _invokeValueCallback:(NSString*)value;
 
@@ -580,7 +581,8 @@ typedef enum {
  *         a stepper motor currently online, or a nil pointer
  *         if there are no more stepper motors to enumerate.
  */
--(YStepperMotor*) nextStepperMotor;
+-(nullable YStepperMotor*) nextStepperMotor
+NS_SWIFT_NAME(nextStepperMotor());
 /**
  * Starts the enumeration of stepper motors currently accessible.
  * Use the method YStepperMotor.nextStepperMotor() to iterate on
@@ -590,7 +592,8 @@ typedef enum {
  *         the first stepper motor currently online, or a nil pointer
  *         if there are none.
  */
-+(YStepperMotor*) FirstStepperMotor;
++(nullable YStepperMotor*) FirstStepperMotor
+NS_SWIFT_NAME(FirstStepperMotor());
 //--- (end of YStepperMotor public methods declaration)
 
 @end
@@ -637,5 +640,6 @@ YStepperMotor* yFindStepperMotor(NSString* func);
 YStepperMotor* yFirstStepperMotor(void);
 
 //--- (end of YStepperMotor functions declaration)
+NS_ASSUME_NONNULL_END
 CF_EXTERN_C_END
 

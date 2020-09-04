@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_pressure.h 38899 2019-12-20 17:21:03Z mvuilleu $
+ *  $Id: yocto_pressure.h 41625 2020-08-31 07:09:39Z seb $
  *
  *  Declares yFindPressure(), the high-level API for Pressure functions
  *
@@ -39,6 +39,7 @@
 
 #include "yocto_api.h"
 CF_EXTERN_C_BEGIN
+NS_ASSUME_NONNULL_BEGIN
 
 @class YPressure;
 
@@ -117,7 +118,7 @@ typedef void (*YPressureTimedReportCallback)(YPressure *func, YMeasure *measure)
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerValueCallback:(YPressureValueCallback)callback;
+-(int)     registerValueCallback:(YPressureValueCallback _Nullable)callback;
 
 -(int)     _invokeValueCallback:(NSString*)value;
 
@@ -132,7 +133,7 @@ typedef void (*YPressureTimedReportCallback)(YPressure *func, YMeasure *measure)
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerTimedReportCallback:(YPressureTimedReportCallback)callback;
+-(int)     registerTimedReportCallback:(YPressureTimedReportCallback _Nullable)callback;
 
 -(int)     _invokeTimedReportCallback:(YMeasure*)value;
 
@@ -147,7 +148,8 @@ typedef void (*YPressureTimedReportCallback)(YPressure *func, YMeasure *measure)
  *         a pressure sensor currently online, or a nil pointer
  *         if there are no more pressure sensors to enumerate.
  */
--(YPressure*) nextPressure;
+-(nullable YPressure*) nextPressure
+NS_SWIFT_NAME(nextPressure());
 /**
  * Starts the enumeration of pressure sensors currently accessible.
  * Use the method YPressure.nextPressure() to iterate on
@@ -157,7 +159,8 @@ typedef void (*YPressureTimedReportCallback)(YPressure *func, YMeasure *measure)
  *         the first pressure sensor currently online, or a nil pointer
  *         if there are none.
  */
-+(YPressure*) FirstPressure;
++(nullable YPressure*) FirstPressure
+NS_SWIFT_NAME(FirstPressure());
 //--- (end of YPressure public methods declaration)
 
 @end
@@ -204,5 +207,6 @@ YPressure* yFindPressure(NSString* func);
 YPressure* yFirstPressure(void);
 
 //--- (end of YPressure functions declaration)
+NS_ASSUME_NONNULL_END
 CF_EXTERN_C_END
 

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_power.m 37827 2019-10-25 13:07:48Z mvuilleu $
+ *  $Id: yocto_power.m 41625 2020-08-31 07:09:39Z seb $
  *
  *  Implements the high-level API for Power functions
  *
@@ -55,6 +55,8 @@
 //--- (YPower attributes initialization)
     _cosPhi = Y_COSPHI_INVALID;
     _meter = Y_METER_INVALID;
+    _deliveredEnergyMeter = Y_DELIVEREDENERGYMETER_INVALID;
+    _receivedEnergyMeter = Y_RECEIVEDENERGYMETER_INVALID;
     _meterTimer = Y_METERTIMER_INVALID;
     _valueCallbackPower = NULL;
     _timedReportCallbackPower = NULL;
@@ -82,6 +84,16 @@
     if(!strcmp(j->token, "meter")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
         _meter =  floor(atof(j->token) * 1000.0 / 65536.0 + 0.5) / 1000.0;
+        return 1;
+    }
+    if(!strcmp(j->token, "deliveredEnergyMeter")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _deliveredEnergyMeter =  floor(atof(j->token) * 1000.0 / 65536.0 + 0.5) / 1000.0;
+        return 1;
+    }
+    if(!strcmp(j->token, "receivedEnergyMeter")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _receivedEnergyMeter =  floor(atof(j->token) * 1000.0 / 65536.0 + 0.5) / 1000.0;
         return 1;
     }
     if(!strcmp(j->token, "meterTimer")) {
@@ -131,11 +143,12 @@
     return [self _setAttr:@"meter" :rest_val];
 }
 /**
- * Returns the energy counter, maintained by the wattmeter by integrating the power consumption over time.
- * Note that this counter is reset at each start of the device.
+ * Returns the energy counter, maintained by the wattmeter by integrating the power consumption over time,
+ * but only when positive. Note that this counter is reset at each start of the device.
  *
  * @return a floating point number corresponding to the energy counter, maintained by the wattmeter by
- * integrating the power consumption over time
+ * integrating the power consumption over time,
+ *         but only when positive
  *
  * On failure, throws an exception or returns Y_METER_INVALID.
  */
@@ -155,6 +168,60 @@
 -(double) meter
 {
     return [self get_meter];
+}
+/**
+ * Returns the energy counter, maintained by the wattmeter by integrating the power consumption over time,
+ * but only when positive. Note that this counter is reset at each start of the device.
+ *
+ * @return a floating point number corresponding to the energy counter, maintained by the wattmeter by
+ * integrating the power consumption over time,
+ *         but only when positive
+ *
+ * On failure, throws an exception or returns Y_DELIVEREDENERGYMETER_INVALID.
+ */
+-(double) get_deliveredEnergyMeter
+{
+    double res;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
+            return Y_DELIVEREDENERGYMETER_INVALID;
+        }
+    }
+    res = _deliveredEnergyMeter;
+    return res;
+}
+
+
+-(double) deliveredEnergyMeter
+{
+    return [self get_deliveredEnergyMeter];
+}
+/**
+ * Returns the energy counter, maintained by the wattmeter by integrating the power consumption over time,
+ * but only when negative. Note that this counter is reset at each start of the device.
+ *
+ * @return a floating point number corresponding to the energy counter, maintained by the wattmeter by
+ * integrating the power consumption over time,
+ *         but only when negative
+ *
+ * On failure, throws an exception or returns Y_RECEIVEDENERGYMETER_INVALID.
+ */
+-(double) get_receivedEnergyMeter
+{
+    double res;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
+            return Y_RECEIVEDENERGYMETER_INVALID;
+        }
+    }
+    res = _receivedEnergyMeter;
+    return res;
+}
+
+
+-(double) receivedEnergyMeter
+{
+    return [self get_receivedEnergyMeter];
 }
 /**
  * Returns the elapsed time since last energy counter reset, in seconds.
@@ -230,7 +297,7 @@
  *         the new advertised value.
  * @noreturn
  */
--(int) registerValueCallback:(YPowerValueCallback)callback
+-(int) registerValueCallback:(YPowerValueCallback _Nullable)callback
 {
     NSString* val;
     if (callback != NULL) {
@@ -270,7 +337,7 @@
  *         the new advertised value.
  * @noreturn
  */
--(int) registerTimedReportCallback:(YPowerTimedReportCallback)callback
+-(int) registerTimedReportCallback:(YPowerTimedReportCallback _Nullable)callback
 {
     YSensor* sensor;
     sensor = self;
@@ -294,7 +361,7 @@
 }
 
 /**
- * Resets the energy counter.
+ * Resets the energy counters.
  *
  * @return YAPI_SUCCESS if the call succeeds.
  *

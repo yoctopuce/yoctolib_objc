@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_relay.m 41109 2020-06-29 12:40:42Z seb $
+ *  $Id: yocto_relay.m 41625 2020-08-31 07:09:39Z seb $
  *
  *  Implements the high-level API for Relay functions
  *
@@ -556,7 +556,7 @@
  *         the new advertised value.
  * @noreturn
  */
--(int) registerValueCallback:(YRelayValueCallback)callback
+-(int) registerValueCallback:(YRelayValueCallback _Nullable)callback
 {
     NSString* val;
     if (callback != NULL) {

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_arithmeticsensor.m 37827 2019-10-25 13:07:48Z mvuilleu $
+ *  $Id: yocto_arithmeticsensor.m 41625 2020-08-31 07:09:39Z seb $
  *
  *  Implements the high-level API for ArithmeticSensor functions
  *
@@ -219,7 +219,7 @@
  *         the new advertised value.
  * @noreturn
  */
--(int) registerValueCallback:(YArithmeticSensorValueCallback)callback
+-(int) registerValueCallback:(YArithmeticSensorValueCallback _Nullable)callback
 {
     NSString* val;
     if (callback != NULL) {
@@ -259,7 +259,7 @@
  *         the new advertised value.
  * @noreturn
  */
--(int) registerTimedReportCallback:(YArithmeticSensorTimedReportCallback)callback
+-(int) registerTimedReportCallback:(YArithmeticSensorTimedReportCallback _Nullable)callback
 {
     YSensor* sensor;
     sensor = self;

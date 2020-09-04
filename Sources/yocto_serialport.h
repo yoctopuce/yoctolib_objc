@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_serialport.h 39333 2020-01-30 10:05:40Z mvuilleu $
+ * $Id: yocto_serialport.h 41625 2020-08-31 07:09:39Z seb $
  *
  * Declares yFindSerialPort(), the high-level API for SerialPort functions
  *
@@ -39,7 +39,7 @@
 
 #include "yocto_api.h"
 CF_EXTERN_C_BEGIN
-
+NS_ASSUME_NONNULL_BEGIN
 @class YSerialPort;
 
 //--- (generated code: YSerialPort globals)
@@ -82,7 +82,7 @@ typedef enum {
 
 //--- (generated code: YSnoopingRecord class start)
 /**
- * YSnoopingRecord Class: Intercepted message description, returned by serialPort.snoopMessages method
+ * YSnoopingRecord Class: Intercepted serial message description, returned by serialPort.snoopMessages method
  *
  *
  */
@@ -110,9 +110,9 @@ typedef enum {
 -(int)     get_time;
 
 /**
- * Returns the message direction (RX=0 , TX=1) .
+ * Returns the message direction (RX=0, TX=1).
  *
- * @return the message direction (RX=0 , TX=1) .
+ * @return the message direction (RX=0, TX=1).
  */
 -(int)     get_direction;
 
@@ -324,6 +324,7 @@ typedef enum {
 /**
  * Returns the type of protocol used over the serial line, as a string.
  * Possible values are "Line" for ASCII messages separated by CR and/or LF,
+ * "StxEtx" for ASCII messages delimited by STX/ETX codes,
  * "Frame:[timeout]ms" for binary messages separated by a delay time,
  * "Modbus-ASCII" for MODBUS messages in ASCII mode,
  * "Modbus-RTU" for MODBUS messages in RTU mode,
@@ -343,6 +344,7 @@ typedef enum {
 /**
  * Changes the type of protocol used over the serial line.
  * Possible values are "Line" for ASCII messages separated by CR and/or LF,
+ * "StxEtx" for ASCII messages delimited by STX/ETX codes,
  * "Frame:[timeout]ms" for binary messages separated by a delay time,
  * "Modbus-ASCII" for MODBUS messages in ASCII mode,
  * "Modbus-RTU" for MODBUS messages in RTU mode,
@@ -475,7 +477,7 @@ typedef enum {
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerValueCallback:(YSerialPortValueCallback)callback;
+-(int)     registerValueCallback:(YSerialPortValueCallback _Nullable)callback;
 
 -(int)     _invokeValueCallback:(NSString*)value;
 
@@ -779,6 +781,18 @@ typedef enum {
 -(NSMutableArray*)     snoopMessages:(int)maxWait;
 
 /**
+ * Sends an ASCII string to the serial port, preceeded with an STX code and
+ * followed by an ETX code.
+ *
+ * @param text : the text string to send
+ *
+ * @return YAPI_SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     writeStxEtx:(NSString*)text;
+
+/**
  * Sends a MODBUS message (provided as a hexadecimal string) to the serial port.
  * The message must start with the slave address. The MODBUS CRC/LRC is
  * automatically added by the function. This function does not wait for a reply.
@@ -945,7 +959,8 @@ typedef enum {
  *         a serial port currently online, or a nil pointer
  *         if there are no more serial ports to enumerate.
  */
--(YSerialPort*) nextSerialPort;
+-(nullable YSerialPort*) nextSerialPort
+NS_SWIFT_NAME(nextSerialPort());
 /**
  * Starts the enumeration of serial ports currently accessible.
  * Use the method YSerialPort.nextSerialPort() to iterate on
@@ -955,7 +970,8 @@ typedef enum {
  *         the first serial port currently online, or a nil pointer
  *         if there are none.
  */
-+(YSerialPort*) FirstSerialPort;
++(nullable YSerialPort*) FirstSerialPort
+NS_SWIFT_NAME(FirstSerialPort());
 //--- (end of generated code: YSerialPort public methods declaration)
 
 @end
@@ -1002,5 +1018,6 @@ YSerialPort* yFindSerialPort(NSString* func);
 YSerialPort* yFirstSerialPort(void);
 
 //--- (end of generated code: YSerialPort functions declaration)
+NS_ASSUME_NONNULL_END
 CF_EXTERN_C_END
 

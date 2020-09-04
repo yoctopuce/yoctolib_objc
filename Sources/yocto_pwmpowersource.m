@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_pwmpowersource.m 38899 2019-12-20 17:21:03Z mvuilleu $
+ *  $Id: yocto_pwmpowersource.m 41625 2020-08-31 07:09:39Z seb $
  *
  *  Implements the high-level API for PwmPowerSource functions
  *
@@ -182,7 +182,7 @@
  *         the new advertised value.
  * @noreturn
  */
--(int) registerValueCallback:(YPwmPowerSourceValueCallback)callback
+-(int) registerValueCallback:(YPwmPowerSourceValueCallback _Nullable)callback
 {
     NSString* val;
     if (callback != NULL) {

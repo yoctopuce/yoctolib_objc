@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_latitude.h 39658 2020-03-12 15:36:29Z seb $
+ *  $Id: yocto_latitude.h 41625 2020-08-31 07:09:39Z seb $
  *
  *  Declares yFindLatitude(), the high-level API for Latitude functions
  *
@@ -39,6 +39,7 @@
 
 #include "yocto_api.h"
 CF_EXTERN_C_BEGIN
+NS_ASSUME_NONNULL_BEGIN
 
 @class YLatitude;
 
@@ -116,7 +117,7 @@ typedef void (*YLatitudeTimedReportCallback)(YLatitude *func, YMeasure *measure)
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerValueCallback:(YLatitudeValueCallback)callback;
+-(int)     registerValueCallback:(YLatitudeValueCallback _Nullable)callback;
 
 -(int)     _invokeValueCallback:(NSString*)value;
 
@@ -131,7 +132,7 @@ typedef void (*YLatitudeTimedReportCallback)(YLatitude *func, YMeasure *measure)
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerTimedReportCallback:(YLatitudeTimedReportCallback)callback;
+-(int)     registerTimedReportCallback:(YLatitudeTimedReportCallback _Nullable)callback;
 
 -(int)     _invokeTimedReportCallback:(YMeasure*)value;
 
@@ -146,7 +147,8 @@ typedef void (*YLatitudeTimedReportCallback)(YLatitude *func, YMeasure *measure)
  *         a latitude sensor currently online, or a nil pointer
  *         if there are no more latitude sensors to enumerate.
  */
--(YLatitude*) nextLatitude;
+-(nullable YLatitude*) nextLatitude
+NS_SWIFT_NAME(nextLatitude());
 /**
  * Starts the enumeration of latitude sensors currently accessible.
  * Use the method YLatitude.nextLatitude() to iterate on
@@ -156,7 +158,8 @@ typedef void (*YLatitudeTimedReportCallback)(YLatitude *func, YMeasure *measure)
  *         the first latitude sensor currently online, or a nil pointer
  *         if there are none.
  */
-+(YLatitude*) FirstLatitude;
++(nullable YLatitude*) FirstLatitude
+NS_SWIFT_NAME(FirstLatitude());
 //--- (end of YLatitude public methods declaration)
 
 @end
@@ -203,5 +206,6 @@ YLatitude* yFindLatitude(NSString* func);
 YLatitude* yFirstLatitude(void);
 
 //--- (end of YLatitude functions declaration)
+NS_ASSUME_NONNULL_END
 CF_EXTERN_C_END
 

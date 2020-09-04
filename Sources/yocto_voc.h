@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_voc.h 38899 2019-12-20 17:21:03Z mvuilleu $
+ *  $Id: yocto_voc.h 41625 2020-08-31 07:09:39Z seb $
  *
  *  Declares yFindVoc(), the high-level API for Voc functions
  *
@@ -39,6 +39,7 @@
 
 #include "yocto_api.h"
 CF_EXTERN_C_BEGIN
+NS_ASSUME_NONNULL_BEGIN
 
 @class YVoc;
 
@@ -116,7 +117,7 @@ typedef void (*YVocTimedReportCallback)(YVoc *func, YMeasure *measure);
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerValueCallback:(YVocValueCallback)callback;
+-(int)     registerValueCallback:(YVocValueCallback _Nullable)callback;
 
 -(int)     _invokeValueCallback:(NSString*)value;
 
@@ -131,7 +132,7 @@ typedef void (*YVocTimedReportCallback)(YVoc *func, YMeasure *measure);
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerTimedReportCallback:(YVocTimedReportCallback)callback;
+-(int)     registerTimedReportCallback:(YVocTimedReportCallback _Nullable)callback;
 
 -(int)     _invokeTimedReportCallback:(YMeasure*)value;
 
@@ -146,7 +147,8 @@ typedef void (*YVocTimedReportCallback)(YVoc *func, YMeasure *measure);
  *         a Volatile Organic Compound sensor currently online, or a nil pointer
  *         if there are no more Volatile Organic Compound sensors to enumerate.
  */
--(YVoc*) nextVoc;
+-(nullable YVoc*) nextVoc
+NS_SWIFT_NAME(nextVoc());
 /**
  * Starts the enumeration of Volatile Organic Compound sensors currently accessible.
  * Use the method YVoc.nextVoc() to iterate on
@@ -156,7 +158,8 @@ typedef void (*YVocTimedReportCallback)(YVoc *func, YMeasure *measure);
  *         the first Volatile Organic Compound sensor currently online, or a nil pointer
  *         if there are none.
  */
-+(YVoc*) FirstVoc;
++(nullable YVoc*) FirstVoc
+NS_SWIFT_NAME(FirstVoc());
 //--- (end of YVoc public methods declaration)
 
 @end
@@ -203,5 +206,6 @@ YVoc* yFindVoc(NSString* func);
 YVoc* yFirstVoc(void);
 
 //--- (end of YVoc functions declaration)
+NS_ASSUME_NONNULL_END
 CF_EXTERN_C_END
 

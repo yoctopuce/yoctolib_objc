@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_currentloopoutput.h 38913 2019-12-20 18:59:49Z mvuilleu $
+ *  $Id: yocto_currentloopoutput.h 41625 2020-08-31 07:09:39Z seb $
  *
  *  Declares yFindCurrentLoopOutput(), the high-level API for CurrentLoopOutput functions
  *
@@ -39,6 +39,7 @@
 
 #include "yocto_api.h"
 CF_EXTERN_C_BEGIN
+NS_ASSUME_NONNULL_BEGIN
 
 @class YCurrentLoopOutput;
 
@@ -200,7 +201,7 @@ typedef enum {
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerValueCallback:(YCurrentLoopOutputValueCallback)callback;
+-(int)     registerValueCallback:(YCurrentLoopOutputValueCallback _Nullable)callback;
 
 -(int)     _invokeValueCallback:(NSString*)value;
 
@@ -227,7 +228,8 @@ typedef enum {
  *         a 4-20mA output currently online, or a nil pointer
  *         if there are no more 4-20mA outputs to enumerate.
  */
--(YCurrentLoopOutput*) nextCurrentLoopOutput;
+-(nullable YCurrentLoopOutput*) nextCurrentLoopOutput
+NS_SWIFT_NAME(nextCurrentLoopOutput());
 /**
  * Starts the enumeration of 4-20mA outputs currently accessible.
  * Use the method YCurrentLoopOutput.nextCurrentLoopOutput() to iterate on
@@ -237,7 +239,8 @@ typedef enum {
  *         the first 4-20mA output currently online, or a nil pointer
  *         if there are none.
  */
-+(YCurrentLoopOutput*) FirstCurrentLoopOutput;
++(nullable YCurrentLoopOutput*) FirstCurrentLoopOutput
+NS_SWIFT_NAME(FirstCurrentLoopOutput());
 //--- (end of YCurrentLoopOutput public methods declaration)
 
 @end
@@ -284,5 +287,6 @@ YCurrentLoopOutput* yFindCurrentLoopOutput(NSString* func);
 YCurrentLoopOutput* yFirstCurrentLoopOutput(void);
 
 //--- (end of YCurrentLoopOutput functions declaration)
+NS_ASSUME_NONNULL_END
 CF_EXTERN_C_END
 

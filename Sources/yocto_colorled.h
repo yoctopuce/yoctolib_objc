@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_colorled.h 41109 2020-06-29 12:40:42Z seb $
+ *  $Id: yocto_colorled.h 41625 2020-08-31 07:09:39Z seb $
  *
  *  Declares yFindColorLed(), the high-level API for ColorLed functions
  *
@@ -39,6 +39,7 @@
 
 #include "yocto_api.h"
 CF_EXTERN_C_BEGIN
+NS_ASSUME_NONNULL_BEGIN
 
 @class YColorLed;
 
@@ -297,7 +298,7 @@ typedef struct _YMove {
  *         the new advertised value.
  * @noreturn
  */
--(int)     registerValueCallback:(YColorLedValueCallback)callback;
+-(int)     registerValueCallback:(YColorLedValueCallback _Nullable)callback;
 
 -(int)     _invokeValueCallback:(NSString*)value;
 
@@ -364,7 +365,8 @@ typedef struct _YMove {
  *         an RGB LED currently online, or a nil pointer
  *         if there are no more RGB LEDs to enumerate.
  */
--(YColorLed*) nextColorLed;
+-(nullable YColorLed*) nextColorLed
+NS_SWIFT_NAME(nextColorLed());
 /**
  * Starts the enumeration of RGB LEDs currently accessible.
  * Use the method YColorLed.nextColorLed() to iterate on
@@ -374,7 +376,8 @@ typedef struct _YMove {
  *         the first RGB LED currently online, or a nil pointer
  *         if there are none.
  */
-+(YColorLed*) FirstColorLed;
++(nullable YColorLed*) FirstColorLed
+NS_SWIFT_NAME(FirstColorLed());
 //--- (end of YColorLed public methods declaration)
 
 @end
@@ -421,5 +424,6 @@ YColorLed* yFindColorLed(NSString* func);
 YColorLed* yFirstColorLed(void);
 
 //--- (end of YColorLed functions declaration)
+NS_ASSUME_NONNULL_END
 CF_EXTERN_C_END
 
