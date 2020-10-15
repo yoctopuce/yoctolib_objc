@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yapi.c 41371 2020-08-11 07:46:11Z seb $
+ * $Id: yapi.c 41930 2020-09-25 09:10:14Z seb $
  *
  * Implementation of public entry points to the low-level API
  *
@@ -2004,12 +2004,12 @@ static YRETCODE yapiInitAPI_internal(int detect_type, char* errmsg)
         return YAPI_IO_ERROR;
     }
 
-    yCreateEvent(&ctx->exitSleepEvent);
+    yCreateEvent(&ctx->yapiSleepWakeUpEvent);
 
     if (detect_type & Y_DETECT_NET) {
         if (YISERR(ySSDPStart(&ctx->SSDP, ssdpEntryUpdate, errmsg))) {
             yTcpShutdown();
-            yCloseEvent(&yContext->exitSleepEvent);
+            yCloseEvent(&yContext->yapiSleepWakeUpEvent);
             deleteAllCS(ctx);
             yFree(ctx);
             return YAPI_IO_ERROR;
@@ -2106,7 +2106,7 @@ static void yapiFreeAPI_internal(void)
 
     yHashFree();
     yTcpShutdown();
-    yCloseEvent(&yContext->exitSleepEvent);
+    yCloseEvent(&yContext->yapiSleepWakeUpEvent);
 
     yLeaveCriticalSection(&yContext->updateDev_cs);
     yLeaveCriticalSection(&yContext->handleEv_cs);
@@ -3441,8 +3441,23 @@ static YRETCODE yapiHandleEvents_internal(char* errmsg)
     return YAPI_SUCCESS;
 }
 
-u64 test_pkt = 0;
-u64 test_tout = 0;
+static YRETCODE yapiRegisterWakeUpCb_internal(yWakeUpCb callback)
+{
+    if (!yContext)
+        return YAPI_NOT_INITIALIZED;
+    yContext->wakeUpCallback = callback;
+    return YAPI_SUCCESS;
+}
+
+void WakeUpAllSleep(void)
+{
+    yWakeUpCb cb;
+    ySetEvent(&yContext->yapiSleepWakeUpEvent);
+    cb = yContext->wakeUpCallback;
+    if (cb) {
+        cb();
+    }
+}
 
 static YRETCODE yapiSleep_internal(int ms_duration, char* errmsg)
 {
@@ -3459,12 +3474,8 @@ static YRETCODE yapiSleep_internal(int ms_duration, char* errmsg)
             err = yapiHandleEvents_internal(errmsg);
         }
         now = yapiGetTickCount();
-        // todo: we may want to use a smaller timeout
         if (now < timeout) {
-            if (yWaitForEvent(&yContext->exitSleepEvent, (int)(timeout - now)))
-                test_pkt++; //just for testing
-            else
-                test_tout++;
+            yWaitForEvent(&yContext->yapiSleepWakeUpEvent, (int)(timeout - now));
         }
     } while (yapiGetTickCount() < timeout);
 
@@ -4965,6 +4976,7 @@ typedef enum
     trcHTTPRequestAsyncOutOfBand,
     trcHTTPRequest,
     trcRegisterHubDiscoveryCallback,
+    yapiRegisterWakupCb,
     trcTriggerHubDiscovery,
     trcGetBootloaders,
     trcIsModuleWritable,
@@ -5033,6 +5045,7 @@ static const char * trc_funname[] =
     "ReqAsyncOB",
     "Req",
     "RegHubDiscovery",
+    "RegWakup",
     "THubDiscov",
     "GBoot",
     "isWr",
@@ -5520,6 +5533,15 @@ void YAPI_FUNCTION_EXPORT yapiRegisterHubDiscoveryCallback(yapiHubDiscoveryCallb
     YDLL_CALL_ENTER(trcRegisterHubDiscoveryCallback);
     yapiRegisterHubDiscoveryCallback_internal(hubDiscoveryCallback);
     YDLL_CALL_LEAVEVOID();
+}
+
+YRETCODE yapiRegisterWakeUpCb(yWakeUpCb callback)
+{
+    YRETCODE res;
+    YDLL_CALL_ENTER(trcRegisterWakupCb);
+    res = yapiRegisterWakeUpCb_internal(callback);
+    YDLL_CALL_LEAVE(res);
+    return res;
 }
 
 YRETCODE YAPI_FUNCTION_EXPORT yapiTriggerHubDiscovery(char* errmsg)

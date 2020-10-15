@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_anbutton.h 41625 2020-08-31 07:09:39Z seb $
+ *  $Id: yocto_anbutton.h 42060 2020-10-14 10:02:12Z seb $
  *
  *  Declares yFindAnButton(), the high-level API for AnButton functions
  *
@@ -61,6 +61,14 @@ typedef enum {
     Y_ISPRESSED_INVALID = -1,
 } Y_ISPRESSED_enum;
 #endif
+#ifndef _Y_INPUTTYPE_ENUM
+#define _Y_INPUTTYPE_ENUM
+typedef enum {
+    Y_INPUTTYPE_ANALOG = 0,
+    Y_INPUTTYPE_DIGITAL4 = 1,
+    Y_INPUTTYPE_INVALID = -1,
+} Y_INPUTTYPE_enum;
+#endif
 #define Y_CALIBRATEDVALUE_INVALID       YAPI_INVALID_UINT
 #define Y_RAWVALUE_INVALID              YAPI_INVALID_UINT
 #define Y_CALIBRATIONMAX_INVALID        YAPI_INVALID_UINT
@@ -75,7 +83,7 @@ typedef enum {
 //--- (YAnButton class start)
 /**
  * YAnButton Class: analog input control interface, available for instance in the Yocto-Buzzer, the
- * Yocto-Display, the Yocto-Knob or the Yocto-MaxiDisplay
+ * Yocto-Knob, the Yocto-MaxiBuzzer or the Yocto-MaxiDisplay
  *
  * The YAnButton class provide access to basic resistive inputs.
  * Such inputs can be used to measure the state
@@ -101,6 +109,7 @@ typedef enum {
     s64             _lastTimeReleased;
     s64             _pulseCounter;
     s64             _pulseTimer;
+    Y_INPUTTYPE_enum _inputType;
     YAnButtonValueCallback _valueCallbackAnButton;
 //--- (end of YAnButton attributes declaration)
 }
@@ -314,6 +323,32 @@ typedef enum {
 
 
 -(s64) pulseTimer;
+/**
+ * Returns the decoding method applied to the input (analog or multiplexed binary switches).
+ *
+ * @return either Y_INPUTTYPE_ANALOG or Y_INPUTTYPE_DIGITAL4, according to the decoding method applied
+ * to the input (analog or multiplexed binary switches)
+ *
+ * On failure, throws an exception or returns Y_INPUTTYPE_INVALID.
+ */
+-(Y_INPUTTYPE_enum)     get_inputType;
+
+
+-(Y_INPUTTYPE_enum) inputType;
+/**
+ * Changes the decoding method applied to the input (analog or multiplexed binary switches).
+ * Remember to call the saveToFlash() method of the module if the modification must be kept.
+ *
+ * @param newval : either Y_INPUTTYPE_ANALOG or Y_INPUTTYPE_DIGITAL4, according to the decoding method
+ * applied to the input (analog or multiplexed binary switches)
+ *
+ * @return YAPI_SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     set_inputType:(Y_INPUTTYPE_enum) newval;
+-(int)     setInputType:(Y_INPUTTYPE_enum) newval;
+
 /**
  * Retrieves an analog input for a given identifier.
  * The identifier can be specified using several formats:

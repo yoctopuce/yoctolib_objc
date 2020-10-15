@@ -1,3 +1,4 @@
-Objective-C v1.10.41779
+Objective-C v1.10.42060
 
-- Fix integration with Swift 5.x
+- Improve firmware update speed
+- Fix slight error in NTC parameters computation

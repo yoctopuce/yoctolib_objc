@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_temperature.m 41625 2020-08-31 07:09:39Z seb $
+ *  $Id: yocto_temperature.m 42054 2020-10-14 09:46:38Z seb $
  *
  *  Implements the high-level API for Temperature functions
  *
@@ -403,8 +403,8 @@
     double res100;
     NSMutableArray* tempValues = [NSMutableArray array];
     NSMutableArray* resValues = [NSMutableArray array];
-    t0 = 25.0+275.15;
-    t1 = 100.0+275.15;
+    t0 = 25.0+273.15;
+    t1 = 100.0+273.15;
     res100 = res25 * exp(beta*(1.0/t1 - 1.0/t0));
     [tempValues removeAllObjects];
     [resValues removeAllObjects];

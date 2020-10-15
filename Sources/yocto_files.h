@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_files.h 41625 2020-08-31 07:09:39Z seb $
+ * $Id: yocto_files.h 42060 2020-10-14 10:02:12Z seb $
  *
  * Declares yFindFiles(), the high-level API for Files functions
  *
@@ -110,7 +110,7 @@ typedef void (*YFilesValueCallback)(YFiles *func, NSString *functionValue);
 //--- (generated code: YFiles class start)
 /**
  * YFiles Class: filesystem control interface, available for instance in the Yocto-Buzzer, the
- * Yocto-Color-V2, the Yocto-RS485-V2 or the YoctoHub-Ethernet
+ * Yocto-Color-V2, the YoctoHub-Ethernet or the YoctoHub-Wireless-n
  *
  * The YFiles class is used to access the filesystem embedded on
  * some Yoctopuce devices. This filesystem makes it

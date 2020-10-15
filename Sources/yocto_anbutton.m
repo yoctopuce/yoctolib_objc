@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_anbutton.m 41625 2020-08-31 07:09:39Z seb $
+ *  $Id: yocto_anbutton.m 42053 2020-10-14 09:46:00Z seb $
  *
  *  Implements the high-level API for AnButton functions
  *
@@ -64,6 +64,7 @@
     _lastTimeReleased = Y_LASTTIMERELEASED_INVALID;
     _pulseCounter = Y_PULSECOUNTER_INVALID;
     _pulseTimer = Y_PULSETIMER_INVALID;
+    _inputType = Y_INPUTTYPE_INVALID;
     _valueCallbackAnButton = NULL;
 //--- (end of YAnButton attributes initialization)
     return self;
@@ -134,6 +135,11 @@
     if(!strcmp(j->token, "pulseTimer")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
         _pulseTimer =  atol(j->token);
+        return 1;
+    }
+    if(!strcmp(j->token, "inputType")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _inputType =  atoi(j->token);
         return 1;
     }
     return [super _parseAttr:j];
@@ -521,6 +527,53 @@
 -(s64) pulseTimer
 {
     return [self get_pulseTimer];
+}
+/**
+ * Returns the decoding method applied to the input (analog or multiplexed binary switches).
+ *
+ * @return either Y_INPUTTYPE_ANALOG or Y_INPUTTYPE_DIGITAL4, according to the decoding method applied
+ * to the input (analog or multiplexed binary switches)
+ *
+ * On failure, throws an exception or returns Y_INPUTTYPE_INVALID.
+ */
+-(Y_INPUTTYPE_enum) get_inputType
+{
+    Y_INPUTTYPE_enum res;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
+            return Y_INPUTTYPE_INVALID;
+        }
+    }
+    res = _inputType;
+    return res;
+}
+
+
+-(Y_INPUTTYPE_enum) inputType
+{
+    return [self get_inputType];
+}
+
+/**
+ * Changes the decoding method applied to the input (analog or multiplexed binary switches).
+ * Remember to call the saveToFlash() method of the module if the modification must be kept.
+ *
+ * @param newval : either Y_INPUTTYPE_ANALOG or Y_INPUTTYPE_DIGITAL4, according to the decoding method
+ * applied to the input (analog or multiplexed binary switches)
+ *
+ * @return YAPI_SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) set_inputType:(Y_INPUTTYPE_enum) newval
+{
+    return [self setInputType:newval];
+}
+-(int) setInputType:(Y_INPUTTYPE_enum) newval
+{
+    NSString* rest_val;
+    rest_val = [NSString stringWithFormat:@"%d", newval];
+    return [self _setAttr:@"inputType" :rest_val];
 }
 /**
  * Retrieves an analog input for a given identifier.
