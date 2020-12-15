@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_lightsensor.h 41625 2020-08-31 07:09:39Z seb $
+ *  $Id: yocto_lightsensor.h 42951 2020-12-14 09:43:29Z seb $
  *
  *  Declares yFindLightSensor(), the high-level API for LightSensor functions
  *
@@ -54,6 +54,7 @@ typedef enum {
     Y_MEASURETYPE_INFRARED = 2,
     Y_MEASURETYPE_HIGH_RATE = 3,
     Y_MEASURETYPE_HIGH_ENERGY = 4,
+    Y_MEASURETYPE_HIGH_RESOLUTION = 5,
     Y_MEASURETYPE_INVALID = -1,
 } Y_MEASURETYPE_enum;
 #endif
@@ -115,7 +116,8 @@ typedef enum {
  * Returns the type of light measure.
  *
  * @return a value among Y_MEASURETYPE_HUMAN_EYE, Y_MEASURETYPE_WIDE_SPECTRUM, Y_MEASURETYPE_INFRARED,
- * Y_MEASURETYPE_HIGH_RATE and Y_MEASURETYPE_HIGH_ENERGY corresponding to the type of light measure
+ * Y_MEASURETYPE_HIGH_RATE, Y_MEASURETYPE_HIGH_ENERGY and Y_MEASURETYPE_HIGH_RESOLUTION corresponding
+ * to the type of light measure
  *
  * On failure, throws an exception or returns Y_MEASURETYPE_INVALID.
  */
@@ -131,8 +133,8 @@ typedef enum {
  * modification must be kept.
  *
  * @param newval : a value among Y_MEASURETYPE_HUMAN_EYE, Y_MEASURETYPE_WIDE_SPECTRUM,
- * Y_MEASURETYPE_INFRARED, Y_MEASURETYPE_HIGH_RATE and Y_MEASURETYPE_HIGH_ENERGY corresponding to the
- * light sensor type used in the device
+ * Y_MEASURETYPE_INFRARED, Y_MEASURETYPE_HIGH_RATE, Y_MEASURETYPE_HIGH_ENERGY and
+ * Y_MEASURETYPE_HIGH_RESOLUTION corresponding to the light sensor type used in the device
  *
  * @return YAPI_SUCCESS if the call succeeds.
  *

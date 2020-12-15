@@ -6,6 +6,7 @@
 
 
 xcode4:
+	@mkdir -p build/Release
 	xcodebuild -UseModernBuildSystem=NO
 
 clean:

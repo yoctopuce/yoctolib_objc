@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_display.m 41625 2020-08-31 07:09:39Z seb $
+ * $Id: yocto_display.m 42117 2020-10-22 10:43:53Z seb $
  *
  * Implements yFindDisplay(), the high-level API for Display functions
  *
@@ -49,6 +49,18 @@
 
 
 -(id)   initWithDisplay:(YDisplay *)display andLayerID:(int)layerid
+{
+    if(!(self = [super init]))
+        return nil;
+//--- (generated code: YDisplayLayer attributes initialization)
+//--- (end of generated code: YDisplayLayer attributes initialization)
+    _display =display;
+    _id = layerid;
+    _cmdbuff =[[NSMutableString alloc] init];
+    return self;
+}
+
+-(id)   initWith:(YDisplay *)display :(int)layerid
 {
     if(!(self = [super init]))
         return nil;
@@ -638,9 +650,9 @@
     _layerCount = Y_LAYERCOUNT_INVALID;
     _command = Y_COMMAND_INVALID;
     _valueCallbackDisplay = NULL;
+    _allDisplayLayers = [NSMutableArray array];
 //--- (end of generated code: YDisplay attributes initialization)
     _sequence = [[NSString alloc] init];
-    _allDisplayLayers =[[NSMutableArray alloc] init];
     return self;
 }
 
@@ -723,35 +735,6 @@
 }
 //--- (end of generated code: YDisplay private methods implementation)
 
-
-/**
- * Returns a YDisplayLayer object that can be used to draw on the specified
- * layer. The content is displayed only when the layer is active on the
- * screen (and not masked by other overlapping layers).
- *
- * @param layerId : the identifier of the layer (a number in range 0..layerCount-1)
- *
- * @return an YDisplayLayer object
- *
- * On failure, throws an exception or returns nil.
- */
-
--(YDisplayLayer*) get_displayLayer:(unsigned) layerId
-{
-    if([_allDisplayLayers count]==0) {
-        unsigned nb_display_layer = [self get_layerCount];
-        for(unsigned i = 0; i < nb_display_layer; i++) {
-            YDisplayLayer *layer =[[YDisplayLayer alloc] initWithDisplay:self andLayerID:i];
-            [_allDisplayLayers addObject:layer];
-            ARC_release(layer);
-        }
-    }
-    if(layerId >= [_allDisplayLayers count]) {
-        [self _throw:YAPI_INVALID_ARGUMENT withMsg:"Invalid layerId"];
-        return NULL;
-    }
-    return [_allDisplayLayers objectAtIndex:layerId];
-}
 
 -(int) flushLayers
 {
@@ -1392,6 +1375,33 @@
 {
     [self flushLayers];
     return [self sendCommand:[NSString stringWithFormat:@"E%d,%d",layerIdA,layerIdB]];
+}
+
+/**
+ * Returns a YDisplayLayer object that can be used to draw on the specified
+ * layer. The content is displayed only when the layer is active on the
+ * screen (and not masked by other overlapping layers).
+ *
+ * @param layerId : the identifier of the layer (a number in range 0..layerCount-1)
+ *
+ * @return an YDisplayLayer object
+ *
+ * On failure, throws an exception or returns nil.
+ */
+-(YDisplayLayer*) get_displayLayer:(int)layerId
+{
+    int layercount;
+    int idx;
+    layercount = [self get_layerCount];
+    if (!((layerId >= 0) && (layerId < layercount))) {[self _throw: YAPI_INVALID_ARGUMENT: @"invalid DisplayLayer index"]; return nil;}
+    if ((int)[_allDisplayLayers count] == 0) {
+        idx = 0;
+        while (idx < layercount) {
+            [_allDisplayLayers addObject:ARC_sendAutorelease([[YDisplayLayer alloc] initWith:self :idx])];
+            idx = idx + 1;
+        }
+    }
+    return [_allDisplayLayers objectAtIndex:layerId];
 }
 
 

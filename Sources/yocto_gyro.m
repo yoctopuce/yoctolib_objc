@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_gyro.m 41625 2020-08-31 07:09:39Z seb $
+ * $Id: yocto_gyro.m 42951 2020-12-14 09:43:29Z seb $
  *
  * Implements the high-level API for Gyro functions
  *
@@ -308,9 +308,9 @@ static void yInternalGyroCallback(YQt *obj, NSString *value)
 //--- (end of generated code: YGyro private methods implementation)
 //--- (generated code: YGyro public methods implementation)
 /**
- * Returns the measure update frequency, measured in Hz (Yocto-3D-V2 only).
+ * Returns the measure update frequency, measured in Hz.
  *
- * @return an integer corresponding to the measure update frequency, measured in Hz (Yocto-3D-V2 only)
+ * @return an integer corresponding to the measure update frequency, measured in Hz
  *
  * On failure, throws an exception or returns Y_BANDWIDTH_INVALID.
  */
@@ -333,12 +333,12 @@ static void yInternalGyroCallback(YQt *obj, NSString *value)
 }
 
 /**
- * Changes the measure update frequency, measured in Hz (Yocto-3D-V2 only). When the
+ * Changes the measure update frequency, measured in Hz. When the
  * frequency is lower, the device performs averaging.
  * Remember to call the saveToFlash()
  * method of the module if the modification must be kept.
  *
- * @param newval : an integer corresponding to the measure update frequency, measured in Hz (Yocto-3D-V2 only)
+ * @param newval : an integer corresponding to the measure update frequency, measured in Hz
  *
  * @return YAPI_SUCCESS if the call succeeds.
  *

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_refframe.m 41625 2020-08-31 07:09:39Z seb $
+ *  $Id: yocto_refframe.m 42951 2020-12-14 09:43:29Z seb $
  *
  *  Implements the high-level API for RefFrame functions
  *
@@ -235,10 +235,11 @@
     return [self _setAttr:@"calibrationParam" :rest_val];
 }
 /**
- * Returns the BNO055 fusion mode. Note this feature is only availabe on Yocto-3D-V2.
+ * Returns the sensor fusion mode. Note that available sensor fusion modes depend on the sensor type.
  *
  * @return a value among Y_FUSIONMODE_NDOF, Y_FUSIONMODE_NDOF_FMC_OFF, Y_FUSIONMODE_M4G,
- * Y_FUSIONMODE_COMPASS and Y_FUSIONMODE_IMU corresponding to the BNO055 fusion mode
+ * Y_FUSIONMODE_COMPASS, Y_FUSIONMODE_IMU, Y_FUSIONMODE_INCLIN_90DEG_1G8,
+ * Y_FUSIONMODE_INCLIN_90DEG_3G6 and Y_FUSIONMODE_INCLIN_10DEG corresponding to the sensor fusion mode
  *
  * On failure, throws an exception or returns Y_FUSIONMODE_INVALID.
  */
@@ -261,11 +262,12 @@
 }
 
 /**
- * Change the BNO055 fusion mode. Note: this feature is only availabe on Yocto-3D-V2.
+ * Change the sensor fusion mode. Note that available sensor fusion modes depend on the sensor type.
  * Remember to call the matching module saveToFlash() method to save the setting permanently.
  *
  * @param newval : a value among Y_FUSIONMODE_NDOF, Y_FUSIONMODE_NDOF_FMC_OFF, Y_FUSIONMODE_M4G,
- * Y_FUSIONMODE_COMPASS and Y_FUSIONMODE_IMU
+ * Y_FUSIONMODE_COMPASS, Y_FUSIONMODE_IMU, Y_FUSIONMODE_INCLIN_90DEG_1G8,
+ * Y_FUSIONMODE_INCLIN_90DEG_3G6 and Y_FUSIONMODE_INCLIN_10DEG
  *
  * @return YAPI_SUCCESS if the call succeeds.
  *

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_display.h 41625 2020-08-31 07:09:39Z seb $
+ * $Id: yocto_display.h 42117 2020-10-22 10:43:53Z seb $
  *
  * Declares yFindDisplay(), the high-level API for Display functions
  *
@@ -131,6 +131,7 @@ typedef enum {
 }
 
 -(id)    initWithDisplay:(YDisplay*)display andLayerID:(int)layerid;
+-(id)    initWith:(YDisplay*)display :(int)layerid;
 
 
 // internal function to send a command for this layer
@@ -580,8 +581,8 @@ typedef enum {
     int             _layerCount;
     NSString*       _command;
     YDisplayValueCallback _valueCallbackDisplay;
+    NSMutableArray* _allDisplayLayers;
 //--- (end of generated code: YDisplay attributes declaration)
-    NSMutableArray   *_allDisplayLayers;
     bool             _recording;
     NSString  *_sequence;
 }
@@ -593,20 +594,6 @@ typedef enum {
 -(int)             _parseAttr:(yJsonStateMachine*) j;
 
 //--- (end of generated code: YDisplay private methods declaration)
-
-/**
- * Returns a YDisplayLayer object that can be used to draw on the specified
- * layer. The content is displayed only when the layer is active on the
- * screen (and not masked by other overlapping layers).
- *
- * @param layerId : the identifier of the layer (a number in range 0..layerCount-1)
- *
- * @return an YDisplayLayer object
- *
- * On failure, throws an exception or returns nil.
- */
--(YDisplayLayer*) get_displayLayer:(unsigned)layerId;
-
 
 -(int) flushLayers;
 
@@ -965,6 +952,19 @@ typedef enum {
  * On failure, throws an exception or returns a negative error code.
  */
 -(int)     swapLayerContent:(int)layerIdA :(int)layerIdB;
+
+/**
+ * Returns a YDisplayLayer object that can be used to draw on the specified
+ * layer. The content is displayed only when the layer is active on the
+ * screen (and not masked by other overlapping layers).
+ *
+ * @param layerId : the identifier of the layer (a number in range 0..layerCount-1)
+ *
+ * @return an YDisplayLayer object
+ *
+ * On failure, throws an exception or returns nil.
+ */
+-(YDisplayLayer*)     get_displayLayer:(int)layerId;
 
 
 /**
