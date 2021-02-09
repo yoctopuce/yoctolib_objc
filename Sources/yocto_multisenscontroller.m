@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_multisenscontroller.m 41625 2020-08-31 07:09:39Z seb $
+ *  $Id: yocto_multisenscontroller.m 43619 2021-01-29 09:14:45Z mvuilleu $
  *
  *  Implements the high-level API for MultiSensController functions
  *
@@ -107,7 +107,7 @@
  *
  * @return an integer corresponding to the number of sensors to poll
  *
- * On failure, throws an exception or returns Y_NSENSORS_INVALID.
+ * On failure, throws an exception or returns YMultiSensController.NSENSORS_INVALID.
  */
 -(int) get_nSensors
 {
@@ -136,7 +136,7 @@
  *
  * @param newval : an integer corresponding to the number of sensors to poll
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -155,7 +155,7 @@
  *
  * @return an integer corresponding to the maximum configurable sensor count allowed on this device
  *
- * On failure, throws an exception or returns Y_MAXSENSORS_INVALID.
+ * On failure, throws an exception or returns YMultiSensController.MAXSENSORS_INVALID.
  */
 -(int) get_maxSensors
 {
@@ -177,10 +177,10 @@
 /**
  * Returns true when the device is in maintenance mode.
  *
- * @return either Y_MAINTENANCEMODE_FALSE or Y_MAINTENANCEMODE_TRUE, according to true when the device
- * is in maintenance mode
+ * @return either YMultiSensController.MAINTENANCEMODE_FALSE or
+ * YMultiSensController.MAINTENANCEMODE_TRUE, according to true when the device is in maintenance mode
  *
- * On failure, throws an exception or returns Y_MAINTENANCEMODE_INVALID.
+ * On failure, throws an exception or returns YMultiSensController.MAINTENANCEMODE_INVALID.
  */
 -(Y_MAINTENANCEMODE_enum) get_maintenanceMode
 {
@@ -205,10 +205,11 @@
  * This way, the device does not automatically restart when it cannot
  * communicate with one of the sensors.
  *
- * @param newval : either Y_MAINTENANCEMODE_FALSE or Y_MAINTENANCEMODE_TRUE, according to the device
- * mode to enable maintenance and to stop sensor polling
+ * @param newval : either YMultiSensController.MAINTENANCEMODE_FALSE or
+ * YMultiSensController.MAINTENANCEMODE_TRUE, according to the device mode to enable maintenance and
+ * to stop sensor polling
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -340,7 +341,7 @@
  *
  * @param addr : new address of the connected sensor
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *         On failure, throws an exception or returns a negative error code.
  */
 -(int) setupAddress:(int)addr

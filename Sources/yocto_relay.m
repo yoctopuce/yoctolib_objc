@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_relay.m 41625 2020-08-31 07:09:39Z seb $
+ *  $Id: yocto_relay.m 43619 2021-01-29 09:14:45Z mvuilleu $
  *
  *  Implements the high-level API for Relay functions
  *
@@ -139,10 +139,10 @@
 /**
  * Returns the state of the relays (A for the idle position, B for the active position).
  *
- * @return either Y_STATE_A or Y_STATE_B, according to the state of the relays (A for the idle
- * position, B for the active position)
+ * @return either YRelay.STATE_A or YRelay.STATE_B, according to the state of the relays (A for the
+ * idle position, B for the active position)
  *
- * On failure, throws an exception or returns Y_STATE_INVALID.
+ * On failure, throws an exception or returns YRelay.STATE_INVALID.
  */
 -(Y_STATE_enum) get_state
 {
@@ -165,10 +165,10 @@
 /**
  * Changes the state of the relays (A for the idle position, B for the active position).
  *
- * @param newval : either Y_STATE_A or Y_STATE_B, according to the state of the relays (A for the idle
- * position, B for the active position)
+ * @param newval : either YRelay.STATE_A or YRelay.STATE_B, according to the state of the relays (A
+ * for the idle position, B for the active position)
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -186,11 +186,11 @@
  * Returns the state of the relays at device startup (A for the idle position,
  * B for the active position, UNCHANGED to leave the relay state as is).
  *
- * @return a value among Y_STATEATPOWERON_UNCHANGED, Y_STATEATPOWERON_A and Y_STATEATPOWERON_B
- * corresponding to the state of the relays at device startup (A for the idle position,
+ * @return a value among YRelay.STATEATPOWERON_UNCHANGED, YRelay.STATEATPOWERON_A and
+ * YRelay.STATEATPOWERON_B corresponding to the state of the relays at device startup (A for the idle position,
  *         B for the active position, UNCHANGED to leave the relay state as is)
  *
- * On failure, throws an exception or returns Y_STATEATPOWERON_INVALID.
+ * On failure, throws an exception or returns YRelay.STATEATPOWERON_INVALID.
  */
 -(Y_STATEATPOWERON_enum) get_stateAtPowerOn
 {
@@ -216,11 +216,11 @@
  * Remember to call the matching module saveToFlash()
  * method, otherwise this call will have no effect.
  *
- * @param newval : a value among Y_STATEATPOWERON_UNCHANGED, Y_STATEATPOWERON_A and Y_STATEATPOWERON_B
- * corresponding to the state of the relays at device startup (A for the idle position,
+ * @param newval : a value among YRelay.STATEATPOWERON_UNCHANGED, YRelay.STATEATPOWERON_A and
+ * YRelay.STATEATPOWERON_B corresponding to the state of the relays at device startup (A for the idle position,
  *         B for the active position, UNCHANGED to leave the relay state as is)
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -241,7 +241,7 @@
  * @return an integer corresponding to the maximum time (ms) allowed for the relay to stay in state
  *         A before automatically switching back in to B state
  *
- * On failure, throws an exception or returns Y_MAXTIMEONSTATEA_INVALID.
+ * On failure, throws an exception or returns YRelay.MAXTIMEONSTATEA_INVALID.
  */
 -(s64) get_maxTimeOnStateA
 {
@@ -270,7 +270,7 @@
  * @param newval : an integer corresponding to the maximum time (ms) allowed for the relay to stay in state A
  *         before automatically switching back in to B state
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -290,7 +290,7 @@
  *
  * @return an integer
  *
- * On failure, throws an exception or returns Y_MAXTIMEONSTATEB_INVALID.
+ * On failure, throws an exception or returns YRelay.MAXTIMEONSTATEB_INVALID.
  */
 -(s64) get_maxTimeOnStateB
 {
@@ -320,7 +320,7 @@
  * state B before
  *         automatically switching back in to A state
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -337,10 +337,10 @@
 /**
  * Returns the output state of the relays, when used as a simple switch (single throw).
  *
- * @return either Y_OUTPUT_OFF or Y_OUTPUT_ON, according to the output state of the relays, when used
- * as a simple switch (single throw)
+ * @return either YRelay.OUTPUT_OFF or YRelay.OUTPUT_ON, according to the output state of the relays,
+ * when used as a simple switch (single throw)
  *
- * On failure, throws an exception or returns Y_OUTPUT_INVALID.
+ * On failure, throws an exception or returns YRelay.OUTPUT_INVALID.
  */
 -(Y_OUTPUT_enum) get_output
 {
@@ -363,10 +363,10 @@
 /**
  * Changes the output state of the relays, when used as a simple switch (single throw).
  *
- * @param newval : either Y_OUTPUT_OFF or Y_OUTPUT_ON, according to the output state of the relays,
- * when used as a simple switch (single throw)
+ * @param newval : either YRelay.OUTPUT_OFF or YRelay.OUTPUT_ON, according to the output state of the
+ * relays, when used as a simple switch (single throw)
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -388,7 +388,7 @@
  * returned to idle position
  *         (state A), during a measured pulse generation
  *
- * On failure, throws an exception or returns Y_PULSETIMER_INVALID.
+ * On failure, throws an exception or returns YRelay.PULSETIMER_INVALID.
  */
 -(s64) get_pulseTimer
 {
@@ -425,7 +425,7 @@
  *
  * @param ms_duration : pulse duration, in milliseconds
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -470,7 +470,7 @@
  * @param ms_delay : waiting time before the pulse, in milliseconds
  * @param ms_duration : pulse duration, in milliseconds
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -487,7 +487,7 @@
  * @return an integer corresponding to the number of milliseconds remaining before a pulse (delayedPulse() call)
  *         When there is no scheduled pulse, returns zero
  *
- * On failure, throws an exception or returns Y_COUNTDOWN_INVALID.
+ * On failure, throws an exception or returns YRelay.COUNTDOWN_INVALID.
  */
 -(s64) get_countdown
 {
@@ -588,7 +588,7 @@
 /**
  * Switch the relay to the opposite state.
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */

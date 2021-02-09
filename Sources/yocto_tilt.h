@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_tilt.h 42951 2020-12-14 09:43:29Z seb $
+ *  $Id: yocto_tilt.h 43619 2021-01-29 09:14:45Z mvuilleu $
  *
  *  Declares yFindTilt(), the high-level API for Tilt functions
  *
@@ -60,7 +60,7 @@ typedef enum {
 
 //--- (YTilt class start)
 /**
- * YTilt Class: tilt sensor control interface, available for instance in the Yocto-3D-V2
+ * YTilt Class: tilt sensor control interface, available for instance in the Yocto-3D-V2 or the Yocto-Inclinometer
  *
  * The YSensor class is the parent class for all Yoctopuce sensor types. It can be
  * used to read the current value and unit of any sensor, read the min/max
@@ -99,7 +99,7 @@ typedef enum {
  *
  * @return an integer corresponding to the measure update frequency, measured in Hz
  *
- * On failure, throws an exception or returns Y_BANDWIDTH_INVALID.
+ * On failure, throws an exception or returns YTilt.BANDWIDTH_INVALID.
  */
 -(int)     get_bandwidth;
 
@@ -113,7 +113,7 @@ typedef enum {
  *
  * @param newval : an integer corresponding to the measure update frequency, measured in Hz
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -190,7 +190,7 @@ typedef enum {
  * is applied so that the current position is reported as a zero angle.
  * Be aware that this shift will also affect the measurement boundaries.
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -200,7 +200,7 @@ typedef enum {
  * Cancels any previous zero calibration for the tilt measurement (Yocto-Inclinometer only).
  * This function restores the factory zero calibration.
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */

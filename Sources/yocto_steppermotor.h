@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_steppermotor.h 41625 2020-08-31 07:09:39Z seb $
+ *  $Id: yocto_steppermotor.h 43619 2021-01-29 09:14:45Z mvuilleu $
  *
  *  Declares yFindStepperMotor(), the high-level API for StepperMotor functions
  *
@@ -126,10 +126,11 @@ typedef enum {
 /**
  * Returns the motor working state.
  *
- * @return a value among Y_MOTORSTATE_ABSENT, Y_MOTORSTATE_ALERT, Y_MOTORSTATE_HI_Z,
- * Y_MOTORSTATE_STOP, Y_MOTORSTATE_RUN and Y_MOTORSTATE_BATCH corresponding to the motor working state
+ * @return a value among YStepperMotor.MOTORSTATE_ABSENT, YStepperMotor.MOTORSTATE_ALERT,
+ * YStepperMotor.MOTORSTATE_HI_Z, YStepperMotor.MOTORSTATE_STOP, YStepperMotor.MOTORSTATE_RUN and
+ * YStepperMotor.MOTORSTATE_BATCH corresponding to the motor working state
  *
- * On failure, throws an exception or returns Y_MOTORSTATE_INVALID.
+ * On failure, throws an exception or returns YStepperMotor.MOTORSTATE_INVALID.
  */
 -(Y_MOTORSTATE_enum)     get_motorState;
 
@@ -140,7 +141,7 @@ typedef enum {
  *
  * @return an integer corresponding to the stepper motor controller diagnostics, as a bitmap
  *
- * On failure, throws an exception or returns Y_DIAGS_INVALID.
+ * On failure, throws an exception or returns YStepperMotor.DIAGS_INVALID.
  */
 -(int)     get_diags;
 
@@ -156,7 +157,7 @@ typedef enum {
  *
  * @param newval : a floating point number corresponding to the current logical motor position, measured in steps
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -169,7 +170,7 @@ typedef enum {
  *
  * @return a floating point number corresponding to the current logical motor position, measured in steps
  *
- * On failure, throws an exception or returns Y_STEPPOS_INVALID.
+ * On failure, throws an exception or returns YStepperMotor.STEPPOS_INVALID.
  */
 -(double)     get_stepPos;
 
@@ -181,7 +182,7 @@ typedef enum {
  *
  * @return a floating point number corresponding to current motor speed, measured in steps per second
  *
- * On failure, throws an exception or returns Y_SPEED_INVALID.
+ * On failure, throws an exception or returns YStepperMotor.SPEED_INVALID.
  */
 -(double)     get_speed;
 
@@ -193,7 +194,7 @@ typedef enum {
  * @param newval : a floating point number corresponding to the motor speed immediately reachable from
  * stop state, measured in steps per second
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -206,7 +207,7 @@ typedef enum {
  * @return a floating point number corresponding to the motor speed immediately reachable from stop
  * state, measured in steps per second
  *
- * On failure, throws an exception or returns Y_PULLINSPEED_INVALID.
+ * On failure, throws an exception or returns YStepperMotor.PULLINSPEED_INVALID.
  */
 -(double)     get_pullinSpeed;
 
@@ -218,7 +219,7 @@ typedef enum {
  * @param newval : a floating point number corresponding to the maximal motor acceleration, measured
  * in steps per second^2
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -230,7 +231,7 @@ typedef enum {
  *
  * @return a floating point number corresponding to the maximal motor acceleration, measured in steps per second^2
  *
- * On failure, throws an exception or returns Y_MAXACCEL_INVALID.
+ * On failure, throws an exception or returns YStepperMotor.MAXACCEL_INVALID.
  */
 -(double)     get_maxAccel;
 
@@ -241,7 +242,7 @@ typedef enum {
  *
  * @param newval : a floating point number corresponding to the maximal motor speed, measured in steps per second
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -253,7 +254,7 @@ typedef enum {
  *
  * @return a floating point number corresponding to the maximal motor speed, measured in steps per second
  *
- * On failure, throws an exception or returns Y_MAXSPEED_INVALID.
+ * On failure, throws an exception or returns YStepperMotor.MAXSPEED_INVALID.
  */
 -(double)     get_maxSpeed;
 
@@ -262,10 +263,11 @@ typedef enum {
 /**
  * Returns the stepping mode used to drive the motor.
  *
- * @return a value among Y_STEPPING_MICROSTEP16, Y_STEPPING_MICROSTEP8, Y_STEPPING_MICROSTEP4,
- * Y_STEPPING_HALFSTEP and Y_STEPPING_FULLSTEP corresponding to the stepping mode used to drive the motor
+ * @return a value among YStepperMotor.STEPPING_MICROSTEP16, YStepperMotor.STEPPING_MICROSTEP8,
+ * YStepperMotor.STEPPING_MICROSTEP4, YStepperMotor.STEPPING_HALFSTEP and
+ * YStepperMotor.STEPPING_FULLSTEP corresponding to the stepping mode used to drive the motor
  *
- * On failure, throws an exception or returns Y_STEPPING_INVALID.
+ * On failure, throws an exception or returns YStepperMotor.STEPPING_INVALID.
  */
 -(Y_STEPPING_enum)     get_stepping;
 
@@ -274,10 +276,12 @@ typedef enum {
 /**
  * Changes the stepping mode used to drive the motor.
  *
- * @param newval : a value among Y_STEPPING_MICROSTEP16, Y_STEPPING_MICROSTEP8, Y_STEPPING_MICROSTEP4,
- * Y_STEPPING_HALFSTEP and Y_STEPPING_FULLSTEP corresponding to the stepping mode used to drive the motor
+ * @param newval : a value among YStepperMotor.STEPPING_MICROSTEP16,
+ * YStepperMotor.STEPPING_MICROSTEP8, YStepperMotor.STEPPING_MICROSTEP4,
+ * YStepperMotor.STEPPING_HALFSTEP and YStepperMotor.STEPPING_FULLSTEP corresponding to the stepping
+ * mode used to drive the motor
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -289,7 +293,7 @@ typedef enum {
  *
  * @return an integer corresponding to the overcurrent alert and emergency stop threshold, measured in mA
  *
- * On failure, throws an exception or returns Y_OVERCURRENT_INVALID.
+ * On failure, throws an exception or returns YStepperMotor.OVERCURRENT_INVALID.
  */
 -(int)     get_overcurrent;
 
@@ -300,7 +304,7 @@ typedef enum {
  *
  * @param newval : an integer corresponding to the overcurrent alert and emergency stop threshold, measured in mA
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -312,7 +316,7 @@ typedef enum {
  *
  * @return an integer corresponding to the torque regulation current when the motor is stopped, measured in mA
  *
- * On failure, throws an exception or returns Y_TCURRSTOP_INVALID.
+ * On failure, throws an exception or returns YStepperMotor.TCURRSTOP_INVALID.
  */
 -(int)     get_tCurrStop;
 
@@ -324,7 +328,7 @@ typedef enum {
  * @param newval : an integer corresponding to the torque regulation current when the motor is
  * stopped, measured in mA
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -336,7 +340,7 @@ typedef enum {
  *
  * @return an integer corresponding to the torque regulation current when the motor is running, measured in mA
  *
- * On failure, throws an exception or returns Y_TCURRRUN_INVALID.
+ * On failure, throws an exception or returns YStepperMotor.TCURRRUN_INVALID.
  */
 -(int)     get_tCurrRun;
 
@@ -348,7 +352,7 @@ typedef enum {
  * @param newval : an integer corresponding to the torque regulation current when the motor is
  * running, measured in mA
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -374,7 +378,7 @@ typedef enum {
  *
  * @return an integer corresponding to the current value of the signal generated on the auxiliary output
  *
- * On failure, throws an exception or returns Y_AUXSIGNAL_INVALID.
+ * On failure, throws an exception or returns YStepperMotor.AUXSIGNAL_INVALID.
  */
 -(int)     get_auxSignal;
 
@@ -386,7 +390,7 @@ typedef enum {
  *
  * @param newval : an integer corresponding to the value of the signal generated on the auxiliary output
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -450,7 +454,7 @@ typedef enum {
 /**
  * Reinitialize the controller and clear all alert flags.
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *         On failure, throws an exception or returns a negative error code.
  */
 -(int)     reset;
@@ -460,7 +464,7 @@ typedef enum {
  *
  * @param speed : desired speed, in steps per second.
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *         On failure, throws an exception or returns a negative error code.
  */
 -(int)     findHomePosition:(double)speed;
@@ -472,7 +476,7 @@ typedef enum {
  * @param speed : desired speed, in steps per second. The minimal non-zero speed
  *         is 0.001 pulse per second.
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *         On failure, throws an exception or returns a negative error code.
  */
 -(int)     changeSpeed:(double)speed;
@@ -484,7 +488,7 @@ typedef enum {
  *
  * @param absPos : absolute position, measured in steps from the origin.
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *         On failure, throws an exception or returns a negative error code.
  */
 -(int)     moveTo:(double)absPos;
@@ -496,7 +500,7 @@ typedef enum {
  *
  * @param relPos : relative position, measured in steps from the current position.
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *         On failure, throws an exception or returns a negative error code.
  */
 -(int)     moveRel:(double)relPos;
@@ -509,7 +513,7 @@ typedef enum {
  * @param relPos : relative position, measured in steps from the current position.
  * @param maxSpeed : limit speed, in steps per second.
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *         On failure, throws an exception or returns a negative error code.
  */
 -(int)     moveRelSlow:(double)relPos :(double)maxSpeed;
@@ -519,7 +523,7 @@ typedef enum {
  *
  * @param waitMs : wait time, specified in milliseconds.
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *         On failure, throws an exception or returns a negative error code.
  */
 -(int)     pause:(int)waitMs;
@@ -527,7 +531,7 @@ typedef enum {
 /**
  * Stops the motor with an emergency alert, without taking any additional precaution.
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *         On failure, throws an exception or returns a negative error code.
  */
 -(int)     emergencyStop;
@@ -537,7 +541,7 @@ typedef enum {
  * The move occurs even if the system is still in alert mode (end switch depressed). Caution.
  * use this function with great care as it may cause mechanical damages !
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *         On failure, throws an exception or returns a negative error code.
  */
 -(int)     alertStepOut;
@@ -549,7 +553,7 @@ typedef enum {
  *
  * @param dir : Value +1 or -1, according to the desired direction of the move
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *         On failure, throws an exception or returns a negative error code.
  */
 -(int)     alertStepDir:(int)dir;
@@ -557,7 +561,7 @@ typedef enum {
 /**
  * Stops the motor smoothly as soon as possible, without waiting for ongoing move completion.
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *         On failure, throws an exception or returns a negative error code.
  */
 -(int)     abortAndBrake;
@@ -565,7 +569,7 @@ typedef enum {
 /**
  * Turn the controller into Hi-Z mode immediately, without waiting for ongoing move completion.
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *         On failure, throws an exception or returns a negative error code.
  */
 -(int)     abortAndHiZ;

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_altitude.h 41625 2020-08-31 07:09:39Z seb $
+ *  $Id: yocto_altitude.h 43580 2021-01-26 17:46:01Z mvuilleu $
  *
  *  Declares yFindAltitude(), the high-level API for Altitude functions
  *
@@ -91,7 +91,7 @@ typedef void (*YAltitudeTimedReportCallback)(YAltitude *func, YMeasure *measure)
  *
  * @param newval : a floating point number corresponding to the current estimated altitude
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -109,7 +109,7 @@ typedef void (*YAltitudeTimedReportCallback)(YAltitude *func, YMeasure *measure)
  * level used to compute
  *         the altitude (QNH)
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -123,7 +123,7 @@ typedef void (*YAltitudeTimedReportCallback)(YAltitude *func, YMeasure *measure)
  * @return a floating point number corresponding to the barometric pressure adjusted to sea level used to compute
  *         the altitude (QNH)
  *
- * On failure, throws an exception or returns Y_QNH_INVALID.
+ * On failure, throws an exception or returns YAltitude.QNH_INVALID.
  */
 -(double)     get_qnh;
 
@@ -136,7 +136,7 @@ typedef void (*YAltitudeTimedReportCallback)(YAltitude *func, YMeasure *measure)
  * @return a string corresponding to the technology used by the sesnor to compute
  *         altitude
  *
- * On failure, throws an exception or returns Y_TECHNOLOGY_INVALID.
+ * On failure, throws an exception or returns YAltitude.TECHNOLOGY_INVALID.
  */
 -(NSString*)     get_technology;
 

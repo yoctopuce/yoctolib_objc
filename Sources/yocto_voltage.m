@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_voltage.m 41625 2020-08-31 07:09:39Z seb $
+ *  $Id: yocto_voltage.m 43580 2021-01-26 17:46:01Z mvuilleu $
  *
  *  Implements the high-level API for Voltage functions
  *
@@ -84,9 +84,9 @@
 /**
  * Returns the activation state of this input.
  *
- * @return either Y_ENABLED_FALSE or Y_ENABLED_TRUE, according to the activation state of this input
+ * @return either YVoltage.ENABLED_FALSE or YVoltage.ENABLED_TRUE, according to the activation state of this input
  *
- * On failure, throws an exception or returns Y_ENABLED_INVALID.
+ * On failure, throws an exception or returns YVoltage.ENABLED_INVALID.
  */
 -(Y_ENABLED_enum) get_enabled
 {
@@ -114,10 +114,10 @@
  * Remember to call the saveToFlash()
  * method of the module if the modification must be kept.
  *
- * @param newval : either Y_ENABLED_FALSE or Y_ENABLED_TRUE, according to the activation state of this
- * voltage input
+ * @param newval : either YVoltage.ENABLED_FALSE or YVoltage.ENABLED_TRUE, according to the activation
+ * state of this voltage input
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */

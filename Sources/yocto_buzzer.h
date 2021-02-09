@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_buzzer.h 41625 2020-08-31 07:09:39Z seb $
+ *  $Id: yocto_buzzer.h 43619 2021-01-29 09:14:45Z mvuilleu $
  *
  *  Declares yFindBuzzer(), the high-level API for Buzzer functions
  *
@@ -91,7 +91,7 @@ typedef void (*YBuzzerValueCallback)(YBuzzer *func, NSString *functionValue);
  *
  * @param newval : a floating point number corresponding to the frequency of the signal sent to the buzzer
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -103,7 +103,7 @@ typedef void (*YBuzzerValueCallback)(YBuzzer *func, NSString *functionValue);
  *
  * @return a floating point number corresponding to the  frequency of the signal sent to the buzzer/speaker
  *
- * On failure, throws an exception or returns Y_FREQUENCY_INVALID.
+ * On failure, throws an exception or returns YBuzzer.FREQUENCY_INVALID.
  */
 -(double)     get_frequency;
 
@@ -114,7 +114,7 @@ typedef void (*YBuzzerValueCallback)(YBuzzer *func, NSString *functionValue);
  *
  * @return an integer corresponding to the volume of the signal sent to the buzzer/speaker
  *
- * On failure, throws an exception or returns Y_VOLUME_INVALID.
+ * On failure, throws an exception or returns YBuzzer.VOLUME_INVALID.
  */
 -(int)     get_volume;
 
@@ -126,7 +126,7 @@ typedef void (*YBuzzerValueCallback)(YBuzzer *func, NSString *functionValue);
  *
  * @param newval : an integer corresponding to the volume of the signal sent to the buzzer/speaker
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -138,7 +138,7 @@ typedef void (*YBuzzerValueCallback)(YBuzzer *func, NSString *functionValue);
  *
  * @return an integer corresponding to the current length of the playing sequence
  *
- * On failure, throws an exception or returns Y_PLAYSEQSIZE_INVALID.
+ * On failure, throws an exception or returns YBuzzer.PLAYSEQSIZE_INVALID.
  */
 -(int)     get_playSeqSize;
 
@@ -149,7 +149,7 @@ typedef void (*YBuzzerValueCallback)(YBuzzer *func, NSString *functionValue);
  *
  * @return an integer corresponding to the maximum length of the playing sequence
  *
- * On failure, throws an exception or returns Y_PLAYSEQMAXSIZE_INVALID.
+ * On failure, throws an exception or returns YBuzzer.PLAYSEQMAXSIZE_INVALID.
  */
 -(int)     get_playSeqMaxSize;
 
@@ -163,7 +163,7 @@ typedef void (*YBuzzerValueCallback)(YBuzzer *func, NSString *functionValue);
  *
  * @return an integer corresponding to the playing sequence signature
  *
- * On failure, throws an exception or returns Y_PLAYSEQSIGNATURE_INVALID.
+ * On failure, throws an exception or returns YBuzzer.PLAYSEQSIGNATURE_INVALID.
  */
 -(int)     get_playSeqSignature;
 
@@ -229,7 +229,7 @@ typedef void (*YBuzzerValueCallback)(YBuzzer *func, NSString *functionValue);
  * @param freq    : desired frequency when the transition is completed, in Hz
  * @param msDelay : duration of the frequency transition, in milliseconds.
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *         On failure, throws an exception or returns a negative error code.
  */
 -(int)     addFreqMoveToPlaySeq:(int)freq :(int)msDelay;
@@ -240,7 +240,7 @@ typedef void (*YBuzzerValueCallback)(YBuzzer *func, NSString *functionValue);
  * @param freq : pulse frequency, in Hz
  * @param msDuration : pulse duration, in milliseconds.
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *         On failure, throws an exception or returns a negative error code.
  */
 -(int)     addPulseToPlaySeq:(int)freq :(int)msDuration;
@@ -252,7 +252,7 @@ typedef void (*YBuzzerValueCallback)(YBuzzer *func, NSString *functionValue);
  * @param volume    : desired volume when the transition is completed, as a percentage.
  * @param msDuration : duration of the volume transition, in milliseconds.
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *         On failure, throws an exception or returns a negative error code.
  */
 -(int)     addVolMoveToPlaySeq:(int)volume :(int)msDuration;
@@ -267,7 +267,7 @@ typedef void (*YBuzzerValueCallback)(YBuzzer *func, NSString *functionValue);
  *
  * @param notes : notes to be played, as a text string.
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *         On failure, throws an exception or returns a negative error code.
  */
 -(int)     addNotesToPlaySeq:(NSString*)notes;
@@ -277,7 +277,7 @@ typedef void (*YBuzzerValueCallback)(YBuzzer *func, NSString *functionValue);
  * runs in loop until it is stopped by stopPlaySeq or an explicit
  * change. To play the sequence only once, use oncePlaySeq().
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *         On failure, throws an exception or returns a negative error code.
  */
 -(int)     startPlaySeq;
@@ -285,7 +285,7 @@ typedef void (*YBuzzerValueCallback)(YBuzzer *func, NSString *functionValue);
 /**
  * Stops the preprogrammed playing sequence and sets the frequency to zero.
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *         On failure, throws an exception or returns a negative error code.
  */
 -(int)     stopPlaySeq;
@@ -293,7 +293,7 @@ typedef void (*YBuzzerValueCallback)(YBuzzer *func, NSString *functionValue);
 /**
  * Resets the preprogrammed playing sequence and sets the frequency to zero.
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *         On failure, throws an exception or returns a negative error code.
  */
 -(int)     resetPlaySeq;
@@ -301,7 +301,7 @@ typedef void (*YBuzzerValueCallback)(YBuzzer *func, NSString *functionValue);
 /**
  * Starts the preprogrammed playing sequence and run it once only.
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *         On failure, throws an exception or returns a negative error code.
  */
 -(int)     oncePlaySeq;
@@ -309,7 +309,7 @@ typedef void (*YBuzzerValueCallback)(YBuzzer *func, NSString *functionValue);
 /**
  * Saves the preprogrammed playing sequence to flash memory.
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *         On failure, throws an exception or returns a negative error code.
  */
 -(int)     savePlaySeq;
@@ -317,7 +317,7 @@ typedef void (*YBuzzerValueCallback)(YBuzzer *func, NSString *functionValue);
 /**
  * Reloads the preprogrammed playing sequence from the flash memory.
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *         On failure, throws an exception or returns a negative error code.
  */
 -(int)     reloadPlaySeq;
@@ -328,7 +328,7 @@ typedef void (*YBuzzerValueCallback)(YBuzzer *func, NSString *functionValue);
  * @param frequency : pulse frequency, in hertz
  * @param duration : pulse duration in milliseconds
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -340,7 +340,7 @@ typedef void (*YBuzzerValueCallback)(YBuzzer *func, NSString *functionValue);
  * @param frequency : frequency to reach, in hertz. A frequency under 25Hz stops the buzzer.
  * @param duration :  pulse duration in milliseconds
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -352,7 +352,7 @@ typedef void (*YBuzzerValueCallback)(YBuzzer *func, NSString *functionValue);
  * @param volume : volume to reach in %
  * @param duration : change duration in milliseconds
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -368,7 +368,7 @@ typedef void (*YBuzzerValueCallback)(YBuzzer *func, NSString *functionValue);
  *
  * @param notes : notes to be played, as a text string.
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *         On failure, throws an exception or returns a negative error code.
  */
 -(int)     playNotes:(NSString*)notes;

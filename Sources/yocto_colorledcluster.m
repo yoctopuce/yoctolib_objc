@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_colorledcluster.m 41625 2020-08-31 07:09:39Z seb $
+ *  $Id: yocto_colorledcluster.m 43619 2021-01-29 09:14:45Z mvuilleu $
  *
  *  Implements the high-level API for ColorLedCluster functions
  *
@@ -119,7 +119,7 @@
  *
  * @return an integer corresponding to the number of LEDs currently handled by the device
  *
- * On failure, throws an exception or returns Y_ACTIVELEDCOUNT_INVALID.
+ * On failure, throws an exception or returns YColorLedCluster.ACTIVELEDCOUNT_INVALID.
  */
 -(int) get_activeLedCount
 {
@@ -146,7 +146,7 @@
  *
  * @param newval : an integer corresponding to the number of LEDs currently handled by the device
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -163,9 +163,10 @@
 /**
  * Returns the RGB LED type currently handled by the device.
  *
- * @return either Y_LEDTYPE_RGB or Y_LEDTYPE_RGBW, according to the RGB LED type currently handled by the device
+ * @return either YColorLedCluster.LEDTYPE_RGB or YColorLedCluster.LEDTYPE_RGBW, according to the RGB
+ * LED type currently handled by the device
  *
- * On failure, throws an exception or returns Y_LEDTYPE_INVALID.
+ * On failure, throws an exception or returns YColorLedCluster.LEDTYPE_INVALID.
  */
 -(Y_LEDTYPE_enum) get_ledType
 {
@@ -190,10 +191,10 @@
  * Remember to call the matching module
  * saveToFlash() method to save the setting permanently.
  *
- * @param newval : either Y_LEDTYPE_RGB or Y_LEDTYPE_RGBW, according to the RGB LED type currently
- * handled by the device
+ * @param newval : either YColorLedCluster.LEDTYPE_RGB or YColorLedCluster.LEDTYPE_RGBW, according to
+ * the RGB LED type currently handled by the device
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -212,7 +213,7 @@
  *
  * @return an integer corresponding to the maximum number of LEDs that the device can handle
  *
- * On failure, throws an exception or returns Y_MAXLEDCOUNT_INVALID.
+ * On failure, throws an exception or returns YColorLedCluster.MAXLEDCOUNT_INVALID.
  */
 -(int) get_maxLedCount
 {
@@ -236,7 +237,7 @@
  *
  * @return an integer corresponding to the maximum number of sequences that the device can handle
  *
- * On failure, throws an exception or returns Y_BLINKSEQMAXCOUNT_INVALID.
+ * On failure, throws an exception or returns YColorLedCluster.BLINKSEQMAXCOUNT_INVALID.
  */
 -(int) get_blinkSeqMaxCount
 {
@@ -260,7 +261,7 @@
  *
  * @return an integer corresponding to the maximum length of sequences
  *
- * On failure, throws an exception or returns Y_BLINKSEQMAXSIZE_INVALID.
+ * On failure, throws an exception or returns YColorLedCluster.BLINKSEQMAXSIZE_INVALID.
  */
 -(int) get_blinkSeqMaxSize
 {
@@ -399,7 +400,7 @@
  * @param count    :  affected LED count.
  * @param rgbValue :  new color.
  *
- * @return YAPI_SUCCESS when the call succeeds.
+ * @return YAPI.SUCCESS when the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -417,7 +418,7 @@
  * @param count    :  affected LED count.
  * @param rgbValue :  new color.
  *
- * @return YAPI_SUCCESS when the call succeeds.
+ * @return YAPI.SUCCESS when the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -435,7 +436,7 @@
  * @param count    :  affected LED count.
  * @param hslValue :  new color.
  *
- * @return YAPI_SUCCESS when the call succeeds.
+ * @return YAPI.SUCCESS when the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -454,7 +455,7 @@
  * @param count    :  affected LED count.
  * @param hslValue :  new color.
  *
- * @return YAPI_SUCCESS when the call succeeds.
+ * @return YAPI.SUCCESS when the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -472,7 +473,7 @@
  * @param rgbValue :  new color (0xRRGGBB).
  * @param delay    :  transition duration in ms
  *
- * @return YAPI_SUCCESS when the call succeeds.
+ * @return YAPI.SUCCESS when the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -494,7 +495,7 @@
  * @param hslValue :  new color (0xHHSSLL).
  * @param delay    :  transition duration in ms
  *
- * @return YAPI_SUCCESS when the call succeeds.
+ * @return YAPI.SUCCESS when the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -512,7 +513,7 @@
  * @param rgbValue :  target color (0xRRGGBB)
  * @param delay    :  transition duration in ms
  *
- * @return YAPI_SUCCESS when the call succeeds.
+ * @return YAPI.SUCCESS when the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -530,7 +531,7 @@
  * @param hslValue : target color (0xHHSSLL)
  * @param delay    : transition duration in ms
  *
- * @return YAPI_SUCCESS when the call succeeds.
+ * @return YAPI.SUCCESS when the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -548,7 +549,7 @@
  *
  * @param seqIndex : sequence index.
  *
- * @return YAPI_SUCCESS when the call succeeds.
+ * @return YAPI.SUCCESS when the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -565,7 +566,7 @@
  * @param seqIndex : sequence index.
  * @param linkSeqIndex : index of the sequence to chain.
  *
- * @return YAPI_SUCCESS when the call succeeds.
+ * @return YAPI.SUCCESS when the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -581,7 +582,7 @@
  *
  * @param seqIndex : sequence index.
  *
- * @return YAPI_SUCCESS when the call succeeds.
+ * @return YAPI.SUCCESS when the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -601,7 +602,7 @@
  * @param seqIndex :  sequence index.
  * @param offset   :  execution offset in ms.
  *
- * @return YAPI_SUCCESS when the call succeeds.
+ * @return YAPI.SUCCESS when the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -621,7 +622,7 @@
  * @param seqIndex :  sequence index.
  * @param offset   :  execution offset in ms.
  *
- * @return YAPI_SUCCESS when the call succeeds.
+ * @return YAPI.SUCCESS when the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -641,7 +642,7 @@
  * @param seqIndex :  sequence index.
  * @param periods  :  number of periods to show on LEDs.
  *
- * @return YAPI_SUCCESS when the call succeeds.
+ * @return YAPI.SUCCESS when the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -656,7 +657,7 @@
  * @param ledIndex  :  index of the first affected LED.
  * @param count     :  affected LED count.
  *
- * @return YAPI_SUCCESS when the call succeeds.
+ * @return YAPI.SUCCESS when the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -671,7 +672,7 @@
  *
  * @param seqIndex :  index of the sequence to start.
  *
- * @return YAPI_SUCCESS when the call succeeds.
+ * @return YAPI.SUCCESS when the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -686,7 +687,7 @@
  *
  * @param seqIndex :  index of the sequence to stop.
  *
- * @return YAPI_SUCCESS when the call succeeds.
+ * @return YAPI.SUCCESS when the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -701,7 +702,7 @@
  *
  * @param seqIndex :  index of the sequence to reset
  *
- * @return YAPI_SUCCESS when the call succeeds.
+ * @return YAPI.SUCCESS when the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -719,7 +720,7 @@
  * @param seqIndex :  index of the sequence to reset.
  * @param autostart : 0 to keep the sequence turned off and 1 to start it automatically.
  *
- * @return YAPI_SUCCESS when the call succeeds.
+ * @return YAPI.SUCCESS when the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -736,7 +737,7 @@
  * @param seqIndex :  index of the sequence to start.
  * @param speed :     sequence running speed (-1000...1000).
  *
- * @return YAPI_SUCCESS when the call succeeds.
+ * @return YAPI.SUCCESS when the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -750,7 +751,7 @@
  * sequence binding for all LEDs. Warning: if some LEDs are linked to a sequence, the
  * method saveBlinkSeq() must also be called to save the sequence definition.
  *
- * @return YAPI_SUCCESS when the call succeeds.
+ * @return YAPI.SUCCESS when the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -771,7 +772,7 @@
  *
  * @param seqIndex :  index of the sequence to start.
  *
- * @return YAPI_SUCCESS when the call succeeds.
+ * @return YAPI.SUCCESS when the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -788,7 +789,7 @@
  * @param ledIndex : index of the first LED which should be updated
  * @param buff : the binary buffer to send
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -805,7 +806,7 @@
  * @param ledIndex : index of the first LED which should be updated
  * @param rgbList : a list of 24bit RGB codes, in the form 0xRRGGBB
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -840,7 +841,7 @@
  * @param rgbList : a list of target 24bit RGB codes, in the form 0xRRGGBB
  * @param delay   : transition duration in ms
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -874,7 +875,7 @@
  * @param rgbList : a list of target 24bit RGB codes, in the form 0xRRGGBB
  * @param delay   : transition duration in ms
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -894,7 +895,7 @@
  * @param ledIndex : index of the first LED which should be updated
  * @param buff : the binary buffer to send
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -911,7 +912,7 @@
  * @param ledIndex : index of the first LED which should be updated
  * @param hslList : a list of 24bit HSL codes, in the form 0xHHSSLL
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -945,7 +946,7 @@
  * @param hslList : a list of target 24bit HSL codes, in the form 0xHHSSLL
  * @param delay   : transition duration in ms
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -966,7 +967,7 @@
  * @param hslList : a list of target 24bit HSL codes, in the form 0xHHSSLL
  * @param delay   : transition duration in ms
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */

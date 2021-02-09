@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_messagebox.m 41625 2020-08-31 07:09:39Z seb $
+ * $Id: yocto_messagebox.m 43619 2021-01-29 09:14:45Z mvuilleu $
  *
  * Implements the high-level API for MessageBox functions
  *
@@ -381,7 +381,7 @@
  *
  * @param val : the text to be sent in the message
  *
- * @return YAPI_SUCCESS when the call succeeds.
+ * @return YAPI.SUCCESS when the call succeeds.
  */
 -(int) addText:(NSString*)val
 {
@@ -446,7 +446,7 @@
  *
  * @param val : an array of special unicode characters
  *
- * @return YAPI_SUCCESS when the call succeeds.
+ * @return YAPI.SUCCESS when the call succeeds.
  */
 -(int) addUnicodeData:(NSMutableArray*)val
 {
@@ -1241,7 +1241,7 @@
  * Sends the SMS to the recipient. Messages of more than 160 characters are supported
  * using SMS concatenation.
  *
- * @return YAPI_SUCCESS when the call succeeds.
+ * @return YAPI.SUCCESS when the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -1375,7 +1375,7 @@
  *
  * @return an integer corresponding to the number of message storage slots currently in use
  *
- * On failure, throws an exception or returns Y_SLOTSINUSE_INVALID.
+ * On failure, throws an exception or returns YMessageBox.SLOTSINUSE_INVALID.
  */
 -(int) get_slotsInUse
 {
@@ -1399,7 +1399,7 @@
  *
  * @return an integer corresponding to the total number of message storage slots on the SIM card
  *
- * On failure, throws an exception or returns Y_SLOTSCOUNT_INVALID.
+ * On failure, throws an exception or returns YMessageBox.SLOTSCOUNT_INVALID.
  */
 -(int) get_slotsCount
 {
@@ -1440,7 +1440,7 @@
  *
  * @return an integer corresponding to the number of SMS units sent so far
  *
- * On failure, throws an exception or returns Y_PDUSENT_INVALID.
+ * On failure, throws an exception or returns YMessageBox.PDUSENT_INVALID.
  */
 -(int) get_pduSent
 {
@@ -1465,7 +1465,7 @@
  *
  * @param newval : an integer corresponding to the value of the outgoing SMS units counter
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -1484,7 +1484,7 @@
  *
  * @return an integer corresponding to the number of SMS units received so far
  *
- * On failure, throws an exception or returns Y_PDURECEIVED_INVALID.
+ * On failure, throws an exception or returns YMessageBox.PDURECEIVED_INVALID.
  */
 -(int) get_pduReceived
 {
@@ -1509,7 +1509,7 @@
  *
  * @param newval : an integer corresponding to the value of the incoming SMS units counter
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -2129,7 +2129,7 @@
 /**
  * Clear the SMS units counters.
  *
- * @return YAPI_SUCCESS when the call succeeds.
+ * @return YAPI.SUCCESS when the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -2156,7 +2156,7 @@
  *         national number, or in international format starting with a plus sign
  * @param message : the text to be sent in the message
  *
- * @return YAPI_SUCCESS when the call succeeds.
+ * @return YAPI.SUCCESS when the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -2182,7 +2182,7 @@
  *         national number, or in international format starting with a plus sign
  * @param message : the text to be sent in the message
  *
- * @return YAPI_SUCCESS when the call succeeds.
+ * @return YAPI.SUCCESS when the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -2203,7 +2203,7 @@
  * @param recipient : a text string with the recipient phone number, either as a
  *         national number, or in international format starting with a plus sign
  *
- * @return YAPI_SUCCESS when the call succeeds.
+ * @return YAPI.SUCCESS when the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_arithmeticsensor.h 41625 2020-08-31 07:09:39Z seb $
+ *  $Id: yocto_arithmeticsensor.h 43619 2021-01-29 09:14:45Z mvuilleu $
  *
  *  Declares yFindArithmeticSensor(), the high-level API for ArithmeticSensor functions
  *
@@ -89,7 +89,7 @@ typedef void (*YArithmeticSensorTimedReportCallback)(YArithmeticSensor *func, YM
  *
  * @param newval : a string corresponding to the measuring unit for the arithmetic sensor
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -101,7 +101,7 @@ typedef void (*YArithmeticSensorTimedReportCallback)(YArithmeticSensor *func, YM
  *
  * @return a string corresponding to a short informative description of the formula
  *
- * On failure, throws an exception or returns Y_DESCRIPTION_INVALID.
+ * On failure, throws an exception or returns YArithmeticSensor.DESCRIPTION_INVALID.
  */
 -(NSString*)     get_description;
 
@@ -211,7 +211,7 @@ typedef void (*YArithmeticSensorTimedReportCallback)(YArithmeticSensor *func, YM
  * @param outputValues : array of floating point numbers, corresponding to the output value
  *         desired for each of the input value, index by index.
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -227,7 +227,7 @@ typedef void (*YArithmeticSensorTimedReportCallback)(YArithmeticSensor *func, YM
  * @param outputValues : array of floating point numbers, that is filled by the function
  *         output value for each of the input value, index by index.
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */

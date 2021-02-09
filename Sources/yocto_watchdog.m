@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_watchdog.m 41625 2020-08-31 07:09:39Z seb $
+ *  $Id: yocto_watchdog.m 43619 2021-01-29 09:14:45Z mvuilleu $
  *
  *  Implements the high-level API for Watchdog functions
  *
@@ -163,10 +163,10 @@
 /**
  * Returns the state of the watchdog (A for the idle position, B for the active position).
  *
- * @return either Y_STATE_A or Y_STATE_B, according to the state of the watchdog (A for the idle
- * position, B for the active position)
+ * @return either YWatchdog.STATE_A or YWatchdog.STATE_B, according to the state of the watchdog (A
+ * for the idle position, B for the active position)
  *
- * On failure, throws an exception or returns Y_STATE_INVALID.
+ * On failure, throws an exception or returns YWatchdog.STATE_INVALID.
  */
 -(Y_STATE_enum) get_state
 {
@@ -189,10 +189,10 @@
 /**
  * Changes the state of the watchdog (A for the idle position, B for the active position).
  *
- * @param newval : either Y_STATE_A or Y_STATE_B, according to the state of the watchdog (A for the
- * idle position, B for the active position)
+ * @param newval : either YWatchdog.STATE_A or YWatchdog.STATE_B, according to the state of the
+ * watchdog (A for the idle position, B for the active position)
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -210,11 +210,12 @@
  * Returns the state of the watchdog at device startup (A for the idle position,
  * B for the active position, UNCHANGED to leave the relay state as is).
  *
- * @return a value among Y_STATEATPOWERON_UNCHANGED, Y_STATEATPOWERON_A and Y_STATEATPOWERON_B
- * corresponding to the state of the watchdog at device startup (A for the idle position,
+ * @return a value among YWatchdog.STATEATPOWERON_UNCHANGED, YWatchdog.STATEATPOWERON_A and
+ * YWatchdog.STATEATPOWERON_B corresponding to the state of the watchdog at device startup (A for the
+ * idle position,
  *         B for the active position, UNCHANGED to leave the relay state as is)
  *
- * On failure, throws an exception or returns Y_STATEATPOWERON_INVALID.
+ * On failure, throws an exception or returns YWatchdog.STATEATPOWERON_INVALID.
  */
 -(Y_STATEATPOWERON_enum) get_stateAtPowerOn
 {
@@ -240,11 +241,12 @@
  * Remember to call the matching module saveToFlash()
  * method, otherwise this call will have no effect.
  *
- * @param newval : a value among Y_STATEATPOWERON_UNCHANGED, Y_STATEATPOWERON_A and Y_STATEATPOWERON_B
- * corresponding to the state of the watchdog at device startup (A for the idle position,
+ * @param newval : a value among YWatchdog.STATEATPOWERON_UNCHANGED, YWatchdog.STATEATPOWERON_A and
+ * YWatchdog.STATEATPOWERON_B corresponding to the state of the watchdog at device startup (A for the
+ * idle position,
  *         B for the active position, UNCHANGED to leave the relay state as is)
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -265,7 +267,7 @@
  * @return an integer corresponding to the maximum time (ms) allowed for the watchdog to stay in state
  *         A before automatically switching back in to B state
  *
- * On failure, throws an exception or returns Y_MAXTIMEONSTATEA_INVALID.
+ * On failure, throws an exception or returns YWatchdog.MAXTIMEONSTATEA_INVALID.
  */
 -(s64) get_maxTimeOnStateA
 {
@@ -294,7 +296,7 @@
  * @param newval : an integer corresponding to the maximum time (ms) allowed for the watchdog to stay in state A
  *         before automatically switching back in to B state
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -314,7 +316,7 @@
  *
  * @return an integer
  *
- * On failure, throws an exception or returns Y_MAXTIMEONSTATEB_INVALID.
+ * On failure, throws an exception or returns YWatchdog.MAXTIMEONSTATEB_INVALID.
  */
 -(s64) get_maxTimeOnStateB
 {
@@ -344,7 +346,7 @@
  * in state B before
  *         automatically switching back in to A state
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -361,10 +363,10 @@
 /**
  * Returns the output state of the watchdog, when used as a simple switch (single throw).
  *
- * @return either Y_OUTPUT_OFF or Y_OUTPUT_ON, according to the output state of the watchdog, when
- * used as a simple switch (single throw)
+ * @return either YWatchdog.OUTPUT_OFF or YWatchdog.OUTPUT_ON, according to the output state of the
+ * watchdog, when used as a simple switch (single throw)
  *
- * On failure, throws an exception or returns Y_OUTPUT_INVALID.
+ * On failure, throws an exception or returns YWatchdog.OUTPUT_INVALID.
  */
 -(Y_OUTPUT_enum) get_output
 {
@@ -387,10 +389,10 @@
 /**
  * Changes the output state of the watchdog, when used as a simple switch (single throw).
  *
- * @param newval : either Y_OUTPUT_OFF or Y_OUTPUT_ON, according to the output state of the watchdog,
- * when used as a simple switch (single throw)
+ * @param newval : either YWatchdog.OUTPUT_OFF or YWatchdog.OUTPUT_ON, according to the output state
+ * of the watchdog, when used as a simple switch (single throw)
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -412,7 +414,7 @@
  * returned to idle position
  *         (state A), during a measured pulse generation
  *
- * On failure, throws an exception or returns Y_PULSETIMER_INVALID.
+ * On failure, throws an exception or returns YWatchdog.PULSETIMER_INVALID.
  */
 -(s64) get_pulseTimer
 {
@@ -449,7 +451,7 @@
  *
  * @param ms_duration : pulse duration, in milliseconds
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -494,7 +496,7 @@
  * @param ms_delay : waiting time before the pulse, in milliseconds
  * @param ms_duration : pulse duration, in milliseconds
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -511,7 +513,7 @@
  * @return an integer corresponding to the number of milliseconds remaining before a pulse (delayedPulse() call)
  *         When there is no scheduled pulse, returns zero
  *
- * On failure, throws an exception or returns Y_COUNTDOWN_INVALID.
+ * On failure, throws an exception or returns YWatchdog.COUNTDOWN_INVALID.
  */
 -(s64) get_countdown
 {
@@ -533,9 +535,10 @@
 /**
  * Returns the watchdog running state at module power on.
  *
- * @return either Y_AUTOSTART_OFF or Y_AUTOSTART_ON, according to the watchdog running state at module power on
+ * @return either YWatchdog.AUTOSTART_OFF or YWatchdog.AUTOSTART_ON, according to the watchdog running
+ * state at module power on
  *
- * On failure, throws an exception or returns Y_AUTOSTART_INVALID.
+ * On failure, throws an exception or returns YWatchdog.AUTOSTART_INVALID.
  */
 -(Y_AUTOSTART_enum) get_autoStart
 {
@@ -559,10 +562,10 @@
  * Changes the watchdog running state at module power on. Remember to call the
  * saveToFlash() method and then to reboot the module to apply this setting.
  *
- * @param newval : either Y_AUTOSTART_OFF or Y_AUTOSTART_ON, according to the watchdog running state
- * at module power on
+ * @param newval : either YWatchdog.AUTOSTART_OFF or YWatchdog.AUTOSTART_ON, according to the watchdog
+ * running state at module power on
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -579,9 +582,9 @@
 /**
  * Returns the watchdog running state.
  *
- * @return either Y_RUNNING_OFF or Y_RUNNING_ON, according to the watchdog running state
+ * @return either YWatchdog.RUNNING_OFF or YWatchdog.RUNNING_ON, according to the watchdog running state
  *
- * On failure, throws an exception or returns Y_RUNNING_INVALID.
+ * On failure, throws an exception or returns YWatchdog.RUNNING_INVALID.
  */
 -(Y_RUNNING_enum) get_running
 {
@@ -604,9 +607,10 @@
 /**
  * Changes the running state of the watchdog.
  *
- * @param newval : either Y_RUNNING_OFF or Y_RUNNING_ON, according to the running state of the watchdog
+ * @param newval : either YWatchdog.RUNNING_OFF or YWatchdog.RUNNING_ON, according to the running
+ * state of the watchdog
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -626,7 +630,7 @@
  * must be called on a regular basis to prevent the watchdog to
  * trigger
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -642,7 +646,7 @@
  * @return an integer corresponding to  the waiting duration before a reset is automatically triggered
  * by the watchdog, in milliseconds
  *
- * On failure, throws an exception or returns Y_TRIGGERDELAY_INVALID.
+ * On failure, throws an exception or returns YWatchdog.TRIGGERDELAY_INVALID.
  */
 -(s64) get_triggerDelay
 {
@@ -670,7 +674,7 @@
  * @param newval : an integer corresponding to the waiting delay before a reset is triggered by the watchdog,
  *         in milliseconds
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -689,7 +693,7 @@
  *
  * @return an integer corresponding to the duration of resets caused by the watchdog, in milliseconds
  *
- * On failure, throws an exception or returns Y_TRIGGERDURATION_INVALID.
+ * On failure, throws an exception or returns YWatchdog.TRIGGERDURATION_INVALID.
  */
 -(s64) get_triggerDuration
 {
@@ -716,7 +720,7 @@
  *
  * @param newval : an integer corresponding to the duration of resets caused by the watchdog, in milliseconds
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -812,7 +816,7 @@
 /**
  * Switch the relay to the opposite state.
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */

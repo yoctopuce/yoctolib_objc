@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_realtimeclock.h 41625 2020-08-31 07:09:39Z seb $
+ *  $Id: yocto_realtimeclock.h 43580 2021-01-26 17:46:01Z mvuilleu $
  *
  *  Declares yFindRealTimeClock(), the high-level API for RealTimeClock functions
  *
@@ -61,7 +61,7 @@ typedef enum {
 //--- (YRealTimeClock class start)
 /**
  * YRealTimeClock Class: real-time clock control interface, available for instance in the
- * YoctoHub-GSM-3G-EU, the YoctoHub-GSM-3G-NA, the YoctoHub-Wireless-g or the YoctoHub-Wireless-n
+ * YoctoHub-GSM-3G-EU, the YoctoHub-GSM-3G-NA, the YoctoHub-GSM-4G or the YoctoHub-Wireless-n
  *
  * The YRealTimeClock class provide access to the embedded real-time clock available on some Yoctopuce
  * devices. It can provide current date and time, even after a power outage
@@ -98,7 +98,7 @@ typedef enum {
  * @return an integer corresponding to the current time in Unix format (number of elapsed seconds
  * since Jan 1st, 1970)
  *
- * On failure, throws an exception or returns Y_UNIXTIME_INVALID.
+ * On failure, throws an exception or returns YRealTimeClock.UNIXTIME_INVALID.
  */
 -(s64)     get_unixTime;
 
@@ -109,7 +109,7 @@ typedef enum {
  *
  * @param newval : an integer corresponding to the current time
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -121,7 +121,7 @@ typedef enum {
  *
  * @return a string corresponding to the current time in the form "YYYY/MM/DD hh:mm:ss"
  *
- * On failure, throws an exception or returns Y_DATETIME_INVALID.
+ * On failure, throws an exception or returns YRealTimeClock.DATETIME_INVALID.
  */
 -(NSString*)     get_dateTime;
 
@@ -132,7 +132,7 @@ typedef enum {
  *
  * @return an integer corresponding to the number of seconds between current time and UTC time (time zone)
  *
- * On failure, throws an exception or returns Y_UTCOFFSET_INVALID.
+ * On failure, throws an exception or returns YRealTimeClock.UTCOFFSET_INVALID.
  */
 -(int)     get_utcOffset;
 
@@ -146,7 +146,7 @@ typedef enum {
  *
  * @param newval : an integer corresponding to the number of seconds between current time and UTC time (time zone)
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -156,10 +156,10 @@ typedef enum {
 /**
  * Returns true if the clock has been set, and false otherwise.
  *
- * @return either Y_TIMESET_FALSE or Y_TIMESET_TRUE, according to true if the clock has been set, and
- * false otherwise
+ * @return either YRealTimeClock.TIMESET_FALSE or YRealTimeClock.TIMESET_TRUE, according to true if
+ * the clock has been set, and false otherwise
  *
- * On failure, throws an exception or returns Y_TIMESET_INVALID.
+ * On failure, throws an exception or returns YRealTimeClock.TIMESET_INVALID.
  */
 -(Y_TIMESET_enum)     get_timeSet;
 

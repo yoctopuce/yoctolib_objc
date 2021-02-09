@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_serialport.m 41625 2020-08-31 07:09:39Z seb $
+ * $Id: yocto_serialport.m 43619 2021-01-29 09:14:45Z mvuilleu $
  *
  * Implements the high-level API for SerialPort functions
  *
@@ -286,7 +286,7 @@
  *
  * @return an integer corresponding to the total number of bytes received since last reset
  *
- * On failure, throws an exception or returns Y_RXCOUNT_INVALID.
+ * On failure, throws an exception or returns YSerialPort.RXCOUNT_INVALID.
  */
 -(int) get_rxCount
 {
@@ -310,7 +310,7 @@
  *
  * @return an integer corresponding to the total number of bytes transmitted since last reset
  *
- * On failure, throws an exception or returns Y_TXCOUNT_INVALID.
+ * On failure, throws an exception or returns YSerialPort.TXCOUNT_INVALID.
  */
 -(int) get_txCount
 {
@@ -334,7 +334,7 @@
  *
  * @return an integer corresponding to the total number of communication errors detected since last reset
  *
- * On failure, throws an exception or returns Y_ERRCOUNT_INVALID.
+ * On failure, throws an exception or returns YSerialPort.ERRCOUNT_INVALID.
  */
 -(int) get_errCount
 {
@@ -358,7 +358,7 @@
  *
  * @return an integer corresponding to the total number of messages received since last reset
  *
- * On failure, throws an exception or returns Y_RXMSGCOUNT_INVALID.
+ * On failure, throws an exception or returns YSerialPort.RXMSGCOUNT_INVALID.
  */
 -(int) get_rxMsgCount
 {
@@ -382,7 +382,7 @@
  *
  * @return an integer corresponding to the total number of messages send since last reset
  *
- * On failure, throws an exception or returns Y_TXMSGCOUNT_INVALID.
+ * On failure, throws an exception or returns YSerialPort.TXMSGCOUNT_INVALID.
  */
 -(int) get_txMsgCount
 {
@@ -406,7 +406,7 @@
  *
  * @return a string corresponding to the latest message fully received (for Line, Frame and Modbus protocols)
  *
- * On failure, throws an exception or returns Y_LASTMSG_INVALID.
+ * On failure, throws an exception or returns YSerialPort.LASTMSG_INVALID.
  */
 -(NSString*) get_lastMsg
 {
@@ -430,7 +430,7 @@
  *
  * @return a string corresponding to the name of the job file currently in use
  *
- * On failure, throws an exception or returns Y_CURRENTJOB_INVALID.
+ * On failure, throws an exception or returns YSerialPort.CURRENTJOB_INVALID.
  */
 -(NSString*) get_currentJob
 {
@@ -456,7 +456,7 @@
  *
  * @param newval : a string
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -475,7 +475,7 @@
  *
  * @return a string corresponding to the job file to use when the device is powered on
  *
- * On failure, throws an exception or returns Y_STARTUPJOB_INVALID.
+ * On failure, throws an exception or returns YSerialPort.STARTUPJOB_INVALID.
  */
 -(NSString*) get_startupJob
 {
@@ -502,7 +502,7 @@
  *
  * @param newval : a string corresponding to the job to use when the device is powered on
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -521,7 +521,7 @@
  *
  * @return an integer corresponding to the maximum number of tasks in a job that the device can handle
  *
- * On failure, throws an exception or returns Y_JOBMAXTASK_INVALID.
+ * On failure, throws an exception or returns YSerialPort.JOBMAXTASK_INVALID.
  */
 -(int) get_jobMaxTask
 {
@@ -545,7 +545,7 @@
  *
  * @return an integer corresponding to maximum size allowed for job files
  *
- * On failure, throws an exception or returns Y_JOBMAXSIZE_INVALID.
+ * On failure, throws an exception or returns YSerialPort.JOBMAXSIZE_INVALID.
  */
 -(int) get_jobMaxSize
 {
@@ -606,7 +606,7 @@
  *
  * @return a string corresponding to the type of protocol used over the serial line, as a string
  *
- * On failure, throws an exception or returns Y_PROTOCOL_INVALID.
+ * On failure, throws an exception or returns YSerialPort.PROTOCOL_INVALID.
  */
 -(NSString*) get_protocol
 {
@@ -644,7 +644,7 @@
  *
  * @param newval : a string corresponding to the type of protocol used over the serial line
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -661,11 +661,12 @@
 /**
  * Returns the voltage level used on the serial line.
  *
- * @return a value among Y_VOLTAGELEVEL_OFF, Y_VOLTAGELEVEL_TTL3V, Y_VOLTAGELEVEL_TTL3VR,
- * Y_VOLTAGELEVEL_TTL5V, Y_VOLTAGELEVEL_TTL5VR, Y_VOLTAGELEVEL_RS232, Y_VOLTAGELEVEL_RS485 and
- * Y_VOLTAGELEVEL_TTL1V8 corresponding to the voltage level used on the serial line
+ * @return a value among YSerialPort.VOLTAGELEVEL_OFF, YSerialPort.VOLTAGELEVEL_TTL3V,
+ * YSerialPort.VOLTAGELEVEL_TTL3VR, YSerialPort.VOLTAGELEVEL_TTL5V, YSerialPort.VOLTAGELEVEL_TTL5VR,
+ * YSerialPort.VOLTAGELEVEL_RS232, YSerialPort.VOLTAGELEVEL_RS485 and YSerialPort.VOLTAGELEVEL_TTL1V8
+ * corresponding to the voltage level used on the serial line
  *
- * On failure, throws an exception or returns Y_VOLTAGELEVEL_INVALID.
+ * On failure, throws an exception or returns YSerialPort.VOLTAGELEVEL_INVALID.
  */
 -(Y_VOLTAGELEVEL_enum) get_voltageLevel
 {
@@ -694,11 +695,12 @@
  * Remember to call the saveToFlash() method of the module if the
  * modification must be kept.
  *
- * @param newval : a value among Y_VOLTAGELEVEL_OFF, Y_VOLTAGELEVEL_TTL3V, Y_VOLTAGELEVEL_TTL3VR,
- * Y_VOLTAGELEVEL_TTL5V, Y_VOLTAGELEVEL_TTL5VR, Y_VOLTAGELEVEL_RS232, Y_VOLTAGELEVEL_RS485 and
- * Y_VOLTAGELEVEL_TTL1V8 corresponding to the voltage type used on the serial line
+ * @param newval : a value among YSerialPort.VOLTAGELEVEL_OFF, YSerialPort.VOLTAGELEVEL_TTL3V,
+ * YSerialPort.VOLTAGELEVEL_TTL3VR, YSerialPort.VOLTAGELEVEL_TTL5V, YSerialPort.VOLTAGELEVEL_TTL5VR,
+ * YSerialPort.VOLTAGELEVEL_RS232, YSerialPort.VOLTAGELEVEL_RS485 and YSerialPort.VOLTAGELEVEL_TTL1V8
+ * corresponding to the voltage type used on the serial line
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -723,7 +725,7 @@
  * @return a string corresponding to the serial port communication parameters, as a string such as
  *         "9600,8N1"
  *
- * On failure, throws an exception or returns Y_SERIALMODE_INVALID.
+ * On failure, throws an exception or returns YSerialPort.SERIALMODE_INVALID.
  */
 -(NSString*) get_serialMode
 {
@@ -756,7 +758,7 @@
  * @param newval : a string corresponding to the serial port communication parameters, with a string such as
  *         "9600,8N1"
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -1068,7 +1070,7 @@
  * @param jobfile : name of the job file to save on the device filesystem
  * @param jsonDef : a string containing a JSON definition of the job
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -1085,7 +1087,7 @@
  *
  * @param jobfile : name of the job file (on the device filesystem)
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -1097,7 +1099,7 @@
 /**
  * Clears the serial port buffer and resets counters to zero.
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -1115,7 +1117,7 @@
  *
  * @param code : the byte to send
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -1129,7 +1131,7 @@
  *
  * @param text : the text string to send
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -1166,7 +1168,7 @@
  *
  * @param buff : the binary buffer to send
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -1180,7 +1182,7 @@
  *
  * @param byteList : a list of byte codes
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -1209,7 +1211,7 @@
  *
  * @param hexString : a string of hexadecimal byte codes
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -1242,7 +1244,7 @@
  *
  * @param text : the text string to send
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -1517,7 +1519,7 @@
  *
  * @param val : 1 to turn RTS on, 0 to turn RTS off
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -1594,7 +1596,7 @@
  *
  * @param text : the text string to send
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -1613,7 +1615,7 @@
  *
  * @param hexString : a hexadecimal message string, including device address but no CRC/LRC
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */

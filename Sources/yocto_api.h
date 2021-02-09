@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.h 41776 2020-09-04 07:55:05Z seb $
+ * $Id: yocto_api.h 43619 2021-01-29 09:14:45Z mvuilleu $
  *
  * High-level programming interface, common to all modules
  *
@@ -62,7 +62,7 @@
 
 //extern NSMutableDictionary* YAPI_YFunctions;
 
-#define YOCTO_API_REVISION          "42982"
+#define YOCTO_API_REVISION          "43781"
 
 // yInitAPI argument
 #define Y_DETECT_NONE           0
@@ -465,17 +465,17 @@ NS_SWIFT_NAME(GetAPIVersion());
  * automatically  initialized when calling yRegisterHub() for the
  * first time.
  *
- * When Y_DETECT_NONE is used as detection mode,
+ * When YAPI.DETECT_NONE is used as detection mode,
  * you must explicitly use yRegisterHub() to point the API to the
  * VirtualHub on which your devices are connected before trying to access them.
  *
  * @param mode : an integer corresponding to the type of automatic
  *         device detection to use. Possible values are
- *         Y_DETECT_NONE, Y_DETECT_USB, Y_DETECT_NET,
- *         and Y_DETECT_ALL.
+ *         YAPI.DETECT_NONE, YAPI.DETECT_USB, YAPI.DETECT_NET,
+ *         and YAPI.DETECT_ALL.
  * @param errmsg : a string passed by reference to receive any error message.
  *
- * @return YAPI_SUCCESS when the call succeeds.
+ * @return YAPI.SUCCESS when the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -625,7 +625,7 @@ NS_SWIFT_NAME(RegisterHubDiscoveryCallback(_:));
  *         root URL of the hub to monitor
  * @param errmsg : a string passed by reference to receive any error message.
  *
- * @return YAPI_SUCCESS when the call succeeds.
+ * @return YAPI.SUCCESS when the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -642,7 +642,7 @@ NS_SWIFT_NAME(RegisterHub(_:_:));
  *         root URL of the hub to monitor
  * @param errmsg : a string passed by reference to receive any error message.
  *
- * @return YAPI_SUCCESS when the call succeeds.
+ * @return YAPI.SUCCESS when the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -670,7 +670,7 @@ NS_SWIFT_NAME(UnregisterHub(_:));
  * @param mstimeout : the number of millisecond available to test the connection.
  * @param errmsg : a string passed by reference to receive any error message.
  *
- * @return YAPI_SUCCESS when the call succeeds.
+ * @return YAPI.SUCCESS when the call succeeds.
  *
  * On failure returns a negative error code.
  */
@@ -690,7 +690,7 @@ NS_SWIFT_NAME(TestHub(_:_:));
  *
  * @param errmsg : a string passed by reference to receive any error message.
  *
- * @return YAPI_SUCCESS when the call succeeds.
+ * @return YAPI.SUCCESS when the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -710,7 +710,7 @@ NS_SWIFT_NAME(UpdateDeviceList(_:));
  *
  * @param errmsg : a string passed by reference to receive any error message.
  *
- * @return YAPI_SUCCESS when the call succeeds.
+ * @return YAPI.SUCCESS when the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -732,7 +732,7 @@ NS_SWIFT_NAME(HandleEvents(_:));
  *         in milliseconds.
  * @param errmsg : a string passed by reference to receive any error message.
  *
- * @return YAPI_SUCCESS when the call succeeds.
+ * @return YAPI.SUCCESS when the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -745,7 +745,7 @@ NS_SWIFT_NAME(Sleep(_:_:));
  *
  * @param errmsg : a string passed by reference to receive any error message.
  *
- * @return YAPI_SUCCESS when the call succeeds.
+ * @return YAPI.SUCCESS when the call succeeds.
  *         On failure, throws an exception or returns a negative error code.
  */
  +(YRETCODE)    TriggerHubDiscovery:(NSError**) errmsg
@@ -1009,7 +1009,7 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
  *
  * @return a string corresponding to the logical name of the function
  *
- * On failure, throws an exception or returns Y_LOGICALNAME_INVALID.
+ * On failure, throws an exception or returns YFunction.LOGICALNAME_INVALID.
  */
 -(NSString*)     get_logicalName;
 
@@ -1023,7 +1023,7 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
  *
  * @param newval : a string corresponding to the logical name of the function
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -1035,7 +1035,7 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
  *
  * @return a string corresponding to a short string representing the current state of the function
  *
- * On failure, throws an exception or returns Y_ADVERTISEDVALUE_INVALID.
+ * On failure, throws an exception or returns YFunction.ADVERTISEDVALUE_INVALID.
  */
 -(NSString*)     get_advertisedValue;
 
@@ -1096,7 +1096,7 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
  * Remember to call the saveToFlash() method of the module if the
  * modification must be kept.
  *
- * @return YAPI_SUCCESS when the call succeeds.
+ * @return YAPI.SUCCESS when the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -1108,7 +1108,7 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
  * Remember to call the saveToFlash() method of the module if the
  * modification must be kept.
  *
- * @return YAPI_SUCCESS when the call succeeds.
+ * @return YAPI.SUCCESS when the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -1139,7 +1139,7 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
  *
  * @return a string corresponding to the serial number of the module, as set by the factory.
  *
- * On failure, throws an exception or returns YModule.SERIALNUMBER_INVALID.
+ * On failure, throws an exception or returns YFunction.SERIALNUMBER_INVALID.
  */
 -(NSString*)     get_serialNumber;
 
@@ -1194,7 +1194,7 @@ NS_SWIFT_NAME(FirstFunction());
  * @return a string that uniquely identifies the function using logical names
  *         (ex: MyCustomName.relay1)
  *
- * On failure, throws an exception or returns  Y_FRIENDLYNAME_INVALID.
+ * On failure, throws an exception or returns  YFunction.FRIENDLYNAME_INVALID.
  */
 -(NSString*)    get_friendlyName;
 -(NSString*)    friendlyName;
@@ -1206,7 +1206,7 @@ NS_SWIFT_NAME(FirstFunction());
  *
  * @return a string that uniquely identifies the function (ex: RELAYLO1-123456.relay1)
  *
- * On failure, throws an exception or returns  Y_HARDWAREID_INVALID.
+ * On failure, throws an exception or returns  YFunction.HARDWAREID_INVALID.
  */
 -(NSString*) get_hardwareId;
 -(NSString*) hardwareId;
@@ -1217,7 +1217,7 @@ NS_SWIFT_NAME(FirstFunction());
  *
  * @return a string that identifies the function (ex: relay1)
  *
- * On failure, throws an exception or returns  Y_FUNCTIONID_INVALID.
+ * On failure, throws an exception or returns  YFunction.FUNCTIONID_INVALID.
  */
 -(NSString*) get_functionId;
 -(NSString*) functionId;
@@ -1269,7 +1269,7 @@ NS_SWIFT_NAME(FirstFunction());
  * @param msValidity : an integer corresponding to the validity attributed to the
  *         loaded function parameters, in milliseconds
  *
- * @return YAPI_SUCCESS when the call succeeds.
+ * @return YAPI.SUCCESS when the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -1302,7 +1302,7 @@ NS_SWIFT_NAME(FirstFunction());
  *
  * @return an identifier of type YFUN_DESCR.
  *
- * If the function has never been contacted, the returned value is Y_FUNCTIONDESCRIPTOR_INVALID.
+ * If the function has never been contacted, the returned value is Y$CLASSNAME$.FUNCTIONDESCRIPTOR_INVALID.
  */
 -(YFUN_DESCR)     get_functionDescriptor;
 -(YFUN_DESCR)     functionDescriptor;
@@ -1432,7 +1432,7 @@ NS_SWIFT_NAME(FirstFunction());
  *
  * @return a string corresponding to the commercial name of the module, as set by the factory
  *
- * On failure, throws an exception or returns Y_PRODUCTNAME_INVALID.
+ * On failure, throws an exception or returns YModule.PRODUCTNAME_INVALID.
  */
 -(NSString*)     get_productName;
 
@@ -1443,7 +1443,7 @@ NS_SWIFT_NAME(FirstFunction());
  *
  * @return a string corresponding to the serial number of the module, as set by the factory
  *
- * On failure, throws an exception or returns Y_SERIALNUMBER_INVALID.
+ * On failure, throws an exception or returns YModule.SERIALNUMBER_INVALID.
  */
 -(NSString*)     get_serialNumber;
 
@@ -1454,7 +1454,7 @@ NS_SWIFT_NAME(FirstFunction());
  *
  * @return an integer corresponding to the USB device identifier of the module
  *
- * On failure, throws an exception or returns Y_PRODUCTID_INVALID.
+ * On failure, throws an exception or returns YModule.PRODUCTID_INVALID.
  */
 -(int)     get_productId;
 
@@ -1466,7 +1466,7 @@ NS_SWIFT_NAME(FirstFunction());
  *
  * @return an integer corresponding to the release number of the module hardware, preprogrammed at the factory
  *
- * On failure, throws an exception or returns Y_PRODUCTRELEASE_INVALID.
+ * On failure, throws an exception or returns YModule.PRODUCTRELEASE_INVALID.
  */
 -(int)     get_productRelease;
 
@@ -1477,7 +1477,7 @@ NS_SWIFT_NAME(FirstFunction());
  *
  * @return a string corresponding to the version of the firmware embedded in the module
  *
- * On failure, throws an exception or returns Y_FIRMWARERELEASE_INVALID.
+ * On failure, throws an exception or returns YModule.FIRMWARERELEASE_INVALID.
  */
 -(NSString*)     get_firmwareRelease;
 
@@ -1486,10 +1486,10 @@ NS_SWIFT_NAME(FirstFunction());
 /**
  * Returns the current state of persistent module settings.
  *
- * @return a value among Y_PERSISTENTSETTINGS_LOADED, Y_PERSISTENTSETTINGS_SAVED and
- * Y_PERSISTENTSETTINGS_MODIFIED corresponding to the current state of persistent module settings
+ * @return a value among YModule.PERSISTENTSETTINGS_LOADED, YModule.PERSISTENTSETTINGS_SAVED and
+ * YModule.PERSISTENTSETTINGS_MODIFIED corresponding to the current state of persistent module settings
  *
- * On failure, throws an exception or returns Y_PERSISTENTSETTINGS_INVALID.
+ * On failure, throws an exception or returns YModule.PERSISTENTSETTINGS_INVALID.
  */
 -(Y_PERSISTENTSETTINGS_enum)     get_persistentSettings;
 
@@ -1503,7 +1503,7 @@ NS_SWIFT_NAME(FirstFunction());
  *
  * @return an integer corresponding to the luminosity of the  module informative LEDs (from 0 to 100)
  *
- * On failure, throws an exception or returns Y_LUMINOSITY_INVALID.
+ * On failure, throws an exception or returns YModule.LUMINOSITY_INVALID.
  */
 -(int)     get_luminosity;
 
@@ -1517,7 +1517,7 @@ NS_SWIFT_NAME(FirstFunction());
  *
  * @param newval : an integer corresponding to the luminosity of the module informative leds
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -1527,9 +1527,9 @@ NS_SWIFT_NAME(FirstFunction());
 /**
  * Returns the state of the localization beacon.
  *
- * @return either Y_BEACON_OFF or Y_BEACON_ON, according to the state of the localization beacon
+ * @return either YModule.BEACON_OFF or YModule.BEACON_ON, according to the state of the localization beacon
  *
- * On failure, throws an exception or returns Y_BEACON_INVALID.
+ * On failure, throws an exception or returns YModule.BEACON_INVALID.
  */
 -(Y_BEACON_enum)     get_beacon;
 
@@ -1538,9 +1538,9 @@ NS_SWIFT_NAME(FirstFunction());
 /**
  * Turns on or off the module localization beacon.
  *
- * @param newval : either Y_BEACON_OFF or Y_BEACON_ON
+ * @param newval : either YModule.BEACON_OFF or YModule.BEACON_ON
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -1552,7 +1552,7 @@ NS_SWIFT_NAME(FirstFunction());
  *
  * @return an integer corresponding to the number of milliseconds spent since the module was powered on
  *
- * On failure, throws an exception or returns Y_UPTIME_INVALID.
+ * On failure, throws an exception or returns YModule.UPTIME_INVALID.
  */
 -(s64)     get_upTime;
 
@@ -1563,7 +1563,7 @@ NS_SWIFT_NAME(FirstFunction());
  *
  * @return an integer corresponding to the current consumed by the module on the USB bus, in milli-amps
  *
- * On failure, throws an exception or returns Y_USBCURRENT_INVALID.
+ * On failure, throws an exception or returns YModule.USBCURRENT_INVALID.
  */
 -(int)     get_usbCurrent;
 
@@ -1576,7 +1576,7 @@ NS_SWIFT_NAME(FirstFunction());
  * @return an integer corresponding to the remaining number of seconds before the module restarts, or zero when no
  *         reboot has been scheduled
  *
- * On failure, throws an exception or returns Y_REBOOTCOUNTDOWN_INVALID.
+ * On failure, throws an exception or returns YModule.REBOOTCOUNTDOWN_INVALID.
  */
 -(int)     get_rebootCountdown;
 
@@ -1591,7 +1591,7 @@ NS_SWIFT_NAME(FirstFunction());
  *
  * @return an integer corresponding to the value previously stored in this attribute
  *
- * On failure, throws an exception or returns Y_USERVAR_INVALID.
+ * On failure, throws an exception or returns YModule.USERVAR_INVALID.
  */
 -(int)     get_userVar;
 
@@ -1604,7 +1604,7 @@ NS_SWIFT_NAME(FirstFunction());
  *
  * @param newval : an integer
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -1657,7 +1657,7 @@ NS_SWIFT_NAME(FirstFunction());
  * Warning: the number of allowed save operations during a module life is
  * limited (about 100000 cycles). Do not call this function within a loop.
  *
- * @return YAPI_SUCCESS when the call succeeds.
+ * @return YAPI.SUCCESS when the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -1667,7 +1667,7 @@ NS_SWIFT_NAME(FirstFunction());
  * Reloads the settings stored in the nonvolatile memory, as
  * when the module is powered on.
  *
- * @return YAPI_SUCCESS when the call succeeds.
+ * @return YAPI.SUCCESS when the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -1678,7 +1678,7 @@ NS_SWIFT_NAME(FirstFunction());
  *
  * @param secBeforeReboot : number of seconds before rebooting
  *
- * @return YAPI_SUCCESS when the call succeeds.
+ * @return YAPI.SUCCESS when the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -1689,7 +1689,7 @@ NS_SWIFT_NAME(FirstFunction());
  *
  * @param secBeforeReboot : number of seconds before rebooting
  *
- * @return YAPI_SUCCESS when the call succeeds.
+ * @return YAPI.SUCCESS when the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -1798,7 +1798,7 @@ NS_SWIFT_NAME(FirstFunction());
  *
  * @param settings : a binary buffer with all the settings.
  *
- * @return YAPI_SUCCESS when the call succeeds.
+ * @return YAPI.SUCCESS when the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -1842,7 +1842,7 @@ NS_SWIFT_NAME(FirstFunction());
  *
  * @param settings : a binary buffer with all the settings.
  *
- * @return YAPI_SUCCESS when the call succeeds.
+ * @return YAPI.SUCCESS when the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -1893,7 +1893,7 @@ NS_SWIFT_NAME(FirstFunction());
  *
  * @param text : the string to append to the logs.
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -2021,7 +2021,7 @@ NS_SWIFT_NAME(FirstModule());
  *
  * @return a string corresponding to the measuring unit for the measure
  *
- * On failure, throws an exception or returns Y_UNIT_INVALID.
+ * On failure, throws an exception or returns YSensor.UNIT_INVALID.
  */
 -(NSString*)     get_unit;
 
@@ -2040,7 +2040,7 @@ NS_SWIFT_NAME(FirstModule());
  * @return a floating point number corresponding to the current value of the measure, in the specified
  * unit, as a floating point number
  *
- * On failure, throws an exception or returns Y_CURRENTVALUE_INVALID.
+ * On failure, throws an exception or returns YSensor.CURRENTVALUE_INVALID.
  */
 -(double)     get_currentValue;
 
@@ -2052,7 +2052,7 @@ NS_SWIFT_NAME(FirstModule());
  *
  * @param newval : a floating point number corresponding to the recorded minimal value observed
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -2066,7 +2066,7 @@ NS_SWIFT_NAME(FirstModule());
  * @return a floating point number corresponding to the minimal value observed for the measure since
  * the device was started
  *
- * On failure, throws an exception or returns Y_LOWESTVALUE_INVALID.
+ * On failure, throws an exception or returns YSensor.LOWESTVALUE_INVALID.
  */
 -(double)     get_lowestValue;
 
@@ -2078,7 +2078,7 @@ NS_SWIFT_NAME(FirstModule());
  *
  * @param newval : a floating point number corresponding to the recorded maximal value observed
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -2092,7 +2092,7 @@ NS_SWIFT_NAME(FirstModule());
  * @return a floating point number corresponding to the maximal value observed for the measure since
  * the device was started
  *
- * On failure, throws an exception or returns Y_HIGHESTVALUE_INVALID.
+ * On failure, throws an exception or returns YSensor.HIGHESTVALUE_INVALID.
  */
 -(double)     get_highestValue;
 
@@ -2105,7 +2105,7 @@ NS_SWIFT_NAME(FirstModule());
  * @return a floating point number corresponding to the uncalibrated, unrounded raw value returned by the
  *         sensor, in the specified unit, as a floating point number
  *
- * On failure, throws an exception or returns Y_CURRENTRAWVALUE_INVALID.
+ * On failure, throws an exception or returns YSensor.CURRENTRAWVALUE_INVALID.
  */
 -(double)     get_currentRawValue;
 
@@ -2118,7 +2118,7 @@ NS_SWIFT_NAME(FirstModule());
  * @return a string corresponding to the datalogger recording frequency for this function, or "OFF"
  *         when measures are not stored in the data logger flash memory
  *
- * On failure, throws an exception or returns Y_LOGFREQUENCY_INVALID.
+ * On failure, throws an exception or returns YSensor.LOGFREQUENCY_INVALID.
  */
 -(NSString*)     get_logFrequency;
 
@@ -2136,7 +2136,7 @@ NS_SWIFT_NAME(FirstModule());
  *
  * @param newval : a string corresponding to the datalogger recording frequency for this function
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -2150,7 +2150,7 @@ NS_SWIFT_NAME(FirstModule());
  * @return a string corresponding to the timed value notification frequency, or "OFF" if timed
  *         value notifications are disabled for this function
  *
- * On failure, throws an exception or returns Y_REPORTFREQUENCY_INVALID.
+ * On failure, throws an exception or returns YSensor.REPORTFREQUENCY_INVALID.
  */
 -(NSString*)     get_reportFrequency;
 
@@ -2169,7 +2169,7 @@ NS_SWIFT_NAME(FirstModule());
  *
  * @param newval : a string corresponding to the timed value notification frequency for this function
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -2179,10 +2179,11 @@ NS_SWIFT_NAME(FirstModule());
 /**
  * Returns the measuring mode used for the advertised value pushed to the parent hub.
  *
- * @return a value among Y_ADVMODE_IMMEDIATE, Y_ADVMODE_PERIOD_AVG, Y_ADVMODE_PERIOD_MIN and
- * Y_ADVMODE_PERIOD_MAX corresponding to the measuring mode used for the advertised value pushed to the parent hub
+ * @return a value among YSensor.ADVMODE_IMMEDIATE, YSensor.ADVMODE_PERIOD_AVG,
+ * YSensor.ADVMODE_PERIOD_MIN and YSensor.ADVMODE_PERIOD_MAX corresponding to the measuring mode used
+ * for the advertised value pushed to the parent hub
  *
- * On failure, throws an exception or returns Y_ADVMODE_INVALID.
+ * On failure, throws an exception or returns YSensor.ADVMODE_INVALID.
  */
 -(Y_ADVMODE_enum)     get_advMode;
 
@@ -2192,10 +2193,11 @@ NS_SWIFT_NAME(FirstModule());
  * Changes the measuring mode used for the advertised value pushed to the parent hub.
  * Remember to call the saveToFlash() method of the module if the modification must be kept.
  *
- * @param newval : a value among Y_ADVMODE_IMMEDIATE, Y_ADVMODE_PERIOD_AVG, Y_ADVMODE_PERIOD_MIN and
- * Y_ADVMODE_PERIOD_MAX corresponding to the measuring mode used for the advertised value pushed to the parent hub
+ * @param newval : a value among YSensor.ADVMODE_IMMEDIATE, YSensor.ADVMODE_PERIOD_AVG,
+ * YSensor.ADVMODE_PERIOD_MIN and YSensor.ADVMODE_PERIOD_MAX corresponding to the measuring mode used
+ * for the advertised value pushed to the parent hub
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -2216,7 +2218,7 @@ NS_SWIFT_NAME(FirstModule());
  *
  * @param newval : a floating point number corresponding to the resolution of the measured physical values
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -2230,7 +2232,7 @@ NS_SWIFT_NAME(FirstModule());
  *
  * @return a floating point number corresponding to the resolution of the measured values
  *
- * On failure, throws an exception or returns Y_RESOLUTION_INVALID.
+ * On failure, throws an exception or returns YSensor.RESOLUTION_INVALID.
  */
 -(double)     get_resolution;
 
@@ -2244,7 +2246,7 @@ NS_SWIFT_NAME(FirstModule());
  * up-to-date measure
  *         available or a positive code if the sensor is not able to provide a measure right now
  *
- * On failure, throws an exception or returns Y_SENSORSTATE_INVALID.
+ * On failure, throws an exception or returns YSensor.SENSORSTATE_INVALID.
  */
 -(int)     get_sensorState;
 
@@ -2321,14 +2323,14 @@ NS_SWIFT_NAME(FirstModule());
  * will only save the measures on this sensor if the logFrequency
  * is not set to "OFF".
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  */
 -(int)     startDataLogger;
 
 /**
  * Stops the datalogger on the device.
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  */
 -(int)     stopDataLogger;
 
@@ -2392,7 +2394,7 @@ NS_SWIFT_NAME(FirstModule());
  * @param refValues : array of floating point numbers, corresponding to the corrected
  *         values for the correction points.
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -2407,7 +2409,7 @@ NS_SWIFT_NAME(FirstModule());
  * @param refValues : array of floating point numbers, that will be filled by the
  *         function with the desired values for the correction points.
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -2953,7 +2955,7 @@ NS_SWIFT_NAME(FirstSensor());
  *
  * @return a string that uniquely identifies the function (ex: THRMCPL1-123456.temperature1)
  *
- * On failure, throws an exception or returns  Y_HARDWAREID_INVALID.
+ * On failure, throws an exception or returns  YDataSet.HARDWAREID_INVALID.
  */
 -(NSString*)     get_hardwareId;
 
@@ -2970,7 +2972,7 @@ NS_SWIFT_NAME(FirstSensor());
  *
  * @return a string that represents a physical unit.
  *
- * On failure, throws an exception or returns  Y_UNIT_INVALID.
+ * On failure, throws an exception or returns  YDataSet.UNIT_INVALID.
  */
 -(NSString*)     get_unit;
 
@@ -3201,17 +3203,17 @@ NS_SWIFT_NAME(FirstSensor());
  * automatically  initialized when calling yRegisterHub() for the
  * first time.
  *
- * When Y_DETECT_NONE is used as detection mode,
+ * When YAPI.DETECT_NONE is used as detection mode,
  * you must explicitly use yRegisterHub() to point the API to the
  * VirtualHub on which your devices are connected before trying to access them.
  *
  * @param mode : an integer corresponding to the type of automatic
  *         device detection to use. Possible values are
- *         Y_DETECT_NONE, Y_DETECT_USB, Y_DETECT_NET,
- *         and Y_DETECT_ALL.
+ *         YAPI.DETECT_NONE, YAPI.DETECT_USB, YAPI.DETECT_NET,
+ *         and YAPI.DETECT_ALL.
  * @param errmsg : a string passed by reference to receive any error message.
  *
- * @return YAPI_SUCCESS when the call succeeds.
+ * @return YAPI.SUCCESS when the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -3316,7 +3318,7 @@ void yEnableExceptions(void);
  *         root URL of the hub to monitor
  * @param errmsg : a string passed by reference to receive any error message.
  *
- * @return YAPI_SUCCESS when the call succeeds.
+ * @return YAPI.SUCCESS when the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -3333,7 +3335,7 @@ YRETCODE yRegisterHub(NSString * url, NSError** errmsg);
  *         root URL of the hub to monitor
  * @param errmsg : a string passed by reference to receive any error message.
  *
- * @return YAPI_SUCCESS when the call succeeds.
+ * @return YAPI.SUCCESS when the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -3364,7 +3366,7 @@ void     yUnregisterHub(NSString * url);
  *
  * @param errmsg : a string passed by reference to receive any error message.
  *
- * @return YAPI_SUCCESS when the call succeeds.
+ * @return YAPI.SUCCESS when the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -3383,7 +3385,7 @@ YRETCODE yUpdateDeviceList(NSError** errmsg);
  *
  * @param errmsg : a string passed by reference to receive any error message.
  *
- * @return YAPI_SUCCESS when the call succeeds.
+ * @return YAPI.SUCCESS when the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -3404,7 +3406,7 @@ YRETCODE yHandleEvents(NSError** errmsg);
  *         in milliseconds.
  * @param errmsg : a string passed by reference to receive any error message.
  *
- * @return YAPI_SUCCESS when the call succeeds.
+ * @return YAPI.SUCCESS when the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -3643,7 +3645,7 @@ YSensor* yFirstSensor(void);
  * @return an integer corresponding to the current run number, corresponding to the number of times the module was
  *         powered on with the dataLogger enabled at some point
  *
- * On failure, throws an exception or returns Y_CURRENTRUNINDEX_INVALID.
+ * On failure, throws an exception or returns YDataLogger.CURRENTRUNINDEX_INVALID.
  */
 -(int)     get_currentRunIndex;
 
@@ -3654,7 +3656,7 @@ YSensor* yFirstSensor(void);
  *
  * @return an integer corresponding to the Unix timestamp for current UTC time, if known
  *
- * On failure, throws an exception or returns Y_TIMEUTC_INVALID.
+ * On failure, throws an exception or returns YDataLogger.TIMEUTC_INVALID.
  */
 -(s64)     get_timeUTC;
 
@@ -3665,7 +3667,7 @@ YSensor* yFirstSensor(void);
  *
  * @param newval : an integer corresponding to the current UTC time reference used for recorded data
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -3675,10 +3677,10 @@ YSensor* yFirstSensor(void);
 /**
  * Returns the current activation state of the data logger.
  *
- * @return a value among Y_RECORDING_OFF, Y_RECORDING_ON and Y_RECORDING_PENDING corresponding to the
- * current activation state of the data logger
+ * @return a value among YDataLogger.RECORDING_OFF, YDataLogger.RECORDING_ON and
+ * YDataLogger.RECORDING_PENDING corresponding to the current activation state of the data logger
  *
- * On failure, throws an exception or returns Y_RECORDING_INVALID.
+ * On failure, throws an exception or returns YDataLogger.RECORDING_INVALID.
  */
 -(Y_RECORDING_enum)     get_recording;
 
@@ -3687,10 +3689,11 @@ YSensor* yFirstSensor(void);
 /**
  * Changes the activation state of the data logger to start/stop recording data.
  *
- * @param newval : a value among Y_RECORDING_OFF, Y_RECORDING_ON and Y_RECORDING_PENDING corresponding
- * to the activation state of the data logger to start/stop recording data
+ * @param newval : a value among YDataLogger.RECORDING_OFF, YDataLogger.RECORDING_ON and
+ * YDataLogger.RECORDING_PENDING corresponding to the activation state of the data logger to
+ * start/stop recording data
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -3700,10 +3703,10 @@ YSensor* yFirstSensor(void);
 /**
  * Returns the default activation state of the data logger on power up.
  *
- * @return either Y_AUTOSTART_OFF or Y_AUTOSTART_ON, according to the default activation state of the
- * data logger on power up
+ * @return either YDataLogger.AUTOSTART_OFF or YDataLogger.AUTOSTART_ON, according to the default
+ * activation state of the data logger on power up
  *
- * On failure, throws an exception or returns Y_AUTOSTART_INVALID.
+ * On failure, throws an exception or returns YDataLogger.AUTOSTART_INVALID.
  */
 -(Y_AUTOSTART_enum)     get_autoStart;
 
@@ -3716,10 +3719,10 @@ YSensor* yFirstSensor(void);
  * starting up, it will wait for ~8 seconds before automatically starting to record  with
  * an arbitrary timestamp
  *
- * @param newval : either Y_AUTOSTART_OFF or Y_AUTOSTART_ON, according to the default activation state
- * of the data logger on power up
+ * @param newval : either YDataLogger.AUTOSTART_OFF or YDataLogger.AUTOSTART_ON, according to the
+ * default activation state of the data logger on power up
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -3729,10 +3732,10 @@ YSensor* yFirstSensor(void);
 /**
  * Returns true if the data logger is synchronised with the localization beacon.
  *
- * @return either Y_BEACONDRIVEN_OFF or Y_BEACONDRIVEN_ON, according to true if the data logger is
- * synchronised with the localization beacon
+ * @return either YDataLogger.BEACONDRIVEN_OFF or YDataLogger.BEACONDRIVEN_ON, according to true if
+ * the data logger is synchronised with the localization beacon
  *
- * On failure, throws an exception or returns Y_BEACONDRIVEN_INVALID.
+ * On failure, throws an exception or returns YDataLogger.BEACONDRIVEN_INVALID.
  */
 -(Y_BEACONDRIVEN_enum)     get_beaconDriven;
 
@@ -3743,10 +3746,10 @@ YSensor* yFirstSensor(void);
  * Remember to call the saveToFlash() method of the module if the
  * modification must be kept.
  *
- * @param newval : either Y_BEACONDRIVEN_OFF or Y_BEACONDRIVEN_ON, according to the type of
- * synchronisation of the data logger
+ * @param newval : either YDataLogger.BEACONDRIVEN_OFF or YDataLogger.BEACONDRIVEN_ON, according to
+ * the type of synchronisation of the data logger
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -3758,7 +3761,7 @@ YSensor* yFirstSensor(void);
  *
  * @return an integer corresponding to the percentage of datalogger memory in use
  *
- * On failure, throws an exception or returns Y_USAGE_INVALID.
+ * On failure, throws an exception or returns YDataLogger.USAGE_INVALID.
  */
 -(int)     get_usage;
 
@@ -3795,7 +3798,7 @@ YSensor* yFirstSensor(void);
  * call registerHub() at application initialization time.
  *
  * @param func : a string that uniquely characterizes the data logger, for instance
- *         LIGHTMK3.dataLogger.
+ *         RX420MA1.dataLogger.
  *
  * @return a YDataLogger object allowing you to drive the data logger.
  */
@@ -3820,7 +3823,7 @@ YSensor* yFirstSensor(void);
  * Clears the data logger memory and discards all recorded data streams.
  * This method also resets the current run index to zero.
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -3895,7 +3898,7 @@ NS_SWIFT_NAME(FirstDataLogger());
  * call registerHub() at application initialization time.
  *
  * @param func : a string that uniquely characterizes the data logger, for instance
- *         LIGHTMK3.dataLogger.
+ *         RX420MA1.dataLogger.
  *
  * @return a YDataLogger object allowing you to drive the data logger.
  */

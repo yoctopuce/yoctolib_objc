@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_pwmpowersource.h 41625 2020-08-31 07:09:39Z seb $
+ *  $Id: yocto_pwmpowersource.h 43580 2021-01-26 17:46:01Z mvuilleu $
  *
  *  Declares yFindPwmPowerSource(), the high-level API for PwmPowerSource functions
  *
@@ -87,10 +87,11 @@ typedef enum {
 /**
  * Returns the selected power source for the PWM on the same device.
  *
- * @return a value among Y_POWERMODE_USB_5V, Y_POWERMODE_USB_3V, Y_POWERMODE_EXT_V and
- * Y_POWERMODE_OPNDRN corresponding to the selected power source for the PWM on the same device
+ * @return a value among YPwmPowerSource.POWERMODE_USB_5V, YPwmPowerSource.POWERMODE_USB_3V,
+ * YPwmPowerSource.POWERMODE_EXT_V and YPwmPowerSource.POWERMODE_OPNDRN corresponding to the selected
+ * power source for the PWM on the same device
  *
- * On failure, throws an exception or returns Y_POWERMODE_INVALID.
+ * On failure, throws an exception or returns YPwmPowerSource.POWERMODE_INVALID.
  */
 -(Y_POWERMODE_enum)     get_powerMode;
 
@@ -105,10 +106,10 @@ typedef enum {
  * If you want the change to be kept after a device reboot, make sure  to call the matching
  * module saveToFlash().
  *
- * @param newval : a value among Y_POWERMODE_USB_5V, Y_POWERMODE_USB_3V, Y_POWERMODE_EXT_V and
- * Y_POWERMODE_OPNDRN corresponding to  the PWM power source
+ * @param newval : a value among YPwmPowerSource.POWERMODE_USB_5V, YPwmPowerSource.POWERMODE_USB_3V,
+ * YPwmPowerSource.POWERMODE_EXT_V and YPwmPowerSource.POWERMODE_OPNDRN corresponding to  the PWM power source
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */

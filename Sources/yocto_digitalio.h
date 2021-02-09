@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_digitalio.h 41625 2020-08-31 07:09:39Z seb $
+ *  $Id: yocto_digitalio.h 43619 2021-01-29 09:14:45Z mvuilleu $
  *
  *  Declares yFindDigitalIO(), the high-level API for DigitalIO functions
  *
@@ -118,7 +118,7 @@ typedef enum {
  * @return an integer corresponding to the digital IO port state as an integer with each bit
  *         representing a channel
  *
- * On failure, throws an exception or returns Y_PORTSTATE_INVALID.
+ * On failure, throws an exception or returns YDigitalIO.PORTSTATE_INVALID.
  */
 -(int)     get_portState;
 
@@ -139,7 +139,7 @@ typedef enum {
  * @param newval : an integer corresponding to the state of all digital IO port's channels at once: the parameter
  *         is an integer where each bit represents a channel, with bit 0 matching channel #0
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -152,7 +152,7 @@ typedef enum {
  * @return an integer corresponding to the I/O direction of all channels of the port (bitmap): 0 makes
  * a bit an input, 1 makes it an output
  *
- * On failure, throws an exception or returns Y_PORTDIRECTION_INVALID.
+ * On failure, throws an exception or returns YDigitalIO.PORTDIRECTION_INVALID.
  */
 -(int)     get_portDirection;
 
@@ -165,7 +165,7 @@ typedef enum {
  * @param newval : an integer corresponding to the I/O direction of all channels of the port (bitmap):
  * 0 makes a bit an input, 1 makes it an output
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -179,7 +179,7 @@ typedef enum {
  *
  * @return an integer corresponding to the electrical interface for each bit of the port
  *
- * On failure, throws an exception or returns Y_PORTOPENDRAIN_INVALID.
+ * On failure, throws an exception or returns YDigitalIO.PORTOPENDRAIN_INVALID.
  */
 -(int)     get_portOpenDrain;
 
@@ -192,7 +192,7 @@ typedef enum {
  *
  * @param newval : an integer corresponding to the electrical interface for each bit of the port
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -205,7 +205,7 @@ typedef enum {
  *
  * @return an integer corresponding to the polarity of all the bits of the port
  *
- * On failure, throws an exception or returns Y_PORTPOLARITY_INVALID.
+ * On failure, throws an exception or returns YDigitalIO.PORTPOLARITY_INVALID.
  */
 -(int)     get_portPolarity;
 
@@ -220,7 +220,7 @@ typedef enum {
  * set to 0, the matching I/O works the regular,
  *         intuitive way; for each bit set to 1, the I/O works in reverse mode
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -234,7 +234,7 @@ typedef enum {
  *
  * @return an integer corresponding to the port state diagnostics (Yocto-IO and Yocto-MaxiIO-V2 only)
  *
- * On failure, throws an exception or returns Y_PORTDIAGS_INVALID.
+ * On failure, throws an exception or returns YDigitalIO.PORTDIAGS_INVALID.
  */
 -(int)     get_portDiags;
 
@@ -245,7 +245,7 @@ typedef enum {
  *
  * @return an integer corresponding to the number of bits (i.e
  *
- * On failure, throws an exception or returns Y_PORTSIZE_INVALID.
+ * On failure, throws an exception or returns YDigitalIO.PORTSIZE_INVALID.
  */
 -(int)     get_portSize;
 
@@ -254,10 +254,10 @@ typedef enum {
 /**
  * Returns the voltage source used to drive output bits.
  *
- * @return a value among Y_OUTPUTVOLTAGE_USB_5V, Y_OUTPUTVOLTAGE_USB_3V and Y_OUTPUTVOLTAGE_EXT_V
- * corresponding to the voltage source used to drive output bits
+ * @return a value among YDigitalIO.OUTPUTVOLTAGE_USB_5V, YDigitalIO.OUTPUTVOLTAGE_USB_3V and
+ * YDigitalIO.OUTPUTVOLTAGE_EXT_V corresponding to the voltage source used to drive output bits
  *
- * On failure, throws an exception or returns Y_OUTPUTVOLTAGE_INVALID.
+ * On failure, throws an exception or returns YDigitalIO.OUTPUTVOLTAGE_INVALID.
  */
 -(Y_OUTPUTVOLTAGE_enum)     get_outputVoltage;
 
@@ -267,10 +267,10 @@ typedef enum {
  * Changes the voltage source used to drive output bits.
  * Remember to call the saveToFlash() method  to make sure the setting is kept after a reboot.
  *
- * @param newval : a value among Y_OUTPUTVOLTAGE_USB_5V, Y_OUTPUTVOLTAGE_USB_3V and
- * Y_OUTPUTVOLTAGE_EXT_V corresponding to the voltage source used to drive output bits
+ * @param newval : a value among YDigitalIO.OUTPUTVOLTAGE_USB_5V, YDigitalIO.OUTPUTVOLTAGE_USB_3V and
+ * YDigitalIO.OUTPUTVOLTAGE_EXT_V corresponding to the voltage source used to drive output bits
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -335,7 +335,7 @@ typedef enum {
  * @param bitno : the bit number; lowest bit has index 0
  * @param bitstate : the state of the bit (1 or 0)
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -357,7 +357,7 @@ typedef enum {
  *
  * @param bitno : the bit number; lowest bit has index 0
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -370,7 +370,7 @@ typedef enum {
  * @param bitdirection : direction to set, 0 makes the bit an input, 1 makes it an output.
  *         Remember to call the   saveToFlash() method to make sure the setting is kept after a reboot.
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -382,7 +382,7 @@ typedef enum {
  *
  * @param bitno : the bit number; lowest bit has index 0
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -396,7 +396,7 @@ typedef enum {
  * in reverse mode.
  *         Remember to call the   saveToFlash() method to make sure the setting is kept after a reboot.
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -408,7 +408,7 @@ typedef enum {
  *
  * @param bitno : the bit number; lowest bit has index 0
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -422,7 +422,7 @@ typedef enum {
  *         it an open-drain (open-collector) input/output. Remember to call the
  *         saveToFlash() method to make sure the setting is kept after a reboot.
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -449,7 +449,7 @@ typedef enum {
  * @param ms_duration : desired pulse duration in milliseconds. Be aware that the device time
  *         resolution is not guaranteed up to the millisecond.
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -464,7 +464,7 @@ typedef enum {
  * @param ms_duration : desired pulse duration in milliseconds. Be aware that the device time
  *         resolution is not guaranteed up to the millisecond.
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */

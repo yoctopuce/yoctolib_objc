@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_led.m 41625 2020-08-31 07:09:39Z seb $
+ *  $Id: yocto_led.m 43580 2021-01-26 17:46:01Z mvuilleu $
  *
  *  Implements the high-level API for Led functions
  *
@@ -95,9 +95,9 @@
 /**
  * Returns the current LED state.
  *
- * @return either Y_POWER_OFF or Y_POWER_ON, according to the current LED state
+ * @return either YLed.POWER_OFF or YLed.POWER_ON, according to the current LED state
  *
- * On failure, throws an exception or returns Y_POWER_INVALID.
+ * On failure, throws an exception or returns YLed.POWER_INVALID.
  */
 -(Y_POWER_enum) get_power
 {
@@ -120,9 +120,9 @@
 /**
  * Changes the state of the LED.
  *
- * @param newval : either Y_POWER_OFF or Y_POWER_ON, according to the state of the LED
+ * @param newval : either YLed.POWER_OFF or YLed.POWER_ON, according to the state of the LED
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -141,7 +141,7 @@
  *
  * @return an integer corresponding to the current LED intensity (in per cent)
  *
- * On failure, throws an exception or returns Y_LUMINOSITY_INVALID.
+ * On failure, throws an exception or returns YLed.LUMINOSITY_INVALID.
  */
 -(int) get_luminosity
 {
@@ -167,7 +167,7 @@
  *
  * @param newval : an integer corresponding to the current LED intensity (in per cent)
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -184,10 +184,10 @@
 /**
  * Returns the current LED signaling mode.
  *
- * @return a value among Y_BLINKING_STILL, Y_BLINKING_RELAX, Y_BLINKING_AWARE, Y_BLINKING_RUN,
- * Y_BLINKING_CALL and Y_BLINKING_PANIC corresponding to the current LED signaling mode
+ * @return a value among YLed.BLINKING_STILL, YLed.BLINKING_RELAX, YLed.BLINKING_AWARE,
+ * YLed.BLINKING_RUN, YLed.BLINKING_CALL and YLed.BLINKING_PANIC corresponding to the current LED signaling mode
  *
- * On failure, throws an exception or returns Y_BLINKING_INVALID.
+ * On failure, throws an exception or returns YLed.BLINKING_INVALID.
  */
 -(Y_BLINKING_enum) get_blinking
 {
@@ -210,10 +210,10 @@
 /**
  * Changes the current LED signaling mode.
  *
- * @param newval : a value among Y_BLINKING_STILL, Y_BLINKING_RELAX, Y_BLINKING_AWARE, Y_BLINKING_RUN,
- * Y_BLINKING_CALL and Y_BLINKING_PANIC corresponding to the current LED signaling mode
+ * @param newval : a value among YLed.BLINKING_STILL, YLed.BLINKING_RELAX, YLed.BLINKING_AWARE,
+ * YLed.BLINKING_RUN, YLed.BLINKING_CALL and YLed.BLINKING_PANIC corresponding to the current LED signaling mode
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */

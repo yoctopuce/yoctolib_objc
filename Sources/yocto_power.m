@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_power.m 41625 2020-08-31 07:09:39Z seb $
+ *  $Id: yocto_power.m 43619 2021-01-29 09:14:45Z mvuilleu $
  *
  *  Implements the high-level API for Power functions
  *
@@ -112,7 +112,7 @@
  * @return a floating point number corresponding to the power factor (the ratio between the real power consumed,
  *         measured in W, and the apparent power provided, measured in VA)
  *
- * On failure, throws an exception or returns Y_COSPHI_INVALID.
+ * On failure, throws an exception or returns YPower.COSPHI_INVALID.
  */
 -(double) get_cosPhi
 {
@@ -150,7 +150,7 @@
  * integrating the power consumption over time,
  *         but only when positive
  *
- * On failure, throws an exception or returns Y_METER_INVALID.
+ * On failure, throws an exception or returns YPower.METER_INVALID.
  */
 -(double) get_meter
 {
@@ -177,7 +177,7 @@
  * integrating the power consumption over time,
  *         but only when positive
  *
- * On failure, throws an exception or returns Y_DELIVEREDENERGYMETER_INVALID.
+ * On failure, throws an exception or returns YPower.DELIVEREDENERGYMETER_INVALID.
  */
 -(double) get_deliveredEnergyMeter
 {
@@ -204,7 +204,7 @@
  * integrating the power consumption over time,
  *         but only when negative
  *
- * On failure, throws an exception or returns Y_RECEIVEDENERGYMETER_INVALID.
+ * On failure, throws an exception or returns YPower.RECEIVEDENERGYMETER_INVALID.
  */
 -(double) get_receivedEnergyMeter
 {
@@ -228,7 +228,7 @@
  *
  * @return an integer corresponding to the elapsed time since last energy counter reset, in seconds
  *
- * On failure, throws an exception or returns Y_METERTIMER_INVALID.
+ * On failure, throws an exception or returns YPower.METERTIMER_INVALID.
  */
 -(int) get_meterTimer
 {
@@ -363,7 +363,7 @@
 /**
  * Resets the energy counters.
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */

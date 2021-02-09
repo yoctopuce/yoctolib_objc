@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_wakeupmonitor.h 41625 2020-08-31 07:09:39Z seb $
+ *  $Id: yocto_wakeupmonitor.h 43619 2021-01-29 09:14:45Z mvuilleu $
  *
  *  Declares yFindWakeUpMonitor(), the high-level API for WakeUpMonitor functions
  *
@@ -74,7 +74,7 @@ typedef enum {
 //--- (YWakeUpMonitor class start)
 /**
  * YWakeUpMonitor Class: wake-up monitor control interface, available for instance in the
- * YoctoHub-GSM-3G-EU, the YoctoHub-GSM-3G-NA, the YoctoHub-Wireless-g or the YoctoHub-Wireless-n
+ * YoctoHub-GSM-3G-EU, the YoctoHub-GSM-3G-NA, the YoctoHub-GSM-4G or the YoctoHub-Wireless-n
  *
  * The YWakeUpMonitor class handles globally all wake-up sources, as well
  * as automated sleep mode.
@@ -110,7 +110,7 @@ typedef enum {
  *
  * @return an integer corresponding to the maximal wake up time (in seconds) before automatically going to sleep
  *
- * On failure, throws an exception or returns Y_POWERDURATION_INVALID.
+ * On failure, throws an exception or returns YWakeUpMonitor.POWERDURATION_INVALID.
  */
 -(int)     get_powerDuration;
 
@@ -124,7 +124,7 @@ typedef enum {
  * @param newval : an integer corresponding to the maximal wake up time (seconds) before automatically
  * going to sleep
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -136,7 +136,7 @@ typedef enum {
  *
  * @return an integer corresponding to the delay before the  next sleep period
  *
- * On failure, throws an exception or returns Y_SLEEPCOUNTDOWN_INVALID.
+ * On failure, throws an exception or returns YWakeUpMonitor.SLEEPCOUNTDOWN_INVALID.
  */
 -(int)     get_sleepCountdown;
 
@@ -147,7 +147,7 @@ typedef enum {
  *
  * @param newval : an integer corresponding to the delay before the next sleep period
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -159,7 +159,7 @@ typedef enum {
  *
  * @return an integer corresponding to the next scheduled wake up date/time (UNIX format)
  *
- * On failure, throws an exception or returns Y_NEXTWAKEUP_INVALID.
+ * On failure, throws an exception or returns YWakeUpMonitor.NEXTWAKEUP_INVALID.
  */
 -(s64)     get_nextWakeUp;
 
@@ -170,7 +170,7 @@ typedef enum {
  *
  * @param newval : an integer corresponding to the days of the week when a wake up must take place
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -180,11 +180,12 @@ typedef enum {
 /**
  * Returns the latest wake up reason.
  *
- * @return a value among Y_WAKEUPREASON_USBPOWER, Y_WAKEUPREASON_EXTPOWER, Y_WAKEUPREASON_ENDOFSLEEP,
- * Y_WAKEUPREASON_EXTSIG1, Y_WAKEUPREASON_SCHEDULE1 and Y_WAKEUPREASON_SCHEDULE2 corresponding to the
- * latest wake up reason
+ * @return a value among YWakeUpMonitor.WAKEUPREASON_USBPOWER, YWakeUpMonitor.WAKEUPREASON_EXTPOWER,
+ * YWakeUpMonitor.WAKEUPREASON_ENDOFSLEEP, YWakeUpMonitor.WAKEUPREASON_EXTSIG1,
+ * YWakeUpMonitor.WAKEUPREASON_SCHEDULE1 and YWakeUpMonitor.WAKEUPREASON_SCHEDULE2 corresponding to
+ * the latest wake up reason
  *
- * On failure, throws an exception or returns Y_WAKEUPREASON_INVALID.
+ * On failure, throws an exception or returns YWakeUpMonitor.WAKEUPREASON_INVALID.
  */
 -(Y_WAKEUPREASON_enum)     get_wakeUpReason;
 
@@ -193,9 +194,10 @@ typedef enum {
 /**
  * Returns  the current state of the monitor.
  *
- * @return either Y_WAKEUPSTATE_SLEEPING or Y_WAKEUPSTATE_AWAKE, according to  the current state of the monitor
+ * @return either YWakeUpMonitor.WAKEUPSTATE_SLEEPING or YWakeUpMonitor.WAKEUPSTATE_AWAKE, according
+ * to  the current state of the monitor
  *
- * On failure, throws an exception or returns Y_WAKEUPSTATE_INVALID.
+ * On failure, throws an exception or returns YWakeUpMonitor.WAKEUPSTATE_INVALID.
  */
 -(Y_WAKEUPSTATE_enum)     get_wakeUpState;
 
@@ -264,7 +266,7 @@ typedef enum {
  *
  * @param secBeforeSleep : number of seconds before going into sleep mode,
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -278,7 +280,7 @@ typedef enum {
  * @param secUntilWakeUp : number of seconds before next wake up
  * @param secBeforeSleep : number of seconds before going into sleep mode
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -292,7 +294,7 @@ typedef enum {
  * @param wakeUpTime : wake-up datetime (UNIX format)
  * @param secBeforeSleep : number of seconds before going into sleep mode
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -301,7 +303,7 @@ typedef enum {
 /**
  * Resets the sleep countdown.
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *         On failure, throws an exception or returns a negative error code.
  */
 -(int)     resetSleepCountDown;

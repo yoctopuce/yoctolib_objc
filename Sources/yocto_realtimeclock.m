@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_realtimeclock.m 41625 2020-08-31 07:09:39Z seb $
+ *  $Id: yocto_realtimeclock.m 43580 2021-01-26 17:46:01Z mvuilleu $
  *
  *  Implements the high-level API for RealTimeClock functions
  *
@@ -108,7 +108,7 @@
  * @return an integer corresponding to the current time in Unix format (number of elapsed seconds
  * since Jan 1st, 1970)
  *
- * On failure, throws an exception or returns Y_UNIXTIME_INVALID.
+ * On failure, throws an exception or returns YRealTimeClock.UNIXTIME_INVALID.
  */
 -(s64) get_unixTime
 {
@@ -133,7 +133,7 @@
  *
  * @param newval : an integer corresponding to the current time
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -152,7 +152,7 @@
  *
  * @return a string corresponding to the current time in the form "YYYY/MM/DD hh:mm:ss"
  *
- * On failure, throws an exception or returns Y_DATETIME_INVALID.
+ * On failure, throws an exception or returns YRealTimeClock.DATETIME_INVALID.
  */
 -(NSString*) get_dateTime
 {
@@ -176,7 +176,7 @@
  *
  * @return an integer corresponding to the number of seconds between current time and UTC time (time zone)
  *
- * On failure, throws an exception or returns Y_UTCOFFSET_INVALID.
+ * On failure, throws an exception or returns YRealTimeClock.UTCOFFSET_INVALID.
  */
 -(int) get_utcOffset
 {
@@ -204,7 +204,7 @@
  *
  * @param newval : an integer corresponding to the number of seconds between current time and UTC time (time zone)
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -221,10 +221,10 @@
 /**
  * Returns true if the clock has been set, and false otherwise.
  *
- * @return either Y_TIMESET_FALSE or Y_TIMESET_TRUE, according to true if the clock has been set, and
- * false otherwise
+ * @return either YRealTimeClock.TIMESET_FALSE or YRealTimeClock.TIMESET_TRUE, according to true if
+ * the clock has been set, and false otherwise
  *
- * On failure, throws an exception or returns Y_TIMESET_INVALID.
+ * On failure, throws an exception or returns YRealTimeClock.TIMESET_INVALID.
  */
 -(Y_TIMESET_enum) get_timeSet
 {

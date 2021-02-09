@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_hubport.m 41625 2020-08-31 07:09:39Z seb $
+ *  $Id: yocto_hubport.m 43580 2021-01-26 17:46:01Z mvuilleu $
  *
  *  Implements the high-level API for HubPort functions
  *
@@ -95,10 +95,10 @@
 /**
  * Returns true if the YoctoHub port is powered, false otherwise.
  *
- * @return either Y_ENABLED_FALSE or Y_ENABLED_TRUE, according to true if the YoctoHub port is
- * powered, false otherwise
+ * @return either YHubPort.ENABLED_FALSE or YHubPort.ENABLED_TRUE, according to true if the YoctoHub
+ * port is powered, false otherwise
  *
- * On failure, throws an exception or returns Y_ENABLED_INVALID.
+ * On failure, throws an exception or returns YHubPort.ENABLED_INVALID.
  */
 -(Y_ENABLED_enum) get_enabled
 {
@@ -122,9 +122,10 @@
  * Changes the activation of the YoctoHub port. If the port is enabled, the
  * connected module is powered. Otherwise, port power is shut down.
  *
- * @param newval : either Y_ENABLED_FALSE or Y_ENABLED_TRUE, according to the activation of the YoctoHub port
+ * @param newval : either YHubPort.ENABLED_FALSE or YHubPort.ENABLED_TRUE, according to the activation
+ * of the YoctoHub port
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -141,10 +142,10 @@
 /**
  * Returns the current state of the YoctoHub port.
  *
- * @return a value among Y_PORTSTATE_OFF, Y_PORTSTATE_OVRLD, Y_PORTSTATE_ON, Y_PORTSTATE_RUN and
- * Y_PORTSTATE_PROG corresponding to the current state of the YoctoHub port
+ * @return a value among YHubPort.PORTSTATE_OFF, YHubPort.PORTSTATE_OVRLD, YHubPort.PORTSTATE_ON,
+ * YHubPort.PORTSTATE_RUN and YHubPort.PORTSTATE_PROG corresponding to the current state of the YoctoHub port
  *
- * On failure, throws an exception or returns Y_PORTSTATE_INVALID.
+ * On failure, throws an exception or returns YHubPort.PORTSTATE_INVALID.
  */
 -(Y_PORTSTATE_enum) get_portState
 {
@@ -170,7 +171,7 @@
  *
  * @return an integer corresponding to the current baud rate used by this YoctoHub port, in kbps
  *
- * On failure, throws an exception or returns Y_BAUDRATE_INVALID.
+ * On failure, throws an exception or returns YHubPort.BAUDRATE_INVALID.
  */
 -(int) get_baudRate
 {

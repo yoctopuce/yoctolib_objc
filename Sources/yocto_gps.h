@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_gps.h 41625 2020-08-31 07:09:39Z seb $
+ *  $Id: yocto_gps.h 43580 2021-01-26 17:46:01Z mvuilleu $
  *
  *  Declares yFindGps(), the high-level API for Gps functions
  *
@@ -139,10 +139,10 @@ typedef enum {
 /**
  * Returns TRUE if the receiver has found enough satellites to work.
  *
- * @return either Y_ISFIXED_FALSE or Y_ISFIXED_TRUE, according to TRUE if the receiver has found
+ * @return either YGps.ISFIXED_FALSE or YGps.ISFIXED_TRUE, according to TRUE if the receiver has found
  * enough satellites to work
  *
- * On failure, throws an exception or returns Y_ISFIXED_INVALID.
+ * On failure, throws an exception or returns YGps.ISFIXED_INVALID.
  */
 -(Y_ISFIXED_enum)     get_isFixed;
 
@@ -153,7 +153,7 @@ typedef enum {
  *
  * @return an integer corresponding to the total count of satellites used to compute GPS position
  *
- * On failure, throws an exception or returns Y_SATCOUNT_INVALID.
+ * On failure, throws an exception or returns YGps.SATCOUNT_INVALID.
  */
 -(s64)     get_satCount;
 
@@ -167,7 +167,7 @@ typedef enum {
  * @return an integer corresponding to the count of visible satellites per constellation encoded
  *         on a 32 bit integer: bits 0.
  *
- * On failure, throws an exception or returns Y_SATPERCONST_INVALID.
+ * On failure, throws an exception or returns YGps.SATPERCONST_INVALID.
  */
 -(s64)     get_satPerConst;
 
@@ -179,7 +179,7 @@ typedef enum {
  *
  * @return a floating point number corresponding to effective GPS data refresh frequency
  *
- * On failure, throws an exception or returns Y_GPSREFRESHRATE_INVALID.
+ * On failure, throws an exception or returns YGps.GPSREFRESHRATE_INVALID.
  */
 -(double)     get_gpsRefreshRate;
 
@@ -188,10 +188,10 @@ typedef enum {
 /**
  * Returns the representation system used for positioning data.
  *
- * @return a value among Y_COORDSYSTEM_GPS_DMS, Y_COORDSYSTEM_GPS_DM and Y_COORDSYSTEM_GPS_D
+ * @return a value among YGps.COORDSYSTEM_GPS_DMS, YGps.COORDSYSTEM_GPS_DM and YGps.COORDSYSTEM_GPS_D
  * corresponding to the representation system used for positioning data
  *
- * On failure, throws an exception or returns Y_COORDSYSTEM_INVALID.
+ * On failure, throws an exception or returns YGps.COORDSYSTEM_INVALID.
  */
 -(Y_COORDSYSTEM_enum)     get_coordSystem;
 
@@ -202,10 +202,10 @@ typedef enum {
  * Remember to call the saveToFlash() method of the module if the
  * modification must be kept.
  *
- * @param newval : a value among Y_COORDSYSTEM_GPS_DMS, Y_COORDSYSTEM_GPS_DM and Y_COORDSYSTEM_GPS_D
- * corresponding to the representation system used for positioning data
+ * @param newval : a value among YGps.COORDSYSTEM_GPS_DMS, YGps.COORDSYSTEM_GPS_DM and
+ * YGps.COORDSYSTEM_GPS_D corresponding to the representation system used for positioning data
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -216,12 +216,12 @@ typedef enum {
  * Returns the the satellites constellation used to compute
  * positioning data.
  *
- * @return a value among Y_CONSTELLATION_GNSS, Y_CONSTELLATION_GPS, Y_CONSTELLATION_GLONASS,
- * Y_CONSTELLATION_GALILEO, Y_CONSTELLATION_GPS_GLONASS, Y_CONSTELLATION_GPS_GALILEO and
- * Y_CONSTELLATION_GLONASS_GALILEO corresponding to the the satellites constellation used to compute
+ * @return a value among YGps.CONSTELLATION_GNSS, YGps.CONSTELLATION_GPS, YGps.CONSTELLATION_GLONASS,
+ * YGps.CONSTELLATION_GALILEO, YGps.CONSTELLATION_GPS_GLONASS, YGps.CONSTELLATION_GPS_GALILEO and
+ * YGps.CONSTELLATION_GLONASS_GALILEO corresponding to the the satellites constellation used to compute
  *         positioning data
  *
- * On failure, throws an exception or returns Y_CONSTELLATION_INVALID.
+ * On failure, throws an exception or returns YGps.CONSTELLATION_INVALID.
  */
 -(Y_CONSTELLATION_enum)     get_constellation;
 
@@ -232,12 +232,13 @@ typedef enum {
  * positioning data. Possible  constellations are GNSS ( = all supported constellations),
  * GPS, Glonass, Galileo , and the 3 possible pairs. This setting has  no effect on Yocto-GPS (V1).
  *
- * @param newval : a value among Y_CONSTELLATION_GNSS, Y_CONSTELLATION_GPS, Y_CONSTELLATION_GLONASS,
- * Y_CONSTELLATION_GALILEO, Y_CONSTELLATION_GPS_GLONASS, Y_CONSTELLATION_GPS_GALILEO and
- * Y_CONSTELLATION_GLONASS_GALILEO corresponding to the satellites constellation used to compute
+ * @param newval : a value among YGps.CONSTELLATION_GNSS, YGps.CONSTELLATION_GPS,
+ * YGps.CONSTELLATION_GLONASS, YGps.CONSTELLATION_GALILEO, YGps.CONSTELLATION_GPS_GLONASS,
+ * YGps.CONSTELLATION_GPS_GALILEO and YGps.CONSTELLATION_GLONASS_GALILEO corresponding to the
+ * satellites constellation used to compute
  *         positioning data
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -249,7 +250,7 @@ typedef enum {
  *
  * @return a string corresponding to the current latitude
  *
- * On failure, throws an exception or returns Y_LATITUDE_INVALID.
+ * On failure, throws an exception or returns YGps.LATITUDE_INVALID.
  */
 -(NSString*)     get_latitude;
 
@@ -260,7 +261,7 @@ typedef enum {
  *
  * @return a string corresponding to the current longitude
  *
- * On failure, throws an exception or returns Y_LONGITUDE_INVALID.
+ * On failure, throws an exception or returns YGps.LONGITUDE_INVALID.
  */
 -(NSString*)     get_longitude;
 
@@ -273,7 +274,7 @@ typedef enum {
  * @return a floating point number corresponding to the current horizontal dilution of precision,
  *         the smaller that number is, the better
  *
- * On failure, throws an exception or returns Y_DILUTION_INVALID.
+ * On failure, throws an exception or returns YGps.DILUTION_INVALID.
  */
 -(double)     get_dilution;
 
@@ -285,7 +286,7 @@ typedef enum {
  *
  * @return a floating point number corresponding to the current altitude
  *
- * On failure, throws an exception or returns Y_ALTITUDE_INVALID.
+ * On failure, throws an exception or returns YGps.ALTITUDE_INVALID.
  */
 -(double)     get_altitude;
 
@@ -296,7 +297,7 @@ typedef enum {
  *
  * @return a floating point number corresponding to the current ground speed in Km/h
  *
- * On failure, throws an exception or returns Y_GROUNDSPEED_INVALID.
+ * On failure, throws an exception or returns YGps.GROUNDSPEED_INVALID.
  */
 -(double)     get_groundSpeed;
 
@@ -309,7 +310,7 @@ typedef enum {
  * @return a floating point number corresponding to the current move bearing in degrees, zero
  *         is the true (geographic) north
  *
- * On failure, throws an exception or returns Y_DIRECTION_INVALID.
+ * On failure, throws an exception or returns YGps.DIRECTION_INVALID.
  */
 -(double)     get_direction;
 
@@ -322,7 +323,7 @@ typedef enum {
  * @return an integer corresponding to the current time in Unix format (number of
  *         seconds elapsed since Jan 1st, 1970)
  *
- * On failure, throws an exception or returns Y_UNIXTIME_INVALID.
+ * On failure, throws an exception or returns YGps.UNIXTIME_INVALID.
  */
 -(s64)     get_unixTime;
 
@@ -333,7 +334,7 @@ typedef enum {
  *
  * @return a string corresponding to the current time in the form "YYYY/MM/DD hh:mm:ss"
  *
- * On failure, throws an exception or returns Y_DATETIME_INVALID.
+ * On failure, throws an exception or returns YGps.DATETIME_INVALID.
  */
 -(NSString*)     get_dateTime;
 
@@ -344,7 +345,7 @@ typedef enum {
  *
  * @return an integer corresponding to the number of seconds between current time and UTC time (time zone)
  *
- * On failure, throws an exception or returns Y_UTCOFFSET_INVALID.
+ * On failure, throws an exception or returns YGps.UTCOFFSET_INVALID.
  */
 -(int)     get_utcOffset;
 
@@ -359,7 +360,7 @@ typedef enum {
  *
  * @param newval : an integer corresponding to the number of seconds between current time and UTC time (time zone)
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */

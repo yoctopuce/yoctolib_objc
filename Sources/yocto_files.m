@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_files.m 41625 2020-08-31 07:09:39Z seb $
+ * $Id: yocto_files.m 43619 2021-01-29 09:14:45Z mvuilleu $
  *
  * Implements yFindFiles(), the high-level API for Files functions
  *
@@ -192,7 +192,7 @@
  *
  * @return an integer corresponding to the number of files currently loaded in the filesystem
  *
- * On failure, throws an exception or returns Y_FILESCOUNT_INVALID.
+ * On failure, throws an exception or returns YFiles.FILESCOUNT_INVALID.
  */
 -(int) get_filesCount
 {
@@ -216,7 +216,7 @@
  *
  * @return an integer corresponding to the free space for uploading new files to the filesystem, in bytes
  *
- * On failure, throws an exception or returns Y_FREESPACE_INVALID.
+ * On failure, throws an exception or returns YFiles.FREESPACE_INVALID.
  */
 -(int) get_freeSpace
 {
@@ -259,7 +259,7 @@
  * call registerHub() at application initialization time.
  *
  * @param func : a string that uniquely characterizes the filesystem, for instance
- *         YBUZZER2.files.
+ *         YRGBLED2.files.
  *
  * @return a YFiles object allowing you to drive the filesystem.
  */
@@ -326,7 +326,7 @@
  * Reinitialize the filesystem to its clean, unfragmented, empty state.
  * All files previously uploaded are permanently lost.
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -412,7 +412,7 @@
  * @param pathname : path and name of the new file to create
  * @param content : binary buffer with the content to set
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -431,7 +431,7 @@
  *
  * @param pathname : path and name of the file to remove.
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_gyro.h 42951 2020-12-14 09:43:29Z seb $
+ * $Id: yocto_gyro.h 43580 2021-01-26 17:46:01Z mvuilleu $
  *
  * Declares yFindGyro(), the high-level API for Gyro functions
  *
@@ -276,7 +276,7 @@ typedef void(*YAnglesCallback)(YGyro *yGyro, double roll, double pitch, double h
  *
  * @return an integer corresponding to the measure update frequency, measured in Hz
  *
- * On failure, throws an exception or returns Y_BANDWIDTH_INVALID.
+ * On failure, throws an exception or returns YGyro.BANDWIDTH_INVALID.
  */
 -(int)     get_bandwidth;
 
@@ -290,7 +290,7 @@ typedef void(*YAnglesCallback)(YGyro *yGyro, double roll, double pitch, double h
  *
  * @param newval : an integer corresponding to the measure update frequency, measured in Hz
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -303,7 +303,7 @@ typedef void(*YAnglesCallback)(YGyro *yGyro, double roll, double pitch, double h
  * @return a floating point number corresponding to the angular velocity around the X axis of the
  * device, as a floating point number
  *
- * On failure, throws an exception or returns Y_XVALUE_INVALID.
+ * On failure, throws an exception or returns YGyro.XVALUE_INVALID.
  */
 -(double)     get_xValue;
 
@@ -315,7 +315,7 @@ typedef void(*YAnglesCallback)(YGyro *yGyro, double roll, double pitch, double h
  * @return a floating point number corresponding to the angular velocity around the Y axis of the
  * device, as a floating point number
  *
- * On failure, throws an exception or returns Y_YVALUE_INVALID.
+ * On failure, throws an exception or returns YGyro.YVALUE_INVALID.
  */
 -(double)     get_yValue;
 
@@ -327,7 +327,7 @@ typedef void(*YAnglesCallback)(YGyro *yGyro, double roll, double pitch, double h
  * @return a floating point number corresponding to the angular velocity around the Z axis of the
  * device, as a floating point number
  *
- * On failure, throws an exception or returns Y_ZVALUE_INVALID.
+ * On failure, throws an exception or returns YGyro.ZVALUE_INVALID.
  */
 -(double)     get_zValue;
 

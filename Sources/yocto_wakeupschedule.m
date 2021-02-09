@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_wakeupschedule.m 41625 2020-08-31 07:09:39Z seb $
+ *  $Id: yocto_wakeupschedule.m 43619 2021-01-29 09:14:45Z mvuilleu $
  *
  *  Implements the high-level API for WakeUpSchedule functions
  *
@@ -121,7 +121,7 @@
  *
  * @return an integer corresponding to the minutes in the 00-29 interval of each hour scheduled for wake up
  *
- * On failure, throws an exception or returns Y_MINUTESA_INVALID.
+ * On failure, throws an exception or returns YWakeUpSchedule.MINUTESA_INVALID.
  */
 -(int) get_minutesA
 {
@@ -148,7 +148,7 @@
  *
  * @param newval : an integer corresponding to the minutes in the 00-29 interval when a wake up must take place
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -167,7 +167,7 @@
  *
  * @return an integer corresponding to the minutes in the 30-59 interval of each hour scheduled for wake up
  *
- * On failure, throws an exception or returns Y_MINUTESB_INVALID.
+ * On failure, throws an exception or returns YWakeUpSchedule.MINUTESB_INVALID.
  */
 -(int) get_minutesB
 {
@@ -194,7 +194,7 @@
  *
  * @param newval : an integer corresponding to the minutes in the 30-59 interval when a wake up must take place
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -213,7 +213,7 @@
  *
  * @return an integer corresponding to the hours scheduled for wake up
  *
- * On failure, throws an exception or returns Y_HOURS_INVALID.
+ * On failure, throws an exception or returns YWakeUpSchedule.HOURS_INVALID.
  */
 -(int) get_hours
 {
@@ -240,7 +240,7 @@
  *
  * @param newval : an integer corresponding to the hours when a wake up must take place
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -259,7 +259,7 @@
  *
  * @return an integer corresponding to the days of the week scheduled for wake up
  *
- * On failure, throws an exception or returns Y_WEEKDAYS_INVALID.
+ * On failure, throws an exception or returns YWakeUpSchedule.WEEKDAYS_INVALID.
  */
 -(int) get_weekDays
 {
@@ -286,7 +286,7 @@
  *
  * @param newval : an integer corresponding to the days of the week when a wake up must take place
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -305,7 +305,7 @@
  *
  * @return an integer corresponding to the days of the month scheduled for wake up
  *
- * On failure, throws an exception or returns Y_MONTHDAYS_INVALID.
+ * On failure, throws an exception or returns YWakeUpSchedule.MONTHDAYS_INVALID.
  */
 -(int) get_monthDays
 {
@@ -332,7 +332,7 @@
  *
  * @param newval : an integer corresponding to the days of the month when a wake up must take place
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -351,7 +351,7 @@
  *
  * @return an integer corresponding to the months scheduled for wake up
  *
- * On failure, throws an exception or returns Y_MONTHS_INVALID.
+ * On failure, throws an exception or returns YWakeUpSchedule.MONTHS_INVALID.
  */
 -(int) get_months
 {
@@ -378,7 +378,7 @@
  *
  * @param newval : an integer corresponding to the months when a wake up must take place
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -397,7 +397,7 @@
  *
  * @return an integer corresponding to the date/time (seconds) of the next wake up occurrence
  *
- * On failure, throws an exception or returns Y_NEXTOCCURENCE_INVALID.
+ * On failure, throws an exception or returns YWakeUpSchedule.NEXTOCCURENCE_INVALID.
  */
 -(s64) get_nextOccurence
 {
@@ -513,7 +513,7 @@
  *
  * @param bitmap : Minutes 00-59 of each hour scheduled for wake up.
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */

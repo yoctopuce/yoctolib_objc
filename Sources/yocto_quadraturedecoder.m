@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_quadraturedecoder.m 41625 2020-08-31 07:09:39Z seb $
+ *  $Id: yocto_quadraturedecoder.m 43580 2021-01-26 17:46:01Z mvuilleu $
  *
  *  Implements the high-level API for QuadratureDecoder functions
  *
@@ -94,7 +94,7 @@
  *
  * @param newval : a floating point number corresponding to the current expected position of the quadrature decoder
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -113,7 +113,7 @@
  *
  * @return a floating point number corresponding to the increments frequency, in Hz
  *
- * On failure, throws an exception or returns Y_SPEED_INVALID.
+ * On failure, throws an exception or returns YQuadratureDecoder.SPEED_INVALID.
  */
 -(double) get_speed
 {
@@ -135,10 +135,10 @@
 /**
  * Returns the current activation state of the quadrature decoder.
  *
- * @return either Y_DECODING_OFF or Y_DECODING_ON, according to the current activation state of the
- * quadrature decoder
+ * @return either YQuadratureDecoder.DECODING_OFF or YQuadratureDecoder.DECODING_ON, according to the
+ * current activation state of the quadrature decoder
  *
- * On failure, throws an exception or returns Y_DECODING_INVALID.
+ * On failure, throws an exception or returns YQuadratureDecoder.DECODING_INVALID.
  */
 -(Y_DECODING_enum) get_decoding
 {
@@ -163,10 +163,10 @@
  * Remember to call the saveToFlash()
  * method of the module if the modification must be kept.
  *
- * @param newval : either Y_DECODING_OFF or Y_DECODING_ON, according to the activation state of the
- * quadrature decoder
+ * @param newval : either YQuadratureDecoder.DECODING_OFF or YQuadratureDecoder.DECODING_ON, according
+ * to the activation state of the quadrature decoder
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */

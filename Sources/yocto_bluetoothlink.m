@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_bluetoothlink.m 41625 2020-08-31 07:09:39Z seb $
+ *  $Id: yocto_bluetoothlink.m 43619 2021-01-29 09:14:45Z mvuilleu $
  *
  *  Implements the high-level API for BluetoothLink functions
  *
@@ -160,7 +160,7 @@
  * @return a string corresponding to the MAC-48 address of the bluetooth interface, which is unique on
  * the bluetooth network
  *
- * On failure, throws an exception or returns Y_OWNADDRESS_INVALID.
+ * On failure, throws an exception or returns YBluetoothLink.OWNADDRESS_INVALID.
  */
 -(NSString*) get_ownAddress
 {
@@ -188,7 +188,7 @@
  *         the SIM card, or an empty string if none has been configured or if the code provided
  *         was rejected by the SIM card
  *
- * On failure, throws an exception or returns Y_PAIRINGPIN_INVALID.
+ * On failure, throws an exception or returns YBluetoothLink.PAIRINGPIN_INVALID.
  */
 -(NSString*) get_pairingPin
 {
@@ -215,7 +215,7 @@
  *
  * @param newval : a string corresponding to the PIN code used by the module for bluetooth pairing
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -234,7 +234,7 @@
  *
  * @return a string corresponding to the MAC-48 address of the remote device to connect to
  *
- * On failure, throws an exception or returns Y_REMOTEADDRESS_INVALID.
+ * On failure, throws an exception or returns YBluetoothLink.REMOTEADDRESS_INVALID.
  */
 -(NSString*) get_remoteAddress
 {
@@ -261,7 +261,7 @@
  *
  * @param newval : a string corresponding to the MAC-48 address defining which remote device to connect to
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -280,7 +280,7 @@
  *
  * @return a string corresponding to the bluetooth name the remote device, if found on the bluetooth network
  *
- * On failure, throws an exception or returns Y_REMOTENAME_INVALID.
+ * On failure, throws an exception or returns YBluetoothLink.REMOTENAME_INVALID.
  */
 -(NSString*) get_remoteName
 {
@@ -302,9 +302,10 @@
 /**
  * Returns the state of the mute function.
  *
- * @return either Y_MUTE_FALSE or Y_MUTE_TRUE, according to the state of the mute function
+ * @return either YBluetoothLink.MUTE_FALSE or YBluetoothLink.MUTE_TRUE, according to the state of the
+ * mute function
  *
- * On failure, throws an exception or returns Y_MUTE_INVALID.
+ * On failure, throws an exception or returns YBluetoothLink.MUTE_INVALID.
  */
 -(Y_MUTE_enum) get_mute
 {
@@ -328,9 +329,10 @@
  * Changes the state of the mute function. Remember to call the matching module
  * saveToFlash() method to save the setting permanently.
  *
- * @param newval : either Y_MUTE_FALSE or Y_MUTE_TRUE, according to the state of the mute function
+ * @param newval : either YBluetoothLink.MUTE_FALSE or YBluetoothLink.MUTE_TRUE, according to the
+ * state of the mute function
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -349,7 +351,7 @@
  *
  * @return an integer corresponding to the audio pre-amplifier volume, in per cents
  *
- * On failure, throws an exception or returns Y_PREAMPLIFIER_INVALID.
+ * On failure, throws an exception or returns YBluetoothLink.PREAMPLIFIER_INVALID.
  */
 -(int) get_preAmplifier
 {
@@ -376,7 +378,7 @@
  *
  * @param newval : an integer corresponding to the audio pre-amplifier volume, in per cents
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -395,7 +397,7 @@
  *
  * @return an integer corresponding to the connected headset volume, in per cents
  *
- * On failure, throws an exception or returns Y_VOLUME_INVALID.
+ * On failure, throws an exception or returns YBluetoothLink.VOLUME_INVALID.
  */
 -(int) get_volume
 {
@@ -420,7 +422,7 @@
  *
  * @param newval : an integer corresponding to the connected headset volume, in per cents
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -437,10 +439,11 @@
 /**
  * Returns the bluetooth link state.
  *
- * @return a value among Y_LINKSTATE_DOWN, Y_LINKSTATE_FREE, Y_LINKSTATE_SEARCH, Y_LINKSTATE_EXISTS,
- * Y_LINKSTATE_LINKED and Y_LINKSTATE_PLAY corresponding to the bluetooth link state
+ * @return a value among YBluetoothLink.LINKSTATE_DOWN, YBluetoothLink.LINKSTATE_FREE,
+ * YBluetoothLink.LINKSTATE_SEARCH, YBluetoothLink.LINKSTATE_EXISTS, YBluetoothLink.LINKSTATE_LINKED
+ * and YBluetoothLink.LINKSTATE_PLAY corresponding to the bluetooth link state
  *
- * On failure, throws an exception or returns Y_LINKSTATE_INVALID.
+ * On failure, throws an exception or returns YBluetoothLink.LINKSTATE_INVALID.
  */
 -(Y_LINKSTATE_enum) get_linkState
 {
@@ -465,7 +468,7 @@
  * @return an integer corresponding to the bluetooth receiver signal strength, in pourcents, or 0 if
  * no connection is established
  *
- * On failure, throws an exception or returns Y_LINKQUALITY_INVALID.
+ * On failure, throws an exception or returns YBluetoothLink.LINKQUALITY_INVALID.
  */
 -(int) get_linkQuality
 {
@@ -594,7 +597,7 @@
 /**
  * Attempt to connect to the previously selected remote device.
  *
- * @return YAPI_SUCCESS when the call succeeds.
+ * @return YAPI.SUCCESS when the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -606,7 +609,7 @@
 /**
  * Disconnect from the previously selected remote device.
  *
- * @return YAPI_SUCCESS when the call succeeds.
+ * @return YAPI.SUCCESS when the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */

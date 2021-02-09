@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_pwminput.m 41625 2020-08-31 07:09:39Z seb $
+ *  $Id: yocto_pwminput.m 43619 2021-01-29 09:14:45Z mvuilleu $
  *
  *  Implements the high-level API for PwmInput functions
  *
@@ -145,7 +145,7 @@
  *
  * @param newval : a string corresponding to the measuring unit for the measured quantity
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -164,7 +164,7 @@
  *
  * @return a floating point number corresponding to the PWM duty cycle, in per cents
  *
- * On failure, throws an exception or returns Y_DUTYCYCLE_INVALID.
+ * On failure, throws an exception or returns YPwmInput.DUTYCYCLE_INVALID.
  */
 -(double) get_dutyCycle
 {
@@ -189,7 +189,7 @@
  * @return a floating point number corresponding to the PWM pulse length in milliseconds, as a
  * floating point number
  *
- * On failure, throws an exception or returns Y_PULSEDURATION_INVALID.
+ * On failure, throws an exception or returns YPwmInput.PULSEDURATION_INVALID.
  */
 -(double) get_pulseDuration
 {
@@ -213,7 +213,7 @@
  *
  * @return a floating point number corresponding to the PWM frequency in Hz
  *
- * On failure, throws an exception or returns Y_FREQUENCY_INVALID.
+ * On failure, throws an exception or returns YPwmInput.FREQUENCY_INVALID.
  */
 -(double) get_frequency
 {
@@ -237,7 +237,7 @@
  *
  * @return a floating point number corresponding to the PWM period in milliseconds
  *
- * On failure, throws an exception or returns Y_PERIOD_INVALID.
+ * On failure, throws an exception or returns YPwmInput.PERIOD_INVALID.
  */
 -(double) get_period
 {
@@ -263,7 +263,7 @@
  *
  * @return an integer corresponding to the pulse counter value
  *
- * On failure, throws an exception or returns Y_PULSECOUNTER_INVALID.
+ * On failure, throws an exception or returns YPwmInput.PULSECOUNTER_INVALID.
  */
 -(s64) get_pulseCounter
 {
@@ -298,7 +298,7 @@
  *
  * @return an integer corresponding to the timer of the pulses counter (ms)
  *
- * On failure, throws an exception or returns Y_PULSETIMER_INVALID.
+ * On failure, throws an exception or returns YPwmInput.PULSETIMER_INVALID.
  */
 -(s64) get_pulseTimer
 {
@@ -321,14 +321,15 @@
  * Returns the parameter (frequency/duty cycle, pulse width, edges count) returned by the
  * get_currentValue function and callbacks. Attention
  *
- * @return a value among Y_PWMREPORTMODE_PWM_DUTYCYCLE, Y_PWMREPORTMODE_PWM_FREQUENCY,
- * Y_PWMREPORTMODE_PWM_PULSEDURATION, Y_PWMREPORTMODE_PWM_EDGECOUNT, Y_PWMREPORTMODE_PWM_PULSECOUNT,
- * Y_PWMREPORTMODE_PWM_CPS, Y_PWMREPORTMODE_PWM_CPM, Y_PWMREPORTMODE_PWM_STATE,
- * Y_PWMREPORTMODE_PWM_FREQ_CPS, Y_PWMREPORTMODE_PWM_FREQ_CPM and Y_PWMREPORTMODE_PWM_PERIODCOUNT
- * corresponding to the parameter (frequency/duty cycle, pulse width, edges count) returned by the
- * get_currentValue function and callbacks
+ * @return a value among YPwmInput.PWMREPORTMODE_PWM_DUTYCYCLE, YPwmInput.PWMREPORTMODE_PWM_FREQUENCY,
+ * YPwmInput.PWMREPORTMODE_PWM_PULSEDURATION, YPwmInput.PWMREPORTMODE_PWM_EDGECOUNT,
+ * YPwmInput.PWMREPORTMODE_PWM_PULSECOUNT, YPwmInput.PWMREPORTMODE_PWM_CPS,
+ * YPwmInput.PWMREPORTMODE_PWM_CPM, YPwmInput.PWMREPORTMODE_PWM_STATE,
+ * YPwmInput.PWMREPORTMODE_PWM_FREQ_CPS, YPwmInput.PWMREPORTMODE_PWM_FREQ_CPM and
+ * YPwmInput.PWMREPORTMODE_PWM_PERIODCOUNT corresponding to the parameter (frequency/duty cycle, pulse
+ * width, edges count) returned by the get_currentValue function and callbacks
  *
- * On failure, throws an exception or returns Y_PWMREPORTMODE_INVALID.
+ * On failure, throws an exception or returns YPwmInput.PWMREPORTMODE_INVALID.
  */
 -(Y_PWMREPORTMODE_enum) get_pwmReportMode
 {
@@ -355,14 +356,16 @@
  * get_pulseCounter().
  * Remember to call the saveToFlash() method of the module if the modification must be kept.
  *
- * @param newval : a value among Y_PWMREPORTMODE_PWM_DUTYCYCLE, Y_PWMREPORTMODE_PWM_FREQUENCY,
- * Y_PWMREPORTMODE_PWM_PULSEDURATION, Y_PWMREPORTMODE_PWM_EDGECOUNT, Y_PWMREPORTMODE_PWM_PULSECOUNT,
- * Y_PWMREPORTMODE_PWM_CPS, Y_PWMREPORTMODE_PWM_CPM, Y_PWMREPORTMODE_PWM_STATE,
- * Y_PWMREPORTMODE_PWM_FREQ_CPS, Y_PWMREPORTMODE_PWM_FREQ_CPM and Y_PWMREPORTMODE_PWM_PERIODCOUNT
- * corresponding to the  parameter  type (frequency/duty cycle, pulse width, or edge count) returned
- * by the get_currentValue function and callbacks
+ * @param newval : a value among YPwmInput.PWMREPORTMODE_PWM_DUTYCYCLE,
+ * YPwmInput.PWMREPORTMODE_PWM_FREQUENCY, YPwmInput.PWMREPORTMODE_PWM_PULSEDURATION,
+ * YPwmInput.PWMREPORTMODE_PWM_EDGECOUNT, YPwmInput.PWMREPORTMODE_PWM_PULSECOUNT,
+ * YPwmInput.PWMREPORTMODE_PWM_CPS, YPwmInput.PWMREPORTMODE_PWM_CPM,
+ * YPwmInput.PWMREPORTMODE_PWM_STATE, YPwmInput.PWMREPORTMODE_PWM_FREQ_CPS,
+ * YPwmInput.PWMREPORTMODE_PWM_FREQ_CPM and YPwmInput.PWMREPORTMODE_PWM_PERIODCOUNT corresponding to
+ * the  parameter  type (frequency/duty cycle, pulse width, or edge count) returned by the
+ * get_currentValue function and callbacks
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -381,7 +384,7 @@
  *
  * @return an integer corresponding to the shortest expected pulse duration, in ms
  *
- * On failure, throws an exception or returns Y_DEBOUNCEPERIOD_INVALID.
+ * On failure, throws an exception or returns YPwmInput.DEBOUNCEPERIOD_INVALID.
  */
 -(int) get_debouncePeriod
 {
@@ -407,7 +410,7 @@
  *
  * @param newval : an integer corresponding to the shortest expected pulse duration, in ms
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -426,7 +429,7 @@
  *
  * @return an integer corresponding to the input signal sampling rate, in kHz
  *
- * On failure, throws an exception or returns Y_BANDWIDTH_INVALID.
+ * On failure, throws an exception or returns YPwmInput.BANDWIDTH_INVALID.
  */
 -(int) get_bandwidth
 {
@@ -455,7 +458,7 @@
  *
  * @param newval : an integer corresponding to the input signal sampling rate, measured in kHz
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -475,7 +478,7 @@
  *
  * @return an integer corresponding to the number of edges detected per preiod
  *
- * On failure, throws an exception or returns Y_EDGESPERPERIOD_INVALID.
+ * On failure, throws an exception or returns YPwmInput.EDGESPERPERIOD_INVALID.
  */
 -(int) get_edgesPerPeriod
 {
@@ -610,7 +613,7 @@
 /**
  * Returns the pulse counter value as well as its timer.
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */

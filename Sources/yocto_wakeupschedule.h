@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_wakeupschedule.h 41625 2020-08-31 07:09:39Z seb $
+ *  $Id: yocto_wakeupschedule.h 43619 2021-01-29 09:14:45Z mvuilleu $
  *
  *  Declares yFindWakeUpSchedule(), the high-level API for WakeUpSchedule functions
  *
@@ -57,7 +57,7 @@ typedef void (*YWakeUpScheduleValueCallback)(YWakeUpSchedule *func, NSString *fu
 //--- (YWakeUpSchedule class start)
 /**
  * YWakeUpSchedule Class: wake up schedule control interface, available for instance in the
- * YoctoHub-GSM-3G-EU, the YoctoHub-GSM-3G-NA, the YoctoHub-Wireless-g or the YoctoHub-Wireless-n
+ * YoctoHub-GSM-3G-EU, the YoctoHub-GSM-3G-NA, the YoctoHub-GSM-4G or the YoctoHub-Wireless-n
  *
  * The YWakeUpSchedule class implements a wake up condition. The wake up time is
  * specified as a set of months and/or days and/or hours and/or minutes when the
@@ -94,7 +94,7 @@ typedef void (*YWakeUpScheduleValueCallback)(YWakeUpSchedule *func, NSString *fu
  *
  * @return an integer corresponding to the minutes in the 00-29 interval of each hour scheduled for wake up
  *
- * On failure, throws an exception or returns Y_MINUTESA_INVALID.
+ * On failure, throws an exception or returns YWakeUpSchedule.MINUTESA_INVALID.
  */
 -(int)     get_minutesA;
 
@@ -107,7 +107,7 @@ typedef void (*YWakeUpScheduleValueCallback)(YWakeUpSchedule *func, NSString *fu
  *
  * @param newval : an integer corresponding to the minutes in the 00-29 interval when a wake up must take place
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -119,7 +119,7 @@ typedef void (*YWakeUpScheduleValueCallback)(YWakeUpSchedule *func, NSString *fu
  *
  * @return an integer corresponding to the minutes in the 30-59 interval of each hour scheduled for wake up
  *
- * On failure, throws an exception or returns Y_MINUTESB_INVALID.
+ * On failure, throws an exception or returns YWakeUpSchedule.MINUTESB_INVALID.
  */
 -(int)     get_minutesB;
 
@@ -132,7 +132,7 @@ typedef void (*YWakeUpScheduleValueCallback)(YWakeUpSchedule *func, NSString *fu
  *
  * @param newval : an integer corresponding to the minutes in the 30-59 interval when a wake up must take place
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -144,7 +144,7 @@ typedef void (*YWakeUpScheduleValueCallback)(YWakeUpSchedule *func, NSString *fu
  *
  * @return an integer corresponding to the hours scheduled for wake up
  *
- * On failure, throws an exception or returns Y_HOURS_INVALID.
+ * On failure, throws an exception or returns YWakeUpSchedule.HOURS_INVALID.
  */
 -(int)     get_hours;
 
@@ -157,7 +157,7 @@ typedef void (*YWakeUpScheduleValueCallback)(YWakeUpSchedule *func, NSString *fu
  *
  * @param newval : an integer corresponding to the hours when a wake up must take place
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -169,7 +169,7 @@ typedef void (*YWakeUpScheduleValueCallback)(YWakeUpSchedule *func, NSString *fu
  *
  * @return an integer corresponding to the days of the week scheduled for wake up
  *
- * On failure, throws an exception or returns Y_WEEKDAYS_INVALID.
+ * On failure, throws an exception or returns YWakeUpSchedule.WEEKDAYS_INVALID.
  */
 -(int)     get_weekDays;
 
@@ -182,7 +182,7 @@ typedef void (*YWakeUpScheduleValueCallback)(YWakeUpSchedule *func, NSString *fu
  *
  * @param newval : an integer corresponding to the days of the week when a wake up must take place
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -194,7 +194,7 @@ typedef void (*YWakeUpScheduleValueCallback)(YWakeUpSchedule *func, NSString *fu
  *
  * @return an integer corresponding to the days of the month scheduled for wake up
  *
- * On failure, throws an exception or returns Y_MONTHDAYS_INVALID.
+ * On failure, throws an exception or returns YWakeUpSchedule.MONTHDAYS_INVALID.
  */
 -(int)     get_monthDays;
 
@@ -207,7 +207,7 @@ typedef void (*YWakeUpScheduleValueCallback)(YWakeUpSchedule *func, NSString *fu
  *
  * @param newval : an integer corresponding to the days of the month when a wake up must take place
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -219,7 +219,7 @@ typedef void (*YWakeUpScheduleValueCallback)(YWakeUpSchedule *func, NSString *fu
  *
  * @return an integer corresponding to the months scheduled for wake up
  *
- * On failure, throws an exception or returns Y_MONTHS_INVALID.
+ * On failure, throws an exception or returns YWakeUpSchedule.MONTHS_INVALID.
  */
 -(int)     get_months;
 
@@ -232,7 +232,7 @@ typedef void (*YWakeUpScheduleValueCallback)(YWakeUpSchedule *func, NSString *fu
  *
  * @param newval : an integer corresponding to the months when a wake up must take place
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -244,7 +244,7 @@ typedef void (*YWakeUpScheduleValueCallback)(YWakeUpSchedule *func, NSString *fu
  *
  * @return an integer corresponding to the date/time (seconds) of the next wake up occurrence
  *
- * On failure, throws an exception or returns Y_NEXTOCCURENCE_INVALID.
+ * On failure, throws an exception or returns YWakeUpSchedule.NEXTOCCURENCE_INVALID.
  */
 -(s64)     get_nextOccurence;
 
@@ -305,7 +305,7 @@ typedef void (*YWakeUpScheduleValueCallback)(YWakeUpSchedule *func, NSString *fu
  *
  * @param bitmap : Minutes 00-59 of each hour scheduled for wake up.
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */

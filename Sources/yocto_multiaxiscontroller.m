@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_multiaxiscontroller.m 41625 2020-08-31 07:09:39Z seb $
+ *  $Id: yocto_multiaxiscontroller.m 43619 2021-01-29 09:14:45Z mvuilleu $
  *
  *  Implements the high-level API for MultiAxisController functions
  *
@@ -101,7 +101,7 @@
  *
  * @return an integer corresponding to the number of synchronized controllers
  *
- * On failure, throws an exception or returns Y_NAXIS_INVALID.
+ * On failure, throws an exception or returns YMultiAxisController.NAXIS_INVALID.
  */
 -(int) get_nAxis
 {
@@ -126,7 +126,7 @@
  *
  * @param newval : an integer corresponding to the number of synchronized controllers
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -143,11 +143,12 @@
 /**
  * Returns the stepper motor set overall state.
  *
- * @return a value among Y_GLOBALSTATE_ABSENT, Y_GLOBALSTATE_ALERT, Y_GLOBALSTATE_HI_Z,
- * Y_GLOBALSTATE_STOP, Y_GLOBALSTATE_RUN and Y_GLOBALSTATE_BATCH corresponding to the stepper motor
- * set overall state
+ * @return a value among YMultiAxisController.GLOBALSTATE_ABSENT,
+ * YMultiAxisController.GLOBALSTATE_ALERT, YMultiAxisController.GLOBALSTATE_HI_Z,
+ * YMultiAxisController.GLOBALSTATE_STOP, YMultiAxisController.GLOBALSTATE_RUN and
+ * YMultiAxisController.GLOBALSTATE_BATCH corresponding to the stepper motor set overall state
  *
- * On failure, throws an exception or returns Y_GLOBALSTATE_INVALID.
+ * On failure, throws an exception or returns YMultiAxisController.GLOBALSTATE_INVALID.
  */
 -(Y_GLOBALSTATE_enum) get_globalState
 {
@@ -282,7 +283,7 @@
     //may throw an exception
     retBin = [self _download:url];
     res = (((u8*)([retBin bytes]))[0]);
-    if (res == 49) {
+    if (res < 58) {
         if (!(res == 48)) {[self _throw: YAPI_DEVICE_BUSY: @"Motor command pipeline is full, try again later"]; return YAPI_DEVICE_BUSY;}
     } else {
         if (!(res == 48)) {[self _throw: YAPI_IO_ERROR: @"Motor command failed permanently"]; return YAPI_IO_ERROR;}
@@ -293,7 +294,7 @@
 /**
  * Reinitialize all controllers and clear all alert flags.
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *         On failure, throws an exception or returns a negative error code.
  */
 -(int) reset
@@ -306,7 +307,7 @@
  *
  * @param speed : desired speed for all axis, in steps per second.
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *         On failure, throws an exception or returns a negative error code.
  */
 -(int) findHomePosition:(NSMutableArray*)speed
@@ -332,7 +333,7 @@
  *
  * @param absPos : absolute position, measured in steps from each origin.
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *         On failure, throws an exception or returns a negative error code.
  */
 -(int) moveTo:(NSMutableArray*)absPos
@@ -358,7 +359,7 @@
  *
  * @param relPos : relative position, measured in steps from the current position.
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *         On failure, throws an exception or returns a negative error code.
  */
 -(int) moveRel:(NSMutableArray*)relPos
@@ -381,7 +382,7 @@
  *
  * @param waitMs : wait time, specified in milliseconds.
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *         On failure, throws an exception or returns a negative error code.
  */
 -(int) pause:(int)waitMs
@@ -392,7 +393,7 @@
 /**
  * Stops the motor with an emergency alert, without taking any additional precaution.
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *         On failure, throws an exception or returns a negative error code.
  */
 -(int) emergencyStop
@@ -403,7 +404,7 @@
 /**
  * Stops the motor smoothly as soon as possible, without waiting for ongoing move completion.
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *         On failure, throws an exception or returns a negative error code.
  */
 -(int) abortAndBrake
@@ -414,7 +415,7 @@
 /**
  * Turn the controller into Hi-Z mode immediately, without waiting for ongoing move completion.
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *         On failure, throws an exception or returns a negative error code.
  */
 -(int) abortAndHiZ

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_voltageoutput.m 41625 2020-08-31 07:09:39Z seb $
+ *  $Id: yocto_voltageoutput.m 43619 2021-01-29 09:14:45Z mvuilleu $
  *
  *  Implements the high-level API for VoltageOutput functions
  *
@@ -102,7 +102,7 @@
  *
  * @param newval : a floating point number corresponding to the output voltage, in V
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -121,7 +121,7 @@
  *
  * @return a floating point number corresponding to the output voltage set point, in V
  *
- * On failure, throws an exception or returns Y_CURRENTVOLTAGE_INVALID.
+ * On failure, throws an exception or returns YVoltageOutput.CURRENTVOLTAGE_INVALID.
  */
 -(double) get_currentVoltage
 {
@@ -175,7 +175,7 @@
  *
  * @param newval : a floating point number corresponding to the output voltage at device start up
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -194,7 +194,7 @@
  *
  * @return a floating point number corresponding to the selected voltage output at device startup, in V
  *
- * On failure, throws an exception or returns Y_VOLTAGEATSTARTUP_INVALID.
+ * On failure, throws an exception or returns YVoltageOutput.VOLTAGEATSTARTUP_INVALID.
  */
 -(double) get_voltageAtStartUp
 {
@@ -300,7 +300,7 @@
  *         (floating-point number, representing the end voltage in V)
  * @param ms_duration : total duration of the transition, in milliseconds
  *
- * @return YAPI_SUCCESS when the call succeeds.
+ * @return YAPI.SUCCESS when the call succeeds.
  */
 -(int) voltageMove:(double)V_target :(int)ms_duration
 {

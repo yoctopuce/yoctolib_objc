@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_temperature.h 41625 2020-08-31 07:09:39Z seb $
+ *  $Id: yocto_temperature.h 43619 2021-01-29 09:14:45Z mvuilleu $
  *
  *  Declares yFindTemperature(), the high-level API for Temperature functions
  *
@@ -123,7 +123,7 @@ typedef enum {
  *
  * @param newval : a string corresponding to the measuring unit for the measured temperature
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -133,14 +133,17 @@ typedef enum {
 /**
  * Returns the temperature sensor type.
  *
- * @return a value among Y_SENSORTYPE_DIGITAL, Y_SENSORTYPE_TYPE_K, Y_SENSORTYPE_TYPE_E,
- * Y_SENSORTYPE_TYPE_J, Y_SENSORTYPE_TYPE_N, Y_SENSORTYPE_TYPE_R, Y_SENSORTYPE_TYPE_S,
- * Y_SENSORTYPE_TYPE_T, Y_SENSORTYPE_PT100_4WIRES, Y_SENSORTYPE_PT100_3WIRES,
- * Y_SENSORTYPE_PT100_2WIRES, Y_SENSORTYPE_RES_OHM, Y_SENSORTYPE_RES_NTC, Y_SENSORTYPE_RES_LINEAR,
- * Y_SENSORTYPE_RES_INTERNAL, Y_SENSORTYPE_IR, Y_SENSORTYPE_RES_PT1000 and Y_SENSORTYPE_CHANNEL_OFF
- * corresponding to the temperature sensor type
+ * @return a value among YTemperature.SENSORTYPE_DIGITAL, YTemperature.SENSORTYPE_TYPE_K,
+ * YTemperature.SENSORTYPE_TYPE_E, YTemperature.SENSORTYPE_TYPE_J, YTemperature.SENSORTYPE_TYPE_N,
+ * YTemperature.SENSORTYPE_TYPE_R, YTemperature.SENSORTYPE_TYPE_S, YTemperature.SENSORTYPE_TYPE_T,
+ * YTemperature.SENSORTYPE_PT100_4WIRES, YTemperature.SENSORTYPE_PT100_3WIRES,
+ * YTemperature.SENSORTYPE_PT100_2WIRES, YTemperature.SENSORTYPE_RES_OHM,
+ * YTemperature.SENSORTYPE_RES_NTC, YTemperature.SENSORTYPE_RES_LINEAR,
+ * YTemperature.SENSORTYPE_RES_INTERNAL, YTemperature.SENSORTYPE_IR,
+ * YTemperature.SENSORTYPE_RES_PT1000 and YTemperature.SENSORTYPE_CHANNEL_OFF corresponding to the
+ * temperature sensor type
  *
- * On failure, throws an exception or returns Y_SENSORTYPE_INVALID.
+ * On failure, throws an exception or returns YTemperature.SENSORTYPE_INVALID.
  */
 -(Y_SENSORTYPE_enum)     get_sensorType;
 
@@ -153,14 +156,17 @@ typedef enum {
  * Remember to call the saveToFlash() method of the module if the
  * modification must be kept.
  *
- * @param newval : a value among Y_SENSORTYPE_DIGITAL, Y_SENSORTYPE_TYPE_K, Y_SENSORTYPE_TYPE_E,
- * Y_SENSORTYPE_TYPE_J, Y_SENSORTYPE_TYPE_N, Y_SENSORTYPE_TYPE_R, Y_SENSORTYPE_TYPE_S,
- * Y_SENSORTYPE_TYPE_T, Y_SENSORTYPE_PT100_4WIRES, Y_SENSORTYPE_PT100_3WIRES,
- * Y_SENSORTYPE_PT100_2WIRES, Y_SENSORTYPE_RES_OHM, Y_SENSORTYPE_RES_NTC, Y_SENSORTYPE_RES_LINEAR,
- * Y_SENSORTYPE_RES_INTERNAL, Y_SENSORTYPE_IR, Y_SENSORTYPE_RES_PT1000 and Y_SENSORTYPE_CHANNEL_OFF
- * corresponding to the temperature sensor type
+ * @param newval : a value among YTemperature.SENSORTYPE_DIGITAL, YTemperature.SENSORTYPE_TYPE_K,
+ * YTemperature.SENSORTYPE_TYPE_E, YTemperature.SENSORTYPE_TYPE_J, YTemperature.SENSORTYPE_TYPE_N,
+ * YTemperature.SENSORTYPE_TYPE_R, YTemperature.SENSORTYPE_TYPE_S, YTemperature.SENSORTYPE_TYPE_T,
+ * YTemperature.SENSORTYPE_PT100_4WIRES, YTemperature.SENSORTYPE_PT100_3WIRES,
+ * YTemperature.SENSORTYPE_PT100_2WIRES, YTemperature.SENSORTYPE_RES_OHM,
+ * YTemperature.SENSORTYPE_RES_NTC, YTemperature.SENSORTYPE_RES_LINEAR,
+ * YTemperature.SENSORTYPE_RES_INTERNAL, YTemperature.SENSORTYPE_IR,
+ * YTemperature.SENSORTYPE_RES_PT1000 and YTemperature.SENSORTYPE_CHANNEL_OFF corresponding to the
+ * temperature sensor type
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -173,7 +179,7 @@ typedef enum {
  * @return a floating point number corresponding to the current value of the electrical signal
  * measured by the sensor
  *
- * On failure, throws an exception or returns Y_SIGNALVALUE_INVALID.
+ * On failure, throws an exception or returns YTemperature.SIGNALVALUE_INVALID.
  */
 -(double)     get_signalValue;
 
@@ -184,7 +190,7 @@ typedef enum {
  *
  * @return a string corresponding to the measuring unit of the electrical signal used by the sensor
  *
- * On failure, throws an exception or returns Y_SIGNALUNIT_INVALID.
+ * On failure, throws an exception or returns YTemperature.SIGNALUNIT_INVALID.
  */
 -(NSString*)     get_signalUnit;
 
@@ -266,7 +272,7 @@ typedef enum {
  * @param res25 : thermistor resistance at 25 degrees Celsius
  * @param beta : Beta value
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -284,7 +290,7 @@ typedef enum {
  *         values (in Ohms) for each of the temperature included in the first
  *         argument, index by index.
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -302,7 +308,7 @@ typedef enum {
  *         with the value (in Ohms) for each of the temperature included in the
  *         first argument, index by index.
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */

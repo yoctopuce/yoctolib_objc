@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_segmenteddisplay.h 41625 2020-08-31 07:09:39Z seb $
+ *  $Id: yocto_segmenteddisplay.h 43580 2021-01-26 17:46:01Z mvuilleu $
  *
  *  Declares yFindSegmentedDisplay(), the high-level API for SegmentedDisplay functions
  *
@@ -90,7 +90,7 @@ typedef enum {
  *
  * @return a string corresponding to the text currently displayed on the screen
  *
- * On failure, throws an exception or returns Y_DISPLAYEDTEXT_INVALID.
+ * On failure, throws an exception or returns YSegmentedDisplay.DISPLAYEDTEXT_INVALID.
  */
 -(NSString*)     get_displayedText;
 
@@ -101,7 +101,7 @@ typedef enum {
  *
  * @param newval : a string corresponding to the text currently displayed on the screen
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */

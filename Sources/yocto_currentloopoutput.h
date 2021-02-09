@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_currentloopoutput.h 41625 2020-08-31 07:09:39Z seb $
+ *  $Id: yocto_currentloopoutput.h 43619 2021-01-29 09:14:45Z mvuilleu $
  *
  *  Declares yFindCurrentLoopOutput(), the high-level API for CurrentLoopOutput functions
  *
@@ -97,7 +97,7 @@ typedef enum {
  *
  * @param newval : a floating point number corresponding to the current loop, the valid range is from 3 to 21mA
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -109,7 +109,7 @@ typedef enum {
  *
  * @return a floating point number corresponding to the loop current set point in mA
  *
- * On failure, throws an exception or returns Y_CURRENT_INVALID.
+ * On failure, throws an exception or returns YCurrentLoopOutput.CURRENT_INVALID.
  */
 -(double)     get_current;
 
@@ -128,7 +128,7 @@ typedef enum {
  *
  * @param newval : a floating point number corresponding to the loop current at device start up
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -140,7 +140,7 @@ typedef enum {
  *
  * @return a floating point number corresponding to the current in the loop at device startup, in mA
  *
- * On failure, throws an exception or returns Y_CURRENTATSTARTUP_INVALID.
+ * On failure, throws an exception or returns YCurrentLoopOutput.CURRENTATSTARTUP_INVALID.
  */
 -(double)     get_currentAtStartUp;
 
@@ -151,10 +151,10 @@ typedef enum {
  * is powered. NOPWR: the loop in not powered. LOWPWR: the loop is not
  * powered enough to maintain the current required (insufficient voltage).
  *
- * @return a value among Y_LOOPPOWER_NOPWR, Y_LOOPPOWER_LOWPWR and Y_LOOPPOWER_POWEROK corresponding
- * to the loop powerstate
+ * @return a value among YCurrentLoopOutput.LOOPPOWER_NOPWR, YCurrentLoopOutput.LOOPPOWER_LOWPWR and
+ * YCurrentLoopOutput.LOOPPOWER_POWEROK corresponding to the loop powerstate
  *
- * On failure, throws an exception or returns Y_LOOPPOWER_INVALID.
+ * On failure, throws an exception or returns YCurrentLoopOutput.LOOPPOWER_INVALID.
  */
 -(Y_LOOPPOWER_enum)     get_loopPower;
 
@@ -213,7 +213,7 @@ typedef enum {
  *         (floating-point number, representing the end current in mA)
  * @param ms_duration : total duration of the transition, in milliseconds
  *
- * @return YAPI_SUCCESS when the call succeeds.
+ * @return YAPI.SUCCESS when the call succeeds.
  */
 -(int)     currentMove:(double)mA_target :(int)ms_duration;
 

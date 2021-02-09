@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_rangefinder.m 41625 2020-08-31 07:09:39Z seb $
+ *  $Id: yocto_rangefinder.m 43619 2021-01-29 09:14:45Z mvuilleu $
  *
  *  Implements the high-level API for RangeFinder functions
  *
@@ -129,7 +129,7 @@
  *
  * @param newval : a string corresponding to the measuring unit for the measured range
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -147,10 +147,11 @@
  * Returns the range finder running mode. The rangefinder running mode
  * allows you to put priority on precision, speed or maximum range.
  *
- * @return a value among Y_RANGEFINDERMODE_DEFAULT, Y_RANGEFINDERMODE_LONG_RANGE,
- * Y_RANGEFINDERMODE_HIGH_ACCURACY and Y_RANGEFINDERMODE_HIGH_SPEED corresponding to the range finder running mode
+ * @return a value among YRangeFinder.RANGEFINDERMODE_DEFAULT,
+ * YRangeFinder.RANGEFINDERMODE_LONG_RANGE, YRangeFinder.RANGEFINDERMODE_HIGH_ACCURACY and
+ * YRangeFinder.RANGEFINDERMODE_HIGH_SPEED corresponding to the range finder running mode
  *
- * On failure, throws an exception or returns Y_RANGEFINDERMODE_INVALID.
+ * On failure, throws an exception or returns YRangeFinder.RANGEFINDERMODE_INVALID.
  */
 -(Y_RANGEFINDERMODE_enum) get_rangeFinderMode
 {
@@ -175,12 +176,13 @@
  * precision, speed or maximum range.
  * Remember to call the saveToFlash() method of the module if the modification must be kept.
  *
- * @param newval : a value among Y_RANGEFINDERMODE_DEFAULT, Y_RANGEFINDERMODE_LONG_RANGE,
- * Y_RANGEFINDERMODE_HIGH_ACCURACY and Y_RANGEFINDERMODE_HIGH_SPEED corresponding to the rangefinder
- * running mode, allowing you to put priority on
+ * @param newval : a value among YRangeFinder.RANGEFINDERMODE_DEFAULT,
+ * YRangeFinder.RANGEFINDERMODE_LONG_RANGE, YRangeFinder.RANGEFINDERMODE_HIGH_ACCURACY and
+ * YRangeFinder.RANGEFINDERMODE_HIGH_SPEED corresponding to the rangefinder running mode, allowing you
+ * to put priority on
  *         precision, speed or maximum range
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -201,7 +203,7 @@
  * @return an integer corresponding to the time frame used to measure the distance and estimate the measure
  *         reliability
  *
- * On failure, throws an exception or returns Y_TIMEFRAME_INVALID.
+ * On failure, throws an exception or returns YRangeFinder.TIMEFRAME_INVALID.
  */
 -(s64) get_timeFrame
 {
@@ -231,7 +233,7 @@
  * @param newval : an integer corresponding to the time frame used to measure the distance and estimate the measure
  *         reliability
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -250,7 +252,7 @@
  *
  * @return an integer corresponding to a measure quality estimate, based on measured dispersion
  *
- * On failure, throws an exception or returns Y_QUALITY_INVALID.
+ * On failure, throws an exception or returns YRangeFinder.QUALITY_INVALID.
  */
 -(int) get_quality
 {
@@ -302,7 +304,7 @@
  *
  * @return a floating point number corresponding to the current sensor temperature, as a floating point number
  *
- * On failure, throws an exception or returns Y_CURRENTTEMPERATURE_INVALID.
+ * On failure, throws an exception or returns YRangeFinder.CURRENTTEMPERATURE_INVALID.
  */
 -(double) get_currentTemperature
 {
@@ -486,7 +488,7 @@
  * automatically at device startup, but it is recommended to start it again when the
  * temperature delta since the latest calibration exceeds 8°C.
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *         On failure, throws an exception or returns a negative error code.
  */
 -(int) triggerTemperatureCalibration
@@ -500,7 +502,7 @@
  * of a cover glass. Make sure to read the chapter about hardware calibration for details
  * on the calibration procedure for proper results.
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *         On failure, throws an exception or returns a negative error code.
  */
 -(int) triggerSpadCalibration
@@ -517,7 +519,7 @@
  * @param targetDist : true distance of the calibration target, in mm or inches, depending
  *         on the unit selected in the device
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *         On failure, throws an exception or returns a negative error code.
  */
 -(int) triggerOffsetCalibration:(double)targetDist
@@ -540,7 +542,7 @@
  * @param targetDist : true distance of the calibration target, in mm or inches, depending
  *         on the unit selected in the device
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *         On failure, throws an exception or returns a negative error code.
  */
 -(int) triggerXTalkCalibration:(double)targetDist
@@ -559,7 +561,7 @@
  * for cover glass, and restores factory settings.
  * Remember to call the saveToFlash() method of the module if the modification must be kept.
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *         On failure, throws an exception or returns a negative error code.
  */
 -(int) cancelCoverGlassCalibrations

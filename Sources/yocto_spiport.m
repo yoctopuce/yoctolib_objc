@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_spiport.m 41625 2020-08-31 07:09:39Z seb $
+ *  $Id: yocto_spiport.m 43619 2021-01-29 09:14:45Z mvuilleu $
  *
  *  Implements the high-level API for SpiPort functions
  *
@@ -294,7 +294,7 @@
  *
  * @return an integer corresponding to the total number of bytes received since last reset
  *
- * On failure, throws an exception or returns Y_RXCOUNT_INVALID.
+ * On failure, throws an exception or returns YSpiPort.RXCOUNT_INVALID.
  */
 -(int) get_rxCount
 {
@@ -318,7 +318,7 @@
  *
  * @return an integer corresponding to the total number of bytes transmitted since last reset
  *
- * On failure, throws an exception or returns Y_TXCOUNT_INVALID.
+ * On failure, throws an exception or returns YSpiPort.TXCOUNT_INVALID.
  */
 -(int) get_txCount
 {
@@ -342,7 +342,7 @@
  *
  * @return an integer corresponding to the total number of communication errors detected since last reset
  *
- * On failure, throws an exception or returns Y_ERRCOUNT_INVALID.
+ * On failure, throws an exception or returns YSpiPort.ERRCOUNT_INVALID.
  */
 -(int) get_errCount
 {
@@ -366,7 +366,7 @@
  *
  * @return an integer corresponding to the total number of messages received since last reset
  *
- * On failure, throws an exception or returns Y_RXMSGCOUNT_INVALID.
+ * On failure, throws an exception or returns YSpiPort.RXMSGCOUNT_INVALID.
  */
 -(int) get_rxMsgCount
 {
@@ -390,7 +390,7 @@
  *
  * @return an integer corresponding to the total number of messages send since last reset
  *
- * On failure, throws an exception or returns Y_TXMSGCOUNT_INVALID.
+ * On failure, throws an exception or returns YSpiPort.TXMSGCOUNT_INVALID.
  */
 -(int) get_txMsgCount
 {
@@ -414,7 +414,7 @@
  *
  * @return a string corresponding to the latest message fully received (for Line and Frame protocols)
  *
- * On failure, throws an exception or returns Y_LASTMSG_INVALID.
+ * On failure, throws an exception or returns YSpiPort.LASTMSG_INVALID.
  */
 -(NSString*) get_lastMsg
 {
@@ -438,7 +438,7 @@
  *
  * @return a string corresponding to the name of the job file currently in use
  *
- * On failure, throws an exception or returns Y_CURRENTJOB_INVALID.
+ * On failure, throws an exception or returns YSpiPort.CURRENTJOB_INVALID.
  */
 -(NSString*) get_currentJob
 {
@@ -464,7 +464,7 @@
  *
  * @param newval : a string
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -483,7 +483,7 @@
  *
  * @return a string corresponding to the job file to use when the device is powered on
  *
- * On failure, throws an exception or returns Y_STARTUPJOB_INVALID.
+ * On failure, throws an exception or returns YSpiPort.STARTUPJOB_INVALID.
  */
 -(NSString*) get_startupJob
 {
@@ -510,7 +510,7 @@
  *
  * @param newval : a string corresponding to the job to use when the device is powered on
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -529,7 +529,7 @@
  *
  * @return an integer corresponding to the maximum number of tasks in a job that the device can handle
  *
- * On failure, throws an exception or returns Y_JOBMAXTASK_INVALID.
+ * On failure, throws an exception or returns YSpiPort.JOBMAXTASK_INVALID.
  */
 -(int) get_jobMaxTask
 {
@@ -553,7 +553,7 @@
  *
  * @return an integer corresponding to maximum size allowed for job files
  *
- * On failure, throws an exception or returns Y_JOBMAXSIZE_INVALID.
+ * On failure, throws an exception or returns YSpiPort.JOBMAXSIZE_INVALID.
  */
 -(int) get_jobMaxSize
 {
@@ -609,7 +609,7 @@
  *
  * @return a string corresponding to the type of protocol used over the serial line, as a string
  *
- * On failure, throws an exception or returns Y_PROTOCOL_INVALID.
+ * On failure, throws an exception or returns YSpiPort.PROTOCOL_INVALID.
  */
 -(NSString*) get_protocol
 {
@@ -642,7 +642,7 @@
  *
  * @param newval : a string corresponding to the type of protocol used over the serial line
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -659,11 +659,12 @@
 /**
  * Returns the voltage level used on the serial line.
  *
- * @return a value among Y_VOLTAGELEVEL_OFF, Y_VOLTAGELEVEL_TTL3V, Y_VOLTAGELEVEL_TTL3VR,
- * Y_VOLTAGELEVEL_TTL5V, Y_VOLTAGELEVEL_TTL5VR, Y_VOLTAGELEVEL_RS232, Y_VOLTAGELEVEL_RS485 and
- * Y_VOLTAGELEVEL_TTL1V8 corresponding to the voltage level used on the serial line
+ * @return a value among YSpiPort.VOLTAGELEVEL_OFF, YSpiPort.VOLTAGELEVEL_TTL3V,
+ * YSpiPort.VOLTAGELEVEL_TTL3VR, YSpiPort.VOLTAGELEVEL_TTL5V, YSpiPort.VOLTAGELEVEL_TTL5VR,
+ * YSpiPort.VOLTAGELEVEL_RS232, YSpiPort.VOLTAGELEVEL_RS485 and YSpiPort.VOLTAGELEVEL_TTL1V8
+ * corresponding to the voltage level used on the serial line
  *
- * On failure, throws an exception or returns Y_VOLTAGELEVEL_INVALID.
+ * On failure, throws an exception or returns YSpiPort.VOLTAGELEVEL_INVALID.
  */
 -(Y_VOLTAGELEVEL_enum) get_voltageLevel
 {
@@ -692,11 +693,12 @@
  * Remember to call the saveToFlash() method of the module if the
  * modification must be kept.
  *
- * @param newval : a value among Y_VOLTAGELEVEL_OFF, Y_VOLTAGELEVEL_TTL3V, Y_VOLTAGELEVEL_TTL3VR,
- * Y_VOLTAGELEVEL_TTL5V, Y_VOLTAGELEVEL_TTL5VR, Y_VOLTAGELEVEL_RS232, Y_VOLTAGELEVEL_RS485 and
- * Y_VOLTAGELEVEL_TTL1V8 corresponding to the voltage type used on the serial line
+ * @param newval : a value among YSpiPort.VOLTAGELEVEL_OFF, YSpiPort.VOLTAGELEVEL_TTL3V,
+ * YSpiPort.VOLTAGELEVEL_TTL3VR, YSpiPort.VOLTAGELEVEL_TTL5V, YSpiPort.VOLTAGELEVEL_TTL5VR,
+ * YSpiPort.VOLTAGELEVEL_RS232, YSpiPort.VOLTAGELEVEL_RS485 and YSpiPort.VOLTAGELEVEL_TTL1V8
+ * corresponding to the voltage type used on the serial line
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -718,7 +720,7 @@
  * @return a string corresponding to the SPI port communication parameters, as a string such as
  *         "125000,0,msb"
  *
- * On failure, throws an exception or returns Y_SPIMODE_INVALID.
+ * On failure, throws an exception or returns YSpiPort.SPIMODE_INVALID.
  */
 -(NSString*) get_spiMode
 {
@@ -748,7 +750,7 @@
  * @param newval : a string corresponding to the SPI port communication parameters, with a string such as
  *         "125000,0,msb"
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -765,9 +767,10 @@
 /**
  * Returns the SS line polarity.
  *
- * @return either Y_SSPOLARITY_ACTIVE_LOW or Y_SSPOLARITY_ACTIVE_HIGH, according to the SS line polarity
+ * @return either YSpiPort.SSPOLARITY_ACTIVE_LOW or YSpiPort.SSPOLARITY_ACTIVE_HIGH, according to the
+ * SS line polarity
  *
- * On failure, throws an exception or returns Y_SSPOLARITY_INVALID.
+ * On failure, throws an exception or returns YSpiPort.SSPOLARITY_INVALID.
  */
 -(Y_SSPOLARITY_enum) get_ssPolarity
 {
@@ -792,9 +795,10 @@
  * Remember to call the saveToFlash() method of the module if the
  * modification must be kept.
  *
- * @param newval : either Y_SSPOLARITY_ACTIVE_LOW or Y_SSPOLARITY_ACTIVE_HIGH, according to the SS line polarity
+ * @param newval : either YSpiPort.SSPOLARITY_ACTIVE_LOW or YSpiPort.SSPOLARITY_ACTIVE_HIGH, according
+ * to the SS line polarity
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -811,10 +815,10 @@
 /**
  * Returns true when the SDI line phase is shifted with regards to the SDO line.
  *
- * @return either Y_SHIFTSAMPLING_OFF or Y_SHIFTSAMPLING_ON, according to true when the SDI line phase
- * is shifted with regards to the SDO line
+ * @return either YSpiPort.SHIFTSAMPLING_OFF or YSpiPort.SHIFTSAMPLING_ON, according to true when the
+ * SDI line phase is shifted with regards to the SDO line
  *
- * On failure, throws an exception or returns Y_SHIFTSAMPLING_INVALID.
+ * On failure, throws an exception or returns YSpiPort.SHIFTSAMPLING_INVALID.
  */
 -(Y_SHIFTSAMPLING_enum) get_shiftSampling
 {
@@ -841,9 +845,10 @@
  * Remember to call the saveToFlash() method of the module if the
  * modification must be kept.
  *
- * @param newval : either Y_SHIFTSAMPLING_OFF or Y_SHIFTSAMPLING_ON, according to the SDI line sampling shift
+ * @param newval : either YSpiPort.SHIFTSAMPLING_OFF or YSpiPort.SHIFTSAMPLING_ON, according to the
+ * SDI line sampling shift
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -1155,7 +1160,7 @@
  * @param jobfile : name of the job file to save on the device filesystem
  * @param jsonDef : a string containing a JSON definition of the job
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -1172,7 +1177,7 @@
  *
  * @param jobfile : name of the job file (on the device filesystem)
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -1184,7 +1189,7 @@
 /**
  * Clears the serial port buffer and resets counters to zero.
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -1202,7 +1207,7 @@
  *
  * @param code : the byte to send
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -1216,7 +1221,7 @@
  *
  * @param text : the text string to send
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -1253,7 +1258,7 @@
  *
  * @param buff : the binary buffer to send
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -1267,7 +1272,7 @@
  *
  * @param byteList : a list of byte codes
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -1296,7 +1301,7 @@
  *
  * @param hexString : a string of hexadecimal byte codes
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -1329,7 +1334,7 @@
  *
  * @param text : the text string to send
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -1604,7 +1609,7 @@
  *
  * @param val : 1 to turn SS active, 0 to release SS.
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */

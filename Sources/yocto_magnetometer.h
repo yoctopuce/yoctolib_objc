@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_magnetometer.h 42951 2020-12-14 09:43:29Z seb $
+ *  $Id: yocto_magnetometer.h 43580 2021-01-26 17:46:01Z mvuilleu $
  *
  *  Declares yFindMagnetometer(), the high-level API for Magnetometer functions
  *
@@ -95,7 +95,7 @@ typedef void (*YMagnetometerTimedReportCallback)(YMagnetometer *func, YMeasure *
  *
  * @return an integer corresponding to the measure update frequency, measured in Hz
  *
- * On failure, throws an exception or returns Y_BANDWIDTH_INVALID.
+ * On failure, throws an exception or returns YMagnetometer.BANDWIDTH_INVALID.
  */
 -(int)     get_bandwidth;
 
@@ -109,7 +109,7 @@ typedef void (*YMagnetometerTimedReportCallback)(YMagnetometer *func, YMeasure *
  *
  * @param newval : an integer corresponding to the measure update frequency, measured in Hz
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -122,7 +122,7 @@ typedef void (*YMagnetometerTimedReportCallback)(YMagnetometer *func, YMeasure *
  * @return a floating point number corresponding to the X component of the magnetic field, as a
  * floating point number
  *
- * On failure, throws an exception or returns Y_XVALUE_INVALID.
+ * On failure, throws an exception or returns YMagnetometer.XVALUE_INVALID.
  */
 -(double)     get_xValue;
 
@@ -134,7 +134,7 @@ typedef void (*YMagnetometerTimedReportCallback)(YMagnetometer *func, YMeasure *
  * @return a floating point number corresponding to the Y component of the magnetic field, as a
  * floating point number
  *
- * On failure, throws an exception or returns Y_YVALUE_INVALID.
+ * On failure, throws an exception or returns YMagnetometer.YVALUE_INVALID.
  */
 -(double)     get_yValue;
 
@@ -146,7 +146,7 @@ typedef void (*YMagnetometerTimedReportCallback)(YMagnetometer *func, YMeasure *
  * @return a floating point number corresponding to the Z component of the magnetic field, as a
  * floating point number
  *
- * On failure, throws an exception or returns Y_ZVALUE_INVALID.
+ * On failure, throws an exception or returns YMagnetometer.ZVALUE_INVALID.
  */
 -(double)     get_zValue;
 

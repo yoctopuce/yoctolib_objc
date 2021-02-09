@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_powersupply.h 41625 2020-08-31 07:09:39Z seb $
+ *  $Id: yocto_powersupply.h 43619 2021-01-29 09:14:45Z mvuilleu $
  *
  *  Declares yFindPowerSupply(), the high-level API for PowerSupply functions
  *
@@ -119,7 +119,7 @@ typedef enum {
  *
  * @param newval : a floating point number corresponding to the voltage set point, in V
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -131,7 +131,7 @@ typedef enum {
  *
  * @return a floating point number corresponding to the voltage set point, in V
  *
- * On failure, throws an exception or returns Y_VOLTAGESETPOINT_INVALID.
+ * On failure, throws an exception or returns YPowerSupply.VOLTAGESETPOINT_INVALID.
  */
 -(double)     get_voltageSetPoint;
 
@@ -142,7 +142,7 @@ typedef enum {
  *
  * @param newval : a floating point number corresponding to the current limit, in mA
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -154,7 +154,7 @@ typedef enum {
  *
  * @return a floating point number corresponding to the current limit, in mA
  *
- * On failure, throws an exception or returns Y_CURRENTLIMIT_INVALID.
+ * On failure, throws an exception or returns YPowerSupply.CURRENTLIMIT_INVALID.
  */
 -(double)     get_currentLimit;
 
@@ -163,9 +163,10 @@ typedef enum {
 /**
  * Returns the power supply output switch state.
  *
- * @return either Y_POWEROUTPUT_OFF or Y_POWEROUTPUT_ON, according to the power supply output switch state
+ * @return either YPowerSupply.POWEROUTPUT_OFF or YPowerSupply.POWEROUTPUT_ON, according to the power
+ * supply output switch state
  *
- * On failure, throws an exception or returns Y_POWEROUTPUT_INVALID.
+ * On failure, throws an exception or returns YPowerSupply.POWEROUTPUT_INVALID.
  */
 -(Y_POWEROUTPUT_enum)     get_powerOutput;
 
@@ -174,9 +175,10 @@ typedef enum {
 /**
  * Changes the power supply output switch state.
  *
- * @param newval : either Y_POWEROUTPUT_OFF or Y_POWEROUTPUT_ON, according to the power supply output switch state
+ * @param newval : either YPowerSupply.POWEROUTPUT_OFF or YPowerSupply.POWEROUTPUT_ON, according to
+ * the power supply output switch state
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -186,9 +188,10 @@ typedef enum {
 /**
  * Returns the output voltage control point.
  *
- * @return either Y_VOLTAGESENSE_INT or Y_VOLTAGESENSE_EXT, according to the output voltage control point
+ * @return either YPowerSupply.VOLTAGESENSE_INT or YPowerSupply.VOLTAGESENSE_EXT, according to the
+ * output voltage control point
  *
- * On failure, throws an exception or returns Y_VOLTAGESENSE_INVALID.
+ * On failure, throws an exception or returns YPowerSupply.VOLTAGESENSE_INVALID.
  */
 -(Y_VOLTAGESENSE_enum)     get_voltageSense;
 
@@ -197,9 +200,10 @@ typedef enum {
 /**
  * Changes the voltage control point.
  *
- * @param newval : either Y_VOLTAGESENSE_INT or Y_VOLTAGESENSE_EXT, according to the voltage control point
+ * @param newval : either YPowerSupply.VOLTAGESENSE_INT or YPowerSupply.VOLTAGESENSE_EXT, according to
+ * the voltage control point
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -211,7 +215,7 @@ typedef enum {
  *
  * @return a floating point number corresponding to the measured output voltage, in V
  *
- * On failure, throws an exception or returns Y_MEASUREDVOLTAGE_INVALID.
+ * On failure, throws an exception or returns YPowerSupply.MEASUREDVOLTAGE_INVALID.
  */
 -(double)     get_measuredVoltage;
 
@@ -222,7 +226,7 @@ typedef enum {
  *
  * @return a floating point number corresponding to the measured output current, in mA
  *
- * On failure, throws an exception or returns Y_MEASUREDCURRENT_INVALID.
+ * On failure, throws an exception or returns YPowerSupply.MEASUREDCURRENT_INVALID.
  */
 -(double)     get_measuredCurrent;
 
@@ -233,7 +237,7 @@ typedef enum {
  *
  * @return a floating point number corresponding to the measured input voltage, in V
  *
- * On failure, throws an exception or returns Y_INPUTVOLTAGE_INVALID.
+ * On failure, throws an exception or returns YPowerSupply.INPUTVOLTAGE_INVALID.
  */
 -(double)     get_inputVoltage;
 
@@ -244,7 +248,7 @@ typedef enum {
  *
  * @return a floating point number corresponding to the internal voltage, in V
  *
- * On failure, throws an exception or returns Y_VINT_INVALID.
+ * On failure, throws an exception or returns YPowerSupply.VINT_INVALID.
  */
 -(double)     get_vInt;
 
@@ -255,7 +259,7 @@ typedef enum {
  *
  * @return a floating point number corresponding to the LDO temperature, in Celsius
  *
- * On failure, throws an exception or returns Y_LDOTEMPERATURE_INVALID.
+ * On failure, throws an exception or returns YPowerSupply.LDOTEMPERATURE_INVALID.
  */
 -(double)     get_ldoTemperature;
 
@@ -274,7 +278,7 @@ typedef enum {
  *
  * @param newval : a floating point number corresponding to the voltage set point at device start up
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -286,7 +290,7 @@ typedef enum {
  *
  * @return a floating point number corresponding to the selected voltage set point at device startup, in V
  *
- * On failure, throws an exception or returns Y_VOLTAGEATSTARTUP_INVALID.
+ * On failure, throws an exception or returns YPowerSupply.VOLTAGEATSTARTUP_INVALID.
  */
 -(double)     get_voltageAtStartUp;
 
@@ -298,7 +302,7 @@ typedef enum {
  *
  * @param newval : a floating point number corresponding to the current limit at device start up
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -310,7 +314,7 @@ typedef enum {
  *
  * @return a floating point number corresponding to the selected current limit at device startup, in mA
  *
- * On failure, throws an exception or returns Y_CURRENTATSTARTUP_INVALID.
+ * On failure, throws an exception or returns YPowerSupply.CURRENTATSTARTUP_INVALID.
  */
 -(double)     get_currentAtStartUp;
 
@@ -376,7 +380,7 @@ typedef enum {
  *         (floating-point number, representing the end voltage in V)
  * @param ms_duration : total duration of the transition, in milliseconds
  *
- * @return YAPI_SUCCESS when the call succeeds.
+ * @return YAPI.SUCCESS when the call succeeds.
  */
 -(int)     voltageMove:(double)V_target :(int)ms_duration;
 

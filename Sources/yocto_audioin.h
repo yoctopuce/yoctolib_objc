@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_audioin.h 41625 2020-08-31 07:09:39Z seb $
+ *  $Id: yocto_audioin.h 43580 2021-01-26 17:46:01Z mvuilleu $
  *
  *  Declares yFindAudioIn(), the high-level API for AudioIn functions
  *
@@ -94,7 +94,7 @@ typedef enum {
  *
  * @return an integer corresponding to audio input gain, in per cents
  *
- * On failure, throws an exception or returns Y_VOLUME_INVALID.
+ * On failure, throws an exception or returns YAudioIn.VOLUME_INVALID.
  */
 -(int)     get_volume;
 
@@ -107,7 +107,7 @@ typedef enum {
  *
  * @param newval : an integer corresponding to audio input gain, in per cents
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -117,9 +117,9 @@ typedef enum {
 /**
  * Returns the state of the mute function.
  *
- * @return either Y_MUTE_FALSE or Y_MUTE_TRUE, according to the state of the mute function
+ * @return either YAudioIn.MUTE_FALSE or YAudioIn.MUTE_TRUE, according to the state of the mute function
  *
- * On failure, throws an exception or returns Y_MUTE_INVALID.
+ * On failure, throws an exception or returns YAudioIn.MUTE_INVALID.
  */
 -(Y_MUTE_enum)     get_mute;
 
@@ -129,9 +129,9 @@ typedef enum {
  * Changes the state of the mute function. Remember to call the matching module
  * saveToFlash() method to save the setting permanently.
  *
- * @param newval : either Y_MUTE_FALSE or Y_MUTE_TRUE, according to the state of the mute function
+ * @param newval : either YAudioIn.MUTE_FALSE or YAudioIn.MUTE_TRUE, according to the state of the mute function
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -146,7 +146,7 @@ typedef enum {
  *
  * @return a string corresponding to the supported volume range
  *
- * On failure, throws an exception or returns Y_VOLUMERANGE_INVALID.
+ * On failure, throws an exception or returns YAudioIn.VOLUMERANGE_INVALID.
  */
 -(NSString*)     get_volumeRange;
 
@@ -157,7 +157,7 @@ typedef enum {
  *
  * @return an integer corresponding to the detected input signal level
  *
- * On failure, throws an exception or returns Y_SIGNAL_INVALID.
+ * On failure, throws an exception or returns YAudioIn.SIGNAL_INVALID.
  */
 -(int)     get_signal;
 
@@ -168,7 +168,7 @@ typedef enum {
  *
  * @return an integer corresponding to the number of seconds elapsed without detecting a signal
  *
- * On failure, throws an exception or returns Y_NOSIGNALFOR_INVALID.
+ * On failure, throws an exception or returns YAudioIn.NOSIGNALFOR_INVALID.
  */
 -(int)     get_noSignalFor;
 

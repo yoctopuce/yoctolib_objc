@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_compass.h 42951 2020-12-14 09:43:29Z seb $
+ *  $Id: yocto_compass.h 43580 2021-01-26 17:46:01Z mvuilleu $
  *
  *  Declares yFindCompass(), the high-level API for Compass functions
  *
@@ -95,7 +95,7 @@ typedef enum {
  *
  * @return an integer corresponding to the measure update frequency, measured in Hz
  *
- * On failure, throws an exception or returns Y_BANDWIDTH_INVALID.
+ * On failure, throws an exception or returns YCompass.BANDWIDTH_INVALID.
  */
 -(int)     get_bandwidth;
 
@@ -109,7 +109,7 @@ typedef enum {
  *
  * @param newval : an integer corresponding to the measure update frequency, measured in Hz
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -125,7 +125,7 @@ typedef enum {
  *
  * @return a floating point number corresponding to the magnetic heading, regardless of the configured bearing
  *
- * On failure, throws an exception or returns Y_MAGNETICHEADING_INVALID.
+ * On failure, throws an exception or returns YCompass.MAGNETICHEADING_INVALID.
  */
 -(double)     get_magneticHeading;
 

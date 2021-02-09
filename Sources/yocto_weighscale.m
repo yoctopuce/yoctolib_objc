@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_weighscale.m 41625 2020-08-31 07:09:39Z seb $
+ *  $Id: yocto_weighscale.m 43619 2021-01-29 09:14:45Z mvuilleu $
  *
  *  Implements the high-level API for WeighScale functions
  *
@@ -135,7 +135,7 @@
  *
  * @param newval : a string corresponding to the measuring unit for the weight
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -152,10 +152,10 @@
 /**
  * Returns the current load cell bridge excitation method.
  *
- * @return a value among Y_EXCITATION_OFF, Y_EXCITATION_DC and Y_EXCITATION_AC corresponding to the
- * current load cell bridge excitation method
+ * @return a value among YWeighScale.EXCITATION_OFF, YWeighScale.EXCITATION_DC and
+ * YWeighScale.EXCITATION_AC corresponding to the current load cell bridge excitation method
  *
- * On failure, throws an exception or returns Y_EXCITATION_INVALID.
+ * On failure, throws an exception or returns YWeighScale.EXCITATION_INVALID.
  */
 -(Y_EXCITATION_enum) get_excitation
 {
@@ -180,10 +180,10 @@
  * Remember to call the saveToFlash() method of the module if the
  * modification must be kept.
  *
- * @param newval : a value among Y_EXCITATION_OFF, Y_EXCITATION_DC and Y_EXCITATION_AC corresponding
- * to the current load cell bridge excitation method
+ * @param newval : a value among YWeighScale.EXCITATION_OFF, YWeighScale.EXCITATION_DC and
+ * YWeighScale.EXCITATION_AC corresponding to the current load cell bridge excitation method
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -209,7 +209,7 @@
  *
  * @param newval : a floating point number corresponding to the averaged temperature update rate, in per mille
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -232,7 +232,7 @@
  *
  * @return a floating point number corresponding to the averaged temperature update rate, in per mille
  *
- * On failure, throws an exception or returns Y_TEMPAVGADAPTRATIO_INVALID.
+ * On failure, throws an exception or returns YWeighScale.TEMPAVGADAPTRATIO_INVALID.
  */
 -(double) get_tempAvgAdaptRatio
 {
@@ -262,7 +262,7 @@
  *
  * @param newval : a floating point number corresponding to the temperature change update rate, in per mille
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -284,7 +284,7 @@
  *
  * @return a floating point number corresponding to the temperature change update rate, in per mille
  *
- * On failure, throws an exception or returns Y_TEMPCHGADAPTRATIO_INVALID.
+ * On failure, throws an exception or returns YWeighScale.TEMPCHGADAPTRATIO_INVALID.
  */
 -(double) get_tempChgAdaptRatio
 {
@@ -308,7 +308,7 @@
  *
  * @return a floating point number corresponding to the current averaged temperature, used for thermal compensation
  *
- * On failure, throws an exception or returns Y_COMPTEMPAVG_INVALID.
+ * On failure, throws an exception or returns YWeighScale.COMPTEMPAVG_INVALID.
  */
 -(double) get_compTempAvg
 {
@@ -333,7 +333,7 @@
  * @return a floating point number corresponding to the current temperature variation, used for
  * thermal compensation
  *
- * On failure, throws an exception or returns Y_COMPTEMPCHG_INVALID.
+ * On failure, throws an exception or returns YWeighScale.COMPTEMPCHG_INVALID.
  */
 -(double) get_compTempChg
 {
@@ -357,7 +357,7 @@
  *
  * @return a floating point number corresponding to the current current thermal compensation value
  *
- * On failure, throws an exception or returns Y_COMPENSATION_INVALID.
+ * On failure, throws an exception or returns YWeighScale.COMPENSATION_INVALID.
  */
 -(double) get_compensation
 {
@@ -386,7 +386,7 @@
  *
  * @param newval : a floating point number corresponding to the zero tracking threshold value
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -407,7 +407,7 @@
  *
  * @return a floating point number corresponding to the zero tracking threshold value
  *
- * On failure, throws an exception or returns Y_ZEROTRACKING_INVALID.
+ * On failure, throws an exception or returns YWeighScale.ZEROTRACKING_INVALID.
  */
 -(double) get_zeroTracking
 {
@@ -572,7 +572,7 @@
  * so that the current signal corresponds to a zero weight. Remember to call the
  * saveToFlash() method of the module if the modification must be kept.
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -588,7 +588,7 @@
  * @param currWeight : reference weight presently on the load cell.
  * @param maxWeight : maximum weight to be expected on the load cell.
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -679,7 +679,7 @@
  *         to apply for each of the temperature included in the first
  *         argument, index by index.
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -699,7 +699,7 @@
  *         with the offset correction applied for each of the temperature
  *         included in the first argument, index by index.
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -719,7 +719,7 @@
  *         to apply for each of the temperature variation included in the first
  *         argument, index by index.
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -739,7 +739,7 @@
  *         with the offset correction applied for each of the temperature
  *         variation included in the first argument, index by index.
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -759,7 +759,7 @@
  *         (in percents) to apply for each of the temperature included in the first
  *         argument, index by index.
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -779,7 +779,7 @@
  *         with the span correction applied for each of the temperature
  *         included in the first argument, index by index.
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -799,7 +799,7 @@
  *         (in percents) to apply for each of the temperature variation included
  *         in the first argument, index by index.
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -819,7 +819,7 @@
  *         with the span correction applied for each of variation of temperature
  *         included in the first argument, index by index.
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_files.h 42060 2020-10-14 10:02:12Z seb $
+ * $Id: yocto_files.h 43619 2021-01-29 09:14:45Z mvuilleu $
  *
  * Declares yFindFiles(), the high-level API for Files functions
  *
@@ -109,8 +109,8 @@ typedef void (*YFilesValueCallback)(YFiles *func, NSString *functionValue);
 
 //--- (generated code: YFiles class start)
 /**
- * YFiles Class: filesystem control interface, available for instance in the Yocto-Buzzer, the
- * Yocto-Color-V2, the YoctoHub-Ethernet or the YoctoHub-Wireless-n
+ * YFiles Class: filesystem control interface, available for instance in the Yocto-Color-V2, the
+ * Yocto-Serial, the YoctoHub-Ethernet or the YoctoHub-Wireless-n
  *
  * The YFiles class is used to access the filesystem embedded on
  * some Yoctopuce devices. This filesystem makes it
@@ -141,7 +141,7 @@ typedef void (*YFilesValueCallback)(YFiles *func, NSString *functionValue);
  *
  * @return an integer corresponding to the number of files currently loaded in the filesystem
  *
- * On failure, throws an exception or returns Y_FILESCOUNT_INVALID.
+ * On failure, throws an exception or returns YFiles.FILESCOUNT_INVALID.
  */
 -(int)     get_filesCount;
 
@@ -152,7 +152,7 @@ typedef void (*YFilesValueCallback)(YFiles *func, NSString *functionValue);
  *
  * @return an integer corresponding to the free space for uploading new files to the filesystem, in bytes
  *
- * On failure, throws an exception or returns Y_FREESPACE_INVALID.
+ * On failure, throws an exception or returns YFiles.FREESPACE_INVALID.
  */
 -(int)     get_freeSpace;
 
@@ -182,7 +182,7 @@ typedef void (*YFilesValueCallback)(YFiles *func, NSString *functionValue);
  * call registerHub() at application initialization time.
  *
  * @param func : a string that uniquely characterizes the filesystem, for instance
- *         YBUZZER2.files.
+ *         YRGBLED2.files.
  *
  * @return a YFiles object allowing you to drive the filesystem.
  */
@@ -209,7 +209,7 @@ typedef void (*YFilesValueCallback)(YFiles *func, NSString *functionValue);
  * Reinitialize the filesystem to its clean, unfragmented, empty state.
  * All files previously uploaded are permanently lost.
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -259,7 +259,7 @@ typedef void (*YFilesValueCallback)(YFiles *func, NSString *functionValue);
  * @param pathname : path and name of the new file to create
  * @param content : binary buffer with the content to set
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -275,7 +275,7 @@ typedef void (*YFilesValueCallback)(YFiles *func, NSString *functionValue);
  *
  * @param pathname : path and name of the file to remove.
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -334,7 +334,7 @@ NS_SWIFT_NAME(FirstFiles());
  * call registerHub() at application initialization time.
  *
  * @param func : a string that uniquely characterizes the filesystem, for instance
- *         YBUZZER2.files.
+ *         YRGBLED2.files.
  *
  * @return a YFiles object allowing you to drive the filesystem.
  */

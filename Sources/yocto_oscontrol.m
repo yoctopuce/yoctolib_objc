@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_oscontrol.m 41625 2020-08-31 07:09:39Z seb $
+ *  $Id: yocto_oscontrol.m 43619 2021-01-29 09:14:45Z mvuilleu $
  *
  *  Implements the high-level API for OsControl functions
  *
@@ -87,7 +87,7 @@
  * @return an integer corresponding to the remaining number of seconds before the OS shutdown, or zero when no
  *         shutdown has been scheduled
  *
- * On failure, throws an exception or returns Y_SHUTDOWNCOUNTDOWN_INVALID.
+ * On failure, throws an exception or returns YOsControl.SHUTDOWNCOUNTDOWN_INVALID.
  */
 -(int) get_shutdownCountdown
 {
@@ -201,7 +201,7 @@
  *
  * @param secBeforeShutDown : number of seconds before shutdown
  *
- * @return YAPI_SUCCESS when the call succeeds.
+ * @return YAPI.SUCCESS when the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_accelerometer.h 42951 2020-12-14 09:43:29Z seb $
+ *  $Id: yocto_accelerometer.h 43580 2021-01-26 17:46:01Z mvuilleu $
  *
  *  Declares yFindAccelerometer(), the high-level API for Accelerometer functions
  *
@@ -62,7 +62,8 @@ typedef enum {
 
 //--- (YAccelerometer class start)
 /**
- * YAccelerometer Class: accelerometer control interface, available for instance in the Yocto-3D-V2
+ * YAccelerometer Class: accelerometer control interface, available for instance in the Yocto-3D-V2 or
+ * the Yocto-Inclinometer
  *
  * The YAccelerometer class allows you to read and configure Yoctopuce accelerometers.
  * It inherits from YSensor class the core functions to read measurements,
@@ -100,7 +101,7 @@ typedef enum {
  *
  * @return an integer corresponding to the measure update frequency, measured in Hz
  *
- * On failure, throws an exception or returns Y_BANDWIDTH_INVALID.
+ * On failure, throws an exception or returns YAccelerometer.BANDWIDTH_INVALID.
  */
 -(int)     get_bandwidth;
 
@@ -114,7 +115,7 @@ typedef enum {
  *
  * @param newval : an integer corresponding to the measure update frequency, measured in Hz
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -126,7 +127,7 @@ typedef enum {
  *
  * @return a floating point number corresponding to the X component of the acceleration, as a floating point number
  *
- * On failure, throws an exception or returns Y_XVALUE_INVALID.
+ * On failure, throws an exception or returns YAccelerometer.XVALUE_INVALID.
  */
 -(double)     get_xValue;
 
@@ -137,7 +138,7 @@ typedef enum {
  *
  * @return a floating point number corresponding to the Y component of the acceleration, as a floating point number
  *
- * On failure, throws an exception or returns Y_YVALUE_INVALID.
+ * On failure, throws an exception or returns YAccelerometer.YVALUE_INVALID.
  */
 -(double)     get_yValue;
 
@@ -148,7 +149,7 @@ typedef enum {
  *
  * @return a floating point number corresponding to the Z component of the acceleration, as a floating point number
  *
- * On failure, throws an exception or returns Y_ZVALUE_INVALID.
+ * On failure, throws an exception or returns YAccelerometer.ZVALUE_INVALID.
  */
 -(double)     get_zValue;
 

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_humidity.h 41625 2020-08-31 07:09:39Z seb $
+ *  $Id: yocto_humidity.h 43580 2021-01-26 17:46:01Z mvuilleu $
  *
  *  Declares yFindHumidity(), the high-level API for Humidity functions
  *
@@ -92,7 +92,7 @@ typedef void (*YHumidityTimedReportCallback)(YHumidity *func, YMeasure *measure)
  *
  * @param newval : a string corresponding to the primary unit for measuring humidity
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -104,7 +104,7 @@ typedef void (*YHumidityTimedReportCallback)(YHumidity *func, YMeasure *measure)
  *
  * @return a floating point number corresponding to the current relative humidity, in per cents
  *
- * On failure, throws an exception or returns Y_RELHUM_INVALID.
+ * On failure, throws an exception or returns YHumidity.RELHUM_INVALID.
  */
 -(double)     get_relHum;
 
@@ -115,7 +115,7 @@ typedef void (*YHumidityTimedReportCallback)(YHumidity *func, YMeasure *measure)
  *
  * @return a floating point number corresponding to the current absolute humidity, in grams per cubic meter of air
  *
- * On failure, throws an exception or returns Y_ABSHUM_INVALID.
+ * On failure, throws an exception or returns YHumidity.ABSHUM_INVALID.
  */
 -(double)     get_absHum;
 

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_audioout.m 41625 2020-08-31 07:09:39Z seb $
+ *  $Id: yocto_audioout.m 43580 2021-01-26 17:46:01Z mvuilleu $
  *
  *  Implements the high-level API for AudioOut functions
  *
@@ -113,7 +113,7 @@
  *
  * @return an integer corresponding to audio output volume, in per cents
  *
- * On failure, throws an exception or returns Y_VOLUME_INVALID.
+ * On failure, throws an exception or returns YAudioOut.VOLUME_INVALID.
  */
 -(int) get_volume
 {
@@ -140,7 +140,7 @@
  *
  * @param newval : an integer corresponding to audio output volume, in per cents
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -157,9 +157,9 @@
 /**
  * Returns the state of the mute function.
  *
- * @return either Y_MUTE_FALSE or Y_MUTE_TRUE, according to the state of the mute function
+ * @return either YAudioOut.MUTE_FALSE or YAudioOut.MUTE_TRUE, according to the state of the mute function
  *
- * On failure, throws an exception or returns Y_MUTE_INVALID.
+ * On failure, throws an exception or returns YAudioOut.MUTE_INVALID.
  */
 -(Y_MUTE_enum) get_mute
 {
@@ -183,9 +183,9 @@
  * Changes the state of the mute function. Remember to call the matching module
  * saveToFlash() method to save the setting permanently.
  *
- * @param newval : either Y_MUTE_FALSE or Y_MUTE_TRUE, according to the state of the mute function
+ * @param newval : either YAudioOut.MUTE_FALSE or YAudioOut.MUTE_TRUE, according to the state of the mute function
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -207,7 +207,7 @@
  *
  * @return a string corresponding to the supported volume range
  *
- * On failure, throws an exception or returns Y_VOLUMERANGE_INVALID.
+ * On failure, throws an exception or returns YAudioOut.VOLUMERANGE_INVALID.
  */
 -(NSString*) get_volumeRange
 {
@@ -231,7 +231,7 @@
  *
  * @return an integer corresponding to the detected output current level
  *
- * On failure, throws an exception or returns Y_SIGNAL_INVALID.
+ * On failure, throws an exception or returns YAudioOut.SIGNAL_INVALID.
  */
 -(int) get_signal
 {
@@ -255,7 +255,7 @@
  *
  * @return an integer corresponding to the number of seconds elapsed without detecting a signal
  *
- * On failure, throws an exception or returns Y_NOSIGNALFOR_INVALID.
+ * On failure, throws an exception or returns YAudioOut.NOSIGNALFOR_INVALID.
  */
 -(int) get_noSignalFor
 {

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_motor.h 41625 2020-08-31 07:09:39Z seb $
+ *  $Id: yocto_motor.h 43619 2021-01-29 09:14:45Z mvuilleu $
  *
  *  Declares yFindMotor(), the high-level API for Motor functions
  *
@@ -121,10 +121,11 @@ typedef enum {
  * When an error condition occurred (LOVOLT, HICURR, HIHEAT, FAILSF), the controller
  * status must be explicitly reset using the resetStatus function.
  *
- * @return a value among Y_MOTORSTATUS_IDLE, Y_MOTORSTATUS_BRAKE, Y_MOTORSTATUS_FORWD,
- * Y_MOTORSTATUS_BACKWD, Y_MOTORSTATUS_LOVOLT, Y_MOTORSTATUS_HICURR, Y_MOTORSTATUS_HIHEAT and Y_MOTORSTATUS_FAILSF
+ * @return a value among YMotor.MOTORSTATUS_IDLE, YMotor.MOTORSTATUS_BRAKE, YMotor.MOTORSTATUS_FORWD,
+ * YMotor.MOTORSTATUS_BACKWD, YMotor.MOTORSTATUS_LOVOLT, YMotor.MOTORSTATUS_HICURR,
+ * YMotor.MOTORSTATUS_HIHEAT and YMotor.MOTORSTATUS_FAILSF
  *
- * On failure, throws an exception or returns Y_MOTORSTATUS_INVALID.
+ * On failure, throws an exception or returns YMotor.MOTORSTATUS_INVALID.
  */
 -(Y_MOTORSTATUS_enum)     get_motorStatus;
 
@@ -142,7 +143,7 @@ typedef enum {
  *
  * @param newval : a floating point number corresponding to immediately the power sent to the motor
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -155,7 +156,7 @@ typedef enum {
  * @return a floating point number corresponding to the power sent to the motor, as a percentage
  * between -100% and +100%
  *
- * On failure, throws an exception or returns Y_DRIVINGFORCE_INVALID.
+ * On failure, throws an exception or returns YMotor.DRIVINGFORCE_INVALID.
  */
 -(double)     get_drivingForce;
 
@@ -169,7 +170,7 @@ typedef enum {
  * @param newval : a floating point number corresponding to immediately the braking force applied to
  * the motor (in percents)
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -182,7 +183,7 @@ typedef enum {
  *
  * @return a floating point number corresponding to the braking force applied to the motor, as a percentage
  *
- * On failure, throws an exception or returns Y_BRAKINGFORCE_INVALID.
+ * On failure, throws an exception or returns YMotor.BRAKINGFORCE_INVALID.
  */
 -(double)     get_brakingForce;
 
@@ -201,7 +202,7 @@ typedef enum {
  * controller automatically switches to error state
  *         and prevents further current draw
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -217,7 +218,7 @@ typedef enum {
  * automatically switches to error state
  *         and prevents further current draw
  *
- * On failure, throws an exception or returns Y_CUTOFFVOLTAGE_INVALID.
+ * On failure, throws an exception or returns YMotor.CUTOFFVOLTAGE_INVALID.
  */
 -(double)     get_cutOffVoltage;
 
@@ -230,7 +231,7 @@ typedef enum {
  * @return an integer corresponding to the current threshold (in mA) above which the controller automatically
  *         switches to error state
  *
- * On failure, throws an exception or returns Y_OVERCURRENTLIMIT_INVALID.
+ * On failure, throws an exception or returns YMotor.OVERCURRENTLIMIT_INVALID.
  */
 -(int)     get_overCurrentLimit;
 
@@ -247,7 +248,7 @@ typedef enum {
  * controller automatically
  *         switches to error state
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -263,7 +264,7 @@ typedef enum {
  *
  * @param newval : a floating point number corresponding to the PWM frequency used to control the motor
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -275,7 +276,7 @@ typedef enum {
  *
  * @return a floating point number corresponding to the PWM frequency used to control the motor
  *
- * On failure, throws an exception or returns Y_FREQUENCY_INVALID.
+ * On failure, throws an exception or returns YMotor.FREQUENCY_INVALID.
  */
 -(double)     get_frequency;
 
@@ -289,7 +290,7 @@ typedef enum {
  * frequency to help
  *         it start up
  *
- * On failure, throws an exception or returns Y_STARTERTIME_INVALID.
+ * On failure, throws an exception or returns YMotor.STARTERTIME_INVALID.
  */
 -(int)     get_starterTime;
 
@@ -304,7 +305,7 @@ typedef enum {
  * at low frequency to help
  *         it start up
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -321,7 +322,7 @@ typedef enum {
  * autonomously without
  *         receiving any instruction from the control process
  *
- * On failure, throws an exception or returns Y_FAILSAFETIMEOUT_INVALID.
+ * On failure, throws an exception or returns YMotor.FAILSAFETIMEOUT_INVALID.
  */
 -(int)     get_failSafeTimeout;
 
@@ -339,7 +340,7 @@ typedef enum {
  * run autonomously without
  *         receiving any instruction from the control process
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -418,7 +419,7 @@ typedef enum {
  * @param targetPower : desired motor power, in percents (between -100% and +100%)
  * @param delay : duration (in ms) of the transition
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -430,7 +431,7 @@ typedef enum {
  * @param targetPower : desired braking force, in percents
  * @param delay : duration (in ms) of the transition
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */

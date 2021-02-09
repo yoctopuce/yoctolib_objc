@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_lightsensor.h 42951 2020-12-14 09:43:29Z seb $
+ *  $Id: yocto_lightsensor.h 43580 2021-01-26 17:46:01Z mvuilleu $
  *
  *  Declares yFindLightSensor(), the high-level API for LightSensor functions
  *
@@ -106,7 +106,7 @@ typedef enum {
  * Remember to call the saveToFlash() method of the module if the
  * modification must be kept.
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -115,11 +115,12 @@ typedef enum {
 /**
  * Returns the type of light measure.
  *
- * @return a value among Y_MEASURETYPE_HUMAN_EYE, Y_MEASURETYPE_WIDE_SPECTRUM, Y_MEASURETYPE_INFRARED,
- * Y_MEASURETYPE_HIGH_RATE, Y_MEASURETYPE_HIGH_ENERGY and Y_MEASURETYPE_HIGH_RESOLUTION corresponding
- * to the type of light measure
+ * @return a value among YLightSensor.MEASURETYPE_HUMAN_EYE, YLightSensor.MEASURETYPE_WIDE_SPECTRUM,
+ * YLightSensor.MEASURETYPE_INFRARED, YLightSensor.MEASURETYPE_HIGH_RATE,
+ * YLightSensor.MEASURETYPE_HIGH_ENERGY and YLightSensor.MEASURETYPE_HIGH_RESOLUTION corresponding to
+ * the type of light measure
  *
- * On failure, throws an exception or returns Y_MEASURETYPE_INVALID.
+ * On failure, throws an exception or returns YLightSensor.MEASURETYPE_INVALID.
  */
 -(Y_MEASURETYPE_enum)     get_measureType;
 
@@ -132,11 +133,12 @@ typedef enum {
  * Remember to call the saveToFlash() method of the module if the
  * modification must be kept.
  *
- * @param newval : a value among Y_MEASURETYPE_HUMAN_EYE, Y_MEASURETYPE_WIDE_SPECTRUM,
- * Y_MEASURETYPE_INFRARED, Y_MEASURETYPE_HIGH_RATE, Y_MEASURETYPE_HIGH_ENERGY and
- * Y_MEASURETYPE_HIGH_RESOLUTION corresponding to the light sensor type used in the device
+ * @param newval : a value among YLightSensor.MEASURETYPE_HUMAN_EYE,
+ * YLightSensor.MEASURETYPE_WIDE_SPECTRUM, YLightSensor.MEASURETYPE_INFRARED,
+ * YLightSensor.MEASURETYPE_HIGH_RATE, YLightSensor.MEASURETYPE_HIGH_ENERGY and
+ * YLightSensor.MEASURETYPE_HIGH_RESOLUTION corresponding to the light sensor type used in the device
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */

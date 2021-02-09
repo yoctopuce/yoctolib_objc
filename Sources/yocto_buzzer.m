@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_buzzer.m 41625 2020-08-31 07:09:39Z seb $
+ *  $Id: yocto_buzzer.m 43619 2021-01-29 09:14:45Z mvuilleu $
  *
  *  Implements the high-level API for Buzzer functions
  *
@@ -120,7 +120,7 @@
  *
  * @param newval : a floating point number corresponding to the frequency of the signal sent to the buzzer
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -139,7 +139,7 @@
  *
  * @return a floating point number corresponding to the  frequency of the signal sent to the buzzer/speaker
  *
- * On failure, throws an exception or returns Y_FREQUENCY_INVALID.
+ * On failure, throws an exception or returns YBuzzer.FREQUENCY_INVALID.
  */
 -(double) get_frequency
 {
@@ -163,7 +163,7 @@
  *
  * @return an integer corresponding to the volume of the signal sent to the buzzer/speaker
  *
- * On failure, throws an exception or returns Y_VOLUME_INVALID.
+ * On failure, throws an exception or returns YBuzzer.VOLUME_INVALID.
  */
 -(int) get_volume
 {
@@ -189,7 +189,7 @@
  *
  * @param newval : an integer corresponding to the volume of the signal sent to the buzzer/speaker
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -208,7 +208,7 @@
  *
  * @return an integer corresponding to the current length of the playing sequence
  *
- * On failure, throws an exception or returns Y_PLAYSEQSIZE_INVALID.
+ * On failure, throws an exception or returns YBuzzer.PLAYSEQSIZE_INVALID.
  */
 -(int) get_playSeqSize
 {
@@ -232,7 +232,7 @@
  *
  * @return an integer corresponding to the maximum length of the playing sequence
  *
- * On failure, throws an exception or returns Y_PLAYSEQMAXSIZE_INVALID.
+ * On failure, throws an exception or returns YBuzzer.PLAYSEQMAXSIZE_INVALID.
  */
 -(int) get_playSeqMaxSize
 {
@@ -259,7 +259,7 @@
  *
  * @return an integer corresponding to the playing sequence signature
  *
- * On failure, throws an exception or returns Y_PLAYSEQSIGNATURE_INVALID.
+ * On failure, throws an exception or returns YBuzzer.PLAYSEQSIGNATURE_INVALID.
  */
 -(int) get_playSeqSignature
 {
@@ -396,7 +396,7 @@
  * @param freq    : desired frequency when the transition is completed, in Hz
  * @param msDelay : duration of the frequency transition, in milliseconds.
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *         On failure, throws an exception or returns a negative error code.
  */
 -(int) addFreqMoveToPlaySeq:(int)freq :(int)msDelay
@@ -410,7 +410,7 @@
  * @param freq : pulse frequency, in Hz
  * @param msDuration : pulse duration, in milliseconds.
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *         On failure, throws an exception or returns a negative error code.
  */
 -(int) addPulseToPlaySeq:(int)freq :(int)msDuration
@@ -425,7 +425,7 @@
  * @param volume    : desired volume when the transition is completed, as a percentage.
  * @param msDuration : duration of the volume transition, in milliseconds.
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *         On failure, throws an exception or returns a negative error code.
  */
 -(int) addVolMoveToPlaySeq:(int)volume :(int)msDuration
@@ -443,7 +443,7 @@
  *
  * @param notes : notes to be played, as a text string.
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *         On failure, throws an exception or returns a negative error code.
  */
 -(int) addNotesToPlaySeq:(NSString*)notes
@@ -611,7 +611,7 @@
  * runs in loop until it is stopped by stopPlaySeq or an explicit
  * change. To play the sequence only once, use oncePlaySeq().
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *         On failure, throws an exception or returns a negative error code.
  */
 -(int) startPlaySeq
@@ -622,7 +622,7 @@
 /**
  * Stops the preprogrammed playing sequence and sets the frequency to zero.
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *         On failure, throws an exception or returns a negative error code.
  */
 -(int) stopPlaySeq
@@ -633,7 +633,7 @@
 /**
  * Resets the preprogrammed playing sequence and sets the frequency to zero.
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *         On failure, throws an exception or returns a negative error code.
  */
 -(int) resetPlaySeq
@@ -644,7 +644,7 @@
 /**
  * Starts the preprogrammed playing sequence and run it once only.
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *         On failure, throws an exception or returns a negative error code.
  */
 -(int) oncePlaySeq
@@ -655,7 +655,7 @@
 /**
  * Saves the preprogrammed playing sequence to flash memory.
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *         On failure, throws an exception or returns a negative error code.
  */
 -(int) savePlaySeq
@@ -666,7 +666,7 @@
 /**
  * Reloads the preprogrammed playing sequence from the flash memory.
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *         On failure, throws an exception or returns a negative error code.
  */
 -(int) reloadPlaySeq
@@ -680,7 +680,7 @@
  * @param frequency : pulse frequency, in hertz
  * @param duration : pulse duration in milliseconds
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -695,7 +695,7 @@
  * @param frequency : frequency to reach, in hertz. A frequency under 25Hz stops the buzzer.
  * @param duration :  pulse duration in milliseconds
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -710,7 +710,7 @@
  * @param volume : volume to reach in %
  * @param duration : change duration in milliseconds
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
@@ -729,7 +729,7 @@
  *
  * @param notes : notes to be played, as a text string.
  *
- * @return YAPI_SUCCESS if the call succeeds.
+ * @return YAPI.SUCCESS if the call succeeds.
  *         On failure, throws an exception or returns a negative error code.
  */
 -(int) playNotes:(NSString*)notes
