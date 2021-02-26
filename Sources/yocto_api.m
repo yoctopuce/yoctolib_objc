@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.m 43619 2021-01-29 09:14:45Z mvuilleu $
+ * $Id: yocto_api.m 44025 2021-02-25 09:38:14Z web $
  *
  * High-level programming interface, common to all modules
  *
@@ -578,6 +578,37 @@ int _ystrpos(NSString* haystack, NSString* needle)
 }
 
 /**
+ * Adds a UDEV rule which authorizes all users to access Yoctopuce modules
+ * connected to the USB ports. This function works only under Linux. The process that
+ * calls this method must have root privileges because this method changes the Linux configuration.
+ *
+ * @param force : if true, overwrites any existing rule.
+ *
+ * @return an empty string if the rule has been added.
+ *
+ * On failure, returns a string that starts with "error:".
+ */
+-(NSString*) AddUdevRule:(bool)force
+{
+    NSString* msg;
+    int res;
+    int c_force;
+    char errmsg[YOCTO_ERRMSG_LEN];
+    if (force) {
+        c_force = 1;
+    } else {
+        c_force = 0;
+    }
+    res = yapiAddUdevRulesForYocto(c_force, errmsg);
+    if (res < 0) {
+        msg = [NSString stringWithFormat:@"%@%@", @"error: ", STR_y2oc(errmsg)];
+    } else {
+        msg = @"";
+    }
+    return msg;
+}
+
+/**
  * Modifies the network connection delay for yRegisterHub() and yUpdateDeviceList().
  * This delay impacts only the YoctoHubs and VirtualHub
  * which are accessible through the network. By default, this delay is of 20000 milliseconds,
@@ -909,6 +940,21 @@ static const char* hexArray = "0123456789ABCDEF";
 +(int) GetDeviceListValidity
 {
         return [YAPI_yapiContext GetDeviceListValidity];
+}
+/**
+ * Adds a UDEV rule which authorizes all users to access Yoctopuce modules
+ * connected to the USB ports. This function works only under Linux. The process that
+ * calls this method must have root privileges because this method changes the Linux configuration.
+ *
+ * @param force : if true, overwrites any existing rule.
+ *
+ * @return an empty string if the rule has been added.
+ *
+ * On failure, returns a string that starts with "error:".
+ */
++(NSString*) AddUdevRule:(bool)force
+{
+        return [YAPI_yapiContext AddUdevRule:force];
 }
 /**
  * Modifies the network connection delay for yRegisterHub() and yUpdateDeviceList().

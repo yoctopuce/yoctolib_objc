@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.h 43619 2021-01-29 09:14:45Z mvuilleu $
+ * $Id: yocto_api.h 44025 2021-02-25 09:38:14Z web $
  *
  * High-level programming interface, common to all modules
  *
@@ -62,7 +62,7 @@
 
 //extern NSMutableDictionary* YAPI_YFunctions;
 
-#define YOCTO_API_REVISION          "43781"
+#define YOCTO_API_REVISION          "44029"
 
 // yInitAPI argument
 #define Y_DETECT_NONE           0
@@ -350,6 +350,19 @@ int _ystrpos(NSString* haystack, NSString* needle);
  * @return the number of seconds between each enumeration.
  */
 -(int)     GetDeviceListValidity;
+
+/**
+ * Adds a UDEV rule which authorizes all users to access Yoctopuce modules
+ * connected to the USB ports. This function works only under Linux. The process that
+ * calls this method must have root privileges because this method changes the Linux configuration.
+ *
+ * @param force : if true, overwrites any existing rule.
+ *
+ * @return an empty string if the rule has been added.
+ *
+ * On failure, returns a string that starts with "error:".
+ */
+-(NSString*)     AddUdevRule:(bool)force;
 
 /**
  * Modifies the network connection delay for yRegisterHub() and yUpdateDeviceList().
@@ -797,6 +810,19 @@ NS_SWIFT_NAME(CheckLogicalName(_:));
  * @return the number of seconds between each enumeration.
  */
 +(int)     GetDeviceListValidity;
+
+/**
+ * Adds a UDEV rule which authorizes all users to access Yoctopuce modules
+ * connected to the USB ports. This function works only under Linux. The process that
+ * calls this method must have root privileges because this method changes the Linux configuration.
+ *
+ * @param force : if true, overwrites any existing rule.
+ *
+ * @return an empty string if the rule has been added.
+ *
+ * On failure, returns a string that starts with "error:".
+ */
++(NSString*)     AddUdevRule:(bool)force;
 
 /**
  * Modifies the network connection delay for yRegisterHub() and yUpdateDeviceList().

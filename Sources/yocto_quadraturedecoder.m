@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_quadraturedecoder.m 43580 2021-01-26 17:46:01Z mvuilleu $
+ *  $Id: yocto_quadraturedecoder.m 44023 2021-02-25 09:23:38Z web $
  *
  *  Implements the high-level API for QuadratureDecoder functions
  *
@@ -80,7 +80,7 @@
     }
     if(!strcmp(j->token, "decoding")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-        _decoding =  (Y_DECODING_enum)atoi(j->token);
+        _decoding =  atoi(j->token);
         return 1;
     }
     return [super _parseAttr:j];
@@ -135,8 +135,9 @@
 /**
  * Returns the current activation state of the quadrature decoder.
  *
- * @return either YQuadratureDecoder.DECODING_OFF or YQuadratureDecoder.DECODING_ON, according to the
- * current activation state of the quadrature decoder
+ * @return a value among YQuadratureDecoder.DECODING_OFF, YQuadratureDecoder.DECODING_ON,
+ * YQuadratureDecoder.DECODING_DIV2 and YQuadratureDecoder.DECODING_DIV4 corresponding to the current
+ * activation state of the quadrature decoder
  *
  * On failure, throws an exception or returns YQuadratureDecoder.DECODING_INVALID.
  */
@@ -163,8 +164,9 @@
  * Remember to call the saveToFlash()
  * method of the module if the modification must be kept.
  *
- * @param newval : either YQuadratureDecoder.DECODING_OFF or YQuadratureDecoder.DECODING_ON, according
- * to the activation state of the quadrature decoder
+ * @param newval : a value among YQuadratureDecoder.DECODING_OFF, YQuadratureDecoder.DECODING_ON,
+ * YQuadratureDecoder.DECODING_DIV2 and YQuadratureDecoder.DECODING_DIV4 corresponding to the
+ * activation state of the quadrature decoder
  *
  * @return YAPI.SUCCESS if the call succeeds.
  *
@@ -177,7 +179,7 @@
 -(int) setDecoding:(Y_DECODING_enum) newval
 {
     NSString* rest_val;
-    rest_val = (newval ? @"1" : @"0");
+    rest_val = [NSString stringWithFormat:@"%d", newval];
     return [self _setAttr:@"decoding" :rest_val];
 }
 /**
