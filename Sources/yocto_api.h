@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.h 44025 2021-02-25 09:38:14Z web $
+ * $Id: yocto_api.h 44114 2021-03-03 17:47:55Z mvuilleu $
  *
  * High-level programming interface, common to all modules
  *
@@ -62,7 +62,7 @@
 
 //extern NSMutableDictionary* YAPI_YFunctions;
 
-#define YOCTO_API_REVISION          "44029"
+#define YOCTO_API_REVISION          "44175"
 
 // yInitAPI argument
 #define Y_DETECT_NONE           0
@@ -3824,7 +3824,7 @@ YSensor* yFirstSensor(void);
  * call registerHub() at application initialization time.
  *
  * @param func : a string that uniquely characterizes the data logger, for instance
- *         RX420MA1.dataLogger.
+ *         LIGHTMK3.dataLogger.
  *
  * @return a YDataLogger object allowing you to drive the data logger.
  */
@@ -3924,7 +3924,7 @@ NS_SWIFT_NAME(FirstDataLogger());
  * call registerHub() at application initialization time.
  *
  * @param func : a string that uniquely characterizes the data logger, for instance
- *         RX420MA1.dataLogger.
+ *         LIGHTMK3.dataLogger.
  *
  * @return a YDataLogger object allowing you to drive the data logger.
  */
