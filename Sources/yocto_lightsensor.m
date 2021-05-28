@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_lightsensor.m 43580 2021-01-26 17:46:01Z mvuilleu $
+ *  $Id: yocto_lightsensor.m 45292 2021-05-25 23:27:54Z mvuilleu $
  *
  *  Implements the high-level API for LightSensor functions
  *
@@ -190,7 +190,7 @@
  * call registerHub() at application initialization time.
  *
  * @param func : a string that uniquely characterizes the light sensor, for instance
- *         LIGHTMK3.lightSensor.
+ *         LIGHTMK4.lightSensor.
  *
  * @return a YLightSensor object allowing you to drive the light sensor.
  */

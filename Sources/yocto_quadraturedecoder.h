@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_quadraturedecoder.h 44023 2021-02-25 09:23:38Z web $
+ *  $Id: yocto_quadraturedecoder.h 45292 2021-05-25 23:27:54Z mvuilleu $
  *
  *  Declares yFindQuadratureDecoder(), the high-level API for QuadratureDecoder functions
  *
@@ -51,12 +51,11 @@ typedef void (*YQuadratureDecoderTimedReportCallback)(YQuadratureDecoder *func, 
 typedef enum {
     Y_DECODING_OFF = 0,
     Y_DECODING_ON = 1,
-    Y_DECODING_DIV2 = 2,
-    Y_DECODING_DIV4 = 3,
     Y_DECODING_INVALID = -1,
 } Y_DECODING_enum;
 #endif
 #define Y_SPEED_INVALID                 YAPI_INVALID_DOUBLE
+#define Y_EDGESPERCYCLE_INVALID         YAPI_INVALID_UINT
 //--- (end of YQuadratureDecoder globals)
 
 //--- (YQuadratureDecoder class start)
@@ -74,6 +73,7 @@ typedef enum {
 //--- (YQuadratureDecoder attributes declaration)
     double          _speed;
     Y_DECODING_enum _decoding;
+    int             _edgesPerCycle;
     YQuadratureDecoderValueCallback _valueCallbackQuadratureDecoder;
     YQuadratureDecoderTimedReportCallback _timedReportCallbackQuadratureDecoder;
 //--- (end of YQuadratureDecoder attributes declaration)
@@ -103,9 +103,9 @@ typedef enum {
 -(int)     setCurrentValue:(double) newval;
 
 /**
- * Returns the increments frequency, in Hz.
+ * Returns the cycle frequency, in Hz.
  *
- * @return a floating point number corresponding to the increments frequency, in Hz
+ * @return a floating point number corresponding to the cycle frequency, in Hz
  *
  * On failure, throws an exception or returns YQuadratureDecoder.SPEED_INVALID.
  */
@@ -116,9 +116,8 @@ typedef enum {
 /**
  * Returns the current activation state of the quadrature decoder.
  *
- * @return a value among YQuadratureDecoder.DECODING_OFF, YQuadratureDecoder.DECODING_ON,
- * YQuadratureDecoder.DECODING_DIV2 and YQuadratureDecoder.DECODING_DIV4 corresponding to the current
- * activation state of the quadrature decoder
+ * @return either YQuadratureDecoder.DECODING_OFF or YQuadratureDecoder.DECODING_ON, according to the
+ * current activation state of the quadrature decoder
  *
  * On failure, throws an exception or returns YQuadratureDecoder.DECODING_INVALID.
  */
@@ -131,9 +130,8 @@ typedef enum {
  * Remember to call the saveToFlash()
  * method of the module if the modification must be kept.
  *
- * @param newval : a value among YQuadratureDecoder.DECODING_OFF, YQuadratureDecoder.DECODING_ON,
- * YQuadratureDecoder.DECODING_DIV2 and YQuadratureDecoder.DECODING_DIV4 corresponding to the
- * activation state of the quadrature decoder
+ * @param newval : either YQuadratureDecoder.DECODING_OFF or YQuadratureDecoder.DECODING_ON, according
+ * to the activation state of the quadrature decoder
  *
  * @return YAPI.SUCCESS if the call succeeds.
  *
@@ -141,6 +139,31 @@ typedef enum {
  */
 -(int)     set_decoding:(Y_DECODING_enum) newval;
 -(int)     setDecoding:(Y_DECODING_enum) newval;
+
+/**
+ * Returns the edge count per full cycle configuration setting.
+ *
+ * @return an integer corresponding to the edge count per full cycle configuration setting
+ *
+ * On failure, throws an exception or returns YQuadratureDecoder.EDGESPERCYCLE_INVALID.
+ */
+-(int)     get_edgesPerCycle;
+
+
+-(int) edgesPerCycle;
+/**
+ * Changes the edge count per full cycle configuration setting.
+ * Remember to call the saveToFlash()
+ * method of the module if the modification must be kept.
+ *
+ * @param newval : an integer corresponding to the edge count per full cycle configuration setting
+ *
+ * @return YAPI.SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     set_edgesPerCycle:(int) newval;
+-(int)     setEdgesPerCycle:(int) newval;
 
 /**
  * Retrieves a quadrature decoder for a given identifier.

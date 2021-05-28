@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_watchdog.m 43619 2021-01-29 09:14:45Z mvuilleu $
+ *  $Id: yocto_watchdog.m 44548 2021-04-13 09:56:42Z mvuilleu $
  *
  *  Implements the high-level API for Watchdog functions
  *
@@ -65,6 +65,7 @@
     _running = Y_RUNNING_INVALID;
     _triggerDelay = Y_TRIGGERDELAY_INVALID;
     _triggerDuration = Y_TRIGGERDURATION_INVALID;
+    _lastTrigger = Y_LASTTRIGGER_INVALID;
     _valueCallbackWatchdog = NULL;
     _firm = 0;
 //--- (end of YWatchdog attributes initialization)
@@ -154,6 +155,11 @@
     if(!strcmp(j->token, "triggerDuration")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
         _triggerDuration =  atol(j->token);
+        return 1;
+    }
+    if(!strcmp(j->token, "lastTrigger")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _lastTrigger =  atoi(j->token);
         return 1;
     }
     return [super _parseAttr:j];
@@ -733,6 +739,30 @@
     NSString* rest_val;
     rest_val = [NSString stringWithFormat:@"%u", (u32)newval];
     return [self _setAttr:@"triggerDuration" :rest_val];
+}
+/**
+ * Returns the number of seconds spent since the last output power-up event.
+ *
+ * @return an integer corresponding to the number of seconds spent since the last output power-up event
+ *
+ * On failure, throws an exception or returns YWatchdog.LASTTRIGGER_INVALID.
+ */
+-(int) get_lastTrigger
+{
+    int res;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
+            return Y_LASTTRIGGER_INVALID;
+        }
+    }
+    res = _lastTrigger;
+    return res;
+}
+
+
+-(int) lastTrigger
+{
+    return [self get_lastTrigger];
 }
 /**
  * Retrieves a watchdog for a given identifier.

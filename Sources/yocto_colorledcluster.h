@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_colorledcluster.h 43619 2021-01-29 09:14:45Z mvuilleu $
+ *  $Id: yocto_colorledcluster.h 44921 2021-05-06 08:03:05Z mvuilleu $
  *
  *  Declares yFindColorLedCluster(), the high-level API for ColorLedCluster functions
  *
@@ -50,6 +50,7 @@ typedef void (*YColorLedClusterValueCallback)(YColorLedCluster *func, NSString *
 typedef enum {
     Y_LEDTYPE_RGB = 0,
     Y_LEDTYPE_RGBW = 1,
+    Y_LEDTYPE_WS2811 = 2,
     Y_LEDTYPE_INVALID = -1,
 } Y_LEDTYPE_enum;
 #endif
@@ -127,8 +128,8 @@ typedef enum {
 /**
  * Returns the RGB LED type currently handled by the device.
  *
- * @return either YColorLedCluster.LEDTYPE_RGB or YColorLedCluster.LEDTYPE_RGBW, according to the RGB
- * LED type currently handled by the device
+ * @return a value among YColorLedCluster.LEDTYPE_RGB, YColorLedCluster.LEDTYPE_RGBW and
+ * YColorLedCluster.LEDTYPE_WS2811 corresponding to the RGB LED type currently handled by the device
  *
  * On failure, throws an exception or returns YColorLedCluster.LEDTYPE_INVALID.
  */
@@ -141,8 +142,8 @@ typedef enum {
  * Remember to call the matching module
  * saveToFlash() method to save the setting permanently.
  *
- * @param newval : either YColorLedCluster.LEDTYPE_RGB or YColorLedCluster.LEDTYPE_RGBW, according to
- * the RGB LED type currently handled by the device
+ * @param newval : a value among YColorLedCluster.LEDTYPE_RGB, YColorLedCluster.LEDTYPE_RGBW and
+ * YColorLedCluster.LEDTYPE_WS2811 corresponding to the RGB LED type currently handled by the device
  *
  * @return YAPI.SUCCESS if the call succeeds.
  *

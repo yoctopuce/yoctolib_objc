@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.m 44114 2021-03-03 17:47:55Z mvuilleu $
+ * $Id: yocto_api.m 45292 2021-05-25 23:27:54Z mvuilleu $
  *
  * High-level programming interface, common to all modules
  *
@@ -8956,7 +8956,7 @@ static const char* hexArray = "0123456789ABCDEF";
  * call registerHub() at application initialization time.
  *
  * @param func : a string that uniquely characterizes the data logger, for instance
- *         LIGHTMK3.dataLogger.
+ *         RX420MA1.dataLogger.
  *
  * @return a YDataLogger object allowing you to drive the data logger.
  */

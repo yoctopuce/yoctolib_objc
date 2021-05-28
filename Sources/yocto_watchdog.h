@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_watchdog.h 43619 2021-01-29 09:14:45Z mvuilleu $
+ *  $Id: yocto_watchdog.h 44548 2021-04-13 09:56:42Z mvuilleu $
  *
  *  Declares yFindWatchdog(), the high-level API for Watchdog functions
  *
@@ -101,6 +101,7 @@ typedef enum {
 #define Y_COUNTDOWN_INVALID             YAPI_INVALID_LONG
 #define Y_TRIGGERDELAY_INVALID          YAPI_INVALID_LONG
 #define Y_TRIGGERDURATION_INVALID       YAPI_INVALID_LONG
+#define Y_LASTTRIGGER_INVALID           YAPI_INVALID_UINT
 //--- (end of YWatchdog globals)
 
 //--- (YWatchdog class start)
@@ -133,6 +134,7 @@ typedef enum {
     Y_RUNNING_enum  _running;
     s64             _triggerDelay;
     s64             _triggerDuration;
+    int             _lastTrigger;
     YWatchdogValueCallback _valueCallbackWatchdog;
     int             _firm;
 //--- (end of YWatchdog attributes declaration)
@@ -463,6 +465,17 @@ typedef enum {
 -(int)     set_triggerDuration:(s64) newval;
 -(int)     setTriggerDuration:(s64) newval;
 
+/**
+ * Returns the number of seconds spent since the last output power-up event.
+ *
+ * @return an integer corresponding to the number of seconds spent since the last output power-up event
+ *
+ * On failure, throws an exception or returns YWatchdog.LASTTRIGGER_INVALID.
+ */
+-(int)     get_lastTrigger;
+
+
+-(int) lastTrigger;
 /**
  * Retrieves a watchdog for a given identifier.
  * The identifier can be specified using several formats:

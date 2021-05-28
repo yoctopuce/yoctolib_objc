@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_quadraturedecoder.m 44023 2021-02-25 09:23:38Z web $
+ *  $Id: yocto_quadraturedecoder.m 45292 2021-05-25 23:27:54Z mvuilleu $
  *
  *  Implements the high-level API for QuadratureDecoder functions
  *
@@ -55,6 +55,7 @@
 //--- (YQuadratureDecoder attributes initialization)
     _speed = Y_SPEED_INVALID;
     _decoding = Y_DECODING_INVALID;
+    _edgesPerCycle = Y_EDGESPERCYCLE_INVALID;
     _valueCallbackQuadratureDecoder = NULL;
     _timedReportCallbackQuadratureDecoder = NULL;
 //--- (end of YQuadratureDecoder attributes initialization)
@@ -80,7 +81,12 @@
     }
     if(!strcmp(j->token, "decoding")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-        _decoding =  atoi(j->token);
+        _decoding =  (Y_DECODING_enum)atoi(j->token);
+        return 1;
+    }
+    if(!strcmp(j->token, "edgesPerCycle")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _edgesPerCycle =  atoi(j->token);
         return 1;
     }
     return [super _parseAttr:j];
@@ -109,9 +115,9 @@
     return [self _setAttr:@"currentValue" :rest_val];
 }
 /**
- * Returns the increments frequency, in Hz.
+ * Returns the cycle frequency, in Hz.
  *
- * @return a floating point number corresponding to the increments frequency, in Hz
+ * @return a floating point number corresponding to the cycle frequency, in Hz
  *
  * On failure, throws an exception or returns YQuadratureDecoder.SPEED_INVALID.
  */
@@ -135,9 +141,8 @@
 /**
  * Returns the current activation state of the quadrature decoder.
  *
- * @return a value among YQuadratureDecoder.DECODING_OFF, YQuadratureDecoder.DECODING_ON,
- * YQuadratureDecoder.DECODING_DIV2 and YQuadratureDecoder.DECODING_DIV4 corresponding to the current
- * activation state of the quadrature decoder
+ * @return either YQuadratureDecoder.DECODING_OFF or YQuadratureDecoder.DECODING_ON, according to the
+ * current activation state of the quadrature decoder
  *
  * On failure, throws an exception or returns YQuadratureDecoder.DECODING_INVALID.
  */
@@ -164,9 +169,8 @@
  * Remember to call the saveToFlash()
  * method of the module if the modification must be kept.
  *
- * @param newval : a value among YQuadratureDecoder.DECODING_OFF, YQuadratureDecoder.DECODING_ON,
- * YQuadratureDecoder.DECODING_DIV2 and YQuadratureDecoder.DECODING_DIV4 corresponding to the
- * activation state of the quadrature decoder
+ * @param newval : either YQuadratureDecoder.DECODING_OFF or YQuadratureDecoder.DECODING_ON, according
+ * to the activation state of the quadrature decoder
  *
  * @return YAPI.SUCCESS if the call succeeds.
  *
@@ -179,8 +183,54 @@
 -(int) setDecoding:(Y_DECODING_enum) newval
 {
     NSString* rest_val;
-    rest_val = [NSString stringWithFormat:@"%d", newval];
+    rest_val = (newval ? @"1" : @"0");
     return [self _setAttr:@"decoding" :rest_val];
+}
+/**
+ * Returns the edge count per full cycle configuration setting.
+ *
+ * @return an integer corresponding to the edge count per full cycle configuration setting
+ *
+ * On failure, throws an exception or returns YQuadratureDecoder.EDGESPERCYCLE_INVALID.
+ */
+-(int) get_edgesPerCycle
+{
+    int res;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
+            return Y_EDGESPERCYCLE_INVALID;
+        }
+    }
+    res = _edgesPerCycle;
+    return res;
+}
+
+
+-(int) edgesPerCycle
+{
+    return [self get_edgesPerCycle];
+}
+
+/**
+ * Changes the edge count per full cycle configuration setting.
+ * Remember to call the saveToFlash()
+ * method of the module if the modification must be kept.
+ *
+ * @param newval : an integer corresponding to the edge count per full cycle configuration setting
+ *
+ * @return YAPI.SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) set_edgesPerCycle:(int) newval
+{
+    return [self setEdgesPerCycle:newval];
+}
+-(int) setEdgesPerCycle:(int) newval
+{
+    NSString* rest_val;
+    rest_val = [NSString stringWithFormat:@"%d", newval];
+    return [self _setAttr:@"edgesPerCycle" :rest_val];
 }
 /**
  * Retrieves a quadrature decoder for a given identifier.
