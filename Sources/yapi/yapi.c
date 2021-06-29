@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yapi.c 44990 2021-05-10 14:53:32Z web $
+ * $Id: yapi.c 45661 2021-06-29 06:54:39Z web $
  *
  * Implementation of public entry points to the low-level API
  *
@@ -1777,31 +1777,38 @@ static int parseInfoJSon(HubSt* hub, u8* info_data, int len, char* errmsg)
 #ifdef DEBUG_JSON_PARSE
                 dbglog("found %s %s(%d)\n", j.token, yJsonStateStr[j.st], j.st);
 #endif
-                if (yJsonParse(&j) != YJSON_PARSE_AVAIL || j.st != YJSON_PARSE_STRUCT) {
-                    return YERRMSG(YAPI_INVALID_ARGUMENT, "Invalid info.json file (port should be an object");
+                if (yJsonParse(&j) != YJSON_PARSE_AVAIL || j.st != YJSON_PARSE_ARRAY) {
+                    return YERRMSG(YAPI_INVALID_ARGUMENT, "Invalid info.json file (port should be a array");
                 }
-                while (yJsonParse(&j) == YJSON_PARSE_AVAIL && j.st != YJSON_PARSE_STRUCT) {
+                while (yJsonParse(&j) == YJSON_PARSE_AVAIL && j.st != YJSON_PARSE_ARRAY) {
+                    char* p;
                     switch (j.st) {
-                    case YJSON_PARSE_MEMBNAME:
+                    case YJSON_PARSE_STRING:
                         if (nb_proto >= NB_PROTO_IN_INFO_JSON) {
                             break;
                         }
-                        if (YSTRCMP("wss", j.token) == 0) {
-                            hub->info.ports[nb_proto].proto = PROTO_SECURE_WEBSOCKET;
-                        } else if (YSTRCMP("https", j.token) == 0) {
-                            hub->info.ports[nb_proto].proto = PROTO_SECURE_HTTP;
-                        } else if (YSTRCMP("ws", j.token) == 0) {
-                            hub->info.ports[nb_proto].proto = PROTO_WEBSOCKET;
-                        } else if (YSTRCMP("http", j.token) == 0) {
-                            hub->info.ports[nb_proto].proto = PROTO_HTTP;
+                        p = j.token;
+                        while (*p && *p!=':') {
+                            p++;
+                        }
+                        if (*p == ':') {
+                            *p++ = 0;
+                            hub->info.ports[nb_proto].port = atoi(p);
+                            if (YSTRCMP("wss", j.token) == 0) {
+                                hub->info.ports[nb_proto].proto = PROTO_SECURE_WEBSOCKET;
+                            } else if (YSTRCMP("https", j.token) == 0) {
+                                hub->info.ports[nb_proto].proto = PROTO_SECURE_HTTP;
+                            } else if (YSTRCMP("ws", j.token) == 0) {
+                                hub->info.ports[nb_proto].proto = PROTO_WEBSOCKET;
+                            } else if (YSTRCMP("http", j.token) == 0) {
+                                hub->info.ports[nb_proto].proto = PROTO_HTTP;
+                            } else {
+                                dbglog("Unknown proto found in info.json (%s)\n", j.st);
+                                hub->info.ports[nb_proto].proto = PROTO_UNKNOWN;
+                            }
                         } else {
-                            dbglog("Unknown proto found in info.json (%s)\n", j.st);
-                            hub->info.ports[nb_proto].proto = PROTO_UNKNOWN;
+                            return YERRMSG(YAPI_INVALID_ARGUMENT, "Invalid protocol definition info.json.");
                         }
-                        if (yJsonParse(&j) != YJSON_PARSE_AVAIL || j.st != YJSON_PARSE_NUM) {
-                            return YERRMSG(YAPI_INVALID_ARGUMENT, "Invalid port in info.json file");
-                        }
-                        hub->info.ports[nb_proto].port = atoi(j.token);
                         nb_proto++;
                         break;
                     default:
@@ -1927,6 +1934,7 @@ static HubSt* yapiAllocHub(const char* url, char* errmsg)
         res = parseInfoJSon(hub, info_data, res, errmsg);
         if (res < 0) {
             dbglog("Warning: unable to parse info.json (%s)\n", errmsg);
+            memset(&hub->info, 0, sizeof(hub->info));
             hub->proto = PROTO_LEGACY;
         }
     }
@@ -3440,13 +3448,13 @@ static int pingURLOnhub(HubSt* hubst, const char* request, int mstimeout, char* 
             res = yReqIsEof(req, errmsg);
             if (YISERR(res)) {
                 // any specific error during select
-                yReqClose(req);
-                yReqFree(req);
-                return res;
+                break;
             }
-            if (res == 1 && jstate == YJSON_NEED_INPUT) {
-                // connection close before end of result
-                res = YERR(YAPI_IO_ERROR);
+            if (res == 1) {
+                // remote connection close change res to Succes and
+                // test json parsing status bellow to detect early close
+                res = YAPI_SUCCESS;
+                break;
             }
             if (yapiGetTickCount() >= globalTimeout) {
                 res = YERR(YAPI_TIMEOUT);
