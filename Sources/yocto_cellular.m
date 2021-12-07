@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_cellular.m 43619 2021-01-29 09:14:45Z mvuilleu $
+ * $Id: yocto_cellular.m 47312 2021-11-16 09:47:43Z seb $
  *
  * Implements the high-level API for Cellular functions
  *
@@ -1287,7 +1287,7 @@
         mncs = [mncs substringWithRange:NSMakeRange(1, (int)[(mncs) length]-1)];
     }
     mnc = [mncs intValue];
-    recs = [NSMutableArray arrayWithArray:[moni componentsSeparatedByString:@"@'#"]];
+    recs = [NSMutableArray arrayWithArray:[moni componentsSeparatedByString:@"#"]];
     // process each line in turn
     [res removeAllObjects];
     for (NSString* _each  in recs) {

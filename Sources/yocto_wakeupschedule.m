@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_wakeupschedule.m 43619 2021-01-29 09:14:45Z mvuilleu $
+ *  $Id: yocto_wakeupschedule.m 45843 2021-08-04 07:51:59Z mvuilleu $
  *
  *  Implements the high-level API for WakeUpSchedule functions
  *
@@ -440,7 +440,7 @@
  * call registerHub() at application initialization time.
  *
  * @param func : a string that uniquely characterizes the wake up schedule, for instance
- *         YHUBGSM3.wakeUpSchedule1.
+ *         YHUBGSM1.wakeUpSchedule1.
  *
  * @return a YWakeUpSchedule object allowing you to drive the wake up schedule.
  */

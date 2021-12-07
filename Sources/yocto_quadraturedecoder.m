@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_quadraturedecoder.m 45292 2021-05-25 23:27:54Z mvuilleu $
+ *  $Id: yocto_quadraturedecoder.m 45843 2021-08-04 07:51:59Z mvuilleu $
  *
  *  Implements the high-level API for QuadratureDecoder functions
  *
@@ -256,7 +256,7 @@
  * call registerHub() at application initialization time.
  *
  * @param func : a string that uniquely characterizes the quadrature decoder, for instance
- *         YPWMRX01.quadratureDecoder.
+ *         YMXBTN01.quadratureDecoder1.
  *
  * @return a YQuadratureDecoder object allowing you to drive the quadrature decoder.
  */

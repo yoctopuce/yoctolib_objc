@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.m 45292 2021-05-25 23:27:54Z mvuilleu $
+ * $Id: yocto_api.m 47312 2021-11-16 09:47:43Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -1282,7 +1282,8 @@ static const char* hexArray = "0123456789ABCDEF";
 
 
 /**
- * Setup the Yoctopuce library to use modules connected on a given machine. The
+ * Setup the Yoctopuce library to use modules connected on a given machine. Idealy this
+ * call will be made once at the begining of your application.  The
  * parameter will determine how the API will work. Use the following values:
  *
  * <b>usb</b>: When the usb keyword is used, the API will work with
@@ -1315,7 +1316,9 @@ static const char* hexArray = "0123456789ABCDEF";
  *
  * http://username:password@address:port
  *
- * You can call <i>RegisterHub</i> several times to connect to several machines.
+ * You can call <i>RegisterHub</i> several times to connect to several machines. On
+ * the other hand, it is useless and even counterproductive to call <i>RegisterHub</i>
+ * with to same address multiple times during the life of the application.
  *
  * @param url : a string containing either "usb","callback" or the
  *         root URL of the hub to monitor
@@ -5997,7 +6000,7 @@ static const char* hexArray = "0123456789ABCDEF";
             }
         } else {
             if (paramVer == 1) {
-                words_str = [NSMutableArray arrayWithArray:[param componentsSeparatedByString:@"@',"]];
+                words_str = [NSMutableArray arrayWithArray:[param componentsSeparatedByString:@","]];
                 for (NSString* _each  in words_str) {
                     [words addObject:[NSNumber numberWithLong:[_each intValue]]];
                 }
@@ -6546,7 +6549,7 @@ static const char* hexArray = "0123456789ABCDEF";
         free(bigbuff);
     }
     if (!([subdevice_list isEqualToString:@""])) {
-        subdevices = [NSMutableArray arrayWithArray:[subdevice_list componentsSeparatedByString:@"@',"]];
+        subdevices = [NSMutableArray arrayWithArray:[subdevice_list componentsSeparatedByString:@","]];
     }
     return subdevices;
 }
@@ -6897,7 +6900,7 @@ static const char* hexArray = "0123456789ABCDEF";
         free(bigbuff);
     }
     if (!([bootloader_list isEqualToString:@""])) {
-        bootladers = [NSMutableArray arrayWithArray:[bootloader_list componentsSeparatedByString:@"@',"]];
+        bootladers = [NSMutableArray arrayWithArray:[bootloader_list componentsSeparatedByString:@","]];
     }
     return bootladers;
 }
@@ -7197,16 +7200,26 @@ static const char* hexArray = "0123456789ABCDEF";
     if (_isAvg) {
         while (idx + 3 < (int)[udat count]) {
             [dat removeAllObjects];
-            [dat addObject:[NSNumber numberWithDouble:[self _decodeVal:[[udat objectAtIndex:idx + 2] intValue] + ((([[udat objectAtIndex:idx + 3] intValue]) << (16)))]]];
-            [dat addObject:[NSNumber numberWithDouble:[self _decodeAvg:[[udat objectAtIndex:idx] intValue] + ((((([[udat objectAtIndex:idx + 1] intValue]) ^ (0x8000))) << (16))) :1]]];
-            [dat addObject:[NSNumber numberWithDouble:[self _decodeVal:[[udat objectAtIndex:idx + 4] intValue] + ((([[udat objectAtIndex:idx + 5] intValue]) << (16)))]]];
+            if (([[udat objectAtIndex:idx] intValue] == 65535) && ([[udat objectAtIndex:idx + 1] intValue] == 65535)) {
+                [dat addObject:[NSNumber numberWithDouble:NAN]];
+                [dat addObject:[NSNumber numberWithDouble:NAN]];
+                [dat addObject:[NSNumber numberWithDouble:NAN]];
+            } else {
+                [dat addObject:[NSNumber numberWithDouble:[self _decodeVal:[[udat objectAtIndex:idx + 2] intValue] + ((([[udat objectAtIndex:idx + 3] intValue]) << (16)))]]];
+                [dat addObject:[NSNumber numberWithDouble:[self _decodeAvg:[[udat objectAtIndex:idx] intValue] + ((((([[udat objectAtIndex:idx + 1] intValue]) ^ (0x8000))) << (16))) :1]]];
+                [dat addObject:[NSNumber numberWithDouble:[self _decodeVal:[[udat objectAtIndex:idx + 4] intValue] + ((([[udat objectAtIndex:idx + 5] intValue]) << (16)))]]];
+            }
             idx = idx + 6;
             [_values addObject:[dat copy]];
         }
     } else {
         while (idx + 1 < (int)[udat count]) {
             [dat removeAllObjects];
-            [dat addObject:[NSNumber numberWithDouble:[self _decodeAvg:[[udat objectAtIndex:idx] intValue] + ((((([[udat objectAtIndex:idx + 1] intValue]) ^ (0x8000))) << (16))) :1]]];
+            if (([[udat objectAtIndex:idx] intValue] == 65535) && ([[udat objectAtIndex:idx + 1] intValue] == 65535)) {
+                [dat addObject:[NSNumber numberWithDouble:NAN]];
+            } else {
+                [dat addObject:[NSNumber numberWithDouble:[self _decodeAvg:[[udat objectAtIndex:idx] intValue] + ((((([[udat objectAtIndex:idx + 1] intValue]) ^ (0x8000))) << (16))) :1]]];
+            }
             [_values addObject:[dat copy]];
             idx = idx + 2;
         }
@@ -7959,6 +7972,7 @@ static const char* hexArray = "0123456789ABCDEF";
     double tim;
     double itv;
     double fitv;
+    double avgv;
     double end_;
     int nCols;
     int minCol;
@@ -8009,8 +8023,9 @@ static const char* hexArray = "0123456789ABCDEF";
         } else {
             end_ = tim + itv;
         }
-        if ((end_ > _startTimeMs) && ((_endTimeMs == 0) || (tim < _endTimeMs))) {
-            [_measures addObject:ARC_sendAutorelease([[YMeasure alloc] initWith:tim / 1000 :end_ / 1000 :[[_each objectAtIndex:minCol] doubleValue] :[[_each objectAtIndex:avgCol] doubleValue] :[[_each objectAtIndex:maxCol] doubleValue]])];
+        avgv = [[_each objectAtIndex:avgCol] doubleValue];
+        if ((end_ > _startTimeMs) && ((_endTimeMs == 0) || (tim < _endTimeMs)) && !((avgv == avgv))) {
+            [_measures addObject:ARC_sendAutorelease([[YMeasure alloc] initWith:tim / 1000 :end_ / 1000 :[[_each objectAtIndex:minCol] doubleValue] :avgv :[[_each objectAtIndex:maxCol] doubleValue]])];
         }
         tim = end_;
     }
@@ -8956,7 +8971,7 @@ static const char* hexArray = "0123456789ABCDEF";
  * call registerHub() at application initialization time.
  *
  * @param func : a string that uniquely characterizes the data logger, for instance
- *         RX420MA1.dataLogger.
+ *         LIGHTMK4.dataLogger.
  *
  * @return a YDataLogger object allowing you to drive the data logger.
  */
@@ -9192,7 +9207,8 @@ void yDisableExceptions(void) { [YAPI DisableExceptions]; }
 void yEnableExceptions(void)  { [YAPI EnableExceptions]; }
 
 /**
- * Setup the Yoctopuce library to use modules connected on a given machine. The
+ * Setup the Yoctopuce library to use modules connected on a given machine. Idealy this
+ * call will be made once at the begining of your application.  The
  * parameter will determine how the API will work. Use the following values:
  *
  * <b>usb</b>: When the usb keyword is used, the API will work with
@@ -9225,7 +9241,9 @@ void yEnableExceptions(void)  { [YAPI EnableExceptions]; }
  *
  * http://username:password@address:port
  *
- * You can call <i>RegisterHub</i> several times to connect to several machines.
+ * You can call <i>RegisterHub</i> several times to connect to several machines. On
+ * the other hand, it is useless and even counterproductive to call <i>RegisterHub</i>
+ * with to same address multiple times during the life of the application.
  *
  * @param url : a string containing either "usb","callback" or the
  *         root URL of the hub to monitor

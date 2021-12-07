@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_realtimeclock.m 43580 2021-01-26 17:46:01Z mvuilleu $
+ *  $Id: yocto_realtimeclock.m 45843 2021-08-04 07:51:59Z mvuilleu $
  *
  *  Implements the high-level API for RealTimeClock functions
  *
@@ -267,7 +267,7 @@
  * call registerHub() at application initialization time.
  *
  * @param func : a string that uniquely characterizes the real-time clock, for instance
- *         YHUBGSM3.realTimeClock.
+ *         YHUBGSM1.realTimeClock.
  *
  * @return a YRealTimeClock object allowing you to drive the real-time clock.
  */
