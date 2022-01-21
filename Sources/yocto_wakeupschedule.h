@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_wakeupschedule.h 47630 2021-12-10 17:04:48Z mvuilleu $
+ *  $Id: yocto_wakeupschedule.h 48183 2022-01-20 10:26:11Z mvuilleu $
  *
  *  Declares yFindWakeUpSchedule(), the high-level API for WakeUpSchedule functions
  *
@@ -57,7 +57,7 @@ typedef void (*YWakeUpScheduleValueCallback)(YWakeUpSchedule *func, NSString *fu
 //--- (YWakeUpSchedule class start)
 /**
  * YWakeUpSchedule Class: wake up schedule control interface, available for instance in the
- * YoctoHub-GSM-2G, the YoctoHub-GSM-4G, the YoctoHub-Wireless-g or the YoctoHub-Wireless-n
+ * YoctoHub-GSM-4G, the YoctoHub-Wireless-SR, the YoctoHub-Wireless-g or the YoctoHub-Wireless-n
  *
  * The YWakeUpSchedule class implements a wake up condition. The wake up time is
  * specified as a set of months and/or days and/or hours and/or minutes when the
@@ -274,7 +274,7 @@ typedef void (*YWakeUpScheduleValueCallback)(YWakeUpSchedule *func, NSString *fu
  * call registerHub() at application initialization time.
  *
  * @param func : a string that uniquely characterizes the wake up schedule, for instance
- *         YHUBGSM1.wakeUpSchedule1.
+ *         YHUBGSM5.wakeUpSchedule1.
  *
  * @return a YWakeUpSchedule object allowing you to drive the wake up schedule.
  */
@@ -364,7 +364,7 @@ NS_SWIFT_NAME(FirstWakeUpSchedule());
  * call registerHub() at application initialization time.
  *
  * @param func : a string that uniquely characterizes the wake up schedule, for instance
- *         YHUBGSM1.wakeUpSchedule1.
+ *         YHUBGSM5.wakeUpSchedule1.
  *
  * @return a YWakeUpSchedule object allowing you to drive the wake up schedule.
  */

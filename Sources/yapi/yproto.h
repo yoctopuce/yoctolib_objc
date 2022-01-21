@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yproto.h 47551 2021-12-03 08:01:44Z seb $
+ * $Id: yproto.h 47923 2022-01-07 10:43:12Z seb $
  *
  * Definitions and prototype common to all supported OS
  *
@@ -258,7 +258,6 @@ int ymemfind(const u8* haystack, u32 haystack_len, const u8* needle, u32 needle_
 //#define DEBUG_DUMP_PKT
 //#define DEBUG_USB_TRAFIC
 //#define TRACE_NET_HUB
-//#define DEBUG_TRACE_FILE "c:\\tmp\\tracefile.txt"
 //#define DEBUG_TCP
 //#define DEBUG_WEBSOCKET
 //#define TRACE_REQUESTS
@@ -1073,7 +1072,7 @@ void yyyPacketShutdown(yInterfaceSt* iface);
 //some early declarations
 void wpSafeRegister(HubSt* hub, u8 devYdx, yStrRef serialref, yStrRef lnameref, yStrRef productref, u16 deviceid, yUrlRef devUrl, s8 beacon);
 void wpSafeUpdate(HubSt* hub, u8 devYdx, yStrRef serialref, yStrRef lnameref, yUrlRef devUrl, s8 beacon);
-void wpSafeUnregister(yStrRef serialref);
+void wpSafeUnregister(yUrlRef eventUrl, yStrRef serialref);
 
 void ypUpdateUSB(const char* serial, const char* funcid, const char* funcname, int funclass, int funydx, const char* funcval);
 void ypUpdateYdx(int devydx, Notification_funydx funInfo, const char* funcval);

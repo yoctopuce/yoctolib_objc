@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_messagebox.m 43619 2021-01-29 09:14:45Z mvuilleu $
+ * $Id: yocto_messagebox.m 48014 2022-01-12 08:06:41Z seb $
  *
  * Implements the high-level API for MessageBox functions
  *
@@ -759,7 +759,7 @@
                 n = n - 1;
                 v2 = 4 * (((u8*)([res bytes]))[n]) + v1;
                 if ((((u8*)([expasc bytes]))[i-3]) == 45) {
-                    v2 += 128;
+                    v2 = v2 + 128;
                 }
                 (((u8*)([res mutableBytes]))[ n]) = v2;
             }
