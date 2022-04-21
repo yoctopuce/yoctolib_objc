@@ -53,7 +53,7 @@ int main(int argc, const char * argv[])
                          [target stringByAppendingString:@".i2cPort"]];
 
     if ([i2cPort isOnline]) {
-      [i2cPort set_i2cMode:@"400kbps"];
+      [i2cPort set_i2cMode:@"100kbps"];
       [i2cPort set_i2cVoltageLevel:Y_I2CVOLTAGELEVEL_3V3];
       [i2cPort reset];
       NSLog(@"****************************");

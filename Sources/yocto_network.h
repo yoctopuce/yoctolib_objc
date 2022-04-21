@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_network.h 48183 2022-01-20 10:26:11Z mvuilleu $
+ *  $Id: yocto_network.h 49385 2022-04-06 00:49:27Z mvuilleu $
  *
  *  Declares yFindNetwork(), the high-level API for Network functions
  *
@@ -96,6 +96,7 @@ typedef enum {
 #define Y_IPADDRESS_INVALID             YAPI_INVALID_STRING
 #define Y_SUBNETMASK_INVALID            YAPI_INVALID_STRING
 #define Y_ROUTER_INVALID                YAPI_INVALID_STRING
+#define Y_CURRENTDNS_INVALID            YAPI_INVALID_STRING
 #define Y_IPCONFIG_INVALID              YAPI_INVALID_STRING
 #define Y_PRIMARYDNS_INVALID            YAPI_INVALID_STRING
 #define Y_SECONDARYDNS_INVALID          YAPI_INVALID_STRING
@@ -117,7 +118,7 @@ typedef enum {
 //--- (YNetwork class start)
 /**
  * YNetwork Class: network interface control interface, available for instance in the
- * YoctoHub-Ethernet, the YoctoHub-GSM-4G, the YoctoHub-Wireless-g or the YoctoHub-Wireless-n
+ * YoctoHub-Ethernet, the YoctoHub-GSM-4G, the YoctoHub-Wireless-SR or the YoctoHub-Wireless-n
  *
  * YNetwork objects provide access to TCP/IP parameters of Yoctopuce
  * devices that include a built-in network interface.
@@ -132,6 +133,7 @@ typedef enum {
     NSString*       _ipAddress;
     NSString*       _subnetMask;
     NSString*       _router;
+    NSString*       _currentDNS;
     NSString*       _ipConfig;
     NSString*       _primaryDNS;
     NSString*       _secondaryDNS;
@@ -237,6 +239,17 @@ typedef enum {
 
 
 -(NSString*) router;
+/**
+ * Returns the IP address of the DNS server currently used by the device.
+ *
+ * @return a string corresponding to the IP address of the DNS server currently used by the device
+ *
+ * On failure, throws an exception or returns YNetwork.CURRENTDNS_INVALID.
+ */
+-(NSString*)     get_currentDNS;
+
+
+-(NSString*) currentDNS;
 /**
  * Returns the IP configuration of the network interface.
  *

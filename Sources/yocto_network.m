@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_network.m 43619 2021-01-29 09:14:45Z mvuilleu $
+ *  $Id: yocto_network.m 48692 2022-02-24 22:30:52Z mvuilleu $
  *
  *  Implements the high-level API for Network functions
  *
@@ -58,6 +58,7 @@
     _ipAddress = Y_IPADDRESS_INVALID;
     _subnetMask = Y_SUBNETMASK_INVALID;
     _router = Y_ROUTER_INVALID;
+    _currentDNS = Y_CURRENTDNS_INVALID;
     _ipConfig = Y_IPCONFIG_INVALID;
     _primaryDNS = Y_PRIMARYDNS_INVALID;
     _secondaryDNS = Y_SECONDARYDNS_INVALID;
@@ -95,6 +96,8 @@
     _subnetMask = nil;
     ARC_release(_router);
     _router = nil;
+    ARC_release(_currentDNS);
+    _currentDNS = nil;
     ARC_release(_ipConfig);
     _ipConfig = nil;
     ARC_release(_primaryDNS);
@@ -153,6 +156,13 @@
        ARC_release(_router);
         _router =  [self _parseString:j];
         ARC_retain(_router);
+        return 1;
+    }
+    if(!strcmp(j->token, "currentDNS")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+       ARC_release(_currentDNS);
+        _currentDNS =  [self _parseString:j];
+        ARC_retain(_currentDNS);
         return 1;
     }
     if(!strcmp(j->token, "ipConfig")) {
@@ -410,6 +420,30 @@
 -(NSString*) router
 {
     return [self get_router];
+}
+/**
+ * Returns the IP address of the DNS server currently used by the device.
+ *
+ * @return a string corresponding to the IP address of the DNS server currently used by the device
+ *
+ * On failure, throws an exception or returns YNetwork.CURRENTDNS_INVALID.
+ */
+-(NSString*) get_currentDNS
+{
+    NSString* res;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
+            return Y_CURRENTDNS_INVALID;
+        }
+    }
+    res = _currentDNS;
+    return res;
+}
+
+
+-(NSString*) currentDNS
+{
+    return [self get_currentDNS];
 }
 /**
  * Returns the IP configuration of the network interface.

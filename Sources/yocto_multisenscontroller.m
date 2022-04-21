@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_multisenscontroller.m 43619 2021-01-29 09:14:45Z mvuilleu $
+ *  $Id: yocto_multisenscontroller.m 49501 2022-04-21 07:09:25Z mvuilleu $
  *
  *  Implements the high-level API for MultiSensController functions
  *
@@ -56,6 +56,7 @@
     _nSensors = Y_NSENSORS_INVALID;
     _maxSensors = Y_MAXSENSORS_INVALID;
     _maintenanceMode = Y_MAINTENANCEMODE_INVALID;
+    _lastAddressDetected = Y_LASTADDRESSDETECTED_INVALID;
     _command = Y_COMMAND_INVALID;
     _valueCallbackMultiSensController = NULL;
 //--- (end of YMultiSensController attributes initialization)
@@ -89,6 +90,11 @@
     if(!strcmp(j->token, "maintenanceMode")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
         _maintenanceMode =  (Y_MAINTENANCEMODE_enum)atoi(j->token);
+        return 1;
+    }
+    if(!strcmp(j->token, "lastAddressDetected")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _lastAddressDetected =  atoi(j->token);
         return 1;
     }
     if(!strcmp(j->token, "command")) {
@@ -132,7 +138,7 @@
  * saveToFlash() method of the module if the
  * modification must be kept. It is recommended to restart the
  * device with  module->reboot() after modifying
- * (and saving) this settings
+ * (and saving) this settings.
  *
  * @param newval : an integer corresponding to the number of sensors to poll
  *
@@ -222,6 +228,33 @@
     NSString* rest_val;
     rest_val = (newval ? @"1" : @"0");
     return [self _setAttr:@"maintenanceMode" :rest_val];
+}
+/**
+ * Returns the I2C address of the most recently detected sensor. This method can
+ * be used to in case of I2C communication error to determine what is the
+ * last sensor that can be reached, or after a call to setupAddress
+ * to make sure that the address change was properly processed.
+ *
+ * @return an integer corresponding to the I2C address of the most recently detected sensor
+ *
+ * On failure, throws an exception or returns YMultiSensController.LASTADDRESSDETECTED_INVALID.
+ */
+-(int) get_lastAddressDetected
+{
+    int res;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
+            return Y_LASTADDRESSDETECTED_INVALID;
+        }
+    }
+    res = _lastAddressDetected;
+    return res;
+}
+
+
+-(int) lastAddressDetected
+{
+    return [self get_lastAddressDetected];
 }
 -(NSString*) get_command
 {
@@ -334,9 +367,10 @@
  * Configures the I2C address of the only sensor connected to the device.
  * It is recommended to put the the device in maintenance mode before
  * changing sensor addresses.  This method is only intended to work with a single
- * sensor connected to the device, if several sensors are connected, the result
+ * sensor connected to the device. If several sensors are connected, the result
  * is unpredictable.
- * Note that the device is probably expecting to find a string of sensors with specific
+ *
+ * Note that the device is expecting to find a sensor or a string of sensors with specific
  * addresses. Check the device documentation to find out which addresses should be used.
  *
  * @param addr : new address of the connected sensor
@@ -347,8 +381,34 @@
 -(int) setupAddress:(int)addr
 {
     NSString* cmd;
+    int res;
     cmd = [NSString stringWithFormat:@"A%d",addr];
-    return [self set_command:cmd];
+    res = [self set_command:cmd];
+    if (!(res == YAPI_SUCCESS)) {[self _throw: YAPI_IO_ERROR: @"unable to trigger address change"]; return YAPI_IO_ERROR;}
+    [YAPI Sleep:1500 :NULL];
+    res = [self get_lastAddressDetected];
+    if (!(res > 0)) {[self _throw: YAPI_IO_ERROR: @"IR sensor not found"]; return YAPI_IO_ERROR;}
+    if (!(res == addr)) {[self _throw: YAPI_IO_ERROR: @"address change failed"]; return YAPI_IO_ERROR;}
+    return YAPI_SUCCESS;
+}
+
+/**
+ * Triggers the I2C address detection procedure for the only sensor connected to the device.
+ * This method is only intended to work with a single sensor connected to the device.
+ * If several sensors are connected, the result is unpredictable.
+ *
+ * @return the I2C address of the detected sensor, or 0 if none is found
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) get_sensorAddress
+{
+    int res;
+    res = [self set_command:@"a"];
+    if (!(res == YAPI_SUCCESS)) {[self _throw: YAPI_IO_ERROR: @"unable to trigger address detection"]; return res;}
+    [YAPI Sleep:1000 :NULL];
+    res = [self get_lastAddressDetected];
+    return res;
 }
 
 

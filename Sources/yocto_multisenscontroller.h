@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_multisenscontroller.h 43619 2021-01-29 09:14:45Z mvuilleu $
+ *  $Id: yocto_multisenscontroller.h 49501 2022-04-21 07:09:25Z mvuilleu $
  *
  *  Declares yFindMultiSensController(), the high-level API for MultiSensController functions
  *
@@ -55,6 +55,7 @@ typedef enum {
 #endif
 #define Y_NSENSORS_INVALID              YAPI_INVALID_UINT
 #define Y_MAXSENSORS_INVALID            YAPI_INVALID_UINT
+#define Y_LASTADDRESSDETECTED_INVALID   YAPI_INVALID_UINT
 #define Y_COMMAND_INVALID               YAPI_INVALID_STRING
 //--- (end of YMultiSensController globals)
 
@@ -74,6 +75,7 @@ typedef enum {
     int             _nSensors;
     int             _maxSensors;
     Y_MAINTENANCEMODE_enum _maintenanceMode;
+    int             _lastAddressDetected;
     NSString*       _command;
     YMultiSensControllerValueCallback _valueCallbackMultiSensController;
 //--- (end of YMultiSensController attributes declaration)
@@ -105,7 +107,7 @@ typedef enum {
  * saveToFlash() method of the module if the
  * modification must be kept. It is recommended to restart the
  * device with  module->reboot() after modifying
- * (and saving) this settings
+ * (and saving) this settings.
  *
  * @param newval : an integer corresponding to the number of sensors to poll
  *
@@ -155,6 +157,20 @@ typedef enum {
 -(int)     set_maintenanceMode:(Y_MAINTENANCEMODE_enum) newval;
 -(int)     setMaintenanceMode:(Y_MAINTENANCEMODE_enum) newval;
 
+/**
+ * Returns the I2C address of the most recently detected sensor. This method can
+ * be used to in case of I2C communication error to determine what is the
+ * last sensor that can be reached, or after a call to setupAddress
+ * to make sure that the address change was properly processed.
+ *
+ * @return an integer corresponding to the I2C address of the most recently detected sensor
+ *
+ * On failure, throws an exception or returns YMultiSensController.LASTADDRESSDETECTED_INVALID.
+ */
+-(int)     get_lastAddressDetected;
+
+
+-(int) lastAddressDetected;
 -(NSString*)     get_command;
 
 
@@ -211,9 +227,10 @@ typedef enum {
  * Configures the I2C address of the only sensor connected to the device.
  * It is recommended to put the the device in maintenance mode before
  * changing sensor addresses.  This method is only intended to work with a single
- * sensor connected to the device, if several sensors are connected, the result
+ * sensor connected to the device. If several sensors are connected, the result
  * is unpredictable.
- * Note that the device is probably expecting to find a string of sensors with specific
+ *
+ * Note that the device is expecting to find a sensor or a string of sensors with specific
  * addresses. Check the device documentation to find out which addresses should be used.
  *
  * @param addr : new address of the connected sensor
@@ -222,6 +239,17 @@ typedef enum {
  *         On failure, throws an exception or returns a negative error code.
  */
 -(int)     setupAddress:(int)addr;
+
+/**
+ * Triggers the I2C address detection procedure for the only sensor connected to the device.
+ * This method is only intended to work with a single sensor connected to the device.
+ * If several sensors are connected, the result is unpredictable.
+ *
+ * @return the I2C address of the detected sensor, or 0 if none is found
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     get_sensorAddress;
 
 
 /**

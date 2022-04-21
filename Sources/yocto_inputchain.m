@@ -59,6 +59,7 @@ static void yInternalEventCallback(YInputChain *inputChain, NSString *value)
 //--- (YInputChain attributes initialization)
     _expectedNodes = Y_EXPECTEDNODES_INVALID;
     _detectedNodes = Y_DETECTEDNODES_INVALID;
+    _loopbackTest = Y_LOOPBACKTEST_INVALID;
     _refreshRate = Y_REFRESHRATE_INVALID;
     _bitChain1 = Y_BITCHAIN1_INVALID;
     _bitChain2 = Y_BITCHAIN2_INVALID;
@@ -113,6 +114,11 @@ static void yInternalEventCallback(YInputChain *inputChain, NSString *value)
     if(!strcmp(j->token, "detectedNodes")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
         _detectedNodes =  atoi(j->token);
+        return 1;
+    }
+    if(!strcmp(j->token, "loopbackTest")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _loopbackTest =  (Y_LOOPBACKTEST_enum)atoi(j->token);
         return 1;
     }
     if(!strcmp(j->token, "refreshRate")) {
@@ -252,6 +258,56 @@ static void yInternalEventCallback(YInputChain *inputChain, NSString *value)
 -(int) detectedNodes
 {
     return [self get_detectedNodes];
+}
+/**
+ * Returns the activation state of the exhaustive chain connectivity test.
+ * The connectivity test requires a cable connecting the end of the chain
+ * to the loopback test connector.
+ *
+ * @return either YInputChain.LOOPBACKTEST_OFF or YInputChain.LOOPBACKTEST_ON, according to the
+ * activation state of the exhaustive chain connectivity test
+ *
+ * On failure, throws an exception or returns YInputChain.LOOPBACKTEST_INVALID.
+ */
+-(Y_LOOPBACKTEST_enum) get_loopbackTest
+{
+    Y_LOOPBACKTEST_enum res;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
+            return Y_LOOPBACKTEST_INVALID;
+        }
+    }
+    res = _loopbackTest;
+    return res;
+}
+
+
+-(Y_LOOPBACKTEST_enum) loopbackTest
+{
+    return [self get_loopbackTest];
+}
+
+/**
+ * Changes the activation state of the exhaustive chain connectivity test.
+ * The connectivity test requires a cable connecting the end of the chain
+ * to the loopback test connector.
+ *
+ * @param newval : either YInputChain.LOOPBACKTEST_OFF or YInputChain.LOOPBACKTEST_ON, according to
+ * the activation state of the exhaustive chain connectivity test
+ *
+ * @return YAPI.SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) set_loopbackTest:(Y_LOOPBACKTEST_enum) newval
+{
+    return [self setLoopbackTest:newval];
+}
+-(int) setLoopbackTest:(Y_LOOPBACKTEST_enum) newval
+{
+    NSString* rest_val;
+    rest_val = (newval ? @"1" : @"0");
+    return [self _setAttr:@"loopbackTest" :rest_val];
 }
 /**
  * Returns the desired refresh rate, measured in Hz.
