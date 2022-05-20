@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_spiport.h 43619 2021-01-29 09:14:45Z mvuilleu $
+ *  $Id: yocto_spiport.h 49744 2022-05-11 15:13:45Z mvuilleu $
  *
  *  Declares yFindSpiPort(), the high-level API for SpiPort functions
  *
@@ -56,6 +56,7 @@ typedef enum {
     Y_VOLTAGELEVEL_RS232 = 5,
     Y_VOLTAGELEVEL_RS485 = 6,
     Y_VOLTAGELEVEL_TTL1V8 = 7,
+    Y_VOLTAGELEVEL_SDI12 = 8,
     Y_VOLTAGELEVEL_INVALID = -1,
 } Y_VOLTAGELEVEL_enum;
 #endif
@@ -379,8 +380,8 @@ typedef enum {
  *
  * @return a value among YSpiPort.VOLTAGELEVEL_OFF, YSpiPort.VOLTAGELEVEL_TTL3V,
  * YSpiPort.VOLTAGELEVEL_TTL3VR, YSpiPort.VOLTAGELEVEL_TTL5V, YSpiPort.VOLTAGELEVEL_TTL5VR,
- * YSpiPort.VOLTAGELEVEL_RS232, YSpiPort.VOLTAGELEVEL_RS485 and YSpiPort.VOLTAGELEVEL_TTL1V8
- * corresponding to the voltage level used on the serial line
+ * YSpiPort.VOLTAGELEVEL_RS232, YSpiPort.VOLTAGELEVEL_RS485, YSpiPort.VOLTAGELEVEL_TTL1V8 and
+ * YSpiPort.VOLTAGELEVEL_SDI12 corresponding to the voltage level used on the serial line
  *
  * On failure, throws an exception or returns YSpiPort.VOLTAGELEVEL_INVALID.
  */
@@ -399,8 +400,8 @@ typedef enum {
  *
  * @param newval : a value among YSpiPort.VOLTAGELEVEL_OFF, YSpiPort.VOLTAGELEVEL_TTL3V,
  * YSpiPort.VOLTAGELEVEL_TTL3VR, YSpiPort.VOLTAGELEVEL_TTL5V, YSpiPort.VOLTAGELEVEL_TTL5VR,
- * YSpiPort.VOLTAGELEVEL_RS232, YSpiPort.VOLTAGELEVEL_RS485 and YSpiPort.VOLTAGELEVEL_TTL1V8
- * corresponding to the voltage type used on the serial line
+ * YSpiPort.VOLTAGELEVEL_RS232, YSpiPort.VOLTAGELEVEL_RS485, YSpiPort.VOLTAGELEVEL_TTL1V8 and
+ * YSpiPort.VOLTAGELEVEL_SDI12 corresponding to the voltage type used on the serial line
  *
  * @return YAPI.SUCCESS if the call succeeds.
  *

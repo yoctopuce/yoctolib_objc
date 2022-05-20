@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_spiport.m 43619 2021-01-29 09:14:45Z mvuilleu $
+ *  $Id: yocto_spiport.m 49744 2022-05-11 15:13:45Z mvuilleu $
  *
  *  Implements the high-level API for SpiPort functions
  *
@@ -661,8 +661,8 @@
  *
  * @return a value among YSpiPort.VOLTAGELEVEL_OFF, YSpiPort.VOLTAGELEVEL_TTL3V,
  * YSpiPort.VOLTAGELEVEL_TTL3VR, YSpiPort.VOLTAGELEVEL_TTL5V, YSpiPort.VOLTAGELEVEL_TTL5VR,
- * YSpiPort.VOLTAGELEVEL_RS232, YSpiPort.VOLTAGELEVEL_RS485 and YSpiPort.VOLTAGELEVEL_TTL1V8
- * corresponding to the voltage level used on the serial line
+ * YSpiPort.VOLTAGELEVEL_RS232, YSpiPort.VOLTAGELEVEL_RS485, YSpiPort.VOLTAGELEVEL_TTL1V8 and
+ * YSpiPort.VOLTAGELEVEL_SDI12 corresponding to the voltage level used on the serial line
  *
  * On failure, throws an exception or returns YSpiPort.VOLTAGELEVEL_INVALID.
  */
@@ -695,8 +695,8 @@
  *
  * @param newval : a value among YSpiPort.VOLTAGELEVEL_OFF, YSpiPort.VOLTAGELEVEL_TTL3V,
  * YSpiPort.VOLTAGELEVEL_TTL3VR, YSpiPort.VOLTAGELEVEL_TTL5V, YSpiPort.VOLTAGELEVEL_TTL5VR,
- * YSpiPort.VOLTAGELEVEL_RS232, YSpiPort.VOLTAGELEVEL_RS485 and YSpiPort.VOLTAGELEVEL_TTL1V8
- * corresponding to the voltage type used on the serial line
+ * YSpiPort.VOLTAGELEVEL_RS232, YSpiPort.VOLTAGELEVEL_RS485, YSpiPort.VOLTAGELEVEL_TTL1V8 and
+ * YSpiPort.VOLTAGELEVEL_SDI12 corresponding to the voltage type used on the serial line
  *
  * @return YAPI.SUCCESS if the call succeeds.
  *

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_serialport.h 48954 2022-03-14 09:55:13Z seb $
+ * $Id: yocto_serialport.h 49777 2022-05-18 09:18:19Z seb $
  *
  * Declares yFindSerialPort(), the high-level API for SerialPort functions
  *
@@ -41,9 +41,11 @@
 CF_EXTERN_C_BEGIN
 NS_ASSUME_NONNULL_BEGIN
 @class YSerialPort;
+@class YSnoopingRecord;
 
 //--- (generated code: YSerialPort globals)
 typedef void (*YSerialPortValueCallback)(YSerialPort *func, NSString *functionValue);
+typedef void (*YSnoopingCallback)(YSerialPort *serialPort, YSnoopingRecord *rec);
 #ifndef _Y_VOLTAGELEVEL_ENUM
 #define _Y_VOLTAGELEVEL_ENUM
 typedef enum {
@@ -55,6 +57,7 @@ typedef enum {
     Y_VOLTAGELEVEL_RS232 = 5,
     Y_VOLTAGELEVEL_RS485 = 6,
     Y_VOLTAGELEVEL_TTL1V8 = 7,
+    Y_VOLTAGELEVEL_SDI12 = 8,
     Y_VOLTAGELEVEL_INVALID = -1,
 } Y_VOLTAGELEVEL_enum;
 #endif
@@ -166,6 +169,8 @@ typedef enum {
     int             _rxptr;
     NSMutableData*  _rxbuff;
     int             _rxbuffptr;
+    YSnoopingCallback _eventCallback;
+    int             _eventPos;
 //--- (end of generated code: YSerialPort attributes declaration)
 }
 // Constructor is protected, use yFindSerialPort factory function to instantiate
@@ -371,8 +376,8 @@ typedef enum {
  *
  * @return a value among YSerialPort.VOLTAGELEVEL_OFF, YSerialPort.VOLTAGELEVEL_TTL3V,
  * YSerialPort.VOLTAGELEVEL_TTL3VR, YSerialPort.VOLTAGELEVEL_TTL5V, YSerialPort.VOLTAGELEVEL_TTL5VR,
- * YSerialPort.VOLTAGELEVEL_RS232, YSerialPort.VOLTAGELEVEL_RS485 and YSerialPort.VOLTAGELEVEL_TTL1V8
- * corresponding to the voltage level used on the serial line
+ * YSerialPort.VOLTAGELEVEL_RS232, YSerialPort.VOLTAGELEVEL_RS485, YSerialPort.VOLTAGELEVEL_TTL1V8 and
+ * YSerialPort.VOLTAGELEVEL_SDI12 corresponding to the voltage level used on the serial line
  *
  * On failure, throws an exception or returns YSerialPort.VOLTAGELEVEL_INVALID.
  */
@@ -391,8 +396,8 @@ typedef enum {
  *
  * @param newval : a value among YSerialPort.VOLTAGELEVEL_OFF, YSerialPort.VOLTAGELEVEL_TTL3V,
  * YSerialPort.VOLTAGELEVEL_TTL3VR, YSerialPort.VOLTAGELEVEL_TTL5V, YSerialPort.VOLTAGELEVEL_TTL5VR,
- * YSerialPort.VOLTAGELEVEL_RS232, YSerialPort.VOLTAGELEVEL_RS485 and YSerialPort.VOLTAGELEVEL_TTL1V8
- * corresponding to the voltage type used on the serial line
+ * YSerialPort.VOLTAGELEVEL_RS232, YSerialPort.VOLTAGELEVEL_RS485, YSerialPort.VOLTAGELEVEL_TTL1V8 and
+ * YSerialPort.VOLTAGELEVEL_SDI12 corresponding to the voltage type used on the serial line
  *
  * @return YAPI.SUCCESS if the call succeeds.
  *
@@ -795,6 +800,21 @@ typedef enum {
  * On failure, throws an exception or returns an empty array.
  */
 -(NSMutableArray*)     snoopMessages:(int)maxWait;
+
+/**
+ * Registers a callback function to be called each time that a message is sent or
+ * received by the serial port.
+ *
+ * @param callback : the callback function to call, or a nil pointer.
+ *         The callback function should take four arguments:
+ *         the YSerialPort object that emitted the event, and
+ *         the SnoopingRecord object that describes the message
+ *         sent or received.
+ *         On failure, throws an exception or returns a negative error code.
+ */
+-(int)     registerSnoopingCallback:(YSnoopingCallback _Nullable)callback;
+
+-(int)     _internalEventHandler:(NSString*)advstr;
 
 /**
  * Sends an ASCII string to the serial port, preceeded with an STX code and

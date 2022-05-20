@@ -43,10 +43,6 @@
 #include "yapi/yapi.h"
 
 
-static void yInternalEventCallback(YInputChain *inputChain, NSString *value)
-{
-    [inputChain _internalEventHandler:value];
-}
 
 @implementation YInputChain
 
@@ -80,6 +76,10 @@ static void yInternalEventCallback(YInputChain *inputChain, NSString *value)
     return self;
 }
 //--- (YInputChain yapiwrapper)
+static void yInternalEventCallback(YInputChain *obj, NSString *value)
+{
+    [obj _internalEventHandler:value];
+}
 //--- (end of YInputChain yapiwrapper)
 // destructor
 -(void)  dealloc

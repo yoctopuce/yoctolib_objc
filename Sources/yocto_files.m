@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_files.m 43619 2021-01-29 09:14:45Z mvuilleu $
+ * $Id: yocto_files.m 49755 2022-05-13 09:48:35Z mvuilleu $
  *
  * Implements yFindFiles(), the high-level API for Files functions
  *
@@ -259,7 +259,7 @@
  * call registerHub() at application initialization time.
  *
  * @param func : a string that uniquely characterizes the filesystem, for instance
- *         YRGBLED2.files.
+ *         YMAXBUZ1.files.
  *
  * @return a YFiles object allowing you to drive the filesystem.
  */
