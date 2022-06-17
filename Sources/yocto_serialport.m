@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_serialport.m 49818 2022-05-19 09:57:42Z seb $
+ * $Id: yocto_serialport.m 49903 2022-05-25 14:18:36Z mvuilleu $
  *
  * Implements the high-level API for SerialPort functions
  *
@@ -167,8 +167,8 @@
     _valueCallbackSerialPort = NULL;
     _rxptr = 0;
     _rxbuffptr = 0;
-    _eventCallback = NULL;
     _eventPos = 0;
+    _eventCallback = NULL;
 //--- (end of generated code: YSerialPort attributes initialization)
     return self;
 }
@@ -1113,6 +1113,7 @@ static void yInternalEventCallback(YSerialPort *obj, NSString *value)
  */
 -(int) reset
 {
+    _eventPos = 0;
     _rxptr = 0;
     _rxbuffptr = 0;
     _rxbuff = [NSMutableData dataWithLength:0];
@@ -1617,12 +1618,15 @@ static void yInternalEventCallback(YSerialPort *obj, NSString *value)
 
 /**
  * Registers a callback function to be called each time that a message is sent or
- * received by the serial port.
+ * received by the serial port. The callback is invoked only during the execution of
+ * ySleep or yHandleEvents. This provides control over the time when
+ * the callback is triggered. For good responsiveness, remember to call one of these
+ * two functions periodically. To unregister a callback, pass a nil pointer as argument.
  *
  * @param callback : the callback function to call, or a nil pointer.
  *         The callback function should take four arguments:
  *         the YSerialPort object that emitted the event, and
- *         the SnoopingRecord object that describes the message
+ *         the YSnoopingRecord object that describes the message
  *         sent or received.
  *         On failure, throws an exception or returns a negative error code.
  */

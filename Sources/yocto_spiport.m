@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_spiport.m 49744 2022-05-11 15:13:45Z mvuilleu $
+ *  $Id: yocto_spiport.m 49903 2022-05-25 14:18:36Z mvuilleu $
  *
  *  Implements the high-level API for SpiPort functions
  *
@@ -165,6 +165,7 @@
     _valueCallbackSpiPort = NULL;
     _rxptr = 0;
     _rxbuffptr = 0;
+    _eventPos = 0;
 //--- (end of generated code: YSpiPort attributes initialization)
     return self;
 }
@@ -1195,6 +1196,7 @@
  */
 -(int) reset
 {
+    _eventPos = 0;
     _rxptr = 0;
     _rxbuffptr = 0;
     _rxbuff = [NSMutableData dataWithLength:0];

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_spiport.h 49744 2022-05-11 15:13:45Z mvuilleu $
+ *  $Id: yocto_spiport.h 49903 2022-05-25 14:18:36Z mvuilleu $
  *
  *  Declares yFindSpiPort(), the high-level API for SpiPort functions
  *
@@ -183,6 +183,7 @@ typedef enum {
     int             _rxptr;
     NSMutableData*  _rxbuff;
     int             _rxbuffptr;
+    int             _eventPos;
 //--- (end of generated code: YSpiPort attributes declaration)
 }
 // Constructor is protected, use yFindSpiPort factory function to instantiate

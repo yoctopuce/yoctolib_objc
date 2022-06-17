@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_serialport.h 49777 2022-05-18 09:18:19Z seb $
+ * $Id: yocto_serialport.h 49903 2022-05-25 14:18:36Z mvuilleu $
  *
  * Declares yFindSerialPort(), the high-level API for SerialPort functions
  *
@@ -169,8 +169,8 @@ typedef enum {
     int             _rxptr;
     NSMutableData*  _rxbuff;
     int             _rxbuffptr;
-    YSnoopingCallback _eventCallback;
     int             _eventPos;
+    YSnoopingCallback _eventCallback;
 //--- (end of generated code: YSerialPort attributes declaration)
 }
 // Constructor is protected, use yFindSerialPort factory function to instantiate
@@ -803,12 +803,15 @@ typedef enum {
 
 /**
  * Registers a callback function to be called each time that a message is sent or
- * received by the serial port.
+ * received by the serial port. The callback is invoked only during the execution of
+ * ySleep or yHandleEvents. This provides control over the time when
+ * the callback is triggered. For good responsiveness, remember to call one of these
+ * two functions periodically. To unregister a callback, pass a nil pointer as argument.
  *
  * @param callback : the callback function to call, or a nil pointer.
  *         The callback function should take four arguments:
  *         the YSerialPort object that emitted the event, and
- *         the SnoopingRecord object that describes the message
+ *         the YSnoopingRecord object that describes the message
  *         sent or received.
  *         On failure, throws an exception or returns a negative error code.
  */

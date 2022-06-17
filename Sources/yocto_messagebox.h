@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_messagebox.h 43619 2021-01-29 09:14:45Z mvuilleu $
+ * $Id: yocto_messagebox.h 50137 2022-06-16 07:39:44Z seb $
  *
  * Declares yFindMessageBox(), the high-level API for MessageBox functions
  *
@@ -401,6 +401,8 @@ typedef void (*YMessageBoxValueCallback)(YMessageBox *func, NSString *functionVa
 -(int)     nextMsgRef;
 
 -(int)     clearSIMSlot:(int)slot;
+
+-(NSString*)     _AT:(NSString*)cmd;
 
 -(YSms*)     fetchPdu:(int)slot;
 

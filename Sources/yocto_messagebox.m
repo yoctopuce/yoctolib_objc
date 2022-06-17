@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_messagebox.m 48014 2022-01-12 08:06:41Z seb $
+ * $Id: yocto_messagebox.m 50144 2022-06-17 06:59:52Z seb $
  *
  * Implements the high-level API for MessageBox functions
  *
@@ -50,12 +50,17 @@
           return nil;
 //--- (generated code: YSms attributes initialization)
     _slot = 0;
+    _smsc = @"";
     _mref = 0;
+    _orig = @"";
+    _dest = @"";
     _pid = 0;
     _alphab = 0;
     _mclass = 0;
+    _stamp = @"";
     _npdu = 0;
     _parts = [NSMutableArray array];
+    _aggSig = @"";
     _aggIdx = 0;
     _aggCnt = 0;
 //--- (end of generated code: YSms attributes initialization)
@@ -538,13 +543,13 @@
         }
     }
     _parts = sorted;
-    _npdu = (int)[sorted count];
     // inherit header fields from first part
     subsms = [_parts objectAtIndex:0];
     retcode = [self parsePdu:[subsms get_pdu]];
     if (retcode != YAPI_SUCCESS) {
         return retcode;
     }
+    _npdu = (int)[sorted count];
     // concatenate user data from all parts
     totsize = 0;
     partno = 0;
@@ -1273,7 +1278,7 @@
     int retcode;
     YSms* pdu;
 
-    if (_slot > 0) {
+    if (_npdu < 2) {
         return [_mbox clearSIMSlot:_slot];
     }
     retcode = YAPI_SUCCESS;
@@ -1311,6 +1316,7 @@
     _command = Y_COMMAND_INVALID;
     _valueCallbackMessageBox = NULL;
     _nextMsgRef = 0;
+    _prevBitmapStr = @"";
     _pdus = [NSMutableArray array];
     _messages = [NSMutableArray array];
     _gsm2unicode = [NSMutableArray array];
@@ -1638,8 +1644,99 @@
 
 -(int) clearSIMSlot:(int)slot
 {
-    _prevBitmapStr = @"";
-    return [self set_command:[NSString stringWithFormat:@"DS%d",slot]];
+    int retry;
+    int idx;
+    NSString* res;
+    NSString* bitmapStr;
+    int int_res;
+    NSMutableData* newBitmap;
+    int bitVal;
+
+    retry = 5;
+    while (retry > 0) {
+        [self clearCache];
+        bitmapStr = [self get_slotsBitmap];
+        newBitmap = [YAPI _hexStr2Bin:bitmapStr];
+        idx = ((slot) >> (3));
+        if (idx < (int)[newBitmap length]) {
+            bitVal = ((1) << ((((slot) & (7)))));
+            if (((((((u8*)([newBitmap bytes]))[idx])) & (bitVal))) != 0) {
+                _prevBitmapStr = @"";
+                int_res = [self set_command:[NSString stringWithFormat:@"DS%d",slot]];
+                if (int_res < 0) {
+                    return int_res;
+                }
+            } else {
+                return YAPI_SUCCESS;
+            }
+        } else {
+            return YAPI_INVALID_ARGUMENT;
+        }
+        res = [self _AT:@""];
+        retry = retry - 1;
+    }
+    return YAPI_IO_ERROR;
+}
+
+-(NSString*) _AT:(NSString*)cmd
+{
+    int chrPos;
+    int cmdLen;
+    int waitMore;
+    NSString* res;
+    NSMutableData* buff;
+    int bufflen;
+    NSString* buffstr;
+    int buffstrlen;
+    int idx;
+    int suffixlen;
+    // copied form the YCellular class
+    // quote dangerous characters used in AT commands
+    cmdLen = (int)[(cmd) length];
+    chrPos = _ystrpos(cmd, @"#");
+    while (chrPos >= 0) {
+        cmd = [NSString stringWithFormat:@"%@%c23%@", [cmd substringWithRange:NSMakeRange( 0, chrPos)], 37,[cmd substringWithRange:NSMakeRange( chrPos+1, cmdLen-chrPos-1)]];
+        cmdLen = cmdLen + 2;
+        chrPos = _ystrpos(cmd, @"#");
+    }
+    chrPos = _ystrpos(cmd, @"+");
+    while (chrPos >= 0) {
+        cmd = [NSString stringWithFormat:@"%@%c2B%@", [cmd substringWithRange:NSMakeRange( 0, chrPos)], 37,[cmd substringWithRange:NSMakeRange( chrPos+1, cmdLen-chrPos-1)]];
+        cmdLen = cmdLen + 2;
+        chrPos = _ystrpos(cmd, @"+");
+    }
+    chrPos = _ystrpos(cmd, @"=");
+    while (chrPos >= 0) {
+        cmd = [NSString stringWithFormat:@"%@%c3D%@", [cmd substringWithRange:NSMakeRange( 0, chrPos)], 37,[cmd substringWithRange:NSMakeRange( chrPos+1, cmdLen-chrPos-1)]];
+        cmdLen = cmdLen + 2;
+        chrPos = _ystrpos(cmd, @"=");
+    }
+    cmd = [NSString stringWithFormat:@"at.txt?cmd=%@",cmd];
+    res = [NSString stringWithFormat:@""];
+    // max 2 minutes (each iteration may take up to 5 seconds if waiting)
+    waitMore = 24;
+    while (waitMore > 0) {
+        buff = [self _download:cmd];
+        bufflen = (int)[buff length];
+        buffstr = ARC_sendAutorelease([[NSString alloc] initWithData:buff encoding:NSISOLatin1StringEncoding]);
+        buffstrlen = (int)[(buffstr) length];
+        idx = bufflen - 1;
+        while ((idx > 0) && ((((u8*)([buff bytes]))[idx]) != 64) && ((((u8*)([buff bytes]))[idx]) != 10) && ((((u8*)([buff bytes]))[idx]) != 13)) {
+            idx = idx - 1;
+        }
+        if ((((u8*)([buff bytes]))[idx]) == 64) {
+            // continuation detected
+            suffixlen = bufflen - idx;
+            cmd = [NSString stringWithFormat:@"at.txt?cmd=%@",[buffstr substringWithRange:NSMakeRange( buffstrlen - suffixlen, suffixlen)]];
+            buffstr = [buffstr substringWithRange:NSMakeRange( 0, buffstrlen - suffixlen)];
+            waitMore = waitMore - 1;
+        } else {
+            // request complete
+            waitMore = 0;
+        }
+        res = [NSString stringWithFormat:@"%@%@", res,buffstr];
+    }
+    return res;
 }
 
 -(YSms*) fetchPdu:(int)slot
