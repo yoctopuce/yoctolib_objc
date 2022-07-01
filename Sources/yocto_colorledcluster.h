@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_colorledcluster.h 45843 2021-08-04 07:51:59Z mvuilleu $
+ *  $Id: yocto_colorledcluster.h 50281 2022-06-30 07:21:14Z mvuilleu $
  *
  *  Declares yFindColorLedCluster(), the high-level API for ColorLedCluster functions
  *
@@ -56,6 +56,7 @@ typedef enum {
 #endif
 #define Y_ACTIVELEDCOUNT_INVALID        YAPI_INVALID_UINT
 #define Y_MAXLEDCOUNT_INVALID           YAPI_INVALID_UINT
+#define Y_DYNAMICLEDCOUNT_INVALID       YAPI_INVALID_UINT
 #define Y_BLINKSEQMAXCOUNT_INVALID      YAPI_INVALID_UINT
 #define Y_BLINKSEQMAXSIZE_INVALID       YAPI_INVALID_UINT
 #define Y_COMMAND_INVALID               YAPI_INVALID_STRING
@@ -83,6 +84,7 @@ typedef enum {
     int             _activeLedCount;
     Y_LEDTYPE_enum  _ledType;
     int             _maxLedCount;
+    int             _dynamicLedCount;
     int             _blinkSeqMaxCount;
     int             _blinkSeqMaxSize;
     NSString*       _command;
@@ -163,6 +165,18 @@ typedef enum {
 
 
 -(int) maxLedCount;
+/**
+ * Returns the maximum number of LEDs that can perform autonomous transitions and sequences.
+ *
+ * @return an integer corresponding to the maximum number of LEDs that can perform autonomous
+ * transitions and sequences
+ *
+ * On failure, throws an exception or returns YColorLedCluster.DYNAMICLEDCOUNT_INVALID.
+ */
+-(int)     get_dynamicLedCount;
+
+
+-(int) dynamicLedCount;
 /**
  * Returns the maximum number of sequences that the device can handle.
  *

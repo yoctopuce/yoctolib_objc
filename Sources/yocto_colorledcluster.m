@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_colorledcluster.m 44921 2021-05-06 08:03:05Z mvuilleu $
+ *  $Id: yocto_colorledcluster.m 50281 2022-06-30 07:21:14Z mvuilleu $
  *
  *  Implements the high-level API for ColorLedCluster functions
  *
@@ -56,6 +56,7 @@
     _activeLedCount = Y_ACTIVELEDCOUNT_INVALID;
     _ledType = Y_LEDTYPE_INVALID;
     _maxLedCount = Y_MAXLEDCOUNT_INVALID;
+    _dynamicLedCount = Y_DYNAMICLEDCOUNT_INVALID;
     _blinkSeqMaxCount = Y_BLINKSEQMAXCOUNT_INVALID;
     _blinkSeqMaxSize = Y_BLINKSEQMAXSIZE_INVALID;
     _command = Y_COMMAND_INVALID;
@@ -91,6 +92,11 @@
     if(!strcmp(j->token, "maxLedCount")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
         _maxLedCount =  atoi(j->token);
+        return 1;
+    }
+    if(!strcmp(j->token, "dynamicLedCount")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _dynamicLedCount =  atoi(j->token);
         return 1;
     }
     if(!strcmp(j->token, "blinkSeqMaxCount")) {
@@ -231,6 +237,31 @@
 -(int) maxLedCount
 {
     return [self get_maxLedCount];
+}
+/**
+ * Returns the maximum number of LEDs that can perform autonomous transitions and sequences.
+ *
+ * @return an integer corresponding to the maximum number of LEDs that can perform autonomous
+ * transitions and sequences
+ *
+ * On failure, throws an exception or returns YColorLedCluster.DYNAMICLEDCOUNT_INVALID.
+ */
+-(int) get_dynamicLedCount
+{
+    int res;
+    if (_cacheExpiration == 0) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
+            return Y_DYNAMICLEDCOUNT_INVALID;
+        }
+    }
+    res = _dynamicLedCount;
+    return res;
+}
+
+
+-(int) dynamicLedCount
+{
+    return [self get_dynamicLedCount];
 }
 /**
  * Returns the maximum number of sequences that the device can handle.

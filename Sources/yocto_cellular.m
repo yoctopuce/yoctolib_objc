@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_cellular.m 47312 2021-11-16 09:47:43Z seb $
+ * $Id: yocto_cellular.m 50281 2022-06-30 07:21:14Z mvuilleu $
  *
  * Implements the high-level API for Cellular functions
  *
@@ -5772,6 +5772,45 @@
 -(NSString*) decodePLMN:(NSString*)mccmnc
 {
     return [self imm_decodePLMN:mccmnc];
+}
+
+/**
+ * Returns the list available radio communication profiles, as a string array
+ * (YoctoHub-GSM-4G only).
+ * Each string is a made of a numerical ID, followed by a colon,
+ * followed by the profile description.
+ *
+ * @return a list of string describing available radio communication profiles.
+ */
+-(NSMutableArray*) get_communicationProfiles
+{
+    NSString* profiles;
+    NSMutableArray* lines = [NSMutableArray array];
+    int nlines;
+    int idx;
+    NSString* line;
+    int cpos;
+    int profno;
+    NSMutableArray* res = [NSMutableArray array];
+
+    profiles = [self _AT:@"+UMNOPROF=?"];
+    lines = [NSMutableArray arrayWithArray:[profiles componentsSeparatedByString:@"\n"]];
+    nlines = (int)[lines count];
+    if (!(nlines > 0)) {[self _throw: YAPI_IO_ERROR: @"fail to retrieve profile list"]; return res;}
+    [res removeAllObjects];
+    idx = 0;
+    while (idx < nlines) {
+        line = [lines objectAtIndex:idx];
+        cpos = _ystrpos(line, @":");
+        if (cpos > 0) {
+            profno = [[line substringWithRange:NSMakeRange( 0, cpos)] intValue];
+            if (profno > 0) {
+                [res addObject:line];
+            }
+        }
+        idx = idx + 1;
+    }
+    return res;
 }
 
 
