@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_powersupply.m 43619 2021-01-29 09:14:45Z mvuilleu $
+ *  $Id: yocto_powersupply.m 50689 2022-08-17 14:37:15Z mvuilleu $
  *
  *  Implements the high-level API for PowerSupply functions
  *
@@ -89,12 +89,12 @@
 {
     if(!strcmp(j->token, "voltageSetPoint")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-        _voltageSetPoint =  floor(atof(j->token) * 1000.0 / 65536.0 + 0.5) / 1000.0;
+        _voltageSetPoint =  floor(atof(j->token) / 65.536 + 0.5) / 1000.0;
         return 1;
     }
     if(!strcmp(j->token, "currentLimit")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-        _currentLimit =  floor(atof(j->token) * 1000.0 / 65536.0 + 0.5) / 1000.0;
+        _currentLimit =  floor(atof(j->token) / 65.536 + 0.5) / 1000.0;
         return 1;
     }
     if(!strcmp(j->token, "powerOutput")) {
@@ -109,27 +109,27 @@
     }
     if(!strcmp(j->token, "measuredVoltage")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-        _measuredVoltage =  floor(atof(j->token) * 1000.0 / 65536.0 + 0.5) / 1000.0;
+        _measuredVoltage =  floor(atof(j->token) / 65.536 + 0.5) / 1000.0;
         return 1;
     }
     if(!strcmp(j->token, "measuredCurrent")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-        _measuredCurrent =  floor(atof(j->token) * 1000.0 / 65536.0 + 0.5) / 1000.0;
+        _measuredCurrent =  floor(atof(j->token) / 65.536 + 0.5) / 1000.0;
         return 1;
     }
     if(!strcmp(j->token, "inputVoltage")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-        _inputVoltage =  floor(atof(j->token) * 1000.0 / 65536.0 + 0.5) / 1000.0;
+        _inputVoltage =  floor(atof(j->token) / 65.536 + 0.5) / 1000.0;
         return 1;
     }
     if(!strcmp(j->token, "vInt")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-        _vInt =  floor(atof(j->token) * 1000.0 / 65536.0 + 0.5) / 1000.0;
+        _vInt =  floor(atof(j->token) / 65.536 + 0.5) / 1000.0;
         return 1;
     }
     if(!strcmp(j->token, "ldoTemperature")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-        _ldoTemperature =  floor(atof(j->token) * 1000.0 / 65536.0 + 0.5) / 1000.0;
+        _ldoTemperature =  floor(atof(j->token) / 65.536 + 0.5) / 1000.0;
         return 1;
     }
     if(!strcmp(j->token, "voltageTransition")) {
@@ -141,12 +141,12 @@
     }
     if(!strcmp(j->token, "voltageAtStartUp")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-        _voltageAtStartUp =  floor(atof(j->token) * 1000.0 / 65536.0 + 0.5) / 1000.0;
+        _voltageAtStartUp =  floor(atof(j->token) / 65.536 + 0.5) / 1000.0;
         return 1;
     }
     if(!strcmp(j->token, "currentAtStartUp")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-        _currentAtStartUp =  floor(atof(j->token) * 1000.0 / 65536.0 + 0.5) / 1000.0;
+        _currentAtStartUp =  floor(atof(j->token) / 65.536 + 0.5) / 1000.0;
         return 1;
     }
     if(!strcmp(j->token, "command")) {

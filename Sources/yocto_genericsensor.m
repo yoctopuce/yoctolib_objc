@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_genericsensor.m 49903 2022-05-25 14:18:36Z mvuilleu $
+ *  $Id: yocto_genericsensor.m 50689 2022-08-17 14:37:15Z mvuilleu $
  *
  *  Implements the high-level API for GenericSensor functions
  *
@@ -86,7 +86,7 @@
 {
     if(!strcmp(j->token, "signalValue")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-        _signalValue =  floor(atof(j->token) * 1000.0 / 65536.0 + 0.5) / 1000.0;
+        _signalValue =  floor(atof(j->token) / 65.536 + 0.5) / 1000.0;
         return 1;
     }
     if(!strcmp(j->token, "signalUnit")) {
@@ -112,7 +112,7 @@
     }
     if(!strcmp(j->token, "signalBias")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-        _signalBias =  floor(atof(j->token) * 1000.0 / 65536.0 + 0.5) / 1000.0;
+        _signalBias =  floor(atof(j->token) / 65.536 + 0.5) / 1000.0;
         return 1;
     }
     if(!strcmp(j->token, "signalSampling")) {

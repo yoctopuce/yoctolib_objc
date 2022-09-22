@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_pwmoutput.m 43619 2021-01-29 09:14:45Z mvuilleu $
+ *  $Id: yocto_pwmoutput.m 50689 2022-08-17 14:37:15Z mvuilleu $
  *
  *  Implements the high-level API for PwmOutput functions
  *
@@ -87,22 +87,22 @@
     }
     if(!strcmp(j->token, "frequency")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-        _frequency =  floor(atof(j->token) * 1000.0 / 65536.0 + 0.5) / 1000.0;
+        _frequency =  floor(atof(j->token) / 65.536 + 0.5) / 1000.0;
         return 1;
     }
     if(!strcmp(j->token, "period")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-        _period =  floor(atof(j->token) * 1000.0 / 65536.0 + 0.5) / 1000.0;
+        _period =  floor(atof(j->token) / 65.536 + 0.5) / 1000.0;
         return 1;
     }
     if(!strcmp(j->token, "dutyCycle")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-        _dutyCycle =  floor(atof(j->token) * 1000.0 / 65536.0 + 0.5) / 1000.0;
+        _dutyCycle =  floor(atof(j->token) / 65.536 + 0.5) / 1000.0;
         return 1;
     }
     if(!strcmp(j->token, "pulseDuration")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-        _pulseDuration =  floor(atof(j->token) * 1000.0 / 65536.0 + 0.5) / 1000.0;
+        _pulseDuration =  floor(atof(j->token) / 65.536 + 0.5) / 1000.0;
         return 1;
     }
     if(!strcmp(j->token, "pwmTransition")) {
@@ -119,7 +119,7 @@
     }
     if(!strcmp(j->token, "dutyCycleAtPowerOn")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-        _dutyCycleAtPowerOn =  floor(atof(j->token) * 1000.0 / 65536.0 + 0.5) / 1000.0;
+        _dutyCycleAtPowerOn =  floor(atof(j->token) / 65.536 + 0.5) / 1000.0;
         return 1;
     }
     return [super _parseAttr:j];

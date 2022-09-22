@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.m 49750 2022-05-13 07:10:42Z seb $
+ * $Id: yocto_api.m 50689 2022-08-17 14:37:15Z mvuilleu $
  *
  * High-level programming interface, common to all modules
  *
@@ -3492,22 +3492,22 @@ static const char* hexArray = "0123456789ABCDEF";
     }
     if(!strcmp(j->token, "currentValue")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-        _currentValue =  floor(atof(j->token) * 1000.0 / 65536.0 + 0.5) / 1000.0;
+        _currentValue =  floor(atof(j->token) / 65.536 + 0.5) / 1000.0;
         return 1;
     }
     if(!strcmp(j->token, "lowestValue")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-        _lowestValue =  floor(atof(j->token) * 1000.0 / 65536.0 + 0.5) / 1000.0;
+        _lowestValue =  floor(atof(j->token) / 65.536 + 0.5) / 1000.0;
         return 1;
     }
     if(!strcmp(j->token, "highestValue")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-        _highestValue =  floor(atof(j->token) * 1000.0 / 65536.0 + 0.5) / 1000.0;
+        _highestValue =  floor(atof(j->token) / 65.536 + 0.5) / 1000.0;
         return 1;
     }
     if(!strcmp(j->token, "currentRawValue")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-        _currentRawValue =  floor(atof(j->token) * 1000.0 / 65536.0 + 0.5) / 1000.0;
+        _currentRawValue =  floor(atof(j->token) / 65.536 + 0.5) / 1000.0;
         return 1;
     }
     if(!strcmp(j->token, "logFrequency")) {
@@ -3538,7 +3538,7 @@ static const char* hexArray = "0123456789ABCDEF";
     }
     if(!strcmp(j->token, "resolution")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-        _resolution =  floor(atof(j->token) * 1000.0 / 65536.0 + 0.5) / 1000.0;
+        _resolution =  floor(atof(j->token) / 65.536 + 0.5) / 1000.0;
         return 1;
     }
     if(!strcmp(j->token, "sensorState")) {

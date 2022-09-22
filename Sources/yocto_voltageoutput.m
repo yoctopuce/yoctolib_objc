@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_voltageoutput.m 43619 2021-01-29 09:14:45Z mvuilleu $
+ *  $Id: yocto_voltageoutput.m 50689 2022-08-17 14:37:15Z mvuilleu $
  *
  *  Implements the high-level API for VoltageOutput functions
  *
@@ -77,7 +77,7 @@
 {
     if(!strcmp(j->token, "currentVoltage")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-        _currentVoltage =  floor(atof(j->token) * 1000.0 / 65536.0 + 0.5) / 1000.0;
+        _currentVoltage =  floor(atof(j->token) / 65.536 + 0.5) / 1000.0;
         return 1;
     }
     if(!strcmp(j->token, "voltageTransition")) {
@@ -89,7 +89,7 @@
     }
     if(!strcmp(j->token, "voltageAtStartUp")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-        _voltageAtStartUp =  floor(atof(j->token) * 1000.0 / 65536.0 + 0.5) / 1000.0;
+        _voltageAtStartUp =  floor(atof(j->token) / 65.536 + 0.5) / 1000.0;
         return 1;
     }
     return [super _parseAttr:j];

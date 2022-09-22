@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_currentloopoutput.m 43619 2021-01-29 09:14:45Z mvuilleu $
+ *  $Id: yocto_currentloopoutput.m 50689 2022-08-17 14:37:15Z mvuilleu $
  *
  *  Implements the high-level API for CurrentLoopOutput functions
  *
@@ -78,7 +78,7 @@
 {
     if(!strcmp(j->token, "current")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-        _current =  floor(atof(j->token) * 1000.0 / 65536.0 + 0.5) / 1000.0;
+        _current =  floor(atof(j->token) / 65.536 + 0.5) / 1000.0;
         return 1;
     }
     if(!strcmp(j->token, "currentTransition")) {
@@ -90,7 +90,7 @@
     }
     if(!strcmp(j->token, "currentAtStartUp")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-        _currentAtStartUp =  floor(atof(j->token) * 1000.0 / 65536.0 + 0.5) / 1000.0;
+        _currentAtStartUp =  floor(atof(j->token) / 65.536 + 0.5) / 1000.0;
         return 1;
     }
     if(!strcmp(j->token, "loopPower")) {

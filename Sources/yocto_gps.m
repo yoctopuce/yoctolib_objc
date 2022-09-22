@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_gps.m 43580 2021-01-26 17:46:01Z mvuilleu $
+ *  $Id: yocto_gps.m 50689 2022-08-17 14:37:15Z mvuilleu $
  *
  *  Implements the high-level API for Gps functions
  *
@@ -111,7 +111,7 @@
     }
     if(!strcmp(j->token, "gpsRefreshRate")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-        _gpsRefreshRate =  floor(atof(j->token) * 1000.0 / 65536.0 + 0.5) / 1000.0;
+        _gpsRefreshRate =  floor(atof(j->token) / 65.536 + 0.5) / 1000.0;
         return 1;
     }
     if(!strcmp(j->token, "coordSystem")) {
@@ -140,22 +140,22 @@
     }
     if(!strcmp(j->token, "dilution")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-        _dilution =  floor(atof(j->token) * 1000.0 / 65536.0 + 0.5) / 1000.0;
+        _dilution =  floor(atof(j->token) / 65.536 + 0.5) / 1000.0;
         return 1;
     }
     if(!strcmp(j->token, "altitude")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-        _altitude =  floor(atof(j->token) * 1000.0 / 65536.0 + 0.5) / 1000.0;
+        _altitude =  floor(atof(j->token) / 65.536 + 0.5) / 1000.0;
         return 1;
     }
     if(!strcmp(j->token, "groundSpeed")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-        _groundSpeed =  floor(atof(j->token) * 1000.0 / 65536.0 + 0.5) / 1000.0;
+        _groundSpeed =  floor(atof(j->token) / 65.536 + 0.5) / 1000.0;
         return 1;
     }
     if(!strcmp(j->token, "direction")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-        _direction =  floor(atof(j->token) * 1000.0 / 65536.0 + 0.5) / 1000.0;
+        _direction =  floor(atof(j->token) / 65.536 + 0.5) / 1000.0;
         return 1;
     }
     if(!strcmp(j->token, "unixTime")) {

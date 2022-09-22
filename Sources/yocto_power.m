@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_power.m 43619 2021-01-29 09:14:45Z mvuilleu $
+ *  $Id: yocto_power.m 50689 2022-08-17 14:37:15Z mvuilleu $
  *
  *  Implements the high-level API for Power functions
  *
@@ -78,22 +78,22 @@
 {
     if(!strcmp(j->token, "cosPhi")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-        _cosPhi =  floor(atof(j->token) * 1000.0 / 65536.0 + 0.5) / 1000.0;
+        _cosPhi =  floor(atof(j->token) / 65.536 + 0.5) / 1000.0;
         return 1;
     }
     if(!strcmp(j->token, "meter")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-        _meter =  floor(atof(j->token) * 1000.0 / 65536.0 + 0.5) / 1000.0;
+        _meter =  floor(atof(j->token) / 65.536 + 0.5) / 1000.0;
         return 1;
     }
     if(!strcmp(j->token, "deliveredEnergyMeter")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-        _deliveredEnergyMeter =  floor(atof(j->token) * 1000.0 / 65536.0 + 0.5) / 1000.0;
+        _deliveredEnergyMeter =  floor(atof(j->token) / 65.536 + 0.5) / 1000.0;
         return 1;
     }
     if(!strcmp(j->token, "receivedEnergyMeter")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-        _receivedEnergyMeter =  floor(atof(j->token) * 1000.0 / 65536.0 + 0.5) / 1000.0;
+        _receivedEnergyMeter =  floor(atof(j->token) / 65.536 + 0.5) / 1000.0;
         return 1;
     }
     if(!strcmp(j->token, "meterTimer")) {

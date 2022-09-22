@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_quadraturedecoder.m 45843 2021-08-04 07:51:59Z mvuilleu $
+ *  $Id: yocto_quadraturedecoder.m 50689 2022-08-17 14:37:15Z mvuilleu $
  *
  *  Implements the high-level API for QuadratureDecoder functions
  *
@@ -76,7 +76,7 @@
 {
     if(!strcmp(j->token, "speed")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-        _speed =  floor(atof(j->token) * 1000.0 / 65536.0 + 0.5) / 1000.0;
+        _speed =  floor(atof(j->token) / 65.536 + 0.5) / 1000.0;
         return 1;
     }
     if(!strcmp(j->token, "decoding")) {

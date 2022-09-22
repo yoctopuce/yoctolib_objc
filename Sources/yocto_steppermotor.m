@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_steppermotor.m 43619 2021-01-29 09:14:45Z mvuilleu $
+ *  $Id: yocto_steppermotor.m 50689 2022-08-17 14:37:15Z mvuilleu $
  *
  *  Implements the high-level API for StepperMotor functions
  *
@@ -108,22 +108,22 @@
     }
     if(!strcmp(j->token, "speed")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-        _speed =  floor(atof(j->token) * 1000.0 / 65536.0 + 0.5) / 1000.0;
+        _speed =  floor(atof(j->token) / 65.536 + 0.5) / 1000.0;
         return 1;
     }
     if(!strcmp(j->token, "pullinSpeed")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-        _pullinSpeed =  floor(atof(j->token) * 1000.0 / 65536.0 + 0.5) / 1000.0;
+        _pullinSpeed =  floor(atof(j->token) / 65.536 + 0.5) / 1000.0;
         return 1;
     }
     if(!strcmp(j->token, "maxAccel")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-        _maxAccel =  floor(atof(j->token) * 1000.0 / 65536.0 + 0.5) / 1000.0;
+        _maxAccel =  floor(atof(j->token) / 65.536 + 0.5) / 1000.0;
         return 1;
     }
     if(!strcmp(j->token, "maxSpeed")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-        _maxSpeed =  floor(atof(j->token) * 1000.0 / 65536.0 + 0.5) / 1000.0;
+        _maxSpeed =  floor(atof(j->token) / 65.536 + 0.5) / 1000.0;
         return 1;
     }
     if(!strcmp(j->token, "stepping")) {

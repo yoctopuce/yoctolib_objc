@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_weighscale.m 43619 2021-01-29 09:14:45Z mvuilleu $
+ *  $Id: yocto_weighscale.m 50689 2022-08-17 14:37:15Z mvuilleu $
  *
  *  Implements the high-level API for WeighScale functions
  *
@@ -88,32 +88,32 @@
     }
     if(!strcmp(j->token, "tempAvgAdaptRatio")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-        _tempAvgAdaptRatio =  floor(atof(j->token) * 1000.0 / 65536.0 + 0.5) / 1000.0;
+        _tempAvgAdaptRatio =  floor(atof(j->token) / 65.536 + 0.5) / 1000.0;
         return 1;
     }
     if(!strcmp(j->token, "tempChgAdaptRatio")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-        _tempChgAdaptRatio =  floor(atof(j->token) * 1000.0 / 65536.0 + 0.5) / 1000.0;
+        _tempChgAdaptRatio =  floor(atof(j->token) / 65.536 + 0.5) / 1000.0;
         return 1;
     }
     if(!strcmp(j->token, "compTempAvg")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-        _compTempAvg =  floor(atof(j->token) * 1000.0 / 65536.0 + 0.5) / 1000.0;
+        _compTempAvg =  floor(atof(j->token) / 65.536 + 0.5) / 1000.0;
         return 1;
     }
     if(!strcmp(j->token, "compTempChg")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-        _compTempChg =  floor(atof(j->token) * 1000.0 / 65536.0 + 0.5) / 1000.0;
+        _compTempChg =  floor(atof(j->token) / 65.536 + 0.5) / 1000.0;
         return 1;
     }
     if(!strcmp(j->token, "compensation")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-        _compensation =  floor(atof(j->token) * 1000.0 / 65536.0 + 0.5) / 1000.0;
+        _compensation =  floor(atof(j->token) / 65.536 + 0.5) / 1000.0;
         return 1;
     }
     if(!strcmp(j->token, "zeroTracking")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-        _zeroTracking =  floor(atof(j->token) * 1000.0 / 65536.0 + 0.5) / 1000.0;
+        _zeroTracking =  floor(atof(j->token) / 65.536 + 0.5) / 1000.0;
         return 1;
     }
     if(!strcmp(j->token, "command")) {

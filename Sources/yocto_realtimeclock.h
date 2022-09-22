@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_realtimeclock.h 48183 2022-01-20 10:26:11Z mvuilleu $
+ *  $Id: yocto_realtimeclock.h 50595 2022-07-28 07:54:15Z mvuilleu $
  *
  *  Declares yFindRealTimeClock(), the high-level API for RealTimeClock functions
  *
@@ -53,6 +53,14 @@ typedef enum {
     Y_TIMESET_INVALID = -1,
 } Y_TIMESET_enum;
 #endif
+#ifndef _Y_DISABLEHOSTSYNC_ENUM
+#define _Y_DISABLEHOSTSYNC_ENUM
+typedef enum {
+    Y_DISABLEHOSTSYNC_FALSE = 0,
+    Y_DISABLEHOSTSYNC_TRUE = 1,
+    Y_DISABLEHOSTSYNC_INVALID = -1,
+} Y_DISABLEHOSTSYNC_enum;
+#endif
 #define Y_UNIXTIME_INVALID              YAPI_INVALID_LONG
 #define Y_DATETIME_INVALID              YAPI_INVALID_STRING
 #define Y_UTCOFFSET_INVALID             YAPI_INVALID_INT
@@ -78,6 +86,7 @@ typedef enum {
     NSString*       _dateTime;
     int             _utcOffset;
     Y_TIMESET_enum  _timeSet;
+    Y_DISABLEHOSTSYNC_enum _disableHostSync;
     YRealTimeClockValueCallback _valueCallbackRealTimeClock;
 //--- (end of YRealTimeClock attributes declaration)
 }
@@ -165,6 +174,35 @@ typedef enum {
 
 
 -(Y_TIMESET_enum) timeSet;
+/**
+ * Returns true if the automatic clock synchronization with host has been disabled,
+ * and false otherwise.
+ *
+ * @return either YRealTimeClock.DISABLEHOSTSYNC_FALSE or YRealTimeClock.DISABLEHOSTSYNC_TRUE,
+ * according to true if the automatic clock synchronization with host has been disabled,
+ *         and false otherwise
+ *
+ * On failure, throws an exception or returns YRealTimeClock.DISABLEHOSTSYNC_INVALID.
+ */
+-(Y_DISABLEHOSTSYNC_enum)     get_disableHostSync;
+
+
+-(Y_DISABLEHOSTSYNC_enum) disableHostSync;
+/**
+ * Changes the automatic clock synchronization with host working state.
+ * To disable automatic synchronization, set the value to true.
+ * To enable automatic synchronization (default), set the value to false.
+ *
+ * @param newval : either YRealTimeClock.DISABLEHOSTSYNC_FALSE or YRealTimeClock.DISABLEHOSTSYNC_TRUE,
+ * according to the automatic clock synchronization with host working state
+ *
+ * @return YAPI.SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     set_disableHostSync:(Y_DISABLEHOSTSYNC_enum) newval;
+-(int)     setDisableHostSync:(Y_DISABLEHOSTSYNC_enum) newval;
+
 /**
  * Retrieves a real-time clock for a given identifier.
  * The identifier can be specified using several formats:

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_accelerometer.m 43580 2021-01-26 17:46:01Z mvuilleu $
+ *  $Id: yocto_accelerometer.m 50689 2022-08-17 14:37:15Z mvuilleu $
  *
  *  Implements the high-level API for Accelerometer functions
  *
@@ -83,17 +83,17 @@
     }
     if(!strcmp(j->token, "xValue")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-        _xValue =  floor(atof(j->token) * 1000.0 / 65536.0 + 0.5) / 1000.0;
+        _xValue =  floor(atof(j->token) / 65.536 + 0.5) / 1000.0;
         return 1;
     }
     if(!strcmp(j->token, "yValue")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-        _yValue =  floor(atof(j->token) * 1000.0 / 65536.0 + 0.5) / 1000.0;
+        _yValue =  floor(atof(j->token) / 65.536 + 0.5) / 1000.0;
         return 1;
     }
     if(!strcmp(j->token, "zValue")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-        _zValue =  floor(atof(j->token) * 1000.0 / 65536.0 + 0.5) / 1000.0;
+        _zValue =  floor(atof(j->token) / 65.536 + 0.5) / 1000.0;
         return 1;
     }
     if(!strcmp(j->token, "gravityCancellation")) {

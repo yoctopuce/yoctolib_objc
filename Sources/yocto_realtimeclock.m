@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_realtimeclock.m 48183 2022-01-20 10:26:11Z mvuilleu $
+ *  $Id: yocto_realtimeclock.m 50595 2022-07-28 07:54:15Z mvuilleu $
  *
  *  Implements the high-level API for RealTimeClock functions
  *
@@ -57,6 +57,7 @@
     _dateTime = Y_DATETIME_INVALID;
     _utcOffset = Y_UTCOFFSET_INVALID;
     _timeSet = Y_TIMESET_INVALID;
+    _disableHostSync = Y_DISABLEHOSTSYNC_INVALID;
     _valueCallbackRealTimeClock = NULL;
 //--- (end of YRealTimeClock attributes initialization)
     return self;
@@ -96,6 +97,11 @@
     if(!strcmp(j->token, "timeSet")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
         _timeSet =  (Y_TIMESET_enum)atoi(j->token);
+        return 1;
+    }
+    if(!strcmp(j->token, "disableHostSync")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _disableHostSync =  (Y_DISABLEHOSTSYNC_enum)atoi(j->token);
         return 1;
     }
     return [super _parseAttr:j];
@@ -242,6 +248,56 @@
 -(Y_TIMESET_enum) timeSet
 {
     return [self get_timeSet];
+}
+/**
+ * Returns true if the automatic clock synchronization with host has been disabled,
+ * and false otherwise.
+ *
+ * @return either YRealTimeClock.DISABLEHOSTSYNC_FALSE or YRealTimeClock.DISABLEHOSTSYNC_TRUE,
+ * according to true if the automatic clock synchronization with host has been disabled,
+ *         and false otherwise
+ *
+ * On failure, throws an exception or returns YRealTimeClock.DISABLEHOSTSYNC_INVALID.
+ */
+-(Y_DISABLEHOSTSYNC_enum) get_disableHostSync
+{
+    Y_DISABLEHOSTSYNC_enum res;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
+            return Y_DISABLEHOSTSYNC_INVALID;
+        }
+    }
+    res = _disableHostSync;
+    return res;
+}
+
+
+-(Y_DISABLEHOSTSYNC_enum) disableHostSync
+{
+    return [self get_disableHostSync];
+}
+
+/**
+ * Changes the automatic clock synchronization with host working state.
+ * To disable automatic synchronization, set the value to true.
+ * To enable automatic synchronization (default), set the value to false.
+ *
+ * @param newval : either YRealTimeClock.DISABLEHOSTSYNC_FALSE or YRealTimeClock.DISABLEHOSTSYNC_TRUE,
+ * according to the automatic clock synchronization with host working state
+ *
+ * @return YAPI.SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) set_disableHostSync:(Y_DISABLEHOSTSYNC_enum) newval
+{
+    return [self setDisableHostSync:newval];
+}
+-(int) setDisableHostSync:(Y_DISABLEHOSTSYNC_enum) newval
+{
+    NSString* rest_val;
+    rest_val = (newval ? @"1" : @"0");
+    return [self _setAttr:@"disableHostSync" :rest_val];
 }
 /**
  * Retrieves a real-time clock for a given identifier.

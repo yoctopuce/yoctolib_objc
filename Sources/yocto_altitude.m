@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_altitude.m 43580 2021-01-26 17:46:01Z mvuilleu $
+ *  $Id: yocto_altitude.m 50689 2022-08-17 14:37:15Z mvuilleu $
  *
  *  Implements the high-level API for Altitude functions
  *
@@ -77,7 +77,7 @@
 {
     if(!strcmp(j->token, "qnh")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-        _qnh =  floor(atof(j->token) * 1000.0 / 65536.0 + 0.5) / 1000.0;
+        _qnh =  floor(atof(j->token) / 65.536 + 0.5) / 1000.0;
         return 1;
     }
     if(!strcmp(j->token, "technology")) {

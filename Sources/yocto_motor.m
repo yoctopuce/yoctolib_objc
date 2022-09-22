@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_motor.m 43619 2021-01-29 09:14:45Z mvuilleu $
+ *  $Id: yocto_motor.m 50689 2022-08-17 14:37:15Z mvuilleu $
  *
  *  Implements the high-level API for Motor functions
  *
@@ -88,17 +88,17 @@
     }
     if(!strcmp(j->token, "drivingForce")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-        _drivingForce =  floor(atof(j->token) * 1000.0 / 65536.0 + 0.5) / 1000.0;
+        _drivingForce =  floor(atof(j->token) / 65.536 + 0.5) / 1000.0;
         return 1;
     }
     if(!strcmp(j->token, "brakingForce")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-        _brakingForce =  floor(atof(j->token) * 1000.0 / 65536.0 + 0.5) / 1000.0;
+        _brakingForce =  floor(atof(j->token) / 65.536 + 0.5) / 1000.0;
         return 1;
     }
     if(!strcmp(j->token, "cutOffVoltage")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-        _cutOffVoltage =  floor(atof(j->token) * 1000.0 / 65536.0 + 0.5) / 1000.0;
+        _cutOffVoltage =  floor(atof(j->token) / 65.536 + 0.5) / 1000.0;
         return 1;
     }
     if(!strcmp(j->token, "overCurrentLimit")) {
@@ -108,7 +108,7 @@
     }
     if(!strcmp(j->token, "frequency")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-        _frequency =  floor(atof(j->token) * 1000.0 / 65536.0 + 0.5) / 1000.0;
+        _frequency =  floor(atof(j->token) / 65.536 + 0.5) / 1000.0;
         return 1;
     }
     if(!strcmp(j->token, "starterTime")) {
