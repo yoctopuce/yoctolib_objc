@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.h 49750 2022-05-13 07:10:42Z seb $
+ * $Id: yocto_api.h 51265 2022-10-10 07:03:22Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -62,7 +62,7 @@
 
 //extern NSMutableDictionary* YAPI_YFunctions;
 
-#define YOCTO_API_REVISION          "51050"
+#define YOCTO_API_REVISION          "51266"
 
 // yInitAPI argument
 #define Y_DETECT_NONE           0
@@ -1876,6 +1876,17 @@ NS_SWIFT_NAME(FirstFunction());
  * On failure, throws an exception or returns a negative error code.
  */
 -(int)     set_allSettings:(NSData*)settings;
+
+/**
+ * Adds a file to the uploaded data at the next HTTP callback.
+ * This function only affects the next HTTP callback and only works in
+ * HTTP callback mode.
+ *
+ * @param filename : the name of the file to upload at the next HTTP callback
+ *
+ * @return nothing.
+ */
+-(int)     addFileToHTTPCallback:(NSString*)filename;
 
 /**
  * Returns the unique hardware identifier of the module.

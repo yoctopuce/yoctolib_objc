@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.m 50689 2022-08-17 14:37:15Z mvuilleu $
+ * $Id: yocto_api.m 51266 2022-10-10 09:18:25Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -6435,6 +6435,26 @@ static const char* hexArray = "0123456789ABCDEF";
     }
     [self clearCache];
     return res;
+}
+
+/**
+ * Adds a file to the uploaded data at the next HTTP callback.
+ * This function only affects the next HTTP callback and only works in
+ * HTTP callback mode.
+ *
+ * @param filename : the name of the file to upload at the next HTTP callback
+ *
+ * @return nothing.
+ */
+-(int) addFileToHTTPCallback:(NSString*)filename
+{
+    NSMutableData* content;
+
+    content = [self _download:[NSString stringWithFormat:@"%@%@", @"@YCB+", filename]];
+    if ((int)[content length] == 0) {
+        return YAPI_NOT_SUPPORTED;
+    }
+    return YAPI_SUCCESS;
 }
 
 /**
