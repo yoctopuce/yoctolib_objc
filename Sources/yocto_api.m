@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.m 51266 2022-10-10 09:18:25Z seb $
+ * $Id: yocto_api.m 52090 2022-12-02 11:17:59Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -7207,6 +7207,9 @@ static const char* hexArray = "0123456789ABCDEF";
     int idx;
     NSMutableArray* udat = [NSMutableArray array];
     NSMutableArray* dat = [NSMutableArray array];
+    if (_isLoaded && !(_isClosed)) {
+        return YAPI_SUCCESS;
+    }
     if ((int)[sdata length] == 0) {
         _nRows = 0;
         return YAPI_SUCCESS;
@@ -7244,7 +7247,13 @@ static const char* hexArray = "0123456789ABCDEF";
     }
 
     _nRows = (int)[_values count];
+    _isLoaded = YES;
     return YAPI_SUCCESS;
+}
+
+-(bool) _wasLoaded
+{
+    return _isLoaded;
 }
 
 -(NSString*) _get_url
@@ -7252,6 +7261,21 @@ static const char* hexArray = "0123456789ABCDEF";
     NSString* url;
     url = [NSString stringWithFormat:@"logger.json?id=%@&run=%d&utc=%lu",
     _functionId,_runNo,_utcStamp];
+    return url;
+}
+
+-(NSString*) _get_baseurl
+{
+    NSString* url;
+    url = [NSString stringWithFormat:@"logger.json?id=%@&run=%d&utc=",
+    _functionId,_runNo];
+    return url;
+}
+
+-(NSString*) _get_urlsuffix
+{
+    NSString* url;
+    url = [NSString stringWithFormat:@"%lu",_utcStamp];
     return url;
 }
 
@@ -7684,6 +7708,7 @@ static const char* hexArray = "0123456789ABCDEF";
     if(!(self = [super init]))
         return nil;
 //--- (generated code: YDataSet attributes initialization)
+    _bulkLoad = 0;
     _startTimeMs = 0;
     _endTimeMs = 0;
     _progress = 0;
@@ -7710,6 +7735,7 @@ static const char* hexArray = "0123456789ABCDEF";
     if(!(self = [super init]))
         return nil;
 //--- (generated code: YDataSet attributes initialization)
+    _bulkLoad = 0;
     _startTimeMs = 0;
     _endTimeMs = 0;
     _progress = 0;
@@ -7752,6 +7778,11 @@ static const char* hexArray = "0123456789ABCDEF";
                 return YAPI_NOT_SUPPORTED;
             }
             _unit = [_parent _parseString:&j];
+        } else if (!strcmp(j.token, "bulk")) {
+            if (yJsonParse(&j) != YJSON_PARSE_AVAIL) {
+                return YAPI_NOT_SUPPORTED;
+            }
+            _bulkLoad = [[_parent _parseString:&j] intValue];
         } else if (!strcmp(j.token, "calib")) {
             if (yJsonParse(&j) != YJSON_PARSE_AVAIL) {
                 return YAPI_NOT_SUPPORTED;
@@ -7886,9 +7917,11 @@ static const char* hexArray = "0123456789ABCDEF";
         } else {
             // stream that are partially in the dataset
             // we need to parse data to filter value outside the dataset
-            url = [_each _get_url];
-            data = [_parent _download:url];
-            [_each _parseStream:data];
+            if (!([_each _wasLoaded])) {
+                url = [_each _get_url];
+                data = [_parent _download:url];
+                [_each _parseStream:data];
+            }
             dataRows = [_each get_dataRows];
             if ((int)[dataRows count] == 0) {
                 return [self get_progress];
@@ -7939,8 +7972,10 @@ static const char* hexArray = "0123456789ABCDEF";
                     if (previewMaxVal < maxVal) {
                         previewMaxVal = maxVal;
                     }
-                    previewTotalAvg = previewTotalAvg + (avgVal * mitv);
-                    previewTotalTime = previewTotalTime + mitv;
+                    if (!(isnan(avgVal))) {
+                        previewTotalAvg = previewTotalAvg + (avgVal * mitv);
+                        previewTotalTime = previewTotalTime + mitv;
+                    }
                 }
                 tim = end_;
                 m_pos = m_pos + 1;
@@ -7997,6 +8032,15 @@ static const char* hexArray = "0123456789ABCDEF";
     int avgCol;
     int maxCol;
     bool firstMeasure;
+    NSString* baseurl;
+    NSString* url;
+    NSString* suffix;
+    NSMutableArray* suffixes = [NSMutableArray array];
+    int idx;
+    NSMutableData* bulkFile;
+    NSMutableArray* streamStr = [NSMutableArray array];
+    int urlIdx;
+    NSMutableData* streamBin;
 
     if (progress != _progress) {
         return _progress;
@@ -8005,7 +8049,9 @@ static const char* hexArray = "0123456789ABCDEF";
         return [self loadSummary:data];
     }
     stream = [_streams objectAtIndex:_progress];
-    [stream _parseStream:data];
+    if (!([stream _wasLoaded])) {
+        [stream _parseStream:data];
+    }
     dataRows = [stream get_dataRows];
     _progress = _progress + 1;
     if ((int)[dataRows count] == 0) {
@@ -8042,10 +8088,44 @@ static const char* hexArray = "0123456789ABCDEF";
             end_ = tim + itv;
         }
         avgv = [[_each objectAtIndex:avgCol] doubleValue];
-        if ((end_ > _startTimeMs) && ((_endTimeMs == 0) || (tim < _endTimeMs)) && !((avgv == avgv))) {
+        if ((end_ > _startTimeMs) && ((_endTimeMs == 0) || (tim < _endTimeMs)) && !(isnan(avgv))) {
             [_measures addObject:ARC_sendAutorelease([[YMeasure alloc] initWith:tim / 1000 :end_ / 1000 :[[_each objectAtIndex:minCol] doubleValue] :avgv :[[_each objectAtIndex:maxCol] doubleValue]])];
         }
         tim = end_;
+    }
+    // Perform bulk preload to speed-up network transfer
+    if ((_bulkLoad > 0) && (_progress < (int)[_streams count])) {
+        stream = [_streams objectAtIndex:_progress];
+        if ([stream _wasLoaded]) {
+            return [self get_progress];
+        }
+        baseurl = [stream _get_baseurl];
+        url = [stream _get_url];
+        suffix = [stream _get_urlsuffix];
+        [suffixes addObject:suffix];
+        idx = _progress+1;
+        while ((idx < (int)[_streams count]) && ((int)[suffixes count] < _bulkLoad)) {
+            stream = [_streams objectAtIndex:idx];
+            if (!([stream _wasLoaded]) && ([[stream _get_baseurl] isEqualToString:baseurl])) {
+                suffix = [stream _get_urlsuffix];
+                [suffixes addObject:suffix];
+                url = [NSString stringWithFormat:@"%@%@%@", url, @",", suffix];
+            }
+            idx = idx + 1;
+        }
+        bulkFile = [_parent _download:url];
+        streamStr = [_parent _json_get_array:bulkFile];
+        urlIdx = 0;
+        idx = _progress;
+        while ((idx < (int)[_streams count]) && (urlIdx < (int)[suffixes count]) && (urlIdx < (int)[streamStr count])) {
+            stream = [_streams objectAtIndex:idx];
+            if (([[stream _get_baseurl] isEqualToString:baseurl]) && ([[stream _get_urlsuffix] isEqualToString:[suffixes objectAtIndex:urlIdx]])) {
+                streamBin = [NSMutableData dataWithData:[[streamStr objectAtIndex:urlIdx] dataUsingEncoding:NSISOLatin1StringEncoding]];
+                [stream _parseStream:streamBin];
+                urlIdx = urlIdx + 1;
+            }
+            idx = idx + 1;
+        }
     }
     return [self get_progress];
 }
@@ -8195,6 +8275,10 @@ static const char* hexArray = "0123456789ABCDEF";
             return 100;
         } else {
             stream = [_streams objectAtIndex:_progress];
+            if ([stream _wasLoaded]) {
+                // Do not reload stream if it was already loaded
+                return [self processMore:_progress :[NSMutableData dataWithData:[@"" dataUsingEncoding:NSISOLatin1StringEncoding]]];
+            }
             url = [stream _get_url];
         }
     }

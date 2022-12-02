@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.h 51265 2022-10-10 07:03:22Z seb $
+ * $Id: yocto_api.h 51740 2022-11-23 16:53:35Z mvuilleu $
  *
  * High-level programming interface, common to all modules
  *
@@ -62,7 +62,7 @@
 
 //extern NSMutableDictionary* YAPI_YFunctions;
 
-#define YOCTO_API_REVISION          "51266"
+#define YOCTO_API_REVISION          "52094"
 
 // yInitAPI argument
 #define Y_DETECT_NONE           0
@@ -2629,6 +2629,7 @@ NS_SWIFT_NAME(FirstSensor());
     NSMutableArray* _calraw;
     NSMutableArray* _calref;
     NSMutableArray* _values;
+    bool            _isLoaded;
 //--- (end of generated code: YDataStream attributes declaration)
     id                      _calhdl;
 
@@ -2644,7 +2645,13 @@ NS_SWIFT_NAME(FirstSensor());
 
 -(int)     _parseStream:(NSData*)sdata;
 
+-(bool)     _wasLoaded;
+
 -(NSString*)     _get_url;
+
+-(NSString*)     _get_baseurl;
+
+-(NSString*)     _get_urlsuffix;
 
 -(int)     loadStream;
 
@@ -2954,6 +2961,7 @@ NS_SWIFT_NAME(FirstSensor());
     NSString*       _hardwareId;
     NSString*       _functionId;
     NSString*       _unit;
+    int             _bulkLoad;
     double          _startTimeMs;
     double          _endTimeMs;
     int             _progress;
