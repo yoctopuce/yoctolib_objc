@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: main.m 32622 2018-10-10 13:11:04Z seb $
+ *  $Id: main.m 52208 2022-12-07 08:17:21Z mvuilleu $
  *
  *  An example that show how to use a  Yocto-RS485
  *
@@ -48,8 +48,8 @@ int main(int argc, const char * argv[])
       slave = atoi(cmd);
     } while(slave < 1 || slave > 255);
     do {
-      NSLog(@"Please select a Coil No (>=1), Input Bit No (>=10001+),");
-      NSLog(@"       Register No (>=30001) or Input Register No (>=40001)");
+      NSLog(@"Please select a Coil No (>=1), Input Bit No (>=10001),");
+      NSLog(@"Input Register No (>=30001) or Holding Register No (>=40001)");
       NSLog(@"No: ");
       fgets(cmd, sizeof(cmd), stdin);
       reg = atoi(cmd);
@@ -69,16 +69,16 @@ int main(int argc, const char * argv[])
       }
       NSLog(@"Current value: %d" , val );
       NSLog(@"Press R to read again, Q to quit");
-      if((reg % 30000) < 10000) {
+      if((reg % 40000) < 10000) {
         NSLog(@" or enter a new value");
       }
       NSLog(@": ");
       fgets(cmd, sizeof(cmd), stdin);
       if(cmd[0] == 'q' || cmd[0] == 'Q') break;
-      if (cmd[0] != 'r' && cmd[0] != 'R' && (reg % 30000) < 10000) {
+      if (cmd[0] != 'r' && cmd[0] != 'R' && (reg % 40000) < 10000) {
         val = atoi(cmd);
-        if(reg >= 30001) {
-          [serialPort modbusWriteRegister:slave :reg - 30001 :val];
+        if(reg >= 40001) {
+          [serialPort modbusWriteRegister:slave :reg - 40001 :val];
         } else {
           [serialPort modbusWriteBit:slave :reg - 1 :val];
         }

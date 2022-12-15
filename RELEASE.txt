@@ -1,4 +1,5 @@
-Objective-C v1.10.52094
+Objective-C v1.10.52382
 
-- Add support for connecting to VirtualHub-4web
-- Improve error message when YoctoHub is not reacheable.
+- Fix wrong MODBUS holding register base address in examples
+- Fix firmware update
+- Fix error 404 returned by USB device when used directly from the API
