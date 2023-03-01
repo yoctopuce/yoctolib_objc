@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_rangefinder.h 43619 2021-01-29 09:14:45Z mvuilleu $
+ *  $Id: yocto_rangefinder.h 52848 2023-01-20 15:49:48Z mvuilleu $
  *
  *  Declares yFindRangeFinder(), the high-level API for RangeFinder functions
  *
@@ -296,7 +296,7 @@ typedef enum {
 
 /**
  * Triggers the photon detector hardware calibration.
- * This function is part of the calibration procedure to compensate for the the effect
+ * This function is part of the calibration procedure to compensate for the effect
  * of a cover glass. Make sure to read the chapter about hardware calibration for details
  * on the calibration procedure for proper results.
  *
@@ -321,7 +321,7 @@ typedef enum {
 
 /**
  * Triggers the hardware cross-talk calibration of the distance sensor.
- * This function is part of the calibration procedure to compensate for the the effect
+ * This function is part of the calibration procedure to compensate for the effect
  * of a cover glass. Make sure to read the chapter about hardware calibration for details
  * on the calibration procedure for proper results.
  *

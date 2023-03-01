@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: main.m 32622 2018-10-10 13:11:04Z seb $
+ *  $Id: main.m 52781 2023-01-12 08:06:07Z seb $
  *
  *  An example that show how to use a  Yocto-Buzzer
  *
@@ -65,7 +65,7 @@ int main(int argc, const char * argv[])
     button2   = [YAnButton FindAnButton:[serial stringByAppendingString:@".anButton2"]];
 
     NSLog(@"press a test button or hit Ctrl-C");
-    while (1) {
+    while ([buz isOnline]) {
       int b1 = [button1 isPressed];
       int b2 = [button2 isPressed];
       if (b1 || b2 ) {

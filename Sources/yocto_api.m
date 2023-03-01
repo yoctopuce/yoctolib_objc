@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.m 52090 2022-12-02 11:17:59Z seb $
+ * $Id: yocto_api.m 53258 2023-02-16 11:16:45Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -1293,9 +1293,15 @@ static const char* hexArray = "0123456789ABCDEF";
  *
  * <b><i>x.x.x.x</i></b> or <b><i>hostname</i></b>: The API will use the devices connected to the
  * host with the given IP address or hostname. That host can be a regular computer
- * running a VirtualHub, or a networked YoctoHub such as YoctoHub-Ethernet or
+ * running a <i>native VirtualHub</i>, a <i>VirtualHub for web</i> hosted on a server,
+ * or a networked YoctoHub such as YoctoHub-Ethernet or
  * YoctoHub-Wireless. If you want to use the VirtualHub running on you local
- * computer, use the IP address 127.0.0.1.
+ * computer, use the IP address 127.0.0.1. If the given IP is unresponsive, yRegisterHub
+ * will not return until a time-out defined by ySetNetworkTimeout has elapsed.
+ * However, it is possible to preventively test a connection  with yTestHub.
+ * If you cannot afford a network time-out, you can use the non blocking yPregisterHub
+ * function that will establish the connection as soon as it is available.
+ *
  *
  * <b>callback</b>: that keyword make the API run in "<i>HTTP Callback</i>" mode.
  * This a special mode allowing to take control of Yoctopuce devices
@@ -1347,7 +1353,8 @@ static const char* hexArray = "0123456789ABCDEF";
  * Fault-tolerant alternative to yRegisterHub(). This function has the same
  * purpose and same arguments as yRegisterHub(), but does not trigger
  * an error when the selected hub is not available at the time of the function call.
- * This makes it possible to register a network hub independently of the current
+ * If the connexion cannot be established immediately, a background task will automatically
+ * perform periodic retries. This makes it possible to register a network hub independently of the current
  * connectivity, and to try to contact it only when a device is actively needed.
  *
  * @param url : a string containing either "usb","callback" or the
@@ -8250,7 +8257,7 @@ static const char* hexArray = "0123456789ABCDEF";
 }
 
 /**
- * Loads the the next block of measures from the dataLogger, and updates
+ * Loads the next block of measures from the dataLogger, and updates
  * the progress indicator.
  *
  * @return an integer in the range 0 to 100 (percentage of completion),
@@ -8359,7 +8366,7 @@ static const char* hexArray = "0123456789ABCDEF";
     int avgCol;
     int maxCol;
 
-    startUtcMs = measure.get_startTimeUTC * 1000;
+    startUtcMs = [measure get_startTimeUTC] * 1000;
     stream = nil;
     for (YDataStream* _each  in _streams) {
         if (floor([_each get_realStartTimeUTC] *1000+0.5) == startUtcMs) {
@@ -9320,9 +9327,15 @@ void yEnableExceptions(void)  { [YAPI EnableExceptions]; }
  *
  * <b><i>x.x.x.x</i></b> or <b><i>hostname</i></b>: The API will use the devices connected to the
  * host with the given IP address or hostname. That host can be a regular computer
- * running a VirtualHub, or a networked YoctoHub such as YoctoHub-Ethernet or
+ * running a <i>native VirtualHub</i>, a <i>VirtualHub for web</i> hosted on a server,
+ * or a networked YoctoHub such as YoctoHub-Ethernet or
  * YoctoHub-Wireless. If you want to use the VirtualHub running on you local
- * computer, use the IP address 127.0.0.1.
+ * computer, use the IP address 127.0.0.1. If the given IP is unresponsive, yRegisterHub
+ * will not return until a time-out defined by ySetNetworkTimeout has elapsed.
+ * However, it is possible to preventively test a connection  with yTestHub.
+ * If you cannot afford a network time-out, you can use the non blocking yPregisterHub
+ * function that will establish the connection as soon as it is available.
+ *
  *
  * <b>callback</b>: that keyword make the API run in "<i>HTTP Callback</i>" mode.
  * This a special mode allowing to take control of Yoctopuce devices
@@ -9361,7 +9374,8 @@ YRETCODE yRegisterHub(NSString * url, NSError** errmsg) { return [YAPI RegisterH
  * Fault-tolerant alternative to yRegisterHub(). This function has the same
  * purpose and same arguments as yRegisterHub(), but does not trigger
  * an error when the selected hub is not available at the time of the function call.
- * This makes it possible to register a network hub independently of the current
+ * If the connexion cannot be established immediately, a background task will automatically
+ * perform periodic retries. This makes it possible to register a network hub independently of the current
  * connectivity, and to try to contact it only when a device is actively needed.
  *
  * @param url : a string containing either "usb","callback" or the

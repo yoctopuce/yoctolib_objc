@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_serialport.h 49903 2022-05-25 14:18:36Z mvuilleu $
+ * $Id: yocto_serialport.h 52848 2023-01-20 15:49:48Z mvuilleu $
  *
  * Declares yFindSerialPort(), the high-level API for SerialPort functions
  *
@@ -553,6 +553,8 @@ typedef enum {
  * @return the number of bytes available to read
  */
 -(int)     read_avail;
+
+-(int)     end_tell;
 
 /**
  * Sends a text line query to the serial port, and reads the reply, if any.

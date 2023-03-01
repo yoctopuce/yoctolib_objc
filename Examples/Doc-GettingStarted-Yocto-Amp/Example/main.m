@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: main.m 32622 2018-10-10 13:11:04Z seb $
+ *  $Id: main.m 52721 2023-01-10 09:53:45Z seb $
  *
  *  An example that show how to use a  Yocto-Amp
  *
@@ -68,7 +68,7 @@ int main(int argc, const char * argv[])
     while(1) {
       if (![m isOnline]) {
         NSLog(@"No module connected (check identification and USB cable)");
-        return 1;
+        break;
       }
       NSLog(@"Current   DC : %f mA", [sensorDC currentValue]);
       NSLog(@"          AC : %f mA", [sensorAC currentValue]);

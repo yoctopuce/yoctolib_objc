@@ -94,7 +94,6 @@ int main(int argc, const char * argv[])
       [l0 drawBitmap:0  :0 :w :nsdata :0];
       zoom = zoom / 0.95;
     }
-    [YAPI FreeAPI];
   }
 
   return 0;

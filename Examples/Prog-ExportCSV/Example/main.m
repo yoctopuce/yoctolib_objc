@@ -7,7 +7,7 @@ int main (int argc, const char * argv[])
   YSensor  *sensor;
   NSMutableArray* sensorList;
   YConsolidatedDataSet* data;
-  NSMutableArray* record;
+  NSMutableArray* record = nil;
   NSString  *line;
   NSDate    *date;
 

@@ -88,7 +88,6 @@ int main(int argc, const char * argv[])
       // change the flake angle
       a += 0.1257;
     }
-    [YAPI FreeAPI];
   }
 
   return 0;

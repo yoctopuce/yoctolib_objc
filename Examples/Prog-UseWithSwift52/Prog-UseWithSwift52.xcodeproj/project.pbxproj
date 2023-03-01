@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 53;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -186,8 +186,9 @@
 		B8A733C224F791A100B90C34 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				BuildIndependentTargetsInParallel = YES;
 				LastSwiftUpdateCheck = 1160;
-				LastUpgradeCheck = 1160;
+				LastUpgradeCheck = 1420;
 				ORGANIZATIONNAME = Yoctopuce;
 				TargetAttributes = {
 					B8A733C924F791A100B90C34 = {
@@ -202,7 +203,6 @@
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
-				Base,
 			);
 			mainGroup = B8A733C124F791A100B90C34;
 			productRefGroup = B8A733CB24F791A100B90C34 /* Products */;

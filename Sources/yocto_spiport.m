@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_spiport.m 49903 2022-05-25 14:18:36Z mvuilleu $
+ *  $Id: yocto_spiport.m 52891 2023-01-25 10:08:05Z seb $
  *
  *  Implements the high-level API for SpiPort functions
  *
@@ -1066,16 +1066,29 @@
  */
 -(int) read_avail
 {
-    NSMutableData* buff;
-    int bufflen;
+    NSString* availPosStr;
+    int atPos;
     int res;
+    NSMutableData* databin;
 
-    buff = [self _download:[NSString stringWithFormat:@"rxcnt.bin?pos=%d",_rxptr]];
-    bufflen = (int)[buff length] - 1;
-    while ((bufflen > 0) && ((((u8*)([buff bytes]))[bufflen]) != 64)) {
-        bufflen = bufflen - 1;
-    }
-    res = [[ARC_sendAutorelease([[NSString alloc] initWithData:buff encoding:NSISOLatin1StringEncoding]) substringWithRange:NSMakeRange( 0, bufflen)] intValue];
+    databin = [self _download:[NSString stringWithFormat:@"rxcnt.bin?pos=%d",_rxptr]];
+    availPosStr = ARC_sendAutorelease([[NSString alloc] initWithData:databin encoding:NSISOLatin1StringEncoding]);
+    atPos = _ystrpos(availPosStr, @"@");
+    res = [[availPosStr substringWithRange:NSMakeRange( 0, atPos)] intValue];
+    return res;
+}
+
+-(int) end_tell
+{
+    NSString* availPosStr;
+    int atPos;
+    int res;
+    NSMutableData* databin;
+
+    databin = [self _download:[NSString stringWithFormat:@"rxcnt.bin?pos=%d",_rxptr]];
+    availPosStr = ARC_sendAutorelease([[NSString alloc] initWithData:databin encoding:NSISOLatin1StringEncoding]);
+    atPos = _ystrpos(availPosStr, @"@");
+    res = [[availPosStr substringWithRange:NSMakeRange( atPos+1, (int)[(availPosStr) length]-atPos-1)] intValue];
     return res;
 }
 
@@ -1093,13 +1106,22 @@
  */
 -(NSString*) queryLine:(NSString*)query :(int)maxWait
 {
+    int prevpos;
     NSString* url;
     NSMutableData* msgbin;
     NSMutableArray* msgarr = [NSMutableArray array];
     int msglen;
     NSString* res;
+    if ((int)[(query) length] <= 80) {
+        // fast query
+        url = [NSString stringWithFormat:@"rxmsg.json?len=1&maxw=%d&cmd=!%@", maxWait,[self _escapeAttr:query]];
+    } else {
+        // long query
+        prevpos = [self end_tell];
+        [self _upload:@"txdata" :[NSMutableData dataWithData:[[NSString stringWithFormat:@"%@%@", query, @"\r\n"] dataUsingEncoding:NSISOLatin1StringEncoding]]];
+        url = [NSString stringWithFormat:@"rxmsg.json?len=1&maxw=%d&pos=%d", maxWait,prevpos];
+    }
 
-    url = [NSString stringWithFormat:@"rxmsg.json?len=1&maxw=%d&cmd=!%@", maxWait,[self _escapeAttr:query]];
     msgbin = [self _download:url];
     msgarr = [self _json_get_array:msgbin];
     msglen = (int)[msgarr count];
@@ -1131,13 +1153,22 @@
  */
 -(NSString*) queryHex:(NSString*)hexString :(int)maxWait
 {
+    int prevpos;
     NSString* url;
     NSMutableData* msgbin;
     NSMutableArray* msgarr = [NSMutableArray array];
     int msglen;
     NSString* res;
+    if ((int)[(hexString) length] <= 80) {
+        // fast query
+        url = [NSString stringWithFormat:@"rxmsg.json?len=1&maxw=%d&cmd=$%@", maxWait,hexString];
+    } else {
+        // long query
+        prevpos = [self end_tell];
+        [self _upload:@"txdata" :[YAPI _hexStr2Bin:hexString]];
+        url = [NSString stringWithFormat:@"rxmsg.json?len=1&maxw=%d&pos=%d", maxWait,prevpos];
+    }
 
-    url = [NSString stringWithFormat:@"rxmsg.json?len=1&maxw=%d&cmd=$%@", maxWait,hexString];
     msgbin = [self _download:url];
     msgarr = [self _json_get_array:msgbin];
     msglen = (int)[msgarr count];

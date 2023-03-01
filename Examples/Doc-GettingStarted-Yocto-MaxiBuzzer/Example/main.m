@@ -66,7 +66,7 @@ int main(int argc, const char * argv[])
     button2   = [YAnButton FindAnButton:[serial stringByAppendingString:@".anButton2"]];
 
     NSLog(@"press a test button or hit Ctrl-C");
-    while (1) {
+    while ([buz isOnline]) {
       int b1 = [button1 isPressed];
       int b2 = [button2 isPressed];
       if (b1 || b2 ) {
