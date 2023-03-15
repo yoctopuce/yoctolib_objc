@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_network.h 49385 2022-04-06 00:49:27Z mvuilleu $
+ *  $Id: yocto_network.h 53420 2023-03-06 10:38:51Z mvuilleu $
  *
  *  Declares yFindNetwork(), the high-level API for Network functions
  *
@@ -92,6 +92,14 @@ typedef enum {
     Y_CALLBACKENCODING_INVALID = -1,
 } Y_CALLBACKENCODING_enum;
 #endif
+#ifndef _Y_CALLBACKTEMPLATE_ENUM
+#define _Y_CALLBACKTEMPLATE_ENUM
+typedef enum {
+    Y_CALLBACKTEMPLATE_OFF = 0,
+    Y_CALLBACKTEMPLATE_ON = 1,
+    Y_CALLBACKTEMPLATE_INVALID = -1,
+} Y_CALLBACKTEMPLATE_enum;
+#endif
 #define Y_MACADDRESS_INVALID            YAPI_INVALID_STRING
 #define Y_IPADDRESS_INVALID             YAPI_INVALID_STRING
 #define Y_SUBNETMASK_INVALID            YAPI_INVALID_STRING
@@ -147,6 +155,7 @@ typedef enum {
     NSString*       _callbackUrl;
     Y_CALLBACKMETHOD_enum _callbackMethod;
     Y_CALLBACKENCODING_enum _callbackEncoding;
+    Y_CALLBACKTEMPLATE_enum _callbackTemplate;
     NSString*       _callbackCredentials;
     int             _callbackInitialDelay;
     NSString*       _callbackSchedule;
@@ -618,6 +627,37 @@ typedef enum {
  */
 -(int)     set_callbackEncoding:(Y_CALLBACKENCODING_enum) newval;
 -(int)     setCallbackEncoding:(Y_CALLBACKENCODING_enum) newval;
+
+/**
+ * Returns the activation state of the custom template file to customize callback
+ * format. If the custom callback template is disabled, it will be ignored even
+ * if present on the YoctoHub.
+ *
+ * @return either YNetwork.CALLBACKTEMPLATE_OFF or YNetwork.CALLBACKTEMPLATE_ON, according to the
+ * activation state of the custom template file to customize callback
+ *         format
+ *
+ * On failure, throws an exception or returns YNetwork.CALLBACKTEMPLATE_INVALID.
+ */
+-(Y_CALLBACKTEMPLATE_enum)     get_callbackTemplate;
+
+
+-(Y_CALLBACKTEMPLATE_enum) callbackTemplate;
+/**
+ * Enable the use of a template file to customize callbacks format.
+ * When the custom callback template file is enabled, the template file
+ * will be loaded for each callback in order to build the data to post to the
+ * server. If template file does not exist on the YoctoHub, the callback will
+ * fail with an error message indicating the name of the expected template file.
+ *
+ * @param newval : either YNetwork.CALLBACKTEMPLATE_OFF or YNetwork.CALLBACKTEMPLATE_ON
+ *
+ * @return YAPI.SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     set_callbackTemplate:(Y_CALLBACKTEMPLATE_enum) newval;
+-(int)     setCallbackTemplate:(Y_CALLBACKTEMPLATE_enum) newval;
 
 /**
  * Returns a hashed version of the notification callback credentials if set,

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_network.m 48692 2022-02-24 22:30:52Z mvuilleu $
+ *  $Id: yocto_network.m 53420 2023-03-06 10:38:51Z mvuilleu $
  *
  *  Implements the high-level API for Network functions
  *
@@ -72,6 +72,7 @@
     _callbackUrl = Y_CALLBACKURL_INVALID;
     _callbackMethod = Y_CALLBACKMETHOD_INVALID;
     _callbackEncoding = Y_CALLBACKENCODING_INVALID;
+    _callbackTemplate = Y_CALLBACKTEMPLATE_INVALID;
     _callbackCredentials = Y_CALLBACKCREDENTIALS_INVALID;
     _callbackInitialDelay = Y_CALLBACKINITIALDELAY_INVALID;
     _callbackSchedule = Y_CALLBACKSCHEDULE_INVALID;
@@ -244,6 +245,11 @@
     if(!strcmp(j->token, "callbackEncoding")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
         _callbackEncoding =  atoi(j->token);
+        return 1;
+    }
+    if(!strcmp(j->token, "callbackTemplate")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _callbackTemplate =  (Y_CALLBACKTEMPLATE_enum)atoi(j->token);
         return 1;
     }
     if(!strcmp(j->token, "callbackCredentials")) {
@@ -1094,6 +1100,58 @@
     NSString* rest_val;
     rest_val = [NSString stringWithFormat:@"%d", newval];
     return [self _setAttr:@"callbackEncoding" :rest_val];
+}
+/**
+ * Returns the activation state of the custom template file to customize callback
+ * format. If the custom callback template is disabled, it will be ignored even
+ * if present on the YoctoHub.
+ *
+ * @return either YNetwork.CALLBACKTEMPLATE_OFF or YNetwork.CALLBACKTEMPLATE_ON, according to the
+ * activation state of the custom template file to customize callback
+ *         format
+ *
+ * On failure, throws an exception or returns YNetwork.CALLBACKTEMPLATE_INVALID.
+ */
+-(Y_CALLBACKTEMPLATE_enum) get_callbackTemplate
+{
+    Y_CALLBACKTEMPLATE_enum res;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
+            return Y_CALLBACKTEMPLATE_INVALID;
+        }
+    }
+    res = _callbackTemplate;
+    return res;
+}
+
+
+-(Y_CALLBACKTEMPLATE_enum) callbackTemplate
+{
+    return [self get_callbackTemplate];
+}
+
+/**
+ * Enable the use of a template file to customize callbacks format.
+ * When the custom callback template file is enabled, the template file
+ * will be loaded for each callback in order to build the data to post to the
+ * server. If template file does not exist on the YoctoHub, the callback will
+ * fail with an error message indicating the name of the expected template file.
+ *
+ * @param newval : either YNetwork.CALLBACKTEMPLATE_OFF or YNetwork.CALLBACKTEMPLATE_ON
+ *
+ * @return YAPI.SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) set_callbackTemplate:(Y_CALLBACKTEMPLATE_enum) newval
+{
+    return [self setCallbackTemplate:newval];
+}
+-(int) setCallbackTemplate:(Y_CALLBACKTEMPLATE_enum) newval
+{
+    NSString* rest_val;
+    rest_val = (newval ? @"1" : @"0");
+    return [self _setAttr:@"callbackTemplate" :rest_val];
 }
 /**
  * Returns a hashed version of the notification callback credentials if set,

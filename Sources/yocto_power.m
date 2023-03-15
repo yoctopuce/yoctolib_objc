@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_power.m 52318 2022-12-13 10:58:18Z seb $
+ *  $Id: yocto_power.m 53420 2023-03-06 10:38:51Z mvuilleu $
  *
  *  Implements the high-level API for Power functions
  *
@@ -53,6 +53,7 @@
           return nil;
     _className = @"Power";
 //--- (YPower attributes initialization)
+    _powerFactor = Y_POWERFACTOR_INVALID;
     _cosPhi = Y_COSPHI_INVALID;
     _meter = Y_METER_INVALID;
     _deliveredEnergyMeter = Y_DELIVEREDENERGYMETER_INVALID;
@@ -76,6 +77,11 @@
 
 -(int) _parseAttr:(yJsonStateMachine*) j
 {
+    if(!strcmp(j->token, "powerFactor")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _powerFactor =  floor(atof(j->token) / 65.536 + 0.5) / 1000.0;
+        return 1;
+    }
     if(!strcmp(j->token, "cosPhi")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
         _cosPhi =  floor(atof(j->token) / 65.536 + 0.5) / 1000.0;
@@ -106,11 +112,41 @@
 //--- (end of YPower private methods implementation)
 //--- (YPower public methods implementation)
 /**
- * Returns the power factor (the ratio between the real power consumed,
- * measured in W, and the apparent power provided, measured in VA).
+ * Returns the power factor (PF), i.e. ratio between the active power consumed (in W)
+ * and the apparent power provided (VA).
  *
- * @return a floating point number corresponding to the power factor (the ratio between the real power consumed,
- *         measured in W, and the apparent power provided, measured in VA)
+ * @return a floating point number corresponding to the power factor (PF), i.e
+ *
+ * On failure, throws an exception or returns YPower.POWERFACTOR_INVALID.
+ */
+-(double) get_powerFactor
+{
+    double res;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
+            return Y_POWERFACTOR_INVALID;
+        }
+    }
+    res = _powerFactor;
+    if (res == Y_POWERFACTOR_INVALID) {
+        res = _cosPhi;
+    }
+    res = floor(res * 1000+0.5) / 1000;
+    return res;
+}
+
+
+-(double) powerFactor
+{
+    return [self get_powerFactor];
+}
+/**
+ * Returns the Displacement Power factor (DPF), i.e. cosine of the phase shift between
+ * the voltage and current fundamentals.
+ * On the Yocto-Watt (V1), the value returned by this method correponds to the
+ * power factor as this device is cannot estimate the true DPF.
+ *
+ * @return a floating point number corresponding to the Displacement Power factor (DPF), i.e
  *
  * On failure, throws an exception or returns YPower.COSPHI_INVALID.
  */

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_power.h 52318 2022-12-13 10:58:18Z seb $
+ *  $Id: yocto_power.h 53420 2023-03-06 10:38:51Z mvuilleu $
  *
  *  Declares yFindPower(), the high-level API for Power functions
  *
@@ -46,6 +46,7 @@ NS_ASSUME_NONNULL_BEGIN
 //--- (YPower globals)
 typedef void (*YPowerValueCallback)(YPower *func, NSString *functionValue);
 typedef void (*YPowerTimedReportCallback)(YPower *func, YMeasure *measure);
+#define Y_POWERFACTOR_INVALID           YAPI_INVALID_DOUBLE
 #define Y_COSPHI_INVALID                YAPI_INVALID_DOUBLE
 #define Y_METER_INVALID                 YAPI_INVALID_DOUBLE
 #define Y_DELIVEREDENERGYMETER_INVALID  YAPI_INVALID_DOUBLE
@@ -67,6 +68,7 @@ typedef void (*YPowerTimedReportCallback)(YPower *func, YMeasure *measure);
 {
 @protected
 //--- (YPower attributes declaration)
+    double          _powerFactor;
     double          _cosPhi;
     double          _meter;
     double          _deliveredEnergyMeter;
@@ -88,11 +90,24 @@ typedef void (*YPowerTimedReportCallback)(YPower *func, YMeasure *measure);
 //--- (end of YPower yapiwrapper declaration)
 //--- (YPower public methods declaration)
 /**
- * Returns the power factor (the ratio between the real power consumed,
- * measured in W, and the apparent power provided, measured in VA).
+ * Returns the power factor (PF), i.e. ratio between the active power consumed (in W)
+ * and the apparent power provided (VA).
  *
- * @return a floating point number corresponding to the power factor (the ratio between the real power consumed,
- *         measured in W, and the apparent power provided, measured in VA)
+ * @return a floating point number corresponding to the power factor (PF), i.e
+ *
+ * On failure, throws an exception or returns YPower.POWERFACTOR_INVALID.
+ */
+-(double)     get_powerFactor;
+
+
+-(double) powerFactor;
+/**
+ * Returns the Displacement Power factor (DPF), i.e. cosine of the phase shift between
+ * the voltage and current fundamentals.
+ * On the Yocto-Watt (V1), the value returned by this method correponds to the
+ * power factor as this device is cannot estimate the true DPF.
+ *
+ * @return a floating point number corresponding to the Displacement Power factor (DPF), i.e
  *
  * On failure, throws an exception or returns YPower.COSPHI_INVALID.
  */
