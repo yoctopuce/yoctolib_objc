@@ -429,6 +429,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Yocto-Inventory/Yocto-Inventory-Prefix.pch";
 				INFOPLIST_FILE = "Yocto-Inventory/Yocto-Inventory-Info.plist";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.yoctopuce.Yocto-Inventory";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};
@@ -441,6 +442,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Yocto-Inventory/Yocto-Inventory-Prefix.pch";
 				INFOPLIST_FILE = "Yocto-Inventory/Yocto-Inventory-Info.plist";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.yoctopuce.Yocto-Inventory";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.m 53258 2023-02-16 11:16:45Z seb $
+ * $Id: yocto_api.m 53689 2023-03-22 11:17:15Z mvuilleu $
  *
  * High-level programming interface, common to all modules
  *
@@ -2976,10 +2976,11 @@ static const char* hexArray = "0123456789ABCDEF";
 }
 
 /**
- * Test if the function is readOnly. Return true if the function is write protected
- * or that the function is not available.
+ * Indicates whether changes to the function are prohibited or allowed.
+ * Returns true if the function is blocked by an admin password
+ * or if the function is not available.
  *
- * @return true if the function is readOnly or not online.
+ * @return true if the function is write-protected or not online.
  */
 -(bool) isReadOnly
 {

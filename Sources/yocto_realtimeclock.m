@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_realtimeclock.m 50595 2022-07-28 07:54:15Z mvuilleu $
+ *  $Id: yocto_realtimeclock.m 53874 2023-04-04 17:43:00Z mvuilleu $
  *
  *  Implements the high-level API for RealTimeClock functions
  *
@@ -281,6 +281,9 @@
  * Changes the automatic clock synchronization with host working state.
  * To disable automatic synchronization, set the value to true.
  * To enable automatic synchronization (default), set the value to false.
+ *
+ * If you want the change to be kept after a device reboot,
+ * make sure  to call the matching module saveToFlash().
  *
  * @param newval : either YRealTimeClock.DISABLEHOSTSYNC_FALSE or YRealTimeClock.DISABLEHOSTSYNC_TRUE,
  * according to the automatic clock synchronization with host working state
