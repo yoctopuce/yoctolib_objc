@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_gyro.m 50689 2022-08-17 14:37:15Z mvuilleu $
+ * $Id: yocto_gyro.m 54282 2023-04-28 10:12:50Z seb $
  *
  * Implements the high-level API for Gyro functions
  *
@@ -816,7 +816,7 @@ static void yInternalGyroCallback(YQt *obj, NSString *value)
 
 -(int) _invokeGyroCallbacks:(int)qtIndex :(double)qtValue
 {
-    switch(qtIndex - 1) {
+    switch (qtIndex - 1) {
     case 0:
         _w = qtValue;
         break;

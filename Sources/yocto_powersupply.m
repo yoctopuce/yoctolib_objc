@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_powersupply.m 50689 2022-08-17 14:37:15Z mvuilleu $
+ *  $Id: yocto_powersupply.m 54768 2023-05-26 06:46:41Z seb $
  *
  *  Implements the high-level API for PowerSupply functions
  *
@@ -56,12 +56,9 @@
     _voltageSetPoint = Y_VOLTAGESETPOINT_INVALID;
     _currentLimit = Y_CURRENTLIMIT_INVALID;
     _powerOutput = Y_POWEROUTPUT_INVALID;
-    _voltageSense = Y_VOLTAGESENSE_INVALID;
     _measuredVoltage = Y_MEASUREDVOLTAGE_INVALID;
     _measuredCurrent = Y_MEASUREDCURRENT_INVALID;
     _inputVoltage = Y_INPUTVOLTAGE_INVALID;
-    _vInt = Y_VINT_INVALID;
-    _ldoTemperature = Y_LDOTEMPERATURE_INVALID;
     _voltageTransition = Y_VOLTAGETRANSITION_INVALID;
     _voltageAtStartUp = Y_VOLTAGEATSTARTUP_INVALID;
     _currentAtStartUp = Y_CURRENTATSTARTUP_INVALID;
@@ -102,11 +99,6 @@
         _powerOutput =  (Y_POWEROUTPUT_enum)atoi(j->token);
         return 1;
     }
-    if(!strcmp(j->token, "voltageSense")) {
-        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-        _voltageSense =  atoi(j->token);
-        return 1;
-    }
     if(!strcmp(j->token, "measuredVoltage")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
         _measuredVoltage =  floor(atof(j->token) / 65.536 + 0.5) / 1000.0;
@@ -120,16 +112,6 @@
     if(!strcmp(j->token, "inputVoltage")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
         _inputVoltage =  floor(atof(j->token) / 65.536 + 0.5) / 1000.0;
-        return 1;
-    }
-    if(!strcmp(j->token, "vInt")) {
-        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-        _vInt =  floor(atof(j->token) / 65.536 + 0.5) / 1000.0;
-        return 1;
-    }
-    if(!strcmp(j->token, "ldoTemperature")) {
-        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-        _ldoTemperature =  floor(atof(j->token) / 65.536 + 0.5) / 1000.0;
         return 1;
     }
     if(!strcmp(j->token, "voltageTransition")) {
@@ -295,52 +277,6 @@
     return [self _setAttr:@"powerOutput" :rest_val];
 }
 /**
- * Returns the output voltage control point.
- *
- * @return either YPowerSupply.VOLTAGESENSE_INT or YPowerSupply.VOLTAGESENSE_EXT, according to the
- * output voltage control point
- *
- * On failure, throws an exception or returns YPowerSupply.VOLTAGESENSE_INVALID.
- */
--(Y_VOLTAGESENSE_enum) get_voltageSense
-{
-    Y_VOLTAGESENSE_enum res;
-    if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
-            return Y_VOLTAGESENSE_INVALID;
-        }
-    }
-    res = _voltageSense;
-    return res;
-}
-
-
--(Y_VOLTAGESENSE_enum) voltageSense
-{
-    return [self get_voltageSense];
-}
-
-/**
- * Changes the voltage control point.
- *
- * @param newval : either YPowerSupply.VOLTAGESENSE_INT or YPowerSupply.VOLTAGESENSE_EXT, according to
- * the voltage control point
- *
- * @return YAPI.SUCCESS if the call succeeds.
- *
- * On failure, throws an exception or returns a negative error code.
- */
--(int) set_voltageSense:(Y_VOLTAGESENSE_enum) newval
-{
-    return [self setVoltageSense:newval];
-}
--(int) setVoltageSense:(Y_VOLTAGESENSE_enum) newval
-{
-    NSString* rest_val;
-    rest_val = [NSString stringWithFormat:@"%d", newval];
-    return [self _setAttr:@"voltageSense" :rest_val];
-}
-/**
  * Returns the measured output voltage, in V.
  *
  * @return a floating point number corresponding to the measured output voltage, in V
@@ -411,54 +347,6 @@
 -(double) inputVoltage
 {
     return [self get_inputVoltage];
-}
-/**
- * Returns the internal voltage, in V.
- *
- * @return a floating point number corresponding to the internal voltage, in V
- *
- * On failure, throws an exception or returns YPowerSupply.VINT_INVALID.
- */
--(double) get_vInt
-{
-    double res;
-    if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
-            return Y_VINT_INVALID;
-        }
-    }
-    res = _vInt;
-    return res;
-}
-
-
--(double) vInt
-{
-    return [self get_vInt];
-}
-/**
- * Returns the LDO temperature, in Celsius.
- *
- * @return a floating point number corresponding to the LDO temperature, in Celsius
- *
- * On failure, throws an exception or returns YPowerSupply.LDOTEMPERATURE_INVALID.
- */
--(double) get_ldoTemperature
-{
-    double res;
-    if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
-            return Y_LDOTEMPERATURE_INVALID;
-        }
-    }
-    res = _ldoTemperature;
-    return res;
-}
-
-
--(double) ldoTemperature
-{
-    return [self get_ldoTemperature];
 }
 -(NSString*) get_voltageTransition
 {

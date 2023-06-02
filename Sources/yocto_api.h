@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.h 53689 2023-03-22 11:17:15Z mvuilleu $
+ * $Id: yocto_api.h 54649 2023-05-22 10:09:20Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -62,7 +62,7 @@
 
 //extern NSMutableDictionary* YAPI_YFunctions;
 
-#define YOCTO_API_REVISION          "54037"
+#define YOCTO_API_REVISION          "54821"
 
 // yInitAPI argument
 #define Y_DETECT_NONE           0
@@ -83,6 +83,7 @@
 @class YFirmwareUpdate;
 @class YDataLogger;
 @class YAPIContext;
+@class YHub;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -322,6 +323,8 @@ int _ystrpos(NSString* haystack, NSString* needle);
 //--- (generated code: YAPIContext attributes declaration)
     u64             _defaultCacheValidity;
 //--- (end of generated code: YAPIContext attributes declaration)
+    NSMutableDictionary* _hub_cache;
+
 }
 // Constructor is protected, use yFindAPIContext factory function to instantiate
 -(id)    init;
@@ -413,6 +416,10 @@ int _ystrpos(NSString* haystack, NSString* needle);
  */
 -(u64)     GetCacheValidity;
 
+-(YHub*)     nextHubInUseInternal:(int)hubref;
+
+-(YHub*)     getYHubObj:(int)hubref;
+
 
 //--- (end of generated code: YAPIContext public methods declaration)
 
@@ -420,6 +427,175 @@ int _ystrpos(NSString* haystack, NSString* needle);
 
 //--- (generated code: YAPIContext functions declaration)
 //--- (end of generated code: YAPIContext functions declaration)
+
+
+//--- (generated code: YHub globals)
+//--- (end of generated code: YHub globals)
+
+//--- (generated code: YHub class start)
+/**
+ * YHub Class: Hub Interface
+ *
+ *
+ */
+@interface YHub : NSObject
+//--- (end of generated code: YHub class start)
+{
+@protected
+//--- (generated code: YHub attributes declaration)
+    YAPIContext*    _ctx;
+    int             _hubref;
+    id              _userData;
+//--- (end of generated code: YHub attributes declaration)
+}
+// Constructor is protected, use yFindCellRecord factory function to instantiate
+-(id) initWith:(YAPIContext*)ctx :(int)hubref;
+
+//--- (generated code: YHub private methods declaration)
+//--- (end of generated code: YHub private methods declaration)
+//--- (generated code: YHub public methods declaration)
+-(NSString*)     _getStrAttr:(NSString*)attrName;
+
+-(int)     _getIntAttr:(NSString*)attrName;
+
+-(void)     _setIntAttr:(NSString*)attrName :(int)value;
+
+/**
+ * Returns the URL that has been used first to register this hub.
+ */
+-(NSString*)     get_registeredUrl;
+
+/**
+ * Returns all known URLs that have been used to register this hub.
+ * URLs are pointing to the same hub when the devices connected
+ * are sharing the same serial number.
+ */
+-(NSMutableArray*)     get_knownUrls;
+
+/**
+ * Returns the URL currently in use to communicate with this hub.
+ */
+-(NSString*)     get_connectionUrl;
+
+/**
+ * Returns the hub serial number, if the hub was already connected once.
+ */
+-(NSString*)     get_serialNumber;
+
+/**
+ * Tells if this hub is still registered within the API.
+ *
+ * @return true if the hub has not been unregistered.
+ */
+-(bool)     isInUse;
+
+/**
+ * Tells if there is an active communication channel with this hub.
+ *
+ * @return true if the hub is currently connected.
+ */
+-(bool)     isOnline;
+
+/**
+ * Tells if write access on this hub is blocked. Return true if it
+ * is not possible to change attributes on this hub
+ *
+ * @return true if it is not possible to change attributes on this hub.
+ */
+-(bool)     isReadOnly;
+
+/**
+ * Modifies tthe network connection delay for this hub.
+ * The default value is inherited from ySetNetworkTimeout
+ * at the time when the hub is registered, but it can be updated
+ * afterwards for each specific hub if necessary.
+ *
+ * @param networkMsTimeout : the network connection delay in milliseconds.
+ * @noreturn
+ */
+-(void)     set_networkTimeout:(int)networkMsTimeout;
+
+/**
+ * Returns the network connection delay for this hub.
+ * The default value is inherited from ySetNetworkTimeout
+ * at the time when the hub is registered, but it can be updated
+ * afterwards for each specific hub if necessary.
+ *
+ * @return the network connection delay in milliseconds.
+ */
+-(int)     get_networkTimeout;
+
+/**
+ * Returns the numerical error code of the latest error with the hub.
+ * This method is mostly useful when using the Yoctopuce library with
+ * exceptions disabled.
+ *
+ * @return a number corresponding to the code of the latest error that occurred while
+ *         using the hub object
+ */
+-(int)     get_errorType;
+
+/**
+ * Returns the error message of the latest error with the hub.
+ * This method is mostly useful when using the Yoctopuce library with
+ * exceptions disabled.
+ *
+ * @return a string corresponding to the latest error message that occured while
+ *         using the hub object
+ */
+-(NSString*)     get_errorMessage;
+
+/**
+ * Returns the value of the userData attribute, as previously stored
+ * using method set_userData.
+ * This attribute is never touched directly by the API, and is at
+ * disposal of the caller to store a context.
+ *
+ * @return the object stored previously by the caller.
+ */
+-(id)     get_userData;
+
+/**
+ * Stores a user context provided as argument in the userData
+ * attribute of the function.
+ * This attribute is never touched by the API, and is at
+ * disposal of the caller to store a context.
+ *
+ * @param data : any kind of object to be stored
+ * @noreturn
+ */
+-(void)     set_userData:(id _Nullable)data;
+
+/**
+ * Starts the enumeration of hubs currently in use by the API.
+ * Use the method YHub.nextHubInUse() to iterate on the
+ * next hubs.
+ *
+ * @return a pointer to a YHub object, corresponding to
+ *         the first hub currently in use by the API, or a
+ *         nil pointer if none has been registered.
+ */
++(YHub*)     FirstHubInUse;
+
+/**
+ * Continues the module enumeration started using YHub.FirstHubInUse().
+ * Caution: You can't make any assumption about the order of returned hubs.
+ *
+ * @return a pointer to a YHub object, corresponding to
+ *         the next hub currenlty in use, or a nil pointer
+ *         if there are no more hubs to enumerate.
+ */
+-(YHub*)     nextHubInUse;
+
+
+//--- (end of generated code: YHub public methods declaration)
+
+@end
+
+//--- (generated code: YHub functions declaration)
+//--- (end of generated code: YHub functions declaration)
+
+
 
 //
 // YAPI Context
@@ -490,7 +666,7 @@ NS_SWIFT_NAME(GetAPIVersion());
  *
  * @return YAPI.SUCCESS when the call succeeds.
  *
- * On failure, throws an exception or returns a negative error code.
+ * On failure returns a negative error code.
  */
  +(YRETCODE)    InitAPI :(int)mode :(NSError**)errmsg
 NS_SWIFT_NAME(InitAPI(_:_:));
@@ -531,8 +707,7 @@ NS_SWIFT_NAME(DisableExceptions());
  * Re-enables the use of exceptions for runtime error handling.
  * Be aware than when exceptions are enabled, every function that fails
  * triggers an exception. If the exception is not caught by the user code,
- * it  either fires the debugger or aborts (i.e. crash) the program.
- * On failure, throws an exception or returns a negative error code.
+ * it either fires the debugger or aborts (i.e. crash) the program.
  */
  +(void)        EnableExceptions
 NS_SWIFT_NAME(EnableExceptions());
@@ -649,7 +824,7 @@ NS_SWIFT_NAME(RegisterHubDiscoveryCallback(_:));
  *
  * @return YAPI.SUCCESS when the call succeeds.
  *
- * On failure, throws an exception or returns a negative error code.
+ * On failure returns a negative error code.
  */
  +(YRETCODE)    RegisterHub:(NSString *) url :(NSError**) errmsg
 NS_SWIFT_NAME(RegisterHub(_:_:));
@@ -667,7 +842,7 @@ NS_SWIFT_NAME(RegisterHub(_:_:));
  *
  * @return YAPI.SUCCESS when the call succeeds.
  *
- * On failure, throws an exception or returns a negative error code.
+ * On failure returns a negative error code.
  */
 +(YRETCODE)         PreregisterHub:(NSString*) url :(NSError**) errmsg
 NS_SWIFT_NAME(PreregisterHub(_:_:));
@@ -715,7 +890,7 @@ NS_SWIFT_NAME(TestHub(_:_:));
  *
  * @return YAPI.SUCCESS when the call succeeds.
  *
- * On failure, throws an exception or returns a negative error code.
+ * On failure returns a negative error code.
  */
  +(YRETCODE)    UpdateDeviceList:(NSError**) errmsg
 NS_SWIFT_NAME(UpdateDeviceList(_:));
@@ -735,7 +910,7 @@ NS_SWIFT_NAME(UpdateDeviceList(_:));
  *
  * @return YAPI.SUCCESS when the call succeeds.
  *
- * On failure, throws an exception or returns a negative error code.
+ * On failure returns a negative error code.
  */
  +(YRETCODE)    HandleEvents:(NSError**) errmsg
 NS_SWIFT_NAME(HandleEvents(_:));
@@ -757,7 +932,7 @@ NS_SWIFT_NAME(HandleEvents(_:));
  *
  * @return YAPI.SUCCESS when the call succeeds.
  *
- * On failure, throws an exception or returns a negative error code.
+ * On failure returns a negative error code.
  */
  +(YRETCODE)    Sleep:(unsigned)ms_duration :(NSError**)errmsg
 NS_SWIFT_NAME(Sleep(_:_:));
@@ -769,7 +944,7 @@ NS_SWIFT_NAME(Sleep(_:_:));
  * @param errmsg : a string passed by reference to receive any error message.
  *
  * @return YAPI.SUCCESS when the call succeeds.
- *         On failure, throws an exception or returns a negative error code.
+ *         On failure returns a negative error code.
  */
  +(YRETCODE)    TriggerHubDiscovery:(NSError**) errmsg
 NS_SWIFT_NAME(TriggerHubDiscovery(_:));
@@ -882,6 +1057,10 @@ NS_SWIFT_NAME(CheckLogicalName(_:));
  *         loaded function parameters, in milliseconds
  */
 +(u64)     GetCacheValidity;
+
++(YHub*)     nextHubInUseInternal:(int)hubref;
+
++(YHub*)     getYHubObj:(int)hubref;
 
 //--- (end of generated code: YAPIContext yapiwrapper declaration)
 @end
@@ -1363,8 +1542,8 @@ NS_SWIFT_NAME(FirstFunction());
  * @param data : any kind of object to be stored
  * @noreturn
  */
--(void)     set_userData:(id) data;
--(void)     setUserData:(id) data;
+-(void)     set_userData:(id _Nullable) data;
+-(void)     setUserData:(id _Nullable) data;
 
 
 
@@ -3269,7 +3448,7 @@ NS_SWIFT_NAME(FirstSensor());
  *
  * @return YAPI.SUCCESS when the call succeeds.
  *
- * On failure, throws an exception or returns a negative error code.
+ * On failure returns a negative error code.
  */
 YRETCODE yInitAPI(int mode, NSError** errmsg);
 
@@ -3326,8 +3505,7 @@ void yDisableExceptions(void);
  * Re-enables the use of exceptions for runtime error handling.
  * Be aware than when exceptions are enabled, every function that fails
  * triggers an exception. If the exception is not caught by the user code,
- * it  either fires the debugger or aborts (i.e. crash) the program.
- * On failure, throws an exception or returns a negative error code.
+ * it either fires the debugger or aborts (i.e. crash) the program.
  */
 void yEnableExceptions(void);
 
@@ -3383,7 +3561,7 @@ void yEnableExceptions(void);
  *
  * @return YAPI.SUCCESS when the call succeeds.
  *
- * On failure, throws an exception or returns a negative error code.
+ * On failure returns a negative error code.
  */
 YRETCODE yRegisterHub(NSString * url, NSError** errmsg);
 
@@ -3401,7 +3579,7 @@ YRETCODE yRegisterHub(NSString * url, NSError** errmsg);
  *
  * @return YAPI.SUCCESS when the call succeeds.
  *
- * On failure, throws an exception or returns a negative error code.
+ * On failure returns a negative error code.
  */
 YRETCODE yPreregisterHub(NSString * url, NSError** errmsg);
 
@@ -3432,7 +3610,7 @@ void     yUnregisterHub(NSString * url);
  *
  * @return YAPI.SUCCESS when the call succeeds.
  *
- * On failure, throws an exception or returns a negative error code.
+ * On failure returns a negative error code.
  */
 YRETCODE yUpdateDeviceList(NSError** errmsg);
 
@@ -3451,7 +3629,7 @@ YRETCODE yUpdateDeviceList(NSError** errmsg);
  *
  * @return YAPI.SUCCESS when the call succeeds.
  *
- * On failure, throws an exception or returns a negative error code.
+ * On failure returns a negative error code.
  */
 YRETCODE yHandleEvents(NSError** errmsg);
 
@@ -3472,7 +3650,7 @@ YRETCODE yHandleEvents(NSError** errmsg);
  *
  * @return YAPI.SUCCESS when the call succeeds.
  *
- * On failure, throws an exception or returns a negative error code.
+ * On failure returns a negative error code.
  */
 YRETCODE ySleep(unsigned ms_duration, NSError** errmsg);
 

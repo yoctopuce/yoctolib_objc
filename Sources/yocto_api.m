@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.m 53689 2023-03-22 11:17:15Z mvuilleu $
+ * $Id: yocto_api.m 54649 2023-05-22 10:09:20Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -521,6 +521,263 @@ int _ystrpos(NSString* haystack, NSString* needle)
     return (int)range.location;
 }
 
+@implementation YHub
+
+-(id) initWith:(YAPIContext*)ctx :(int)hubref
+{
+   if(!(self = [super init]))
+          return nil;
+//--- (generated code: YHub attributes initialization)
+    _hubref = 0;
+    _userData = nil;
+//--- (end of generated code: YHub attributes initialization)
+    _ctx = ctx;
+    _hubref = hubref;
+    return self;
+}
+// destructor
+-(void)  dealloc
+{
+//--- (generated code: YHub cleanup)
+    ARC_dealloc(super);
+//--- (end of generated code: YHub cleanup)
+}
+//--- (generated code: YHub private methods implementation)
+
+//--- (end of generated code: YHub private methods implementation)
+//--- (generated code: YHub public methods implementation)
+-(NSString*) _getStrAttr:(NSString*)attrName
+{
+    char val[1024];
+    int res;
+    int fullsize;
+    fullsize = 0;
+    res = yapiGetHubStrAttr(_hubref, STR_oc2y(attrName), val, 1024, &fullsize);
+    if (res > 0) {
+        return ARC_sendAutorelease([[NSString alloc] initWithBytes:val length:res encoding:NSUTF8StringEncoding]);
+    }
+    return @"";
+}
+
+-(int) _getIntAttr:(NSString*)attrName
+{
+    return yapiGetHubIntAttr(_hubref, STR_oc2y(attrName));
+}
+
+-(void) _setIntAttr:(NSString*)attrName :(int)value
+{
+    yapiSetHubIntAttr(_hubref, STR_oc2y(attrName), value);
+}
+
+/**
+ * Returns the URL that has been used first to register this hub.
+ */
+-(NSString*) get_registeredUrl
+{
+    return [self _getStrAttr:@"registeredUrl"];
+}
+
+/**
+ * Returns all known URLs that have been used to register this hub.
+ * URLs are pointing to the same hub when the devices connected
+ * are sharing the same serial number.
+ */
+-(NSMutableArray*) get_knownUrls
+{
+    char smallbuff[1024];
+    char *bigbuff;
+    int buffsize;
+    int fullsize;
+    int yapi_res;
+    NSString* urls_packed;
+    NSString* known_url_val;
+    NSMutableArray* url_list = [NSMutableArray array];
+
+    fullsize = 0;
+    known_url_val = @"knownUrls";
+    yapi_res = yapiGetHubStrAttr(_hubref, STR_oc2y(known_url_val), smallbuff, 1024, &fullsize);
+    if (yapi_res < 0) {
+        return url_list;
+    }
+    if (fullsize <= 1024) {
+        urls_packed = ARC_sendAutorelease([[NSString alloc] initWithBytes:smallbuff length:yapi_res encoding:NSUTF8StringEncoding]);
+    } else {
+        buffsize = fullsize;
+        bigbuff = (char *)malloc(buffsize);
+        yapi_res = yapiGetHubStrAttr(_hubref, STR_oc2y(known_url_val), bigbuff, buffsize, &fullsize);
+        if (yapi_res < 0) {
+            free(bigbuff);
+            return url_list;
+        } else {
+            urls_packed = ARC_sendAutorelease([[NSString alloc] initWithBytes:bigbuff length:yapi_res encoding:NSUTF8StringEncoding]);
+        }
+        free(bigbuff);
+    }
+    if (!([urls_packed isEqualToString:@""])) {
+        url_list = [NSMutableArray arrayWithArray:[urls_packed componentsSeparatedByString:@"?"]];
+    }
+    return url_list;
+}
+
+/**
+ * Returns the URL currently in use to communicate with this hub.
+ */
+-(NSString*) get_connectionUrl
+{
+    return [self _getStrAttr:@"connectionUrl"];
+}
+
+/**
+ * Returns the hub serial number, if the hub was already connected once.
+ */
+-(NSString*) get_serialNumber
+{
+    return [self _getStrAttr:@"serialNumber"];
+}
+
+/**
+ * Tells if this hub is still registered within the API.
+ *
+ * @return true if the hub has not been unregistered.
+ */
+-(bool) isInUse
+{
+    return [self _getIntAttr:@"isInUse"] > 0;
+}
+
+/**
+ * Tells if there is an active communication channel with this hub.
+ *
+ * @return true if the hub is currently connected.
+ */
+-(bool) isOnline
+{
+    return [self _getIntAttr:@"isOnline"] > 0;
+}
+
+/**
+ * Tells if write access on this hub is blocked. Return true if it
+ * is not possible to change attributes on this hub
+ *
+ * @return true if it is not possible to change attributes on this hub.
+ */
+-(bool) isReadOnly
+{
+    return [self _getIntAttr:@"isReadOnly"] > 0;
+}
+
+/**
+ * Modifies tthe network connection delay for this hub.
+ * The default value is inherited from ySetNetworkTimeout
+ * at the time when the hub is registered, but it can be updated
+ * afterwards for each specific hub if necessary.
+ *
+ * @param networkMsTimeout : the network connection delay in milliseconds.
+ * @noreturn
+ */
+-(void) set_networkTimeout:(int)networkMsTimeout
+{
+    [self _setIntAttr:@"networkTimeout" :networkMsTimeout];
+}
+
+/**
+ * Returns the network connection delay for this hub.
+ * The default value is inherited from ySetNetworkTimeout
+ * at the time when the hub is registered, but it can be updated
+ * afterwards for each specific hub if necessary.
+ *
+ * @return the network connection delay in milliseconds.
+ */
+-(int) get_networkTimeout
+{
+    return [self _getIntAttr:@"networkTimeout"];
+}
+
+/**
+ * Returns the numerical error code of the latest error with the hub.
+ * This method is mostly useful when using the Yoctopuce library with
+ * exceptions disabled.
+ *
+ * @return a number corresponding to the code of the latest error that occurred while
+ *         using the hub object
+ */
+-(int) get_errorType
+{
+    return [self _getIntAttr:@"errorType"];
+}
+
+/**
+ * Returns the error message of the latest error with the hub.
+ * This method is mostly useful when using the Yoctopuce library with
+ * exceptions disabled.
+ *
+ * @return a string corresponding to the latest error message that occured while
+ *         using the hub object
+ */
+-(NSString*) get_errorMessage
+{
+    return [self _getStrAttr:@"errorMessage"];
+}
+
+/**
+ * Returns the value of the userData attribute, as previously stored
+ * using method set_userData.
+ * This attribute is never touched directly by the API, and is at
+ * disposal of the caller to store a context.
+ *
+ * @return the object stored previously by the caller.
+ */
+-(id) get_userData
+{
+    return _userData;
+}
+
+/**
+ * Stores a user context provided as argument in the userData
+ * attribute of the function.
+ * This attribute is never touched by the API, and is at
+ * disposal of the caller to store a context.
+ *
+ * @param data : any kind of object to be stored
+ * @noreturn
+ */
+-(void) set_userData:(id _Nullable)data
+{
+    _userData = data;
+}
+
+/**
+ * Starts the enumeration of hubs currently in use by the API.
+ * Use the method YHub.nextHubInUse() to iterate on the
+ * next hubs.
+ *
+ * @return a pointer to a YHub object, corresponding to
+ *         the first hub currently in use by the API, or a
+ *         nil pointer if none has been registered.
+ */
++(YHub*) FirstHubInUse
+{
+    return [YAPI nextHubInUseInternal:-1];
+}
+
+/**
+ * Continues the module enumeration started using YHub.FirstHubInUse().
+ * Caution: You can't make any assumption about the order of returned hubs.
+ *
+ * @return a pointer to a YHub object, corresponding to
+ *         the next hub currenlty in use, or a nil pointer
+ *         if there are no more hubs to enumerate.
+ */
+-(YHub*) nextHubInUse
+{
+    return [_ctx nextHubInUseInternal:_hubref];
+}
+
+//--- (end of generated code: YHub public methods implementation)
+
+@end
+//--- (generated code: YHub functions)
+//--- (end of generated code: YHub functions)
 
 
 
@@ -534,11 +791,14 @@ int _ystrpos(NSString* haystack, NSString* needle)
 //--- (generated code: YAPIContext attributes initialization)
     _defaultCacheValidity = 5;
 //--- (end of generated code: YAPIContext attributes initialization)
+    _hub_cache = [[NSMutableDictionary alloc] init];
     return self;
 }
 // destructor
 -(void)  dealloc
 {
+    ARC_release(_hub_cache);
+    _hub_cache = nil;
 //--- (generated code: YAPIContext cleanup)
     ARC_dealloc(super);
 //--- (end of generated code: YAPIContext cleanup)
@@ -671,7 +931,44 @@ int _ystrpos(NSString* haystack, NSString* needle)
     return _defaultCacheValidity;
 }
 
+-(YHub*) nextHubInUseInternal:(int)hubref
+{
+    int nextref;
+    nextref = yapiGetNextHubRef(hubref);
+    if (nextref < 0) {
+        return nil;
+    }
+    return [self getYHubObj:nextref];
+}
+
+-(YHub*) getYHubObj:(int)hubref
+{
+    YHub* obj;
+    obj = [self _findYHubFromCache:hubref];
+    if (obj == nil) {
+        obj = ARC_sendAutorelease([[YHub alloc] initWith:self :hubref]);
+        [self _addYHubToCache:hubref :obj];
+    }
+    return obj;
+}
+
 //--- (end of generated code: YAPIContext public methods implementation)
+
+-(YHub*) _findYHubFromCache:(int)hubref
+{
+    NSNumber* ref= [NSNumber numberWithInt:hubref];
+    if ([_hub_cache doesContain: ref]) {
+        return _hub_cache [ref];
+    }
+    return nil;
+}
+
+-(void) _addYHubToCache:(int) hubref :(YHub*) obj
+{
+    NSNumber* ref= [NSNumber numberWithInt:hubref];
+    [_hub_cache setObject:obj forKey:ref];
+}
+
 
 @end
 //--- (generated code: YAPIContext functions)
@@ -1013,6 +1310,14 @@ static const char* hexArray = "0123456789ABCDEF";
 {
         return [YAPI_yapiContext GetCacheValidity];
 }
++(YHub*) nextHubInUseInternal:(int)hubref
+{
+        return [YAPI_yapiContext nextHubInUseInternal:hubref];
+}
++(YHub*) getYHubObj:(int)hubref
+{
+        return [YAPI_yapiContext getYHubObj:hubref];
+}
 //--- (end of generated code: YAPIContext yapiwrapper)
 
 
@@ -1059,7 +1364,7 @@ static const char* hexArray = "0123456789ABCDEF";
  *
  * @return YAPI.SUCCESS when the call succeeds.
  *
- * On failure, throws an exception or returns a negative error code.
+ * On failure returns a negative error code.
  */
 +(YRETCODE)    InitAPI:(int)mode :(NSError**)errmsg
 {
@@ -1157,8 +1462,7 @@ static const char* hexArray = "0123456789ABCDEF";
  * Re-enables the use of exceptions for runtime error handling.
  * Be aware than when exceptions are enabled, every function that fails
  * triggers an exception. If the exception is not caught by the user code,
- * it  either fires the debugger or aborts (i.e. crash) the program.
- * On failure, throws an exception or returns a negative error code.
+ * it either fires the debugger or aborts (i.e. crash) the program.
  */
 +(void)        EnableExceptions
 {
@@ -1332,7 +1636,7 @@ static const char* hexArray = "0123456789ABCDEF";
  *
  * @return YAPI.SUCCESS when the call succeeds.
  *
- * On failure, throws an exception or returns a negative error code.
+ * On failure returns a negative error code.
  */
 +(YRETCODE)    RegisterHub:(NSString*)url :(NSError**)errmsg
 {
@@ -1363,7 +1667,7 @@ static const char* hexArray = "0123456789ABCDEF";
  *
  * @return YAPI.SUCCESS when the call succeeds.
  *
- * On failure, throws an exception or returns a negative error code.
+ * On failure returns a negative error code.
  */
 +(YRETCODE)   PreregisterHub:(NSString*)url :(NSError**)errmsg
 {
@@ -1433,7 +1737,7 @@ static const char* hexArray = "0123456789ABCDEF";
  *
  * @return YAPI.SUCCESS when the call succeeds.
  *
- * On failure, throws an exception or returns a negative error code.
+ * On failure returns a negative error code.
  */
 +(YRETCODE)    UpdateDeviceList:(NSError**) errmsg
 {
@@ -1491,7 +1795,7 @@ static const char* hexArray = "0123456789ABCDEF";
  *
  * @return YAPI.SUCCESS when the call succeeds.
  *
- * On failure, throws an exception or returns a negative error code.
+ * On failure returns a negative error code.
  */
 +(YRETCODE)     HandleEvents:(NSError**) errmsg
 {
@@ -1542,7 +1846,7 @@ static const char* hexArray = "0123456789ABCDEF";
  *
  * @return YAPI.SUCCESS when the call succeeds.
  *
- * On failure, throws an exception or returns a negative error code.
+ * On failure returns a negative error code.
  */
 +(YRETCODE)        Sleep:(unsigned) ms_duration :(NSError**) errmsg
 {
@@ -1573,7 +1877,7 @@ static const char* hexArray = "0123456789ABCDEF";
  * @param errmsg : a string passed by reference to receive any error message.
  *
  * @return YAPI.SUCCESS when the call succeeds.
- *         On failure, throws an exception or returns a negative error code.
+ *         On failure returns a negative error code.
  */
  +(YRETCODE)    TriggerHubDiscovery:(NSError**) errmsg
  {
@@ -3423,11 +3727,11 @@ static const char* hexArray = "0123456789ABCDEF";
  * @param data : any kind of object to be stored
  * @noreturn
  */
--(void)     set_userData:(id)data
+-(void)     set_userData:(id _Nullable)data
 {
     [self setUserData:data];}
 
--(void)     setUserData:(id)data
+-(void)     setUserData:(id _Nullable)data
 {
     _userData = data;
 }
@@ -4364,7 +4668,7 @@ static const char* hexArray = "0123456789ABCDEF";
     NSMutableData* res;
 
     res = [self _download:@"api/dataLogger/recording?recording=1"];
-    if (!((int)[res length]>0)) {[self _throw: YAPI_IO_ERROR: @"unable to start datalogger"]; return YAPI_IO_ERROR;}
+    if (!((int)[res length] > 0)) {[self _throw: YAPI_IO_ERROR: @"unable to start datalogger"]; return YAPI_IO_ERROR;}
     return YAPI_SUCCESS;
 }
 
@@ -4378,7 +4682,7 @@ static const char* hexArray = "0123456789ABCDEF";
     NSMutableData* res;
 
     res = [self _download:@"api/dataLogger/recording?recording=0"];
-    if (!((int)[res length]>0)) {[self _throw: YAPI_IO_ERROR: @"unable to stop datalogger"]; return YAPI_IO_ERROR;}
+    if (!((int)[res length] > 0)) {[self _throw: YAPI_IO_ERROR: @"unable to stop datalogger"]; return YAPI_IO_ERROR;}
     return YAPI_SUCCESS;
 }
 
@@ -5382,7 +5686,7 @@ static const char* hexArray = "0123456789ABCDEF";
     prodname = [self get_productName];
     prodrel = [self get_productRelease];
     if (prodrel > 1) {
-        fullname = [NSString stringWithFormat:@"%@ rev. %c", prodname,64+prodrel];
+        fullname = [NSString stringWithFormat:@"%@ rev. %c", prodname,64 + prodrel];
     } else {
         fullname = prodname;
     }
@@ -7142,7 +7446,7 @@ static const char* hexArray = "0123456789ABCDEF";
         _startTime = _utcStamp + (ms_offset / 1000.0);
     } else {
         // legacy encoding subtract the measure interval form the UTC timestamp
-        _startTime = _utcStamp -  _dataSamplesInterval;
+        _startTime = _utcStamp - _dataSamplesInterval;
     }
     _firstMeasureDuration = [[encoded objectAtIndex:5] intValue];
     if (!(_isAvg)) {
@@ -7911,8 +8215,8 @@ static const char* hexArray = "0123456789ABCDEF";
 
     // Parse complete streams
     for (YDataStream* _each  in  _streams) {
-        streamStartTimeMs = floor([_each get_realStartTimeUTC] *1000+0.5);
-        streamDuration = [_each get_realDuration] ;
+        streamStartTimeMs = floor([_each get_realStartTimeUTC] * 1000+0.5);
+        streamDuration = [_each get_realDuration];
         streamEndTimeMs = streamStartTimeMs + floor(streamDuration * 1000+0.5);
         if ((streamStartTimeMs >= _startTimeMs) && ((_endTimeMs == 0) || (streamEndTimeMs <= _endTimeMs))) {
             // stream that are completely inside the dataset
@@ -7957,7 +8261,7 @@ static const char* hexArray = "0123456789ABCDEF";
             previewMaxVal = YAPI_MIN_DOUBLE;
             m_pos = 0;
             while (m_pos < (int)[dataRows count]) {
-                measure_data  = [dataRows objectAtIndex:m_pos];
+                measure_data = [dataRows objectAtIndex:m_pos];
                 if (m_pos == 0) {
                     mitv = fitv;
                 } else {
@@ -8111,7 +8415,7 @@ static const char* hexArray = "0123456789ABCDEF";
         url = [stream _get_url];
         suffix = [stream _get_urlsuffix];
         [suffixes addObject:suffix];
-        idx = _progress+1;
+        idx = _progress + 1;
         while ((idx < (int)[_streams count]) && ((int)[suffixes count] < _bulkLoad)) {
             stream = [_streams objectAtIndex:idx];
             if (!([stream _wasLoaded]) && ([[stream _get_baseurl] isEqualToString:baseurl])) {
@@ -8276,7 +8580,7 @@ static const char* hexArray = "0123456789ABCDEF";
             url = [NSString stringWithFormat:@"%@&from=%lu",url,[self imm_get_startTimeUTC]];
         }
         if (_endTimeMs != 0) {
-            url = [NSString stringWithFormat:@"%@&to=%lu",url,[self imm_get_endTimeUTC]+1];
+            url = [NSString stringWithFormat:@"%@&to=%lu",url,[self imm_get_endTimeUTC] + 1];
         }
     } else {
         if (_progress >= (int)[_streams count]) {
@@ -8622,7 +8926,7 @@ static const char* hexArray = "0123456789ABCDEF";
             newvalue = [((YMeasure*) [measures objectAtIndex:idx]) get_averageValue];
             [datarec addObject:[NSNumber numberWithDouble:newvalue]];
             [_nexttim replaceObjectAtIndex: s withObject:[NSNumber numberWithDouble:0.0]];
-            [_nextidx replaceObjectAtIndex: s withObject:[NSNumber numberWithLong:idx+1]];
+            [_nextidx replaceObjectAtIndex: s withObject:[NSNumber numberWithLong:idx + 1]];
         } else {
             [datarec addObject:[NSNumber numberWithDouble:NAN]];
         }
@@ -9246,7 +9550,7 @@ YDataLogger *yFirstDataLogger(void)
  *
  * @return YAPI.SUCCESS when the call succeeds.
  *
- * On failure, throws an exception or returns a negative error code.
+ * On failure returns a negative error code.
  */
 YRETCODE yInitAPI(int mode, NSError** errmsg)
 { return [YAPI InitAPI:mode:errmsg]; }
@@ -9311,8 +9615,7 @@ void yDisableExceptions(void) { [YAPI DisableExceptions]; }
  * Re-enables the use of exceptions for runtime error handling.
  * Be aware than when exceptions are enabled, every function that fails
  * triggers an exception. If the exception is not caught by the user code,
- * it  either fires the debugger or aborts (i.e. crash) the program.
- * On failure, throws an exception or returns a negative error code.
+ * it either fires the debugger or aborts (i.e. crash) the program.
  */
 void yEnableExceptions(void)  { [YAPI EnableExceptions]; }
 
@@ -9367,7 +9670,7 @@ void yEnableExceptions(void)  { [YAPI EnableExceptions]; }
  *
  * @return YAPI.SUCCESS when the call succeeds.
  *
- * On failure, throws an exception or returns a negative error code.
+ * On failure returns a negative error code.
  */
 YRETCODE yRegisterHub(NSString * url, NSError** errmsg) { return [YAPI RegisterHub:url:errmsg]; }
 
@@ -9385,7 +9688,7 @@ YRETCODE yRegisterHub(NSString * url, NSError** errmsg) { return [YAPI RegisterH
  *
  * @return YAPI.SUCCESS when the call succeeds.
  *
- * On failure, throws an exception or returns a negative error code.
+ * On failure returns a negative error code.
  */
 YRETCODE yPreregisterHub(NSString * url, NSError** errmsg) { return [YAPI PreregisterHub:url:errmsg]; }
 
@@ -9415,7 +9718,7 @@ void     yUnregisterHub(NSString * url) { [YAPI UnregisterHub:url]; }
  *
  * @return YAPI.SUCCESS when the call succeeds.
  *
- * On failure, throws an exception or returns a negative error code.
+ * On failure returns a negative error code.
  */
 YRETCODE yUpdateDeviceList(NSError** errmsg) {  return [YAPI  UpdateDeviceList:errmsg]; }
 
@@ -9434,7 +9737,7 @@ YRETCODE yUpdateDeviceList(NSError** errmsg) {  return [YAPI  UpdateDeviceList:e
  *
  * @return YAPI.SUCCESS when the call succeeds.
  *
- * On failure, throws an exception or returns a negative error code.
+ * On failure returns a negative error code.
  */
 YRETCODE yHandleEvents(NSError** errmsg)
 { return [YAPI HandleEvents:errmsg];}
@@ -9456,7 +9759,7 @@ YRETCODE yHandleEvents(NSError** errmsg)
  *
  * @return YAPI.SUCCESS when the call succeeds.
  *
- * On failure, throws an exception or returns a negative error code.
+ * On failure returns a negative error code.
  */
 YRETCODE ySleep(unsigned ms_duration, NSError **errmsg)
 { return [YAPI Sleep:ms_duration:errmsg]; }

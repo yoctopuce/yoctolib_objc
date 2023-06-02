@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_powersupply.h 43619 2021-01-29 09:14:45Z mvuilleu $
+ *  $Id: yocto_powersupply.h 54768 2023-05-26 06:46:41Z seb $
  *
  *  Declares yFindPowerSupply(), the high-level API for PowerSupply functions
  *
@@ -53,21 +53,11 @@ typedef enum {
     Y_POWEROUTPUT_INVALID = -1,
 } Y_POWEROUTPUT_enum;
 #endif
-#ifndef _Y_VOLTAGESENSE_ENUM
-#define _Y_VOLTAGESENSE_ENUM
-typedef enum {
-    Y_VOLTAGESENSE_INT = 0,
-    Y_VOLTAGESENSE_EXT = 1,
-    Y_VOLTAGESENSE_INVALID = -1,
-} Y_VOLTAGESENSE_enum;
-#endif
 #define Y_VOLTAGESETPOINT_INVALID       YAPI_INVALID_DOUBLE
 #define Y_CURRENTLIMIT_INVALID          YAPI_INVALID_DOUBLE
 #define Y_MEASUREDVOLTAGE_INVALID       YAPI_INVALID_DOUBLE
 #define Y_MEASUREDCURRENT_INVALID       YAPI_INVALID_DOUBLE
 #define Y_INPUTVOLTAGE_INVALID          YAPI_INVALID_DOUBLE
-#define Y_VINT_INVALID                  YAPI_INVALID_DOUBLE
-#define Y_LDOTEMPERATURE_INVALID        YAPI_INVALID_DOUBLE
 #define Y_VOLTAGETRANSITION_INVALID     YAPI_INVALID_STRING
 #define Y_VOLTAGEATSTARTUP_INVALID      YAPI_INVALID_DOUBLE
 #define Y_CURRENTATSTARTUP_INVALID      YAPI_INVALID_DOUBLE
@@ -90,12 +80,9 @@ typedef enum {
     double          _voltageSetPoint;
     double          _currentLimit;
     Y_POWEROUTPUT_enum _powerOutput;
-    Y_VOLTAGESENSE_enum _voltageSense;
     double          _measuredVoltage;
     double          _measuredCurrent;
     double          _inputVoltage;
-    double          _vInt;
-    double          _ldoTemperature;
     NSString*       _voltageTransition;
     double          _voltageAtStartUp;
     double          _currentAtStartUp;
@@ -186,31 +173,6 @@ typedef enum {
 -(int)     setPowerOutput:(Y_POWEROUTPUT_enum) newval;
 
 /**
- * Returns the output voltage control point.
- *
- * @return either YPowerSupply.VOLTAGESENSE_INT or YPowerSupply.VOLTAGESENSE_EXT, according to the
- * output voltage control point
- *
- * On failure, throws an exception or returns YPowerSupply.VOLTAGESENSE_INVALID.
- */
--(Y_VOLTAGESENSE_enum)     get_voltageSense;
-
-
--(Y_VOLTAGESENSE_enum) voltageSense;
-/**
- * Changes the voltage control point.
- *
- * @param newval : either YPowerSupply.VOLTAGESENSE_INT or YPowerSupply.VOLTAGESENSE_EXT, according to
- * the voltage control point
- *
- * @return YAPI.SUCCESS if the call succeeds.
- *
- * On failure, throws an exception or returns a negative error code.
- */
--(int)     set_voltageSense:(Y_VOLTAGESENSE_enum) newval;
--(int)     setVoltageSense:(Y_VOLTAGESENSE_enum) newval;
-
-/**
  * Returns the measured output voltage, in V.
  *
  * @return a floating point number corresponding to the measured output voltage, in V
@@ -243,28 +205,6 @@ typedef enum {
 
 
 -(double) inputVoltage;
-/**
- * Returns the internal voltage, in V.
- *
- * @return a floating point number corresponding to the internal voltage, in V
- *
- * On failure, throws an exception or returns YPowerSupply.VINT_INVALID.
- */
--(double)     get_vInt;
-
-
--(double) vInt;
-/**
- * Returns the LDO temperature, in Celsius.
- *
- * @return a floating point number corresponding to the LDO temperature, in Celsius
- *
- * On failure, throws an exception or returns YPowerSupply.LDOTEMPERATURE_INVALID.
- */
--(double)     get_ldoTemperature;
-
-
--(double) ldoTemperature;
 -(NSString*)     get_voltageTransition;
 
 
