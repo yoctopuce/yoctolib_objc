@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_audioin.m 43580 2021-01-26 17:46:01Z mvuilleu $
+ *  $Id: yocto_audioin.m 56091 2023-08-16 06:32:54Z mvuilleu $
  *
  *  Implements the high-level API for AudioIn functions
  *
@@ -43,9 +43,7 @@
 #include "yapi/yapi.h"
 
 
-
 @implementation YAudioIn
-
 // Constructor is protected, use yFindAudioIn factory function to instantiate
 -(id)              initWith:(NSString*) func
 {
@@ -380,8 +378,8 @@
 }
 
 //--- (end of YAudioIn public methods implementation)
-
 @end
+
 //--- (YAudioIn functions)
 
 YAudioIn *yFindAudioIn(NSString* func)
@@ -395,3 +393,4 @@ YAudioIn *yFirstAudioIn(void)
 }
 
 //--- (end of YAudioIn functions)
+

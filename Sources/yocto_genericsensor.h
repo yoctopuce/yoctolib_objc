@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_genericsensor.h 51903 2022-11-29 17:25:59Z mvuilleu $
+ *  $Id: yocto_genericsensor.h 56091 2023-08-16 06:32:54Z mvuilleu $
  *
  *  Declares yFindGenericSensor(), the high-level API for GenericSensor functions
  *
@@ -453,6 +453,7 @@ YGenericSensor* yFindGenericSensor(NSString* func);
 YGenericSensor* yFirstGenericSensor(void);
 
 //--- (end of YGenericSensor functions declaration)
+
 NS_ASSUME_NONNULL_END
 CF_EXTERN_C_END
 

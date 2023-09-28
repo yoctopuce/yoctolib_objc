@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_pwmoutput.m 50689 2022-08-17 14:37:15Z mvuilleu $
+ *  $Id: yocto_pwmoutput.m 56091 2023-08-16 06:32:54Z mvuilleu $
  *
  *  Implements the high-level API for PwmOutput functions
  *
@@ -43,9 +43,7 @@
 #include "yapi/yapi.h"
 
 
-
 @implementation YPwmOutput
-
 // Constructor is protected, use yFindPwmOutput factory function to instantiate
 -(id)              initWith:(NSString*) func
 {
@@ -752,8 +750,8 @@
 }
 
 //--- (end of YPwmOutput public methods implementation)
-
 @end
+
 //--- (YPwmOutput functions)
 
 YPwmOutput *yFindPwmOutput(NSString* func)
@@ -767,3 +765,4 @@ YPwmOutput *yFirstPwmOutput(void)
 }
 
 //--- (end of YPwmOutput functions)
+

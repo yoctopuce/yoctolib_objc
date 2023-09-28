@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_led.h 43580 2021-01-26 17:46:01Z mvuilleu $
+ *  $Id: yocto_led.h 56091 2023-08-16 06:32:54Z mvuilleu $
  *
  *  Declares yFindLed(), the high-level API for Led functions
  *
@@ -286,6 +286,7 @@ YLed* yFindLed(NSString* func);
 YLed* yFirstLed(void);
 
 //--- (end of YLed functions declaration)
+
 NS_ASSUME_NONNULL_END
 CF_EXTERN_C_END
 

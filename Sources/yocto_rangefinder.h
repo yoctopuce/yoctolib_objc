@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_rangefinder.h 52848 2023-01-20 15:49:48Z mvuilleu $
+ *  $Id: yocto_rangefinder.h 56091 2023-08-16 06:32:54Z mvuilleu $
  *
  *  Declares yFindRangeFinder(), the high-level API for RangeFinder functions
  *
@@ -413,6 +413,7 @@ YRangeFinder* yFindRangeFinder(NSString* func);
 YRangeFinder* yFirstRangeFinder(void);
 
 //--- (end of YRangeFinder functions declaration)
+
 NS_ASSUME_NONNULL_END
 CF_EXTERN_C_END
 

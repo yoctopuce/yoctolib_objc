@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_tilt.h 43619 2021-01-29 09:14:45Z mvuilleu $
+ *  $Id: yocto_tilt.h 56091 2023-08-16 06:32:54Z mvuilleu $
  *
  *  Declares yFindTilt(), the high-level API for Tilt functions
  *
@@ -276,6 +276,7 @@ YTilt* yFindTilt(NSString* func);
 YTilt* yFirstTilt(void);
 
 //--- (end of YTilt functions declaration)
+
 NS_ASSUME_NONNULL_END
 CF_EXTERN_C_END
 

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_voc.m 41625 2020-08-31 07:09:39Z seb $
+ *  $Id: yocto_voc.m 56091 2023-08-16 06:32:54Z mvuilleu $
  *
  *  Implements the high-level API for Voc functions
  *
@@ -43,9 +43,7 @@
 #include "yapi/yapi.h"
 
 
-
 @implementation YVoc
-
 // Constructor is protected, use yFindVoc factory function to instantiate
 -(id)              initWith:(NSString*) func
 {
@@ -215,8 +213,8 @@
 }
 
 //--- (end of YVoc public methods implementation)
-
 @end
+
 //--- (YVoc functions)
 
 YVoc *yFindVoc(NSString* func)
@@ -230,3 +228,4 @@ YVoc *yFirstVoc(void)
 }
 
 //--- (end of YVoc functions)
+

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_current.h 43580 2021-01-26 17:46:01Z mvuilleu $
+ *  $Id: yocto_current.h 56091 2023-08-16 06:32:54Z mvuilleu $
  *
  *  Declares yFindCurrent(), the high-level API for Current functions
  *
@@ -245,6 +245,7 @@ YCurrent* yFindCurrent(NSString* func);
 YCurrent* yFirstCurrent(void);
 
 //--- (end of YCurrent functions declaration)
+
 NS_ASSUME_NONNULL_END
 CF_EXTERN_C_END
 

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_proximity.m 50689 2022-08-17 14:37:15Z mvuilleu $
+ *  $Id: yocto_proximity.m 56091 2023-08-16 06:32:54Z mvuilleu $
  *
  *  Implements the high-level API for Proximity functions
  *
@@ -43,9 +43,7 @@
 #include "yapi/yapi.h"
 
 
-
 @implementation YProximity
-
 // Constructor is protected, use yFindProximity factory function to instantiate
 -(id)              initWith:(NSString*) func
 {
@@ -709,8 +707,8 @@
 }
 
 //--- (end of YProximity public methods implementation)
-
 @end
+
 //--- (YProximity functions)
 
 YProximity *yFindProximity(NSString* func)
@@ -724,3 +722,4 @@ YProximity *yFirstProximity(void)
 }
 
 //--- (end of YProximity functions)
+

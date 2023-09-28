@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_compass.m 50689 2022-08-17 14:37:15Z mvuilleu $
+ *  $Id: yocto_compass.m 56091 2023-08-16 06:32:54Z mvuilleu $
  *
  *  Implements the high-level API for Compass functions
  *
@@ -43,9 +43,7 @@
 #include "yapi/yapi.h"
 
 
-
 @implementation YCompass
-
 // Constructor is protected, use yFindCompass factory function to instantiate
 -(id)              initWith:(NSString*) func
 {
@@ -321,8 +319,8 @@
 }
 
 //--- (end of YCompass public methods implementation)
-
 @end
+
 //--- (YCompass functions)
 
 YCompass *yFindCompass(NSString* func)
@@ -336,3 +334,4 @@ YCompass *yFirstCompass(void)
 }
 
 //--- (end of YCompass functions)
+

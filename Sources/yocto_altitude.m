@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_altitude.m 50689 2022-08-17 14:37:15Z mvuilleu $
+ *  $Id: yocto_altitude.m 56091 2023-08-16 06:32:54Z mvuilleu $
  *
  *  Implements the high-level API for Altitude functions
  *
@@ -43,9 +43,7 @@
 #include "yapi/yapi.h"
 
 
-
 @implementation YAltitude
-
 // Constructor is protected, use yFindAltitude factory function to instantiate
 -(id)              initWith:(NSString*) func
 {
@@ -332,8 +330,8 @@
 }
 
 //--- (end of YAltitude public methods implementation)
-
 @end
+
 //--- (YAltitude functions)
 
 YAltitude *yFindAltitude(NSString* func)
@@ -347,3 +345,4 @@ YAltitude *yFirstAltitude(void)
 }
 
 //--- (end of YAltitude functions)
+

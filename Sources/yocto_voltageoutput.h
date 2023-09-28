@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_voltageoutput.h 43619 2021-01-29 09:14:45Z mvuilleu $
+ *  $Id: yocto_voltageoutput.h 56091 2023-08-16 06:32:54Z mvuilleu $
  *
  *  Declares yFindVoltageOutput(), the high-level API for VoltageOutput functions
  *
@@ -259,6 +259,7 @@ YVoltageOutput* yFindVoltageOutput(NSString* func);
 YVoltageOutput* yFirstVoltageOutput(void);
 
 //--- (end of YVoltageOutput functions declaration)
+
 NS_ASSUME_NONNULL_END
 CF_EXTERN_C_END
 

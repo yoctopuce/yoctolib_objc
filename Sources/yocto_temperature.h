@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_temperature.h 43619 2021-01-29 09:14:45Z mvuilleu $
+ *  $Id: yocto_temperature.h 56091 2023-08-16 06:32:54Z mvuilleu $
  *
  *  Declares yFindTemperature(), the high-level API for Temperature functions
  *
@@ -384,6 +384,7 @@ YTemperature* yFindTemperature(NSString* func);
 YTemperature* yFirstTemperature(void);
 
 //--- (end of YTemperature functions declaration)
+
 NS_ASSUME_NONNULL_END
 CF_EXTERN_C_END
 

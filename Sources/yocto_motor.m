@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_motor.m 50689 2022-08-17 14:37:15Z mvuilleu $
+ *  $Id: yocto_motor.m 56091 2023-08-16 06:32:54Z mvuilleu $
  *
  *  Implements the high-level API for Motor functions
  *
@@ -43,9 +43,7 @@
 #include "yapi/yapi.h"
 
 
-
 @implementation YMotor
-
 // Constructor is protected, use yFindMotor factory function to instantiate
 -(id)              initWith:(NSString*) func
 {
@@ -724,8 +722,8 @@
 }
 
 //--- (end of YMotor public methods implementation)
-
 @end
+
 //--- (YMotor functions)
 
 YMotor *yFindMotor(NSString* func)
@@ -739,3 +737,4 @@ YMotor *yFirstMotor(void)
 }
 
 //--- (end of YMotor functions)
+

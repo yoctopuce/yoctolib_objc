@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_messagebox.m 50144 2022-06-17 06:59:52Z seb $
+ * $Id: yocto_messagebox.m 55576 2023-07-25 06:26:34Z mvuilleu $
  *
  * Implements the high-level API for MessageBox functions
  *
@@ -1313,6 +1313,7 @@
     _slotsBitmap = Y_SLOTSBITMAP_INVALID;
     _pduSent = Y_PDUSENT_INVALID;
     _pduReceived = Y_PDURECEIVED_INVALID;
+    _obey = Y_OBEY_INVALID;
     _command = Y_COMMAND_INVALID;
     _valueCallbackMessageBox = NULL;
     _nextMsgRef = 0;
@@ -1329,6 +1330,8 @@
 //--- (generated code: YMessageBox cleanup)
     ARC_release(_slotsBitmap);
     _slotsBitmap = nil;
+    ARC_release(_obey);
+    _obey = nil;
     ARC_release(_command);
     _command = nil;
     ARC_dealloc(super);
@@ -1363,6 +1366,13 @@
     if(!strcmp(j->token, "pduReceived")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
         _pduReceived =  atoi(j->token);
+        return 1;
+    }
+    if(!strcmp(j->token, "obey")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+       ARC_release(_obey);
+        _obey =  [self _parseString:j];
+        ARC_retain(_obey);
         return 1;
     }
     if(!strcmp(j->token, "command")) {
@@ -1528,6 +1538,64 @@
     NSString* rest_val;
     rest_val = [NSString stringWithFormat:@"%d", newval];
     return [self _setAttr:@"pduReceived" :rest_val];
+}
+/**
+ * Returns the phone number authorized to send remote management commands.
+ * When a phone number is specified, the hub will take contre of all incoming
+ * SMS messages: it will execute commands coming from the authorized number,
+ * and delete all messages once received (whether authorized or not).
+ * If you need to receive SMS messages using your own software, leave this
+ * attribute empty.
+ *
+ * @return a string corresponding to the phone number authorized to send remote management commands
+ *
+ * On failure, throws an exception or returns YMessageBox.OBEY_INVALID.
+ */
+-(NSString*) get_obey
+{
+    NSString* res;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
+            return Y_OBEY_INVALID;
+        }
+    }
+    res = _obey;
+    return res;
+}
+
+
+-(NSString*) obey
+{
+    return [self get_obey];
+}
+
+/**
+ * Changes the phone number authorized to send remote management commands.
+ * The phone number usually starts with a '+' and does not include spacers.
+ * When a phone number is specified, the hub will take contre of all incoming
+ * SMS messages: it will execute commands coming from the authorized number,
+ * and delete all messages once received (whether authorized or not).
+ * If you need to receive SMS messages using your own software, leave this
+ * attribute empty. Remember to call the saveToFlash() method of the
+ * module if the modification must be kept.
+ *
+ * This feature is only available since YoctoHub-GSM-4G.
+ *
+ * @param newval : a string corresponding to the phone number authorized to send remote management commands
+ *
+ * @return YAPI.SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) set_obey:(NSString*) newval
+{
+    return [self setObey:newval];
+}
+-(int) setObey:(NSString*) newval
+{
+    NSString* rest_val;
+    rest_val = newval;
+    return [self _setAttr:@"obey" :rest_val];
 }
 -(NSString*) get_command
 {

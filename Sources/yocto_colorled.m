@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_colorled.m 43619 2021-01-29 09:14:45Z mvuilleu $
+ *  $Id: yocto_colorled.m 56091 2023-08-16 06:32:54Z mvuilleu $
  *
  *  Implements the high-level API for ColorLed functions
  *
@@ -43,9 +43,7 @@
 #include "yapi/yapi.h"
 
 
-
 @implementation YColorLed
-
 // Constructor is protected, use yFindColorLed factory function to instantiate
 -(id)              initWith:(NSString*) func
 {
@@ -228,9 +226,9 @@
 }
 
 /**
- * Changes the current color of the LED, using a color HSL. Encoding is done as follows: 0xHHSSLL.
+ * Changes the current color of the LED, using a specific HSL color. Encoding is done as follows: 0xHHSSLL.
  *
- * @param newval : an integer corresponding to the current color of the LED, using a color HSL
+ * @param newval : an integer corresponding to the current color of the LED, using a specific HSL color
  *
  * @return YAPI.SUCCESS if the call succeeds.
  *
@@ -432,12 +430,12 @@
     return [self get_blinkSeqMaxSize];
 }
 /**
- * Return the blinking sequence signature. Since blinking
+ * Returns the blinking sequence signature. Since blinking
  * sequences cannot be read from the device, this can be used
  * to detect if a specific blinking sequence is already
  * programmed.
  *
- * @return an integer
+ * @return an integer corresponding to the blinking sequence signature
  *
  * On failure, throws an exception or returns YColorLed.BLINKSEQSIGNATURE_INVALID.
  */
@@ -662,8 +660,8 @@
 }
 
 //--- (end of YColorLed public methods implementation)
-
 @end
+
 //--- (YColorLed functions)
 
 YColorLed *yFindColorLed(NSString* func)
@@ -677,3 +675,4 @@ YColorLed *yFirstColorLed(void)
 }
 
 //--- (end of YColorLed functions)
+

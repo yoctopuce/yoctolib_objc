@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_rangefinder.m 52848 2023-01-20 15:49:48Z mvuilleu $
+ *  $Id: yocto_rangefinder.m 56091 2023-08-16 06:32:54Z mvuilleu $
  *
  *  Implements the high-level API for RangeFinder functions
  *
@@ -43,9 +43,7 @@
 #include "yapi/yapi.h"
 
 
-
 @implementation YRangeFinder
-
 // Constructor is protected, use yFindRangeFinder factory function to instantiate
 -(id)              initWith:(NSString*) func
 {
@@ -596,8 +594,8 @@
 }
 
 //--- (end of YRangeFinder public methods implementation)
-
 @end
+
 //--- (YRangeFinder functions)
 
 YRangeFinder *yFindRangeFinder(NSString* func)
@@ -611,3 +609,4 @@ YRangeFinder *yFirstRangeFinder(void)
 }
 
 //--- (end of YRangeFinder functions)
+

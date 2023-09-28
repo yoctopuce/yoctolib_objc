@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_latitude.m 41625 2020-08-31 07:09:39Z seb $
+ *  $Id: yocto_latitude.m 56091 2023-08-16 06:32:54Z mvuilleu $
  *
  *  Implements the high-level API for Latitude functions
  *
@@ -43,9 +43,7 @@
 #include "yapi/yapi.h"
 
 
-
 @implementation YLatitude
-
 // Constructor is protected, use yFindLatitude factory function to instantiate
 -(id)              initWith:(NSString*) func
 {
@@ -215,8 +213,8 @@
 }
 
 //--- (end of YLatitude public methods implementation)
-
 @end
+
 //--- (YLatitude functions)
 
 YLatitude *yFindLatitude(NSString* func)
@@ -230,3 +228,4 @@ YLatitude *yFirstLatitude(void)
 }
 
 //--- (end of YLatitude functions)
+

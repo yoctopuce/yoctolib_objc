@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_relay.m 43619 2021-01-29 09:14:45Z mvuilleu $
+ *  $Id: yocto_relay.m 56091 2023-08-16 06:32:54Z mvuilleu $
  *
  *  Implements the high-level API for Relay functions
  *
@@ -43,9 +43,7 @@
 #include "yapi/yapi.h"
 
 
-
 @implementation YRelay
-
 // Constructor is protected, use yFindRelay factory function to instantiate
 -(id)              initWith:(NSString*) func
 {
@@ -648,8 +646,8 @@
 }
 
 //--- (end of YRelay public methods implementation)
-
 @end
+
 //--- (YRelay functions)
 
 YRelay *yFindRelay(NSString* func)
@@ -663,3 +661,4 @@ YRelay *yFirstRelay(void)
 }
 
 //--- (end of YRelay functions)
+

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_colorledcluster.m 50281 2022-06-30 07:21:14Z mvuilleu $
+ *  $Id: yocto_colorledcluster.m 56091 2023-08-16 06:32:54Z mvuilleu $
  *
  *  Implements the high-level API for ColorLedCluster functions
  *
@@ -43,9 +43,7 @@
 #include "yapi/yapi.h"
 
 
-
 @implementation YColorLedCluster
-
 // Constructor is protected, use yFindColorLedCluster factory function to instantiate
 -(id)              initWith:(NSString*) func
 {
@@ -1360,8 +1358,8 @@
 }
 
 //--- (end of YColorLedCluster public methods implementation)
-
 @end
+
 //--- (YColorLedCluster functions)
 
 YColorLedCluster *yFindColorLedCluster(NSString* func)
@@ -1375,3 +1373,4 @@ YColorLedCluster *yFirstColorLedCluster(void)
 }
 
 //--- (end of YColorLedCluster functions)
+

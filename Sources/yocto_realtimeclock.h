@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_realtimeclock.h 53874 2023-04-04 17:43:00Z mvuilleu $
+ *  $Id: yocto_realtimeclock.h 56091 2023-08-16 06:32:54Z mvuilleu $
  *
  *  Declares yFindRealTimeClock(), the high-level API for RealTimeClock functions
  *
@@ -321,6 +321,7 @@ YRealTimeClock* yFindRealTimeClock(NSString* func);
 YRealTimeClock* yFirstRealTimeClock(void);
 
 //--- (end of YRealTimeClock functions declaration)
+
 NS_ASSUME_NONNULL_END
 CF_EXTERN_C_END
 

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_compass.h 43580 2021-01-26 17:46:01Z mvuilleu $
+ *  $Id: yocto_compass.h 56091 2023-08-16 06:32:54Z mvuilleu $
  *
  *  Declares yFindCompass(), the high-level API for Compass functions
  *
@@ -261,6 +261,7 @@ YCompass* yFindCompass(NSString* func);
 YCompass* yFirstCompass(void);
 
 //--- (end of YCompass functions declaration)
+
 NS_ASSUME_NONNULL_END
 CF_EXTERN_C_END
 

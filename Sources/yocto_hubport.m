@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_hubport.m 43580 2021-01-26 17:46:01Z mvuilleu $
+ *  $Id: yocto_hubport.m 56091 2023-08-16 06:32:54Z mvuilleu $
  *
  *  Implements the high-level API for HubPort functions
  *
@@ -43,9 +43,7 @@
 #include "yapi/yapi.h"
 
 
-
 @implementation YHubPort
-
 // Constructor is protected, use yFindHubPort factory function to instantiate
 -(id)              initWith:(NSString*) func
 {
@@ -296,8 +294,8 @@
 }
 
 //--- (end of YHubPort public methods implementation)
-
 @end
+
 //--- (YHubPort functions)
 
 YHubPort *yFindHubPort(NSString* func)
@@ -311,3 +309,4 @@ YHubPort *yFirstHubPort(void)
 }
 
 //--- (end of YHubPort functions)
+

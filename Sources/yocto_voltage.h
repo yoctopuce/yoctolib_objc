@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_voltage.h 43580 2021-01-26 17:46:01Z mvuilleu $
+ *  $Id: yocto_voltage.h 56091 2023-08-16 06:32:54Z mvuilleu $
  *
  *  Declares yFindVoltage(), the high-level API for Voltage functions
  *
@@ -245,6 +245,7 @@ YVoltage* yFindVoltage(NSString* func);
 YVoltage* yFirstVoltage(void);
 
 //--- (end of YVoltage functions declaration)
+
 NS_ASSUME_NONNULL_END
 CF_EXTERN_C_END
 

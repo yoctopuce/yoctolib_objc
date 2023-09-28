@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_power.h 53420 2023-03-06 10:38:51Z mvuilleu $
+ *  $Id: yocto_power.h 56091 2023-08-16 06:32:54Z mvuilleu $
  *
  *  Declares yFindPower(), the high-level API for Power functions
  *
@@ -312,6 +312,7 @@ YPower* yFindPower(NSString* func);
 YPower* yFirstPower(void);
 
 //--- (end of YPower functions declaration)
+
 NS_ASSUME_NONNULL_END
 CF_EXTERN_C_END
 

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_oscontrol.m 43619 2021-01-29 09:14:45Z mvuilleu $
+ *  $Id: yocto_oscontrol.m 56091 2023-08-16 06:32:54Z mvuilleu $
  *
  *  Implements the high-level API for OsControl functions
  *
@@ -43,9 +43,7 @@
 #include "yapi/yapi.h"
 
 
-
 @implementation YOsControl
-
 // Constructor is protected, use yFindOsControl factory function to instantiate
 -(id)              initWith:(NSString*) func
 {
@@ -237,8 +235,8 @@
 }
 
 //--- (end of YOsControl public methods implementation)
-
 @end
+
 //--- (YOsControl functions)
 
 YOsControl *yFindOsControl(NSString* func)
@@ -252,3 +250,4 @@ YOsControl *yFirstOsControl(void)
 }
 
 //--- (end of YOsControl functions)
+

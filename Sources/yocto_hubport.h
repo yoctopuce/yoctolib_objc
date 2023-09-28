@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_hubport.h 43580 2021-01-26 17:46:01Z mvuilleu $
+ *  $Id: yocto_hubport.h 56091 2023-08-16 06:32:54Z mvuilleu $
  *
  *  Declares yFindHubPort(), the high-level API for HubPort functions
  *
@@ -265,6 +265,7 @@ YHubPort* yFindHubPort(NSString* func);
 YHubPort* yFirstHubPort(void);
 
 //--- (end of YHubPort functions declaration)
+
 NS_ASSUME_NONNULL_END
 CF_EXTERN_C_END
 

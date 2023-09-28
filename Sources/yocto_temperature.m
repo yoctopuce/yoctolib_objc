@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_temperature.m 50689 2022-08-17 14:37:15Z mvuilleu $
+ *  $Id: yocto_temperature.m 56091 2023-08-16 06:32:54Z mvuilleu $
  *
  *  Implements the high-level API for Temperature functions
  *
@@ -43,9 +43,7 @@
 #include "yapi/yapi.h"
 
 
-
 @implementation YTemperature
-
 // Constructor is protected, use yFindTemperature factory function to instantiate
 -(id)              initWith:(NSString*) func
 {
@@ -582,8 +580,8 @@
 }
 
 //--- (end of YTemperature public methods implementation)
-
 @end
+
 //--- (YTemperature functions)
 
 YTemperature *yFindTemperature(NSString* func)
@@ -597,3 +595,4 @@ YTemperature *yFirstTemperature(void)
 }
 
 //--- (end of YTemperature functions)
+

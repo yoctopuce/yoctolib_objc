@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_gps.m 50689 2022-08-17 14:37:15Z mvuilleu $
+ *  $Id: yocto_gps.m 56091 2023-08-16 06:32:54Z mvuilleu $
  *
  *  Implements the high-level API for Gps functions
  *
@@ -43,9 +43,7 @@
 #include "yapi/yapi.h"
 
 
-
 @implementation YGps
-
 // Constructor is protected, use yFindGps factory function to instantiate
 -(id)              initWith:(NSString*) func
 {
@@ -770,8 +768,8 @@
 }
 
 //--- (end of YGps public methods implementation)
-
 @end
+
 //--- (YGps functions)
 
 YGps *yFindGps(NSString* func)
@@ -785,3 +783,4 @@ YGps *yFirstGps(void)
 }
 
 //--- (end of YGps functions)
+

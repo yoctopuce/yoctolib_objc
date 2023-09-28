@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_wakeupschedule.m 48183 2022-01-20 10:26:11Z mvuilleu $
+ *  $Id: yocto_wakeupschedule.m 56230 2023-08-21 15:20:59Z mvuilleu $
  *
  *  Implements the high-level API for WakeUpSchedule functions
  *
@@ -43,9 +43,7 @@
 #include "yapi/yapi.h"
 
 
-
 @implementation YWakeUpSchedule
-
 // Constructor is protected, use yFindWakeUpSchedule factory function to instantiate
 -(id)              initWith:(NSString*) func
 {
@@ -59,6 +57,7 @@
     _weekDays = Y_WEEKDAYS_INVALID;
     _monthDays = Y_MONTHDAYS_INVALID;
     _months = Y_MONTHS_INVALID;
+    _secondsBefore = Y_SECONDSBEFORE_INVALID;
     _nextOccurence = Y_NEXTOCCURENCE_INVALID;
     _valueCallbackWakeUpSchedule = NULL;
 //--- (end of YWakeUpSchedule attributes initialization)
@@ -105,6 +104,11 @@
     if(!strcmp(j->token, "months")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
         _months =  atoi(j->token);
+        return 1;
+    }
+    if(!strcmp(j->token, "secondsBefore")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _secondsBefore =  atoi(j->token);
         return 1;
     }
     if(!strcmp(j->token, "nextOccurence")) {
@@ -393,6 +397,56 @@
     return [self _setAttr:@"months" :rest_val];
 }
 /**
+ * Returns the number of seconds to anticipate wake-up time to allow
+ * the system to power-up.
+ *
+ * @return an integer corresponding to the number of seconds to anticipate wake-up time to allow
+ *         the system to power-up
+ *
+ * On failure, throws an exception or returns YWakeUpSchedule.SECONDSBEFORE_INVALID.
+ */
+-(int) get_secondsBefore
+{
+    int res;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
+            return Y_SECONDSBEFORE_INVALID;
+        }
+    }
+    res = _secondsBefore;
+    return res;
+}
+
+
+-(int) secondsBefore
+{
+    return [self get_secondsBefore];
+}
+
+/**
+ * Changes the number of seconds to anticipate wake-up time to allow
+ * the system to power-up.
+ * Remember to call the saveToFlash() method of the module if the
+ * modification must be kept.
+ *
+ * @param newval : an integer corresponding to the number of seconds to anticipate wake-up time to allow
+ *         the system to power-up
+ *
+ * @return YAPI.SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) set_secondsBefore:(int) newval
+{
+    return [self setSecondsBefore:newval];
+}
+-(int) setSecondsBefore:(int) newval
+{
+    NSString* rest_val;
+    rest_val = [NSString stringWithFormat:@"%d", newval];
+    return [self _setAttr:@"secondsBefore" :rest_val];
+}
+/**
  * Returns the date/time (seconds) of the next wake up occurrence.
  *
  * @return an integer corresponding to the date/time (seconds) of the next wake up occurrence
@@ -551,8 +605,8 @@
 }
 
 //--- (end of YWakeUpSchedule public methods implementation)
-
 @end
+
 //--- (YWakeUpSchedule functions)
 
 YWakeUpSchedule *yFindWakeUpSchedule(NSString* func)
@@ -566,3 +620,4 @@ YWakeUpSchedule *yFirstWakeUpSchedule(void)
 }
 
 //--- (end of YWakeUpSchedule functions)
+

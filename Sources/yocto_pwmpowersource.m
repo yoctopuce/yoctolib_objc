@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_pwmpowersource.m 43580 2021-01-26 17:46:01Z mvuilleu $
+ *  $Id: yocto_pwmpowersource.m 56091 2023-08-16 06:32:54Z mvuilleu $
  *
  *  Implements the high-level API for PwmPowerSource functions
  *
@@ -43,9 +43,7 @@
 #include "yapi/yapi.h"
 
 
-
 @implementation YPwmPowerSource
-
 // Constructor is protected, use yFindPwmPowerSource factory function to instantiate
 -(id)              initWith:(NSString*) func
 {
@@ -239,8 +237,8 @@
 }
 
 //--- (end of YPwmPowerSource public methods implementation)
-
 @end
+
 //--- (YPwmPowerSource functions)
 
 YPwmPowerSource *yFindPwmPowerSource(NSString* func)
@@ -254,3 +252,4 @@ YPwmPowerSource *yFirstPwmPowerSource(void)
 }
 
 //--- (end of YPwmPowerSource functions)
+

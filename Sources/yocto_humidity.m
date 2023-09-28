@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_humidity.m 50689 2022-08-17 14:37:15Z mvuilleu $
+ *  $Id: yocto_humidity.m 56091 2023-08-16 06:32:54Z mvuilleu $
  *
  *  Implements the high-level API for Humidity functions
  *
@@ -43,9 +43,7 @@
 #include "yapi/yapi.h"
 
 
-
 @implementation YHumidity
-
 // Constructor is protected, use yFindHumidity factory function to instantiate
 -(id)              initWith:(NSString*) func
 {
@@ -301,8 +299,8 @@
 }
 
 //--- (end of YHumidity public methods implementation)
-
 @end
+
 //--- (YHumidity functions)
 
 YHumidity *yFindHumidity(NSString* func)
@@ -316,3 +314,4 @@ YHumidity *yFirstHumidity(void)
 }
 
 //--- (end of YHumidity functions)
+

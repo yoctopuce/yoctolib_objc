@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_wakeupmonitor.h 48183 2022-01-20 10:26:11Z mvuilleu $
+ *  $Id: yocto_wakeupmonitor.h 56091 2023-08-16 06:32:54Z mvuilleu $
  *
  *  Declares yFindWakeUpMonitor(), the high-level API for WakeUpMonitor functions
  *
@@ -378,6 +378,7 @@ YWakeUpMonitor* yFindWakeUpMonitor(NSString* func);
 YWakeUpMonitor* yFirstWakeUpMonitor(void);
 
 //--- (end of YWakeUpMonitor functions declaration)
+
 NS_ASSUME_NONNULL_END
 CF_EXTERN_C_END
 

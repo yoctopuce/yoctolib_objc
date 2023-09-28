@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_network.m 53886 2023-04-05 08:06:39Z mvuilleu $
+ *  $Id: yocto_network.m 56091 2023-08-16 06:32:54Z mvuilleu $
  *
  *  Implements the high-level API for Network functions
  *
@@ -43,9 +43,7 @@
 #include "yapi/yapi.h"
 
 
-
 @implementation YNetwork
-
 // Constructor is protected, use yFindNetwork factory function to instantiate
 -(id)              initWith:(NSString*) func
 {
@@ -1647,8 +1645,8 @@
 }
 
 //--- (end of YNetwork public methods implementation)
-
 @end
+
 //--- (YNetwork functions)
 
 YNetwork *yFindNetwork(NSString* func)
@@ -1662,3 +1660,4 @@ YNetwork *yFirstNetwork(void)
 }
 
 //--- (end of YNetwork functions)
+

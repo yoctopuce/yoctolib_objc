@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_accelerometer.m 50689 2022-08-17 14:37:15Z mvuilleu $
+ *  $Id: yocto_accelerometer.m 56091 2023-08-16 06:32:54Z mvuilleu $
  *
  *  Implements the high-level API for Accelerometer functions
  *
@@ -43,9 +43,7 @@
 #include "yapi/yapi.h"
 
 
-
 @implementation YAccelerometer
-
 // Constructor is protected, use yFindAccelerometer factory function to instantiate
 -(id)              initWith:(NSString*) func
 {
@@ -392,8 +390,8 @@
 }
 
 //--- (end of YAccelerometer public methods implementation)
-
 @end
+
 //--- (YAccelerometer functions)
 
 YAccelerometer *yFindAccelerometer(NSString* func)
@@ -407,3 +405,4 @@ YAccelerometer *yFirstAccelerometer(void)
 }
 
 //--- (end of YAccelerometer functions)
+

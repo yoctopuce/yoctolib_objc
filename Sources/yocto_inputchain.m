@@ -43,9 +43,7 @@
 #include "yapi/yapi.h"
 
 
-
 @implementation YInputChain
-
 // Constructor is protected, use yFindInputChain factory function to instantiate
 -(id)              initWith:(NSString*) func
 {
@@ -67,7 +65,7 @@
     _watchdogPeriod = Y_WATCHDOGPERIOD_INVALID;
     _chainDiags = Y_CHAINDIAGS_INVALID;
     _valueCallbackInputChain = NULL;
-    _eventCallback = NULL;
+    _stateChangeCallback = NULL;
     _prevPos = 0;
     _eventPos = 0;
     _eventStamp = 0;
@@ -750,7 +748,7 @@ static void yInternalEventCallback(YInputChain *obj, NSString *value)
  *         the type of event and a character string with the event data.
  *         On failure, throws an exception or returns a negative error code.
  */
--(int) registerEventCallback:(YEventCallback _Nullable)callback
+-(int) registerStateChangeCallback:(YStateChangeCallback _Nullable)callback
 {
     if (callback != NULL) {
         [self registerValueCallback:yInternalEventCallback];
@@ -759,7 +757,7 @@ static void yInternalEventCallback(YInputChain *obj, NSString *value)
     }
     // register user callback AFTER the internal pseudo-event,
     // to make sure we start with future events only
-    _eventCallback = callback;
+    _stateChangeCallback = callback;
     return 0;
 }
 
@@ -791,7 +789,7 @@ static void yInternalEventCallback(YInputChain *obj, NSString *value)
     if (newPos < _eventPos) {
         return YAPI_SUCCESS;
     }
-    if (!(_eventCallback != NULL)) {
+    if (!(_stateChangeCallback != NULL)) {
         // first simulated event, use it to initialize reference values
         _eventPos = newPos;
         [_eventChains removeAllObjects];
@@ -840,7 +838,7 @@ static void yInternalEventCallback(YInputChain *obj, NSString *value)
                         [_eventChains replaceObjectAtIndex: chainIdx withObject:evtData];
                     }
                 }
-                _eventCallback(self, evtStamp, evtType, evtData, evtChange);
+                _stateChangeCallback(self, evtStamp, evtType, evtData, evtChange);
             }
         }
         arrPos = arrPos + 1;
@@ -925,8 +923,8 @@ static void yInternalEventCallback(YInputChain *obj, NSString *value)
 }
 
 //--- (end of YInputChain public methods implementation)
-
 @end
+
 //--- (YInputChain functions)
 
 YInputChain *yFindInputChain(NSString* func)
@@ -940,3 +938,4 @@ YInputChain *yFirstInputChain(void)
 }
 
 //--- (end of YInputChain functions)
+

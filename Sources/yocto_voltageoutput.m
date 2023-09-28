@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_voltageoutput.m 50689 2022-08-17 14:37:15Z mvuilleu $
+ *  $Id: yocto_voltageoutput.m 56091 2023-08-16 06:32:54Z mvuilleu $
  *
  *  Implements the high-level API for VoltageOutput functions
  *
@@ -43,9 +43,7 @@
 #include "yapi/yapi.h"
 
 
-
 @implementation YVoltageOutput
-
 // Constructor is protected, use yFindVoltageOutput factory function to instantiate
 -(id)              initWith:(NSString*) func
 {
@@ -343,8 +341,8 @@
 }
 
 //--- (end of YVoltageOutput public methods implementation)
-
 @end
+
 //--- (YVoltageOutput functions)
 
 YVoltageOutput *yFindVoltageOutput(NSString* func)
@@ -358,3 +356,4 @@ YVoltageOutput *yFirstVoltageOutput(void)
 }
 
 //--- (end of YVoltageOutput functions)
+

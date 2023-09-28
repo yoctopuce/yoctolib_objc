@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_lightsensor.m 45292 2021-05-25 23:27:54Z mvuilleu $
+ *  $Id: yocto_lightsensor.m 56091 2023-08-16 06:32:54Z mvuilleu $
  *
  *  Implements the high-level API for LightSensor functions
  *
@@ -43,9 +43,7 @@
 #include "yapi/yapi.h"
 
 
-
 @implementation YLightSensor
-
 // Constructor is protected, use yFindLightSensor factory function to instantiate
 -(id)              initWith:(NSString*) func
 {
@@ -306,8 +304,8 @@
 }
 
 //--- (end of YLightSensor public methods implementation)
-
 @end
+
 //--- (YLightSensor functions)
 
 YLightSensor *yFindLightSensor(NSString* func)
@@ -321,3 +319,4 @@ YLightSensor *yFirstLightSensor(void)
 }
 
 //--- (end of YLightSensor functions)
+

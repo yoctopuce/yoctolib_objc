@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_gps.h 43580 2021-01-26 17:46:01Z mvuilleu $
+ *  $Id: yocto_gps.h 56091 2023-08-16 06:32:54Z mvuilleu $
  *
  *  Declares yFindGps(), the high-level API for Gps functions
  *
@@ -489,6 +489,7 @@ YGps* yFindGps(NSString* func);
 YGps* yFirstGps(void);
 
 //--- (end of YGps functions declaration)
+
 NS_ASSUME_NONNULL_END
 CF_EXTERN_C_END
 

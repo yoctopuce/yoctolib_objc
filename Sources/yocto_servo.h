@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_servo.h 43580 2021-01-26 17:46:01Z mvuilleu $
+ *  $Id: yocto_servo.h 56091 2023-08-16 06:32:54Z mvuilleu $
  *
  *  Declares yFindServo(), the high-level API for Servo functions
  *
@@ -399,6 +399,7 @@ YServo* yFindServo(NSString* func);
 YServo* yFirstServo(void);
 
 //--- (end of YServo functions declaration)
+
 NS_ASSUME_NONNULL_END
 CF_EXTERN_C_END
 

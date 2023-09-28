@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_multisenscontroller.m 49501 2022-04-21 07:09:25Z mvuilleu $
+ *  $Id: yocto_multisenscontroller.m 56091 2023-08-16 06:32:54Z mvuilleu $
  *
  *  Implements the high-level API for MultiSensController functions
  *
@@ -43,9 +43,7 @@
 #include "yapi/yapi.h"
 
 
-
 @implementation YMultiSensController
-
 // Constructor is protected, use yFindMultiSensController factory function to instantiate
 -(id)              initWith:(NSString*) func
 {
@@ -438,8 +436,8 @@
 }
 
 //--- (end of YMultiSensController public methods implementation)
-
 @end
+
 //--- (YMultiSensController functions)
 
 YMultiSensController *yFindMultiSensController(NSString* func)
@@ -453,3 +451,4 @@ YMultiSensController *yFirstMultiSensController(void)
 }
 
 //--- (end of YMultiSensController functions)
+

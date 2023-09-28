@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_motor.h 43619 2021-01-29 09:14:45Z mvuilleu $
+ *  $Id: yocto_motor.h 56091 2023-08-16 06:32:54Z mvuilleu $
  *
  *  Declares yFindMotor(), the high-level API for Motor functions
  *
@@ -507,6 +507,7 @@ YMotor* yFindMotor(NSString* func);
 YMotor* yFirstMotor(void);
 
 //--- (end of YMotor functions declaration)
+
 NS_ASSUME_NONNULL_END
 CF_EXTERN_C_END
 

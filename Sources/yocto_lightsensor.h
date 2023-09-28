@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_lightsensor.h 45292 2021-05-25 23:27:54Z mvuilleu $
+ *  $Id: yocto_lightsensor.h 56091 2023-08-16 06:32:54Z mvuilleu $
  *
  *  Declares yFindLightSensor(), the high-level API for LightSensor functions
  *
@@ -275,6 +275,7 @@ YLightSensor* yFindLightSensor(NSString* func);
 YLightSensor* yFirstLightSensor(void);
 
 //--- (end of YLightSensor functions declaration)
+
 NS_ASSUME_NONNULL_END
 CF_EXTERN_C_END
 

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_multiaxiscontroller.h 43619 2021-01-29 09:14:45Z mvuilleu $
+ *  $Id: yocto_multiaxiscontroller.h 56091 2023-08-16 06:32:54Z mvuilleu $
  *
  *  Declares yFindMultiAxisController(), the high-level API for MultiAxisController functions
  *
@@ -329,6 +329,7 @@ YMultiAxisController* yFindMultiAxisController(NSString* func);
 YMultiAxisController* yFirstMultiAxisController(void);
 
 //--- (end of YMultiAxisController functions declaration)
+
 NS_ASSUME_NONNULL_END
 CF_EXTERN_C_END
 

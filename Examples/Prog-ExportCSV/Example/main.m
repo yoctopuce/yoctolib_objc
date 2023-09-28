@@ -40,7 +40,8 @@ int main (int argc, const char * argv[])
       date = [NSDate dateWithTimeIntervalSince1970:timestamp];
       line = [dateFormatter stringFromDate: date];
       for (size_t idx = 1; idx < [record count]; idx++) {
-        line = [NSString stringWithFormat:@"%@;%.3f", line, [[record objectAtIndex:idx] doubleValue]];
+        line = [NSString stringWithFormat:@"%@;%.3f",
+                line, [[record objectAtIndex:idx] doubleValue]];
       }
       NSLog(@"%@", line);
     }

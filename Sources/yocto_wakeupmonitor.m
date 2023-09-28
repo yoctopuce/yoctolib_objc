@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_wakeupmonitor.m 48183 2022-01-20 10:26:11Z mvuilleu $
+ *  $Id: yocto_wakeupmonitor.m 56091 2023-08-16 06:32:54Z mvuilleu $
  *
  *  Implements the high-level API for WakeUpMonitor functions
  *
@@ -43,9 +43,7 @@
 #include "yapi/yapi.h"
 
 
-
 @implementation YWakeUpMonitor
-
 // Constructor is protected, use yFindWakeUpMonitor factory function to instantiate
 -(id)              initWith:(NSString*) func
 {
@@ -517,8 +515,8 @@
 }
 
 //--- (end of YWakeUpMonitor public methods implementation)
-
 @end
+
 //--- (YWakeUpMonitor functions)
 
 YWakeUpMonitor *yFindWakeUpMonitor(NSString* func)
@@ -532,3 +530,4 @@ YWakeUpMonitor *yFirstWakeUpMonitor(void)
 }
 
 //--- (end of YWakeUpMonitor functions)
+

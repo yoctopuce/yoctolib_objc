@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_realtimeclock.m 53874 2023-04-04 17:43:00Z mvuilleu $
+ *  $Id: yocto_realtimeclock.m 56091 2023-08-16 06:32:54Z mvuilleu $
  *
  *  Implements the high-level API for RealTimeClock functions
  *
@@ -43,9 +43,7 @@
 #include "yapi/yapi.h"
 
 
-
 @implementation YRealTimeClock
-
 // Constructor is protected, use yFindRealTimeClock factory function to instantiate
 -(id)              initWith:(NSString*) func
 {
@@ -408,8 +406,8 @@
 }
 
 //--- (end of YRealTimeClock public methods implementation)
-
 @end
+
 //--- (YRealTimeClock functions)
 
 YRealTimeClock *yFindRealTimeClock(NSString* func)
@@ -423,3 +421,4 @@ YRealTimeClock *yFirstRealTimeClock(void)
 }
 
 //--- (end of YRealTimeClock functions)
+

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_watchdog.m 44548 2021-04-13 09:56:42Z mvuilleu $
+ *  $Id: yocto_watchdog.m 56091 2023-08-16 06:32:54Z mvuilleu $
  *
  *  Implements the high-level API for Watchdog functions
  *
@@ -43,9 +43,7 @@
 #include "yapi/yapi.h"
 
 
-
 @implementation YWatchdog
-
 // Constructor is protected, use yFindWatchdog factory function to instantiate
 -(id)              initWith:(NSString*) func
 {
@@ -906,8 +904,8 @@
 }
 
 //--- (end of YWatchdog public methods implementation)
-
 @end
+
 //--- (YWatchdog functions)
 
 YWatchdog *yFindWatchdog(NSString* func)
@@ -921,3 +919,4 @@ YWatchdog *yFirstWatchdog(void)
 }
 
 //--- (end of YWatchdog functions)
+

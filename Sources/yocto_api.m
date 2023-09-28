@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.m 54649 2023-05-22 10:09:20Z seb $
+ * $Id: yocto_api.m 55094 2023-06-15 07:35:09Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -1226,6 +1226,9 @@ static const char* hexArray = "0123456789ABCDEF";
  */
 +(void) SetDeviceListValidity:(int)deviceListValidity
 {
+        if (!YAPI_apiInitialized) {
+            [YAPI InitAPI:0:nil];
+        }
         [YAPI_yapiContext SetDeviceListValidity:deviceListValidity];
 }
 /**
@@ -1236,6 +1239,9 @@ static const char* hexArray = "0123456789ABCDEF";
  */
 +(int) GetDeviceListValidity
 {
+        if (!YAPI_apiInitialized) {
+            [YAPI InitAPI:0:nil];
+        }
         return [YAPI_yapiContext GetDeviceListValidity];
 }
 /**
@@ -1251,6 +1257,9 @@ static const char* hexArray = "0123456789ABCDEF";
  */
 +(NSString*) AddUdevRule:(bool)force
 {
+        if (!YAPI_apiInitialized) {
+            [YAPI InitAPI:0:nil];
+        }
         return [YAPI_yapiContext AddUdevRule:force];
 }
 /**
@@ -1265,6 +1274,9 @@ static const char* hexArray = "0123456789ABCDEF";
  */
 +(void) SetNetworkTimeout:(int)networkMsTimeout
 {
+        if (!YAPI_apiInitialized) {
+            [YAPI InitAPI:0:nil];
+        }
         [YAPI_yapiContext SetNetworkTimeout:networkMsTimeout];
 }
 /**
@@ -1278,6 +1290,9 @@ static const char* hexArray = "0123456789ABCDEF";
  */
 +(int) GetNetworkTimeout
 {
+        if (!YAPI_apiInitialized) {
+            [YAPI InitAPI:0:nil];
+        }
         return [YAPI_yapiContext GetNetworkTimeout];
 }
 /**
@@ -1295,6 +1310,9 @@ static const char* hexArray = "0123456789ABCDEF";
  */
 +(void) SetCacheValidity:(u64)cacheValidityMs
 {
+        if (!YAPI_apiInitialized) {
+            [YAPI InitAPI:0:nil];
+        }
         [YAPI_yapiContext SetCacheValidity:cacheValidityMs];
 }
 /**
@@ -1308,14 +1326,23 @@ static const char* hexArray = "0123456789ABCDEF";
  */
 +(u64) GetCacheValidity
 {
+        if (!YAPI_apiInitialized) {
+            [YAPI InitAPI:0:nil];
+        }
         return [YAPI_yapiContext GetCacheValidity];
 }
 +(YHub*) nextHubInUseInternal:(int)hubref
 {
+        if (!YAPI_apiInitialized) {
+            [YAPI InitAPI:0:nil];
+        }
         return [YAPI_yapiContext nextHubInUseInternal:hubref];
 }
 +(YHub*) getYHubObj:(int)hubref
 {
+        if (!YAPI_apiInitialized) {
+            [YAPI InitAPI:0:nil];
+        }
         return [YAPI_yapiContext getYHubObj:hubref];
 }
 //--- (end of generated code: YAPIContext yapiwrapper)

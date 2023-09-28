@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_weighscale.m 50689 2022-08-17 14:37:15Z mvuilleu $
+ *  $Id: yocto_weighscale.m 56091 2023-08-16 06:32:54Z mvuilleu $
  *
  *  Implements the high-level API for WeighScale functions
  *
@@ -43,9 +43,7 @@
 #include "yapi/yapi.h"
 
 
-
 @implementation YWeighScale
-
 // Constructor is protected, use yFindWeighScale factory function to instantiate
 -(id)              initWith:(NSString*) func
 {
@@ -855,8 +853,8 @@
 }
 
 //--- (end of YWeighScale public methods implementation)
-
 @end
+
 //--- (YWeighScale functions)
 
 YWeighScale *yFindWeighScale(NSString* func)
@@ -870,3 +868,4 @@ YWeighScale *yFirstWeighScale(void)
 }
 
 //--- (end of YWeighScale functions)
+

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_led.m 43580 2021-01-26 17:46:01Z mvuilleu $
+ *  $Id: yocto_led.m 56091 2023-08-16 06:32:54Z mvuilleu $
  *
  *  Implements the high-level API for Led functions
  *
@@ -43,9 +43,7 @@
 #include "yapi/yapi.h"
 
 
-
 @implementation YLed
-
 // Constructor is protected, use yFindLed factory function to instantiate
 -(id)              initWith:(NSString*) func
 {
@@ -333,8 +331,8 @@
 }
 
 //--- (end of YLed public methods implementation)
-
 @end
+
 //--- (YLed functions)
 
 YLed *yFindLed(NSString* func)
@@ -348,3 +346,4 @@ YLed *yFirstLed(void)
 }
 
 //--- (end of YLed functions)
+

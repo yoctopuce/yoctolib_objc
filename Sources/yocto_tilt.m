@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_tilt.m 43619 2021-01-29 09:14:45Z mvuilleu $
+ *  $Id: yocto_tilt.m 56091 2023-08-16 06:32:54Z mvuilleu $
  *
  *  Implements the high-level API for Tilt functions
  *
@@ -43,9 +43,7 @@
 #include "yapi/yapi.h"
 
 
-
 @implementation YTilt
-
 // Constructor is protected, use yFindTilt factory function to instantiate
 -(id)              initWith:(NSString*) func
 {
@@ -327,8 +325,8 @@
 }
 
 //--- (end of YTilt public methods implementation)
-
 @end
+
 //--- (YTilt functions)
 
 YTilt *yFindTilt(NSString* func)
@@ -342,3 +340,4 @@ YTilt *yFirstTilt(void)
 }
 
 //--- (end of YTilt functions)
+

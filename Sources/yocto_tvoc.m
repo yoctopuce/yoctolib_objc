@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_tvoc.m 41625 2020-08-31 07:09:39Z seb $
+ *  $Id: yocto_tvoc.m 56091 2023-08-16 06:32:54Z mvuilleu $
  *
  *  Implements the high-level API for Tvoc functions
  *
@@ -43,9 +43,7 @@
 #include "yapi/yapi.h"
 
 
-
 @implementation YTvoc
-
 // Constructor is protected, use yFindTvoc factory function to instantiate
 -(id)              initWith:(NSString*) func
 {
@@ -215,8 +213,8 @@
 }
 
 //--- (end of YTvoc public methods implementation)
-
 @end
+
 //--- (YTvoc functions)
 
 YTvoc *yFindTvoc(NSString* func)
@@ -230,3 +228,4 @@ YTvoc *yFirstTvoc(void)
 }
 
 //--- (end of YTvoc functions)
+

@@ -45,7 +45,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 //--- (YInputChain globals)
 typedef void (*YInputChainValueCallback)(YInputChain *func, NSString *functionValue);
-typedef void (*YEventCallback)(YInputChain *inputChain, int timestamp, NSString *eventType, NSString *eventData, NSString *eventChange);
+typedef void (*YStateChangeCallback)(YInputChain *obj, int timestamp, NSString *eventType, NSString *eventData, NSString *eventChange);
 #ifndef _Y_LOOPBACKTEST_ENUM
 #define _Y_LOOPBACKTEST_ENUM
 typedef enum {
@@ -94,7 +94,7 @@ typedef enum {
     int             _watchdogPeriod;
     int             _chainDiags;
     YInputChainValueCallback _valueCallbackInputChain;
-    YEventCallback  _eventCallback;
+    YStateChangeCallback _stateChangeCallback;
     int             _prevPos;
     int             _eventPos;
     int             _eventStamp;
@@ -429,7 +429,7 @@ typedef enum {
  *         the type of event and a character string with the event data.
  *         On failure, throws an exception or returns a negative error code.
  */
--(int)     registerEventCallback:(YEventCallback _Nullable)callback;
+-(int)     registerStateChangeCallback:(YStateChangeCallback _Nullable)callback;
 
 -(int)     _internalEventHandler:(NSString*)cbpos;
 
@@ -507,6 +507,7 @@ YInputChain* yFindInputChain(NSString* func);
 YInputChain* yFirstInputChain(void);
 
 //--- (end of YInputChain functions declaration)
+
 NS_ASSUME_NONNULL_END
 CF_EXTERN_C_END
 

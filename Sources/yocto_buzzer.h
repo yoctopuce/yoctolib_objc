@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_buzzer.h 45843 2021-08-04 07:51:59Z mvuilleu $
+ *  $Id: yocto_buzzer.h 56091 2023-08-16 06:32:54Z mvuilleu $
  *
  *  Declares yFindBuzzer(), the high-level API for Buzzer functions
  *
@@ -444,6 +444,7 @@ YBuzzer* yFindBuzzer(NSString* func);
 YBuzzer* yFirstBuzzer(void);
 
 //--- (end of YBuzzer functions declaration)
+
 NS_ASSUME_NONNULL_END
 CF_EXTERN_C_END
 

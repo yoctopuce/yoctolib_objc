@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_tvoc.h 41625 2020-08-31 07:09:39Z seb $
+ *  $Id: yocto_tvoc.h 56091 2023-08-16 06:32:54Z mvuilleu $
  *
  *  Declares yFindTvoc(), the high-level API for Tvoc functions
  *
@@ -207,6 +207,7 @@ YTvoc* yFindTvoc(NSString* func);
 YTvoc* yFirstTvoc(void);
 
 //--- (end of YTvoc functions declaration)
+
 NS_ASSUME_NONNULL_END
 CF_EXTERN_C_END
 

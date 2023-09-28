@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_dualpower.m 43580 2021-01-26 17:46:01Z mvuilleu $
+ *  $Id: yocto_dualpower.m 56091 2023-08-16 06:32:54Z mvuilleu $
  *
  *  Implements the high-level API for DualPower functions
  *
@@ -43,9 +43,7 @@
 #include "yapi/yapi.h"
 
 
-
 @implementation YDualPower
-
 // Constructor is protected, use yFindDualPower factory function to instantiate
 -(id)              initWith:(NSString*) func
 {
@@ -297,8 +295,8 @@
 }
 
 //--- (end of YDualPower public methods implementation)
-
 @end
+
 //--- (YDualPower functions)
 
 YDualPower *yFindDualPower(NSString* func)
@@ -312,3 +310,4 @@ YDualPower *yFirstDualPower(void)
 }
 
 //--- (end of YDualPower functions)
+

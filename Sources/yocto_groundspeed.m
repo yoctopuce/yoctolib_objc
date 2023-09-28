@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_groundspeed.m 41625 2020-08-31 07:09:39Z seb $
+ *  $Id: yocto_groundspeed.m 56091 2023-08-16 06:32:54Z mvuilleu $
  *
  *  Implements the high-level API for GroundSpeed functions
  *
@@ -43,9 +43,7 @@
 #include "yapi/yapi.h"
 
 
-
 @implementation YGroundSpeed
-
 // Constructor is protected, use yFindGroundSpeed factory function to instantiate
 -(id)              initWith:(NSString*) func
 {
@@ -215,8 +213,8 @@
 }
 
 //--- (end of YGroundSpeed public methods implementation)
-
 @end
+
 //--- (YGroundSpeed functions)
 
 YGroundSpeed *yFindGroundSpeed(NSString* func)
@@ -230,3 +228,4 @@ YGroundSpeed *yFirstGroundSpeed(void)
 }
 
 //--- (end of YGroundSpeed functions)
+

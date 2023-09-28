@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_pressure.m 41625 2020-08-31 07:09:39Z seb $
+ *  $Id: yocto_pressure.m 56091 2023-08-16 06:32:54Z mvuilleu $
  *
  *  Implements the high-level API for Pressure functions
  *
@@ -43,9 +43,7 @@
 #include "yapi/yapi.h"
 
 
-
 @implementation YPressure
-
 // Constructor is protected, use yFindPressure factory function to instantiate
 -(id)              initWith:(NSString*) func
 {
@@ -215,8 +213,8 @@
 }
 
 //--- (end of YPressure public methods implementation)
-
 @end
+
 //--- (YPressure functions)
 
 YPressure *yFindPressure(NSString* func)
@@ -230,3 +228,4 @@ YPressure *yFirstPressure(void)
 }
 
 //--- (end of YPressure functions)
+

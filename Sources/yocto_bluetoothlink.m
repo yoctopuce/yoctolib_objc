@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_bluetoothlink.m 43619 2021-01-29 09:14:45Z mvuilleu $
+ *  $Id: yocto_bluetoothlink.m 56091 2023-08-16 06:32:54Z mvuilleu $
  *
  *  Implements the high-level API for BluetoothLink functions
  *
@@ -43,9 +43,7 @@
 #include "yapi/yapi.h"
 
 
-
 @implementation YBluetoothLink
-
 // Constructor is protected, use yFindBluetoothLink factory function to instantiate
 -(id)              initWith:(NSString*) func
 {
@@ -645,8 +643,8 @@
 }
 
 //--- (end of YBluetoothLink public methods implementation)
-
 @end
+
 //--- (YBluetoothLink functions)
 
 YBluetoothLink *yFindBluetoothLink(NSString* func)
@@ -660,3 +658,4 @@ YBluetoothLink *yFirstBluetoothLink(void)
 }
 
 //--- (end of YBluetoothLink functions)
+

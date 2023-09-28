@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_currentloopoutput.m 50689 2022-08-17 14:37:15Z mvuilleu $
+ *  $Id: yocto_currentloopoutput.m 56091 2023-08-16 06:32:54Z mvuilleu $
  *
  *  Implements the high-level API for CurrentLoopOutput functions
  *
@@ -43,9 +43,7 @@
 #include "yapi/yapi.h"
 
 
-
 @implementation YCurrentLoopOutput
-
 // Constructor is protected, use yFindCurrentLoopOutput factory function to instantiate
 -(id)              initWith:(NSString*) func
 {
@@ -378,8 +376,8 @@
 }
 
 //--- (end of YCurrentLoopOutput public methods implementation)
-
 @end
+
 //--- (YCurrentLoopOutput functions)
 
 YCurrentLoopOutput *yFindCurrentLoopOutput(NSString* func)
@@ -393,3 +391,4 @@ YCurrentLoopOutput *yFirstCurrentLoopOutput(void)
 }
 
 //--- (end of YCurrentLoopOutput functions)
+

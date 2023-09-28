@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_carbondioxide.m 44175 2021-03-11 11:27:12Z mvuilleu $
+ *  $Id: yocto_carbondioxide.m 56091 2023-08-16 06:32:54Z mvuilleu $
  *
  *  Implements the high-level API for CarbonDioxide functions
  *
@@ -43,9 +43,7 @@
 #include "yapi/yapi.h"
 
 
-
 @implementation YCarbonDioxide
-
 // Constructor is protected, use yFindCarbonDioxide factory function to instantiate
 -(id)              initWith:(NSString*) func
 {
@@ -378,8 +376,8 @@
 }
 
 //--- (end of YCarbonDioxide public methods implementation)
-
 @end
+
 //--- (YCarbonDioxide functions)
 
 YCarbonDioxide *yFindCarbonDioxide(NSString* func)
@@ -393,3 +391,4 @@ YCarbonDioxide *yFirstCarbonDioxide(void)
 }
 
 //--- (end of YCarbonDioxide functions)
+

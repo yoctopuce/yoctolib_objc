@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_currentloopoutput.h 43619 2021-01-29 09:14:45Z mvuilleu $
+ *  $Id: yocto_currentloopoutput.h 56091 2023-08-16 06:32:54Z mvuilleu $
  *
  *  Declares yFindCurrentLoopOutput(), the high-level API for CurrentLoopOutput functions
  *
@@ -287,6 +287,7 @@ YCurrentLoopOutput* yFindCurrentLoopOutput(NSString* func);
 YCurrentLoopOutput* yFirstCurrentLoopOutput(void);
 
 //--- (end of YCurrentLoopOutput functions declaration)
+
 NS_ASSUME_NONNULL_END
 CF_EXTERN_C_END
 

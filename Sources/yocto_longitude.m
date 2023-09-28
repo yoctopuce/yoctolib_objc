@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_longitude.m 41625 2020-08-31 07:09:39Z seb $
+ *  $Id: yocto_longitude.m 56091 2023-08-16 06:32:54Z mvuilleu $
  *
  *  Implements the high-level API for Longitude functions
  *
@@ -43,9 +43,7 @@
 #include "yapi/yapi.h"
 
 
-
 @implementation YLongitude
-
 // Constructor is protected, use yFindLongitude factory function to instantiate
 -(id)              initWith:(NSString*) func
 {
@@ -215,8 +213,8 @@
 }
 
 //--- (end of YLongitude public methods implementation)
-
 @end
+
 //--- (YLongitude functions)
 
 YLongitude *yFindLongitude(NSString* func)
@@ -230,3 +228,4 @@ YLongitude *yFirstLongitude(void)
 }
 
 //--- (end of YLongitude functions)
+

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_voc.h 41625 2020-08-31 07:09:39Z seb $
+ *  $Id: yocto_voc.h 56091 2023-08-16 06:32:54Z mvuilleu $
  *
  *  Declares yFindVoc(), the high-level API for Voc functions
  *
@@ -206,6 +206,7 @@ YVoc* yFindVoc(NSString* func);
 YVoc* yFirstVoc(void);
 
 //--- (end of YVoc functions declaration)
+
 NS_ASSUME_NONNULL_END
 CF_EXTERN_C_END
 

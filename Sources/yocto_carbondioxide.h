@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_carbondioxide.h 44175 2021-03-11 11:27:12Z mvuilleu $
+ *  $Id: yocto_carbondioxide.h 56091 2023-08-16 06:32:54Z mvuilleu $
  *
  *  Declares yFindCarbonDioxide(), the high-level API for CarbonDioxide functions
  *
@@ -301,6 +301,7 @@ YCarbonDioxide* yFindCarbonDioxide(NSString* func);
 YCarbonDioxide* yFirstCarbonDioxide(void);
 
 //--- (end of YCarbonDioxide functions declaration)
+
 NS_ASSUME_NONNULL_END
 CF_EXTERN_C_END
 

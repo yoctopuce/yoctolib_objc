@@ -165,6 +165,9 @@
     int ms;
     int recSize;
     int count;
+    int mult1;
+    int mult2;
+    int mult3;
     double v;
 
     buffSize = (int)[sdata length];
@@ -215,11 +218,31 @@
             recOfs = recOfs + 1;
         }
     }
+    if (((recOfs) & (1)) == 1) {
+        // align to next word
+        recOfs = recOfs + 1;
+    }
+    mult1 = 1;
+    mult2 = 1;
+    mult3 = 1;
+    if (recOfs < _recOfs) {
+        // load optional value multiplier
+        mult1 = [self _decodeU16:sdata :_recOfs];
+        recOfs = recOfs + 2;
+        if (_var2size > 0) {
+            mult2 = [self _decodeU16:sdata :_recOfs];
+            recOfs = recOfs + 2;
+        }
+        if (_var3size > 0) {
+            mult3 = [self _decodeU16:sdata :_recOfs];
+            recOfs = recOfs + 2;
+        }
+    }
     recOfs = _recOfs;
     count = _nRecs;
     while ((count > 0) && (recOfs + _var1size <= buffSize)) {
         v = [self _decodeVal:sdata : recOfs :_var1size] / 1000.0;
-        [_var1samples addObject:[NSNumber numberWithDouble:v]];
+        [_var1samples addObject:[NSNumber numberWithDouble:v*mult1]];
         recOfs = recOfs + recSize;
     }
     if (_var2size > 0) {
@@ -227,7 +250,7 @@
         count = _nRecs;
         while ((count > 0) && (recOfs + _var2size <= buffSize)) {
             v = [self _decodeVal:sdata : recOfs :_var2size] / 1000.0;
-            [_var2samples addObject:[NSNumber numberWithDouble:v]];
+            [_var2samples addObject:[NSNumber numberWithDouble:v*mult2]];
             recOfs = recOfs + recSize;
         }
     }
@@ -236,7 +259,7 @@
         count = _nRecs;
         while ((count > 0) && (recOfs + _var3size <= buffSize)) {
             v = [self _decodeVal:sdata : recOfs :_var3size] / 1000.0;
-            [_var3samples addObject:[NSNumber numberWithDouble:v]];
+            [_var3samples addObject:[NSNumber numberWithDouble:v*mult3]];
             recOfs = recOfs + recSize;
         }
     }

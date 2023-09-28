@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_genericsensor.m 50689 2022-08-17 14:37:15Z mvuilleu $
+ *  $Id: yocto_genericsensor.m 56091 2023-08-16 06:32:54Z mvuilleu $
  *
  *  Implements the high-level API for GenericSensor functions
  *
@@ -43,9 +43,7 @@
 #include "yapi/yapi.h"
 
 
-
 @implementation YGenericSensor
-
 // Constructor is protected, use yFindGenericSensor factory function to instantiate
 -(id)              initWith:(NSString*) func
 {
@@ -627,8 +625,8 @@
 }
 
 //--- (end of YGenericSensor public methods implementation)
-
 @end
+
 //--- (YGenericSensor functions)
 
 YGenericSensor *yFindGenericSensor(NSString* func)
@@ -642,3 +640,4 @@ YGenericSensor *yFirstGenericSensor(void)
 }
 
 //--- (end of YGenericSensor functions)
+

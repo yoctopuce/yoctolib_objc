@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_power.m 53420 2023-03-06 10:38:51Z mvuilleu $
+ *  $Id: yocto_power.m 56091 2023-08-16 06:32:54Z mvuilleu $
  *
  *  Implements the high-level API for Power functions
  *
@@ -43,9 +43,7 @@
 #include "yapi/yapi.h"
 
 
-
 @implementation YPower
-
 // Constructor is protected, use yFindPower factory function to instantiate
 -(id)              initWith:(NSString*) func
 {
@@ -437,8 +435,8 @@
 }
 
 //--- (end of YPower public methods implementation)
-
 @end
+
 //--- (YPower functions)
 
 YPower *yFindPower(NSString* func)
@@ -452,3 +450,4 @@ YPower *yFirstPower(void)
 }
 
 //--- (end of YPower functions)
+

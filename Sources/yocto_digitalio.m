@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_digitalio.m 43619 2021-01-29 09:14:45Z mvuilleu $
+ *  $Id: yocto_digitalio.m 56091 2023-08-16 06:32:54Z mvuilleu $
  *
  *  Implements the high-level API for DigitalIO functions
  *
@@ -43,9 +43,7 @@
 #include "yapi/yapi.h"
 
 
-
 @implementation YDigitalIO
-
 // Constructor is protected, use yFindDigitalIO factory function to instantiate
 -(id)              initWith:(NSString*) func
 {
@@ -753,8 +751,8 @@
 }
 
 //--- (end of YDigitalIO public methods implementation)
-
 @end
+
 //--- (YDigitalIO functions)
 
 YDigitalIO *yFindDigitalIO(NSString* func)
@@ -768,3 +766,4 @@ YDigitalIO *yFirstDigitalIO(void)
 }
 
 //--- (end of YDigitalIO functions)
+

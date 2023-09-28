@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_pwminput.m 50689 2022-08-17 14:37:15Z mvuilleu $
+ *  $Id: yocto_pwminput.m 56091 2023-08-16 06:32:54Z mvuilleu $
  *
  *  Implements the high-level API for PwmInput functions
  *
@@ -43,9 +43,7 @@
 #include "yapi/yapi.h"
 
 
-
 @implementation YPwmInput
-
 // Constructor is protected, use yFindPwmInput factory function to instantiate
 -(id)              initWith:(NSString*) func
 {
@@ -649,8 +647,8 @@
 }
 
 //--- (end of YPwmInput public methods implementation)
-
 @end
+
 //--- (YPwmInput functions)
 
 YPwmInput *yFindPwmInput(NSString* func)
@@ -664,3 +662,4 @@ YPwmInput *yFirstPwmInput(void)
 }
 
 //--- (end of YPwmInput functions)
+

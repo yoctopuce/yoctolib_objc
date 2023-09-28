@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_buzzer.m 50689 2022-08-17 14:37:15Z mvuilleu $
+ *  $Id: yocto_buzzer.m 56091 2023-08-16 06:32:54Z mvuilleu $
  *
  *  Implements the high-level API for Buzzer functions
  *
@@ -43,9 +43,7 @@
 #include "yapi/yapi.h"
 
 
-
 @implementation YBuzzer
-
 // Constructor is protected, use yFindBuzzer factory function to instantiate
 -(id)              initWith:(NSString*) func
 {
@@ -766,8 +764,8 @@
 }
 
 //--- (end of YBuzzer public methods implementation)
-
 @end
+
 //--- (YBuzzer functions)
 
 YBuzzer *yFindBuzzer(NSString* func)
@@ -781,3 +779,4 @@ YBuzzer *yFirstBuzzer(void)
 }
 
 //--- (end of YBuzzer functions)
+

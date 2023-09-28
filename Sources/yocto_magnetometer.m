@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_magnetometer.m 50689 2022-08-17 14:37:15Z mvuilleu $
+ *  $Id: yocto_magnetometer.m 56091 2023-08-16 06:32:54Z mvuilleu $
  *
  *  Implements the high-level API for Magnetometer functions
  *
@@ -43,9 +43,7 @@
 #include "yapi/yapi.h"
 
 
-
 @implementation YMagnetometer
-
 // Constructor is protected, use yFindMagnetometer factory function to instantiate
 -(id)              initWith:(NSString*) func
 {
@@ -361,8 +359,8 @@
 }
 
 //--- (end of YMagnetometer public methods implementation)
-
 @end
+
 //--- (YMagnetometer functions)
 
 YMagnetometer *yFindMagnetometer(NSString* func)
@@ -376,3 +374,4 @@ YMagnetometer *yFirstMagnetometer(void)
 }
 
 //--- (end of YMagnetometer functions)
+

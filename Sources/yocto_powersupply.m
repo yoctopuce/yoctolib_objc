@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_powersupply.m 54768 2023-05-26 06:46:41Z seb $
+ *  $Id: yocto_powersupply.m 56091 2023-08-16 06:32:54Z mvuilleu $
  *
  *  Implements the high-level API for PowerSupply functions
  *
@@ -43,9 +43,7 @@
 #include "yapi/yapi.h"
 
 
-
 @implementation YPowerSupply
-
 // Constructor is protected, use yFindPowerSupply factory function to instantiate
 -(id)              initWith:(NSString*) func
 {
@@ -53,15 +51,16 @@
           return nil;
     _className = @"PowerSupply";
 //--- (YPowerSupply attributes initialization)
-    _voltageSetPoint = Y_VOLTAGESETPOINT_INVALID;
+    _voltageLimit = Y_VOLTAGELIMIT_INVALID;
     _currentLimit = Y_CURRENTLIMIT_INVALID;
     _powerOutput = Y_POWEROUTPUT_INVALID;
     _measuredVoltage = Y_MEASUREDVOLTAGE_INVALID;
     _measuredCurrent = Y_MEASUREDCURRENT_INVALID;
     _inputVoltage = Y_INPUTVOLTAGE_INVALID;
     _voltageTransition = Y_VOLTAGETRANSITION_INVALID;
-    _voltageAtStartUp = Y_VOLTAGEATSTARTUP_INVALID;
-    _currentAtStartUp = Y_CURRENTATSTARTUP_INVALID;
+    _voltageLimitAtStartUp = Y_VOLTAGELIMITATSTARTUP_INVALID;
+    _currentLimitAtStartUp = Y_CURRENTLIMITATSTARTUP_INVALID;
+    _powerOutputAtStartUp = Y_POWEROUTPUTATSTARTUP_INVALID;
     _command = Y_COMMAND_INVALID;
     _valueCallbackPowerSupply = NULL;
 //--- (end of YPowerSupply attributes initialization)
@@ -84,9 +83,9 @@
 
 -(int) _parseAttr:(yJsonStateMachine*) j
 {
-    if(!strcmp(j->token, "voltageSetPoint")) {
+    if(!strcmp(j->token, "voltageLimit")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-        _voltageSetPoint =  floor(atof(j->token) / 65.536 + 0.5) / 1000.0;
+        _voltageLimit =  floor(atof(j->token) / 65.536 + 0.5) / 1000.0;
         return 1;
     }
     if(!strcmp(j->token, "currentLimit")) {
@@ -121,14 +120,19 @@
         ARC_retain(_voltageTransition);
         return 1;
     }
-    if(!strcmp(j->token, "voltageAtStartUp")) {
+    if(!strcmp(j->token, "voltageLimitAtStartUp")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-        _voltageAtStartUp =  floor(atof(j->token) / 65.536 + 0.5) / 1000.0;
+        _voltageLimitAtStartUp =  floor(atof(j->token) / 65.536 + 0.5) / 1000.0;
         return 1;
     }
-    if(!strcmp(j->token, "currentAtStartUp")) {
+    if(!strcmp(j->token, "currentLimitAtStartUp")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-        _currentAtStartUp =  floor(atof(j->token) / 65.536 + 0.5) / 1000.0;
+        _currentLimitAtStartUp =  floor(atof(j->token) / 65.536 + 0.5) / 1000.0;
+        return 1;
+    }
+    if(!strcmp(j->token, "powerOutputAtStartUp")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _powerOutputAtStartUp =  (Y_POWEROUTPUTATSTARTUP_enum)atoi(j->token);
         return 1;
     }
     if(!strcmp(j->token, "command")) {
@@ -144,47 +148,47 @@
 //--- (YPowerSupply public methods implementation)
 
 /**
- * Changes the voltage set point, in V.
+ * Changes the voltage limit, in V.
  *
- * @param newval : a floating point number corresponding to the voltage set point, in V
+ * @param newval : a floating point number corresponding to the voltage limit, in V
  *
  * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
--(int) set_voltageSetPoint:(double) newval
+-(int) set_voltageLimit:(double) newval
 {
-    return [self setVoltageSetPoint:newval];
+    return [self setVoltageLimit:newval];
 }
--(int) setVoltageSetPoint:(double) newval
+-(int) setVoltageLimit:(double) newval
 {
     NSString* rest_val;
     rest_val = [NSString stringWithFormat:@"%ld",(s64)floor(newval * 65536.0 + 0.5)];
-    return [self _setAttr:@"voltageSetPoint" :rest_val];
+    return [self _setAttr:@"voltageLimit" :rest_val];
 }
 /**
- * Returns the voltage set point, in V.
+ * Returns the voltage limit, in V.
  *
- * @return a floating point number corresponding to the voltage set point, in V
+ * @return a floating point number corresponding to the voltage limit, in V
  *
- * On failure, throws an exception or returns YPowerSupply.VOLTAGESETPOINT_INVALID.
+ * On failure, throws an exception or returns YPowerSupply.VOLTAGELIMIT_INVALID.
  */
--(double) get_voltageSetPoint
+-(double) get_voltageLimit
 {
     double res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
-            return Y_VOLTAGESETPOINT_INVALID;
+            return Y_VOLTAGELIMIT_INVALID;
         }
     }
-    res = _voltageSetPoint;
+    res = _voltageLimit;
     return res;
 }
 
 
--(double) voltageSetPoint
+-(double) voltageLimit
 {
-    return [self get_voltageSetPoint];
+    return [self get_voltageLimit];
 }
 
 /**
@@ -387,39 +391,39 @@
  *
  * On failure, throws an exception or returns a negative error code.
  */
--(int) set_voltageAtStartUp:(double) newval
+-(int) set_voltageLimitAtStartUp:(double) newval
 {
-    return [self setVoltageAtStartUp:newval];
+    return [self setVoltageLimitAtStartUp:newval];
 }
--(int) setVoltageAtStartUp:(double) newval
+-(int) setVoltageLimitAtStartUp:(double) newval
 {
     NSString* rest_val;
     rest_val = [NSString stringWithFormat:@"%ld",(s64)floor(newval * 65536.0 + 0.5)];
-    return [self _setAttr:@"voltageAtStartUp" :rest_val];
+    return [self _setAttr:@"voltageLimitAtStartUp" :rest_val];
 }
 /**
- * Returns the selected voltage set point at device startup, in V.
+ * Returns the selected voltage limit at device startup, in V.
  *
- * @return a floating point number corresponding to the selected voltage set point at device startup, in V
+ * @return a floating point number corresponding to the selected voltage limit at device startup, in V
  *
- * On failure, throws an exception or returns YPowerSupply.VOLTAGEATSTARTUP_INVALID.
+ * On failure, throws an exception or returns YPowerSupply.VOLTAGELIMITATSTARTUP_INVALID.
  */
--(double) get_voltageAtStartUp
+-(double) get_voltageLimitAtStartUp
 {
     double res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
-            return Y_VOLTAGEATSTARTUP_INVALID;
+            return Y_VOLTAGELIMITATSTARTUP_INVALID;
         }
     }
-    res = _voltageAtStartUp;
+    res = _voltageLimitAtStartUp;
     return res;
 }
 
 
--(double) voltageAtStartUp
+-(double) voltageLimitAtStartUp
 {
-    return [self get_voltageAtStartUp];
+    return [self get_voltageLimitAtStartUp];
 }
 
 /**
@@ -432,39 +436,86 @@
  *
  * On failure, throws an exception or returns a negative error code.
  */
--(int) set_currentAtStartUp:(double) newval
+-(int) set_currentLimitAtStartUp:(double) newval
 {
-    return [self setCurrentAtStartUp:newval];
+    return [self setCurrentLimitAtStartUp:newval];
 }
--(int) setCurrentAtStartUp:(double) newval
+-(int) setCurrentLimitAtStartUp:(double) newval
 {
     NSString* rest_val;
     rest_val = [NSString stringWithFormat:@"%ld",(s64)floor(newval * 65536.0 + 0.5)];
-    return [self _setAttr:@"currentAtStartUp" :rest_val];
+    return [self _setAttr:@"currentLimitAtStartUp" :rest_val];
 }
 /**
  * Returns the selected current limit at device startup, in mA.
  *
  * @return a floating point number corresponding to the selected current limit at device startup, in mA
  *
- * On failure, throws an exception or returns YPowerSupply.CURRENTATSTARTUP_INVALID.
+ * On failure, throws an exception or returns YPowerSupply.CURRENTLIMITATSTARTUP_INVALID.
  */
--(double) get_currentAtStartUp
+-(double) get_currentLimitAtStartUp
 {
     double res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
-            return Y_CURRENTATSTARTUP_INVALID;
+            return Y_CURRENTLIMITATSTARTUP_INVALID;
         }
     }
-    res = _currentAtStartUp;
+    res = _currentLimitAtStartUp;
     return res;
 }
 
 
--(double) currentAtStartUp
+-(double) currentLimitAtStartUp
 {
-    return [self get_currentAtStartUp];
+    return [self get_currentLimitAtStartUp];
+}
+/**
+ * Returns the power supply output switch state.
+ *
+ * @return either YPowerSupply.POWEROUTPUTATSTARTUP_OFF or YPowerSupply.POWEROUTPUTATSTARTUP_ON,
+ * according to the power supply output switch state
+ *
+ * On failure, throws an exception or returns YPowerSupply.POWEROUTPUTATSTARTUP_INVALID.
+ */
+-(Y_POWEROUTPUTATSTARTUP_enum) get_powerOutputAtStartUp
+{
+    Y_POWEROUTPUTATSTARTUP_enum res;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
+            return Y_POWEROUTPUTATSTARTUP_INVALID;
+        }
+    }
+    res = _powerOutputAtStartUp;
+    return res;
+}
+
+
+-(Y_POWEROUTPUTATSTARTUP_enum) powerOutputAtStartUp
+{
+    return [self get_powerOutputAtStartUp];
+}
+
+/**
+ * Changes the power supply output switch state at device start up. Remember to call the matching
+ * module saveToFlash() method, otherwise this call has no effect.
+ *
+ * @param newval : either YPowerSupply.POWEROUTPUTATSTARTUP_OFF or
+ * YPowerSupply.POWEROUTPUTATSTARTUP_ON, according to the power supply output switch state at device start up
+ *
+ * @return YAPI.SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) set_powerOutputAtStartUp:(Y_POWEROUTPUTATSTARTUP_enum) newval
+{
+    return [self setPowerOutputAtStartUp:newval];
+}
+-(int) setPowerOutputAtStartUp:(Y_POWEROUTPUTATSTARTUP_enum) newval
+{
+    NSString* rest_val;
+    rest_val = (newval ? @"1" : @"0");
+    return [self _setAttr:@"powerOutputAtStartUp" :rest_val];
 }
 -(NSString*) get_command
 {
@@ -621,8 +672,8 @@
 }
 
 //--- (end of YPowerSupply public methods implementation)
-
 @end
+
 //--- (YPowerSupply functions)
 
 YPowerSupply *yFindPowerSupply(NSString* func)
@@ -636,3 +687,4 @@ YPowerSupply *yFirstPowerSupply(void)
 }
 
 //--- (end of YPowerSupply functions)
+

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_multicellweighscale.h 43619 2021-01-29 09:14:45Z mvuilleu $
+ *  $Id: yocto_multicellweighscale.h 56091 2023-08-16 06:32:54Z mvuilleu $
  *
  *  Declares yFindMultiCellWeighScale(), the high-level API for MultiCellWeighScale functions
  *
@@ -498,6 +498,7 @@ YMultiCellWeighScale* yFindMultiCellWeighScale(NSString* func);
 YMultiCellWeighScale* yFirstMultiCellWeighScale(void);
 
 //--- (end of YMultiCellWeighScale functions declaration)
+
 NS_ASSUME_NONNULL_END
 CF_EXTERN_C_END
 

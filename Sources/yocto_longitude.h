@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_longitude.h 41625 2020-08-31 07:09:39Z seb $
+ *  $Id: yocto_longitude.h 56091 2023-08-16 06:32:54Z mvuilleu $
  *
  *  Declares yFindLongitude(), the high-level API for Longitude functions
  *
@@ -206,6 +206,7 @@ YLongitude* yFindLongitude(NSString* func);
 YLongitude* yFirstLongitude(void);
 
 //--- (end of YLongitude functions declaration)
+
 NS_ASSUME_NONNULL_END
 CF_EXTERN_C_END
 

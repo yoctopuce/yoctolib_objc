@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_dualpower.h 43580 2021-01-26 17:46:01Z mvuilleu $
+ *  $Id: yocto_dualpower.h 56091 2023-08-16 06:32:54Z mvuilleu $
  *
  *  Declares yFindDualPower(), the high-level API for DualPower functions
  *
@@ -266,6 +266,7 @@ YDualPower* yFindDualPower(NSString* func);
 YDualPower* yFirstDualPower(void);
 
 //--- (end of YDualPower functions declaration)
+
 NS_ASSUME_NONNULL_END
 CF_EXTERN_C_END
 

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_audioout.h 43580 2021-01-26 17:46:01Z mvuilleu $
+ *  $Id: yocto_audioout.h 56091 2023-08-16 06:32:54Z mvuilleu $
  *
  *  Declares yFindAudioOut(), the high-level API for AudioOut functions
  *
@@ -289,6 +289,7 @@ YAudioOut* yFindAudioOut(NSString* func);
 YAudioOut* yFirstAudioOut(void);
 
 //--- (end of YAudioOut functions declaration)
+
 NS_ASSUME_NONNULL_END
 CF_EXTERN_C_END
 

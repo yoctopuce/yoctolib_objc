@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_multicellweighscale.m 50689 2022-08-17 14:37:15Z mvuilleu $
+ *  $Id: yocto_multicellweighscale.m 56091 2023-08-16 06:32:54Z mvuilleu $
  *
  *  Implements the high-level API for MultiCellWeighScale functions
  *
@@ -43,9 +43,7 @@
 #include "yapi/yapi.h"
 
 
-
 @implementation YMultiCellWeighScale
-
 // Constructor is protected, use yFindMultiCellWeighScale factory function to instantiate
 -(id)              initWith:(NSString*) func
 {
@@ -732,8 +730,8 @@
 }
 
 //--- (end of YMultiCellWeighScale public methods implementation)
-
 @end
+
 //--- (YMultiCellWeighScale functions)
 
 YMultiCellWeighScale *yFindMultiCellWeighScale(NSString* func)
@@ -747,3 +745,4 @@ YMultiCellWeighScale *yFirstMultiCellWeighScale(void)
 }
 
 //--- (end of YMultiCellWeighScale functions)
+

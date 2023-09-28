@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_groundspeed.h 41625 2020-08-31 07:09:39Z seb $
+ *  $Id: yocto_groundspeed.h 56091 2023-08-16 06:32:54Z mvuilleu $
  *
  *  Declares yFindGroundSpeed(), the high-level API for GroundSpeed functions
  *
@@ -206,6 +206,7 @@ YGroundSpeed* yFindGroundSpeed(NSString* func);
 YGroundSpeed* yFirstGroundSpeed(void);
 
 //--- (end of YGroundSpeed functions declaration)
+
 NS_ASSUME_NONNULL_END
 CF_EXTERN_C_END
 

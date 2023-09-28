@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_weighscale.h 43619 2021-01-29 09:14:45Z mvuilleu $
+ *  $Id: yocto_weighscale.h 56091 2023-08-16 06:32:54Z mvuilleu $
  *
  *  Declares yFindWeighScale(), the high-level API for WeighScale functions
  *
@@ -572,6 +572,7 @@ YWeighScale* yFindWeighScale(NSString* func);
 YWeighScale* yFirstWeighScale(void);
 
 //--- (end of YWeighScale functions declaration)
+
 NS_ASSUME_NONNULL_END
 CF_EXTERN_C_END
 

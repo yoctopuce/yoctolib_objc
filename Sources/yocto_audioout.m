@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_audioout.m 43580 2021-01-26 17:46:01Z mvuilleu $
+ *  $Id: yocto_audioout.m 56091 2023-08-16 06:32:54Z mvuilleu $
  *
  *  Implements the high-level API for AudioOut functions
  *
@@ -43,9 +43,7 @@
 #include "yapi/yapi.h"
 
 
-
 @implementation YAudioOut
-
 // Constructor is protected, use yFindAudioOut factory function to instantiate
 -(id)              initWith:(NSString*) func
 {
@@ -380,8 +378,8 @@
 }
 
 //--- (end of YAudioOut public methods implementation)
-
 @end
+
 //--- (YAudioOut functions)
 
 YAudioOut *yFindAudioOut(NSString* func)
@@ -395,3 +393,4 @@ YAudioOut *yFirstAudioOut(void)
 }
 
 //--- (end of YAudioOut functions)
+

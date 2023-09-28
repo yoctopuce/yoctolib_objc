@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_multisenscontroller.h 49501 2022-04-21 07:09:25Z mvuilleu $
+ *  $Id: yocto_multisenscontroller.h 56091 2023-08-16 06:32:54Z mvuilleu $
  *
  *  Declares yFindMultiSensController(), the high-level API for MultiSensController functions
  *
@@ -321,6 +321,7 @@ YMultiSensController* yFindMultiSensController(NSString* func);
 YMultiSensController* yFirstMultiSensController(void);
 
 //--- (end of YMultiSensController functions declaration)
+
 NS_ASSUME_NONNULL_END
 CF_EXTERN_C_END
 

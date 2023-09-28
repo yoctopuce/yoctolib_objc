@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_magnetometer.h 43580 2021-01-26 17:46:01Z mvuilleu $
+ *  $Id: yocto_magnetometer.h 56091 2023-08-16 06:32:54Z mvuilleu $
  *
  *  Declares yFindMagnetometer(), the high-level API for Magnetometer functions
  *
@@ -282,6 +282,7 @@ YMagnetometer* yFindMagnetometer(NSString* func);
 YMagnetometer* yFirstMagnetometer(void);
 
 //--- (end of YMagnetometer functions declaration)
+
 NS_ASSUME_NONNULL_END
 CF_EXTERN_C_END
 

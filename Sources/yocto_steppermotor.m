@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_steppermotor.m 50689 2022-08-17 14:37:15Z mvuilleu $
+ *  $Id: yocto_steppermotor.m 56091 2023-08-16 06:32:54Z mvuilleu $
  *
  *  Implements the high-level API for StepperMotor functions
  *
@@ -43,9 +43,7 @@
 #include "yapi/yapi.h"
 
 
-
 @implementation YStepperMotor
-
 // Constructor is protected, use yFindStepperMotor factory function to instantiate
 -(id)              initWith:(NSString*) func
 {
@@ -1037,8 +1035,8 @@
 }
 
 //--- (end of YStepperMotor public methods implementation)
-
 @end
+
 //--- (YStepperMotor functions)
 
 YStepperMotor *yFindStepperMotor(NSString* func)
@@ -1052,3 +1050,4 @@ YStepperMotor *yFirstStepperMotor(void)
 }
 
 //--- (end of YStepperMotor functions)
+

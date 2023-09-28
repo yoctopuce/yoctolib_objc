@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yapi.c 54437 2023-05-08 07:02:48Z seb $
+ * $Id: yapi.c 56399 2023-09-05 15:11:32Z mvuilleu $
  *
  * Implementation of public entry points to the low-level API
  *
@@ -427,7 +427,12 @@ static int yParseHubURL(HubURLSt *hub, const char *url, char *errmsg)
         hub->portno = atoi(buffer);
         end = pos;
     } else {
-        hub->portno = YOCTO_DEFAULT_PORT;
+        if (hub->proto == PROTO_HTTP && hub->subdomain[0]) {
+            //http proto + subdomain + no port sepcified -> Vhub4Web -> Use port 80 instead of 4444
+            hub->portno = 80;
+        } else {
+            hub->portno = YOCTO_DEFAULT_PORT;
+        }
     }
     //dbglog("port=%d\n", hub->portno);
     domlen = (int)(end - url);
@@ -1269,7 +1274,7 @@ static void ypUpdateNet(ENU_CONTEXT *enus)
 static void disable_jzon(HubSt *hub)
 {
     if ((hub->flags & INCOMPATIBLE_JZON_ENCODING) == 0) {
-        dbglog("Disable JZON encoding for hub %\n", hub->url.host);
+        dbglog("Disable JZON encoding for hub %s\n", hub->url.host);
     }
     hub->flags |= INCOMPATIBLE_JZON_ENCODING;
 }
@@ -1610,7 +1615,7 @@ static int yEnuJson(ENU_CONTEXT *enus, yJsonStateMachine *j)
         break;
     case ENU_YP_ADVERTISEDVALUE:
         NETENUMLOG("set advertised value to %s\n", j->token);
-        YSTRNCPY(enus->advertisedValue, YOCTO_PUBVAL_LEN, j->token, YOCTO_PUBVAL_SIZE);
+        YSTRNCPY(enus->advertisedValue, YOCTO_PUBVAL_LEN, j->token, YOCTO_PUBVAL_LEN);
         enus->state = ENU_YP_ENTRY;
         break;
     case ENU_YP_INDEX:
@@ -1994,7 +1999,7 @@ static int yEnuJZon(ENU_CONTEXT *enus, yJsonStateMachine *j, yJsonStateMachine *
                 break;
             case YP_ADV_VAL:
                 NETENUMLOG("set advertised value to %s\n", z->token);
-                YSTRNCPY(enus->advertisedValue, YOCTO_PUBVAL_LEN, z->token, YOCTO_PUBVAL_SIZE);
+                YSTRNCPY(enus->advertisedValue, YOCTO_PUBVAL_LEN, z->token, YOCTO_PUBVAL_LEN);
                 enus->yp_state = YP_INDEX;
                 break;
             case YP_INDEX:
@@ -3358,7 +3363,7 @@ int handleNetNotification(HubSt *hub)
         testPing = ySeekFifo(&(hub->not_fifo), (u8*)&netstop, 1, 0, 1, 0);
         if (testPing == 0) {
 #ifdef DEBUG_NET_NOTIFICATION
-            YSPRINTF(Dbuffer,1024,"HUB: %s will send ping notification\n",hub->host);
+            YSPRINTF(Dbuffer,1024,"HUB: %s will send ping notification\n",hub->url.host);
             dumpNotif(Dbuffer);
 #endif
             hub->send_ping = 1;
@@ -3613,7 +3618,7 @@ static void* yhelper_thread(void *ctx)
                     dbglog("TRACE(%s): notification socket open\n",hub->host);
 #endif
 #ifdef DEBUG_NET_NOTIFICATION
-                    YSPRINTF(Dbuffer,1024,"HUB: %s started\n",hub->host);
+                    YSPRINTF(Dbuffer,1024,"HUB: %s started\n",hub->url.host);
                     dumpNotif(Dbuffer);
 #endif
                     hub->state = NET_HUB_TRYING;
@@ -3731,7 +3736,7 @@ static void* yhelper_thread(void *ctx)
                             yLeaveCriticalSection(&hub->access);
                         }
 #ifdef DEBUG_NET_NOTIFICATION
-                        YSPRINTF(Dbuffer, 1024, "Network hub %s has closed the connection for notification\n", hub->host);
+                        YSPRINTF(Dbuffer, 1024, "Network hub %s has closed the connection for notification\n", hub->url.host);
                         dumpNotif(Dbuffer);
 #endif
                     }
@@ -3856,7 +3861,7 @@ static YRETCODE yapiRegisterHubEx(const char *url, int checkacces, char *errmsg)
         hubst = yGetHubFromURL(url);
         if (hubst) {
             for (i = 0; i < MAX_KNOW_URLS_SIZE; i++) {
-                if (hubst->know_urls[i]==NULL || YSTRCMP(hubst->know_urls[i], url) == 0) {
+                if (hubst->know_urls[i] == NULL || YSTRCMP(hubst->know_urls[i], url) == 0) {
                     break;
                 }
             }

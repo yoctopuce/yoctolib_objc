@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_audioin.h 43580 2021-01-26 17:46:01Z mvuilleu $
+ *  $Id: yocto_audioin.h 56091 2023-08-16 06:32:54Z mvuilleu $
  *
  *  Declares yFindAudioIn(), the high-level API for AudioIn functions
  *
@@ -289,6 +289,7 @@ YAudioIn* yFindAudioIn(NSString* func);
 YAudioIn* yFirstAudioIn(void);
 
 //--- (end of YAudioIn functions declaration)
+
 NS_ASSUME_NONNULL_END
 CF_EXTERN_C_END
 

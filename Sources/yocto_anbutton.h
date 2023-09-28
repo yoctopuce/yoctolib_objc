@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_anbutton.h 43619 2021-01-29 09:14:45Z mvuilleu $
+ *  $Id: yocto_anbutton.h 56268 2023-08-25 17:43:56Z mvuilleu $
  *
  *  Declares yFindAnButton(), the high-level API for AnButton functions
  *
@@ -67,6 +67,7 @@ typedef enum {
     Y_INPUTTYPE_ANALOG_FAST = 0,
     Y_INPUTTYPE_DIGITAL4 = 1,
     Y_INPUTTYPE_ANALOG_SMOOTH = 2,
+    Y_INPUTTYPE_DIGITAL_FAST = 3,
     Y_INPUTTYPE_INVALID = -1,
 } Y_INPUTTYPE_enum;
 #endif
@@ -327,9 +328,9 @@ typedef enum {
 /**
  * Returns the decoding method applied to the input (analog or multiplexed binary switches).
  *
- * @return a value among YAnButton.INPUTTYPE_ANALOG_FAST, YAnButton.INPUTTYPE_DIGITAL4 and
- * YAnButton.INPUTTYPE_ANALOG_SMOOTH corresponding to the decoding method applied to the input (analog
- * or multiplexed binary switches)
+ * @return a value among YAnButton.INPUTTYPE_ANALOG_FAST, YAnButton.INPUTTYPE_DIGITAL4,
+ * YAnButton.INPUTTYPE_ANALOG_SMOOTH and YAnButton.INPUTTYPE_DIGITAL_FAST corresponding to the
+ * decoding method applied to the input (analog or multiplexed binary switches)
  *
  * On failure, throws an exception or returns YAnButton.INPUTTYPE_INVALID.
  */
@@ -341,9 +342,9 @@ typedef enum {
  * Changes the decoding method applied to the input (analog or multiplexed binary switches).
  * Remember to call the saveToFlash() method of the module if the modification must be kept.
  *
- * @param newval : a value among YAnButton.INPUTTYPE_ANALOG_FAST, YAnButton.INPUTTYPE_DIGITAL4 and
- * YAnButton.INPUTTYPE_ANALOG_SMOOTH corresponding to the decoding method applied to the input (analog
- * or multiplexed binary switches)
+ * @param newval : a value among YAnButton.INPUTTYPE_ANALOG_FAST, YAnButton.INPUTTYPE_DIGITAL4,
+ * YAnButton.INPUTTYPE_ANALOG_SMOOTH and YAnButton.INPUTTYPE_DIGITAL_FAST corresponding to the
+ * decoding method applied to the input (analog or multiplexed binary switches)
  *
  * @return YAPI.SUCCESS if the call succeeds.
  *
@@ -476,6 +477,7 @@ YAnButton* yFindAnButton(NSString* func);
 YAnButton* yFirstAnButton(void);
 
 //--- (end of YAnButton functions declaration)
+
 NS_ASSUME_NONNULL_END
 CF_EXTERN_C_END
 

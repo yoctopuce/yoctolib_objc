@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_current.m 43580 2021-01-26 17:46:01Z mvuilleu $
+ *  $Id: yocto_current.m 56091 2023-08-16 06:32:54Z mvuilleu $
  *
  *  Implements the high-level API for Current functions
  *
@@ -43,9 +43,7 @@
 #include "yapi/yapi.h"
 
 
-
 @implementation YCurrent
-
 // Constructor is protected, use yFindCurrent factory function to instantiate
 -(id)              initWith:(NSString*) func
 {
@@ -271,8 +269,8 @@
 }
 
 //--- (end of YCurrent public methods implementation)
-
 @end
+
 //--- (YCurrent functions)
 
 YCurrent *yFindCurrent(NSString* func)
@@ -286,3 +284,4 @@ YCurrent *yFirstCurrent(void)
 }
 
 //--- (end of YCurrent functions)
+

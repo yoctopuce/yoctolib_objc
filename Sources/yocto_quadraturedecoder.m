@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_quadraturedecoder.m 50689 2022-08-17 14:37:15Z mvuilleu $
+ *  $Id: yocto_quadraturedecoder.m 56091 2023-08-16 06:32:54Z mvuilleu $
  *
  *  Implements the high-level API for QuadratureDecoder functions
  *
@@ -43,9 +43,7 @@
 #include "yapi/yapi.h"
 
 
-
 @implementation YQuadratureDecoder
-
 // Constructor is protected, use yFindQuadratureDecoder factory function to instantiate
 -(id)              initWith:(NSString*) func
 {
@@ -372,8 +370,8 @@
 }
 
 //--- (end of YQuadratureDecoder public methods implementation)
-
 @end
+
 //--- (YQuadratureDecoder functions)
 
 YQuadratureDecoder *yFindQuadratureDecoder(NSString* func)
@@ -387,3 +385,4 @@ YQuadratureDecoder *yFirstQuadratureDecoder(void)
 }
 
 //--- (end of YQuadratureDecoder functions)
+

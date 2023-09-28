@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_quadraturedecoder.h 45843 2021-08-04 07:51:59Z mvuilleu $
+ *  $Id: yocto_quadraturedecoder.h 56091 2023-08-16 06:32:54Z mvuilleu $
  *
  *  Declares yFindQuadratureDecoder(), the high-level API for QuadratureDecoder functions
  *
@@ -296,6 +296,7 @@ YQuadratureDecoder* yFindQuadratureDecoder(NSString* func);
 YQuadratureDecoder* yFirstQuadratureDecoder(void);
 
 //--- (end of YQuadratureDecoder functions declaration)
+
 NS_ASSUME_NONNULL_END
 CF_EXTERN_C_END
 

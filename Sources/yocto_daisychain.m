@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_daisychain.m 43580 2021-01-26 17:46:01Z mvuilleu $
+ *  $Id: yocto_daisychain.m 56091 2023-08-16 06:32:54Z mvuilleu $
  *
  *  Implements the high-level API for DaisyChain functions
  *
@@ -43,9 +43,7 @@
 #include "yapi/yapi.h"
 
 
-
 @implementation YDaisyChain
-
 // Constructor is protected, use yFindDaisyChain factory function to instantiate
 -(id)              initWith:(NSString*) func
 {
@@ -296,8 +294,8 @@
 }
 
 //--- (end of YDaisyChain public methods implementation)
-
 @end
+
 //--- (YDaisyChain functions)
 
 YDaisyChain *yFindDaisyChain(NSString* func)
@@ -311,3 +309,4 @@ YDaisyChain *yFirstDaisyChain(void)
 }
 
 //--- (end of YDaisyChain functions)
+

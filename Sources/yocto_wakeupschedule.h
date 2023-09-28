@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_wakeupschedule.h 48183 2022-01-20 10:26:11Z mvuilleu $
+ *  $Id: yocto_wakeupschedule.h 56230 2023-08-21 15:20:59Z mvuilleu $
  *
  *  Declares yFindWakeUpSchedule(), the high-level API for WakeUpSchedule functions
  *
@@ -51,6 +51,7 @@ typedef void (*YWakeUpScheduleValueCallback)(YWakeUpSchedule *func, NSString *fu
 #define Y_WEEKDAYS_INVALID              YAPI_INVALID_UINT
 #define Y_MONTHDAYS_INVALID             YAPI_INVALID_UINT
 #define Y_MONTHS_INVALID                YAPI_INVALID_UINT
+#define Y_SECONDSBEFORE_INVALID         YAPI_INVALID_UINT
 #define Y_NEXTOCCURENCE_INVALID         YAPI_INVALID_LONG
 //--- (end of YWakeUpSchedule globals)
 
@@ -74,6 +75,7 @@ typedef void (*YWakeUpScheduleValueCallback)(YWakeUpSchedule *func, NSString *fu
     int             _weekDays;
     int             _monthDays;
     int             _months;
+    int             _secondsBefore;
     s64             _nextOccurence;
     YWakeUpScheduleValueCallback _valueCallbackWakeUpSchedule;
 //--- (end of YWakeUpSchedule attributes declaration)
@@ -240,6 +242,35 @@ typedef void (*YWakeUpScheduleValueCallback)(YWakeUpSchedule *func, NSString *fu
 -(int)     setMonths:(int) newval;
 
 /**
+ * Returns the number of seconds to anticipate wake-up time to allow
+ * the system to power-up.
+ *
+ * @return an integer corresponding to the number of seconds to anticipate wake-up time to allow
+ *         the system to power-up
+ *
+ * On failure, throws an exception or returns YWakeUpSchedule.SECONDSBEFORE_INVALID.
+ */
+-(int)     get_secondsBefore;
+
+
+-(int) secondsBefore;
+/**
+ * Changes the number of seconds to anticipate wake-up time to allow
+ * the system to power-up.
+ * Remember to call the saveToFlash() method of the module if the
+ * modification must be kept.
+ *
+ * @param newval : an integer corresponding to the number of seconds to anticipate wake-up time to allow
+ *         the system to power-up
+ *
+ * @return YAPI.SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     set_secondsBefore:(int) newval;
+-(int)     setSecondsBefore:(int) newval;
+
+/**
  * Returns the date/time (seconds) of the next wake up occurrence.
  *
  * @return an integer corresponding to the date/time (seconds) of the next wake up occurrence
@@ -381,6 +412,7 @@ YWakeUpSchedule* yFindWakeUpSchedule(NSString* func);
 YWakeUpSchedule* yFirstWakeUpSchedule(void);
 
 //--- (end of YWakeUpSchedule functions declaration)
+
 NS_ASSUME_NONNULL_END
 CF_EXTERN_C_END
 

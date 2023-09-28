@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_colorledcluster.h 50281 2022-06-30 07:21:14Z mvuilleu $
+ *  $Id: yocto_colorledcluster.h 56091 2023-08-16 06:32:54Z mvuilleu $
  *
  *  Declares yFindColorLedCluster(), the high-level API for ColorLedCluster functions
  *
@@ -865,6 +865,7 @@ YColorLedCluster* yFindColorLedCluster(NSString* func);
 YColorLedCluster* yFirstColorLedCluster(void);
 
 //--- (end of YColorLedCluster functions declaration)
+
 NS_ASSUME_NONNULL_END
 CF_EXTERN_C_END
 
