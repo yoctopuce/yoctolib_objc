@@ -466,9 +466,6 @@
         if (errCode == Y_UNKNOWN_DWARFxx_ERROR_CODE) {
             errMsg = @"Unknown DWARF15 error code";
         }
-        if (errCode == Y_RESPONSE_SHORT) {
-            errMsg = @"Response too short";
-        }
         if (errCode == Y_UNEXPECTED_TAG_ID_IN_RESPONSE) {
             errMsg = @"Unexpected Tag id in response";
         }
@@ -780,9 +777,9 @@ static void yInternalEventCallback(YRfidReader *obj, NSString *value)
     return [self get_nTags];
 }
 /**
- * Returns the desired refresh rate, measured in Hz.
+ * Returns the tag list refresh rate, measured in Hz.
  *
- * @return an integer corresponding to the desired refresh rate, measured in Hz
+ * @return an integer corresponding to the tag list refresh rate, measured in Hz
  *
  * On failure, throws an exception or returns YRfidReader.REFRESHRATE_INVALID.
  */
@@ -805,11 +802,14 @@ static void yInternalEventCallback(YRfidReader *obj, NSString *value)
 }
 
 /**
- * Changes the desired refresh rate, measured in Hz.
+ * Changes the present tag list refresh rate, measured in Hz. The reader will do
+ * its best to respect it. Note that the reader cannot detect tag arrival or removal
+ * while it is  communicating with a tag.  Maximum frequency is limited to 100Hz,
+ * but in real life it will be difficult to do better than 50Hz.
  * Remember to call the saveToFlash() method of the module if the
  * modification must be kept.
  *
- * @param newval : an integer corresponding to the desired refresh rate, measured in Hz
+ * @param newval : an integer corresponding to the present tag list refresh rate, measured in Hz
  *
  * @return YAPI.SUCCESS if the call succeeds.
  *
