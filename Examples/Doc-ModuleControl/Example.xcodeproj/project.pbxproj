@@ -87,6 +87,7 @@
 		B8A727A817E0CD3A005735afd4a7 /* yocto_spiport.m in Sources */ = {isa = PBXBuildFile; fileRef = B8A727A817E0CD3A00575f0c27a7 /* yocto_spiport.m */; };
 		B8A727A817E0CD3A0057f8935eb1 /* yocto_steppermotor.m in Sources */ = {isa = PBXBuildFile; fileRef = B8A727A817E0CD3A0057286c87ec /* yocto_steppermotor.m */; };
 		B8A727A817E0CD3A0057b726534f /* yocto_temperature.m in Sources */ = {isa = PBXBuildFile; fileRef = B8A727A817E0CD3A005728e9f9aa /* yocto_temperature.m */; };
+		B8A727A817E0CD3A00573566e2eb /* yocto_threshold.m in Sources */ = {isa = PBXBuildFile; fileRef = B8A727A817E0CD3A005711d22bee /* yocto_threshold.m */; };
 		B8A727A817E0CD3A00574df66abb /* yocto_tilt.m in Sources */ = {isa = PBXBuildFile; fileRef = B8A727A817E0CD3A0057f7d06488 /* yocto_tilt.m */; };
 		B8A727A817E0CD3A0057a49a70f3 /* yocto_tvoc.m in Sources */ = {isa = PBXBuildFile; fileRef = B8A727A817E0CD3A00571ebc7ec0 /* yocto_tvoc.m */; };
 		B8A727A817E0CD3A0057b0177d5e /* yocto_voc.m in Sources */ = {isa = PBXBuildFile; fileRef = B8A727A817E0CD3A0057462f4baa /* yocto_voc.m */; };
@@ -270,6 +271,8 @@
 		B8A727A817E0CD3A005758067363 /* yocto_steppermotor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yocto_steppermotor.h; path = ../../../Sources/yocto_steppermotor.h; sourceTree = "<group>"; };
 		B8A727A817E0CD3A005728e9f9aa /* yocto_temperature.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = yocto_temperature.m; path = ../../../Sources/yocto_temperature.m; sourceTree = "<group>"; };
 		B8A727A817E0CD3A005758830d25 /* yocto_temperature.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yocto_temperature.h; path = ../../../Sources/yocto_temperature.h; sourceTree = "<group>"; };
+		B8A727A817E0CD3A005711d22bee /* yocto_threshold.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = yocto_threshold.m; path = ../../../Sources/yocto_threshold.m; sourceTree = "<group>"; };
+		B8A727A817E0CD3A005761b8df61 /* yocto_threshold.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yocto_threshold.h; path = ../../../Sources/yocto_threshold.h; sourceTree = "<group>"; };
 		B8A727A817E0CD3A0057f7d06488 /* yocto_tilt.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = yocto_tilt.m; path = ../../../Sources/yocto_tilt.m; sourceTree = "<group>"; };
 		B8A727A817E0CD3A005787ba9007 /* yocto_tilt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yocto_tilt.h; path = ../../../Sources/yocto_tilt.h; sourceTree = "<group>"; };
 		B8A727A817E0CD3A00571ebc7ec0 /* yocto_tvoc.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = yocto_tvoc.m; path = ../../../Sources/yocto_tvoc.m; sourceTree = "<group>"; };
@@ -481,6 +484,8 @@
 				B8A727A817E0CD3A005758067363 /* yocto_steppermotor.h */,
 				B8A727A817E0CD3A005728e9f9aa /* yocto_temperature.m */,
 				B8A727A817E0CD3A005758830d25 /* yocto_temperature.h */,
+				B8A727A817E0CD3A005711d22bee /* yocto_threshold.m */,
+				B8A727A817E0CD3A005761b8df61 /* yocto_threshold.h */,
 				B8A727A817E0CD3A0057f7d06488 /* yocto_tilt.m */,
 				B8A727A817E0CD3A005787ba9007 /* yocto_tilt.h */,
 				B8A727A817E0CD3A00571ebc7ec0 /* yocto_tvoc.m */,
@@ -667,6 +672,7 @@
 				B8A727A817E0CD3A005735afd4a7 /* yocto_spiport.m in Sources */,
 				B8A727A817E0CD3A0057f8935eb1 /* yocto_steppermotor.m in Sources */,
 				B8A727A817E0CD3A0057b726534f /* yocto_temperature.m in Sources */,
+				B8A727A817E0CD3A00573566e2eb /* yocto_threshold.m in Sources */,
 				B8A727A817E0CD3A00574df66abb /* yocto_tilt.m in Sources */,
 				B8A727A817E0CD3A0057a49a70f3 /* yocto_tvoc.m in Sources */,
 				B8A727A817E0CD3A0057b0177d5e /* yocto_voc.m in Sources */,

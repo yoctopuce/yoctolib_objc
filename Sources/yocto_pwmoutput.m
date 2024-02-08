@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_pwmoutput.m 56091 2023-08-16 06:32:54Z mvuilleu $
+ *  $Id: yocto_pwmoutput.m 58892 2024-01-11 11:11:28Z mvuilleu $
  *
  *  Implements the high-level API for PwmOutput functions
  *
@@ -57,6 +57,7 @@
     _dutyCycle = Y_DUTYCYCLE_INVALID;
     _pulseDuration = Y_PULSEDURATION_INVALID;
     _pwmTransition = Y_PWMTRANSITION_INVALID;
+    _invertedOutput = Y_INVERTEDOUTPUT_INVALID;
     _enabledAtPowerOn = Y_ENABLEDATPOWERON_INVALID;
     _dutyCycleAtPowerOn = Y_DUTYCYCLEATPOWERON_INVALID;
     _valueCallbackPwmOutput = NULL;
@@ -108,6 +109,11 @@
        ARC_release(_pwmTransition);
         _pwmTransition =  [self _parseString:j];
         ARC_retain(_pwmTransition);
+        return 1;
+    }
+    if(!strcmp(j->token, "invertedOutput")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _invertedOutput =  (Y_INVERTEDOUTPUT_enum)atoi(j->token);
         return 1;
     }
     if(!strcmp(j->token, "enabledAtPowerOn")) {
@@ -383,6 +389,54 @@
     NSString* rest_val;
     rest_val = newval;
     return [self _setAttr:@"pwmTransition" :rest_val];
+}
+/**
+ * Returns true if the output signal is configured as inverted, and false otherwise.
+ *
+ * @return either YPwmOutput.INVERTEDOUTPUT_FALSE or YPwmOutput.INVERTEDOUTPUT_TRUE, according to true
+ * if the output signal is configured as inverted, and false otherwise
+ *
+ * On failure, throws an exception or returns YPwmOutput.INVERTEDOUTPUT_INVALID.
+ */
+-(Y_INVERTEDOUTPUT_enum) get_invertedOutput
+{
+    Y_INVERTEDOUTPUT_enum res;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
+            return Y_INVERTEDOUTPUT_INVALID;
+        }
+    }
+    res = _invertedOutput;
+    return res;
+}
+
+
+-(Y_INVERTEDOUTPUT_enum) invertedOutput
+{
+    return [self get_invertedOutput];
+}
+
+/**
+ * Changes the inversion mode of the output signal.
+ * Remember to call the matching module saveToFlash() method if you want
+ * the change to be kept after power cycle.
+ *
+ * @param newval : either YPwmOutput.INVERTEDOUTPUT_FALSE or YPwmOutput.INVERTEDOUTPUT_TRUE, according
+ * to the inversion mode of the output signal
+ *
+ * @return YAPI.SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) set_invertedOutput:(Y_INVERTEDOUTPUT_enum) newval
+{
+    return [self setInvertedOutput:newval];
+}
+-(int) setInvertedOutput:(Y_INVERTEDOUTPUT_enum) newval
+{
+    NSString* rest_val;
+    rest_val = (newval ? @"1" : @"0");
+    return [self _setAttr:@"invertedOutput" :rest_val];
 }
 /**
  * Returns the state of the PWM at device power on.

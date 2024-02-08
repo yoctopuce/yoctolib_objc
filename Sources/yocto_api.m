@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.m 55094 2023-06-15 07:35:09Z seb $
+ * $Id: yocto_api.m 59224 2024-02-05 16:02:45Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -4831,7 +4831,7 @@ static const char* hexArray = "0123456789ABCDEF";
     [rawValues removeAllObjects];
     [refValues removeAllObjects];
     // Load function parameters if not yet loaded
-    if (_scale == 0) {
+    if ((_scale == 0) || (_cacheExpiration <= [YAPI GetTickCount])) {
         if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
             return YAPI_DEVICE_NOT_FOUND;
         }
@@ -7186,7 +7186,7 @@ static const char* hexArray = "0123456789ABCDEF";
         _progress = ((_progress_c * 9) / (10));
         _progress_msg = STR_y2oc(errmsg);
     } else {
-        if (((int)[_settings length] != 0)) {
+        if (((int)[_settings length] != 0) && ( _progress_c != 101)) {
             _progress_msg = @"restoring settings";
             m = [YModule FindModule:[NSString stringWithFormat:@"%@%@", _serial, @".module"]];
             if (!([m isOnline])) {

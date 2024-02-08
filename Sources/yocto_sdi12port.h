@@ -93,6 +93,7 @@ typedef enum {
 @protected
 //--- (generated code: YSdi12SnoopingRecord attributes declaration)
     int             _tim;
+    int             _pos;
     int             _dir;
     NSString*       _msg;
 //--- (end of generated code: YSdi12SnoopingRecord attributes declaration)
@@ -109,6 +110,13 @@ typedef enum {
  * @return the elapsed time, in ms, since the beginning of the preceding message.
  */
 -(int)     get_time;
+
+/**
+ * Returns the absolute position of the message end.
+ *
+ * @return the absolute position of the message end.
+ */
+-(int)     get_pos;
 
 /**
  * Returns the message direction (RX=0, TX=1).
@@ -160,28 +168,98 @@ typedef enum {
 //--- (generated code: YSdi12Sensor private methods declaration)
 //--- (end of generated code: YSdi12Sensor private methods declaration)
 //--- (generated code: YSdi12Sensor public methods declaration)
+/**
+ * Returns the sensor address.
+ *
+ * @return the sensor address.
+ */
 -(NSString*)     get_sensorAddress;
 
+/**
+ * Returns the compatible SDI-12 version of the sensor.
+ *
+ * @return the compatible SDI-12 version of the sensor.
+ */
 -(NSString*)     get_sensorProtocol;
 
+/**
+ * Returns the sensor vendor identification.
+ *
+ * @return the sensor vendor identification.
+ */
 -(NSString*)     get_sensorVendor;
 
+/**
+ * Returns the sensor model number.
+ *
+ * @return the sensor model number.
+ */
 -(NSString*)     get_sensorModel;
 
+/**
+ * Returns the sensor version.
+ *
+ * @return the sensor version.
+ */
 -(NSString*)     get_sensorVersion;
 
+/**
+ * Returns the sensor serial number.
+ *
+ * @return the sensor serial number.
+ */
 -(NSString*)     get_sensorSerial;
 
+/**
+ * Returns the number of sensor measurements.
+ *
+ * @return the number of sensor measurements.
+ */
 -(int)     get_measureCount;
 
+/**
+ * Returns the sensor measurement command.
+ *
+ * @param measureIndex : measurement index
+ *
+ * @return the sensor measurement command.
+ */
 -(NSString*)     get_measureCommand:(int)measureIndex;
 
+/**
+ * Returns sensor measurement position.
+ *
+ * @param measureIndex : measurement index
+ *
+ * @return the sensor measurement command.
+ */
 -(int)     get_measurePosition:(int)measureIndex;
 
+/**
+ * Returns the measured value symbol.
+ *
+ * @param measureIndex : measurement index
+ *
+ * @return the sensor measurement command.
+ */
 -(NSString*)     get_measureSymbol:(int)measureIndex;
 
+/**
+ * Returns the unit of the measured value.
+ *
+ * @param measureIndex : measurement index
+ *
+ * @return the sensor measurement command.
+ */
 -(NSString*)     get_measureUnit:(int)measureIndex;
 
+/**
+ * Returns the description of the measured value.
+ *
+ * @param measureIndex : measurement index
+ *
+ * @return the sensor measurement command.
+ */
 -(NSString*)     get_measureDescription:(int)measureIndex;
 
 -(NSMutableArray*)     get_typeMeasure;

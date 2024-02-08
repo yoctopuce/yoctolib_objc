@@ -54,6 +54,7 @@
         return nil;
 //--- (generated code: YSdi12SnoopingRecord attributes initialization)
     _tim = 0;
+    _pos = 0;
     _dir = 0;
 //--- (end of generated code: YSdi12SnoopingRecord attributes initialization)
     // Parse JSON data
@@ -83,6 +84,11 @@
                 return self;
             }
             _tim = atoi(j.token);;
+        } else if(!strcmp(j.token, "p")) {
+            if (yJsonParse(&j) != YJSON_PARSE_AVAIL) {
+                return self;
+            }
+            _pos = atoi(j.token);;
         } else {
             yJsonSkip(&j, 1);
         }
@@ -110,6 +116,16 @@
 -(int) get_time
 {
     return _tim;
+}
+
+/**
+ * Returns the absolute position of the message end.
+ *
+ * @return the absolute position of the message end.
+ */
+-(int) get_pos
+{
+    return _pos;
 }
 
 /**
@@ -166,61 +182,131 @@
 
 //--- (end of generated code: YSdi12Sensor private methods implementation)
 //--- (generated code: YSdi12Sensor public methods implementation)
+/**
+ * Returns the sensor address.
+ *
+ * @return the sensor address.
+ */
 -(NSString*) get_sensorAddress
 {
     return _addr;
 }
 
+/**
+ * Returns the compatible SDI-12 version of the sensor.
+ *
+ * @return the compatible SDI-12 version of the sensor.
+ */
 -(NSString*) get_sensorProtocol
 {
     return _proto;
 }
 
+/**
+ * Returns the sensor vendor identification.
+ *
+ * @return the sensor vendor identification.
+ */
 -(NSString*) get_sensorVendor
 {
     return _mfg;
 }
 
+/**
+ * Returns the sensor model number.
+ *
+ * @return the sensor model number.
+ */
 -(NSString*) get_sensorModel
 {
     return _model;
 }
 
+/**
+ * Returns the sensor version.
+ *
+ * @return the sensor version.
+ */
 -(NSString*) get_sensorVersion
 {
     return _ver;
 }
 
+/**
+ * Returns the sensor serial number.
+ *
+ * @return the sensor serial number.
+ */
 -(NSString*) get_sensorSerial
 {
     return _sn;
 }
 
+/**
+ * Returns the number of sensor measurements.
+ *
+ * @return the number of sensor measurements.
+ */
 -(int) get_measureCount
 {
     return (int)[_valuesDesc count];
 }
 
+/**
+ * Returns the sensor measurement command.
+ *
+ * @param measureIndex : measurement index
+ *
+ * @return the sensor measurement command.
+ */
 -(NSString*) get_measureCommand:(int)measureIndex
 {
     return [[_valuesDesc objectAtIndex:measureIndex] objectAtIndex:0];
 }
 
+/**
+ * Returns sensor measurement position.
+ *
+ * @param measureIndex : measurement index
+ *
+ * @return the sensor measurement command.
+ */
 -(int) get_measurePosition:(int)measureIndex
 {
     return [[[_valuesDesc objectAtIndex:measureIndex] objectAtIndex:2] intValue];
 }
 
+/**
+ * Returns the measured value symbol.
+ *
+ * @param measureIndex : measurement index
+ *
+ * @return the sensor measurement command.
+ */
 -(NSString*) get_measureSymbol:(int)measureIndex
 {
     return [[_valuesDesc objectAtIndex:measureIndex] objectAtIndex:3];
 }
 
+/**
+ * Returns the unit of the measured value.
+ *
+ * @param measureIndex : measurement index
+ *
+ * @return the sensor measurement command.
+ */
 -(NSString*) get_measureUnit:(int)measureIndex
 {
     return [[_valuesDesc objectAtIndex:measureIndex] objectAtIndex:4];
 }
 
+/**
+ * Returns the description of the measured value.
+ *
+ * @param measureIndex : measurement index
+ *
+ * @return the sensor measurement command.
+ */
 -(NSString*) get_measureDescription:(int)measureIndex
 {
     return [[_valuesDesc objectAtIndex:measureIndex] objectAtIndex:5];
@@ -268,8 +354,10 @@
     int i;
     int j;
     NSMutableArray* listVal = [NSMutableArray array];
+    int size;
 
     k = 0;
+    size = 4;
     while (k < 10) {
         infoNbVal = [_sdi12Port querySdi12:_addr : [NSString stringWithFormat:@"IM%d",k] :5000];
         if ((int)[(infoNbVal) length] > 1) {
@@ -287,6 +375,9 @@
                     [listVal addObject:[NSString stringWithFormat:@"M%d",k]];
                     [listVal addObject:[NSString stringWithFormat:@"%d",i+1]];
                     j = 0;
+                    while ((int)[data count] < size) {
+                        [data addObject:@""];
+                    }
                     while (j < (int)[data count]) {
                         [listVal addObject:[data objectAtIndex:j]];
                         j = j + 1;

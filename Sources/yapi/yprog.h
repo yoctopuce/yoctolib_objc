@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yprog.h 49256 2022-04-01 08:09:27Z seb $
+ * $Id: yprog.h 58576 2023-12-18 11:02:20Z seb $
  *
  * Declaration of firmware upgrade functions
  *
@@ -221,7 +221,7 @@ typedef enum {
 } YPROG_RESULT;
 
 
-#define MAX_FIRMWARE_LEN  0x100000ul
+#define MAX_FIRMWARE_LEN  0x200000ul
 #define INVALID_FIRMWARE  0xfffffffful
 #define FLASH_NB_REBOOT_RETRY  1
 

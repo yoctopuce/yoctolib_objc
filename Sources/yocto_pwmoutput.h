@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_pwmoutput.h 56091 2023-08-16 06:32:54Z mvuilleu $
+ *  $Id: yocto_pwmoutput.h 58892 2024-01-11 11:11:28Z mvuilleu $
  *
  *  Declares yFindPwmOutput(), the high-level API for PwmOutput functions
  *
@@ -53,6 +53,14 @@ typedef enum {
     Y_ENABLED_INVALID = -1,
 } Y_ENABLED_enum;
 #endif
+#ifndef _Y_INVERTEDOUTPUT_ENUM
+#define _Y_INVERTEDOUTPUT_ENUM
+typedef enum {
+    Y_INVERTEDOUTPUT_FALSE = 0,
+    Y_INVERTEDOUTPUT_TRUE = 1,
+    Y_INVERTEDOUTPUT_INVALID = -1,
+} Y_INVERTEDOUTPUT_enum;
+#endif
 #ifndef _Y_ENABLEDATPOWERON_ENUM
 #define _Y_ENABLEDATPOWERON_ENUM
 typedef enum {
@@ -88,6 +96,7 @@ typedef enum {
     double          _dutyCycle;
     double          _pulseDuration;
     NSString*       _pwmTransition;
+    Y_INVERTEDOUTPUT_enum _invertedOutput;
     Y_ENABLEDATPOWERON_enum _enabledAtPowerOn;
     double          _dutyCycleAtPowerOn;
     YPwmOutputValueCallback _valueCallbackPwmOutput;
@@ -237,6 +246,33 @@ typedef enum {
 -(NSString*) pwmTransition;
 -(int)     set_pwmTransition:(NSString*) newval;
 -(int)     setPwmTransition:(NSString*) newval;
+
+/**
+ * Returns true if the output signal is configured as inverted, and false otherwise.
+ *
+ * @return either YPwmOutput.INVERTEDOUTPUT_FALSE or YPwmOutput.INVERTEDOUTPUT_TRUE, according to true
+ * if the output signal is configured as inverted, and false otherwise
+ *
+ * On failure, throws an exception or returns YPwmOutput.INVERTEDOUTPUT_INVALID.
+ */
+-(Y_INVERTEDOUTPUT_enum)     get_invertedOutput;
+
+
+-(Y_INVERTEDOUTPUT_enum) invertedOutput;
+/**
+ * Changes the inversion mode of the output signal.
+ * Remember to call the matching module saveToFlash() method if you want
+ * the change to be kept after power cycle.
+ *
+ * @param newval : either YPwmOutput.INVERTEDOUTPUT_FALSE or YPwmOutput.INVERTEDOUTPUT_TRUE, according
+ * to the inversion mode of the output signal
+ *
+ * @return YAPI.SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     set_invertedOutput:(Y_INVERTEDOUTPUT_enum) newval;
+-(int)     setInvertedOutput:(Y_INVERTEDOUTPUT_enum) newval;
 
 /**
  * Returns the state of the PWM at device power on.

@@ -465,7 +465,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 //--- (generated code: YRfidReader globals)
 typedef void (*YRfidReaderValueCallback)(YRfidReader *func, NSString *functionValue);
-typedef void (*YEventCallback)(YRfidReader *obj, int timestamp, NSString *eventType, NSString *eventData);
+typedef void (*YEventCallback)(YRfidReader *obj, double timestamp, NSString *eventType, NSString *eventData);
 #define Y_NTAGS_INVALID                 YAPI_INVALID_UINT
 #define Y_REFRESHRATE_INVALID           YAPI_INVALID_UINT
 //--- (end of generated code: YRfidReader globals)
@@ -608,7 +608,7 @@ typedef void (*YEventCallback)(YRfidReader *obj, int timestamp, NSString *eventT
  * @param status : an RfidStatus object that will contain
  *         the detailled status of the operation
  *
- * @return YAPI.SUCCESS if the call succeeds.
+ * @return a YRfidTagInfo object.
  *
  * On failure, throws an exception or returns an empty YRfidTagInfo objact.
  * When it happens, you can get more information from the status object.

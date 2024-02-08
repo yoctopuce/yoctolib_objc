@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_i2cport.m 52943 2023-01-26 15:46:47Z mvuilleu $
+ *  $Id: yocto_i2cport.m 58903 2024-01-11 16:44:48Z mvuilleu $
  *
  *  Implements the high-level API for I2cPort functions
  *
@@ -52,6 +52,7 @@
         return nil;
 //--- (generated code: YI2cSnoopingRecord attributes initialization)
     _tim = 0;
+    _pos = 0;
     _dir = 0;
 //--- (end of generated code: YI2cSnoopingRecord attributes initialization)
 
@@ -78,6 +79,11 @@
                 return self;
             }
             _tim = atoi(j.token);;
+        } else if(!strcmp(j.token, "p")) {
+            if (yJsonParse(&j) != YJSON_PARSE_AVAIL) {
+                return self;
+            }
+            _pos = atoi(j.token);;
         } else {
             yJsonSkip(&j, 1);
         }
@@ -107,6 +113,16 @@
 -(int) get_time
 {
     return _tim;
+}
+
+/**
+ * Returns the absolute position of the message end.
+ *
+ * @return the absolute position of the message end.
+ */
+-(int) get_pos
+{
+    return _pos;
 }
 
 /**

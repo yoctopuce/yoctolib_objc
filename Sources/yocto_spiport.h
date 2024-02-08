@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_spiport.h 52848 2023-01-20 15:49:48Z mvuilleu $
+ *  $Id: yocto_spiport.h 58892 2024-01-11 11:11:28Z mvuilleu $
  *
  *  Declares yFindSpiPort(), the high-level API for SpiPort functions
  *
@@ -109,6 +109,7 @@ typedef enum {
 @protected
 //--- (generated code: YSpiSnoopingRecord attributes declaration)
     int             _tim;
+    int             _pos;
     int             _dir;
     NSString*       _msg;
 //--- (end of generated code: YSpiSnoopingRecord attributes declaration)
@@ -125,6 +126,13 @@ typedef enum {
  * @return the elapsed time, in ms, since the beginning of the preceding message.
  */
 -(int)     get_time;
+
+/**
+ * Returns the absolute position of the message end.
+ *
+ * @return the absolute position of the message end.
+ */
+-(int)     get_pos;
 
 /**
  * Returns the message direction (RX=0, TX=1).

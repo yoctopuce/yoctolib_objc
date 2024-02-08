@@ -978,7 +978,7 @@ static void yInternalEventCallback(YRfidReader *obj, NSString *value)
  * @param status : an RfidStatus object that will contain
  *         the detailled status of the operation
  *
- * @return YAPI.SUCCESS if the call succeeds.
+ * @return a YRfidTagInfo object.
  *
  * On failure, throws an exception or returns an empty YRfidTagInfo objact.
  * When it happens, you can get more information from the status object.
@@ -1452,7 +1452,7 @@ static void yInternalEventCallback(YRfidReader *obj, NSString *value)
 {
     NSMutableData* content;
 
-    content = [self _download:@"events.txt"];
+    content = [self _download:@"events.txt?pos=0"];
     return ARC_sendAutorelease([[NSString alloc] initWithData:content encoding:NSISOLatin1StringEncoding]);
 }
 
@@ -1487,15 +1487,11 @@ static void yInternalEventCallback(YRfidReader *obj, NSString *value)
 {
     int cbPos;
     int cbDPos;
-    int cbNtags;
-    int searchTags;
     NSString* url;
     NSMutableData* content;
     NSString* contentStr;
-    NSMutableArray* currentTags = [NSMutableArray array];
     NSMutableArray* eventArr = [NSMutableArray array];
     int arrLen;
-    NSMutableArray* lastEvents = [NSMutableArray array];
     NSString* lenStr;
     int arrPos;
     NSString* eventStr;
@@ -1503,13 +1499,14 @@ static void yInternalEventCallback(YRfidReader *obj, NSString *value)
     NSString* hexStamp;
     int typePos;
     int dataPos;
-    int evtStamp;
+    int intStamp;
+    NSMutableData* binMStamp;
+    int msStamp;
+    double evtStamp;
     NSString* evtType;
     NSString* evtData;
-    int tagIdx;
     // detect possible power cycle of the reader to clear event pointer
     cbPos = [cbVal intValue];
-    cbNtags = ((cbPos) % (1000));
     cbPos = ((cbPos) / (1000));
     cbDPos = ((cbPos - _prevCbPos) & (0x7ffff));
     _prevCbPos = cbPos;
@@ -1519,99 +1516,63 @@ static void yInternalEventCallback(YRfidReader *obj, NSString *value)
     if (!(_eventCallback != NULL)) {
         return YAPI_SUCCESS;
     }
-    // load all events since previous call
-    url = [NSString stringWithFormat:@"events.txt?pos=%d",_eventPos];
-
-    content = [self _download:url];
-    contentStr = ARC_sendAutorelease([[NSString alloc] initWithData:content encoding:NSISOLatin1StringEncoding]);
-    eventArr = [NSMutableArray arrayWithArray:[contentStr componentsSeparatedByString:@"\n"]];
-    arrLen = (int)[eventArr count];
-    if (!(arrLen > 0)) {[self _throw: YAPI_IO_ERROR: @"fail to download events"]; return YAPI_IO_ERROR;}
-    // last element of array is the new position preceeded by '@'
-    arrLen = arrLen - 1;
-    lenStr = [eventArr objectAtIndex:arrLen];
-    lenStr = [lenStr substringWithRange:NSMakeRange( 1, (int)[(lenStr) length]-1)];
-    // update processed event position pointer
-    _eventPos = [lenStr intValue];
     if (_isFirstCb) {
         // first emulated value callback caused by registerValueCallback:
-        // attempt to retrieve arrivals of all tags present to emulate arrival
+        // retrieve arrivals of all tags currently present to emulate arrival
         _isFirstCb = NO;
         _eventStamp = 0;
-        if (cbNtags == 0) {
-            return YAPI_SUCCESS;
-        }
-        currentTags = [self get_tagIdList];
-        cbNtags = (int)[currentTags count];
-        searchTags = cbNtags;
-        [lastEvents removeAllObjects];
-        arrPos = arrLen - 1;
-        while ((arrPos >= 0) && (searchTags > 0)) {
-            eventStr = [eventArr objectAtIndex:arrPos];
-            typePos = _ystrpos(eventStr, @":")+1;
-            if (typePos > 8) {
-                dataPos = _ystrpos(eventStr, @"=")+1;
-                evtType = [eventStr substringWithRange:NSMakeRange( typePos, 1)];
-                if ((dataPos > 10) && [evtType isEqualToString:@"+"]) {
-                    evtData = [eventStr substringWithRange:NSMakeRange( dataPos, (int)[(eventStr) length]-dataPos)];
-                    tagIdx = searchTags - 1;
-                    while (tagIdx >= 0) {
-                        if ([evtData isEqualToString:[currentTags objectAtIndex:tagIdx]]) {
-                            [lastEvents addObject:[NSNumber numberWithLong:0+arrPos]];
-                            [currentTags replaceObjectAtIndex:tagIdx withObject:@""];
-                            while ((searchTags > 0) && [[currentTags objectAtIndex:searchTags-1] isEqualToString:@""]) {
-                                searchTags = searchTags - 1;
-                            }
-                            tagIdx = -1;
-                        }
-                        tagIdx = tagIdx - 1;
-                    }
-                }
-            }
-            arrPos = arrPos - 1;
-        }
-        // If we have any remaining tags without a known arrival event,
-        // create a pseudo callback with timestamp zero
-        tagIdx = 0;
-        while (tagIdx < searchTags) {
-            evtData = [currentTags objectAtIndex:tagIdx];
-            if (!([evtData isEqualToString:@""])) {
-                _eventCallback(self, 0, @"+", evtData);
-            }
-            tagIdx = tagIdx + 1;
-        }
+        content = [self _download:@"events.txt"];
+        contentStr = ARC_sendAutorelease([[NSString alloc] initWithData:content encoding:NSISOLatin1StringEncoding]);
+        eventArr = [NSMutableArray arrayWithArray:[contentStr componentsSeparatedByString:@"\n"]];
+        arrLen = (int)[eventArr count];
+        if (!(arrLen > 0)) {[self _throw: YAPI_IO_ERROR: @"fail to download events"]; return YAPI_IO_ERROR;}
+        // first element of array is the new position preceeded by '@'
+        arrPos = 1;
+        lenStr = [eventArr objectAtIndex:0];
+        lenStr = [lenStr substringWithRange:NSMakeRange( 1, (int)[(lenStr) length]-1)];
+        // update processed event position pointer
+        _eventPos = [lenStr intValue];
     } else {
-        // regular callback
-        [lastEvents removeAllObjects];
-        arrPos = arrLen - 1;
-        while (arrPos >= 0) {
-            [lastEvents addObject:[NSNumber numberWithLong:0+arrPos]];
-            arrPos = arrPos - 1;
-        }
+        // load all events since previous call
+        url = [NSString stringWithFormat:@"events.txt?pos=%d",_eventPos];
+        content = [self _download:url];
+        contentStr = ARC_sendAutorelease([[NSString alloc] initWithData:content encoding:NSISOLatin1StringEncoding]);
+        eventArr = [NSMutableArray arrayWithArray:[contentStr componentsSeparatedByString:@"\n"]];
+        arrLen = (int)[eventArr count];
+        if (!(arrLen > 0)) {[self _throw: YAPI_IO_ERROR: @"fail to download events"]; return YAPI_IO_ERROR;}
+        // last element of array is the new position preceeded by '@'
+        arrPos = 0;
+        arrLen = arrLen - 1;
+        lenStr = [eventArr objectAtIndex:arrLen];
+        lenStr = [lenStr substringWithRange:NSMakeRange( 1, (int)[(lenStr) length]-1)];
+        // update processed event position pointer
+        _eventPos = [lenStr intValue];
     }
-    // now generate callbacks for each selected event
-    arrLen = (int)[lastEvents count];
-    arrPos = arrLen - 1;
-    while (arrPos >= 0) {
-        tagIdx = [[lastEvents objectAtIndex:arrPos] intValue];
-        eventStr = [eventArr objectAtIndex:tagIdx];
+    // now generate callbacks for each real event
+    while (arrPos < arrLen) {
+        eventStr = [eventArr objectAtIndex:arrPos];
         eventLen = (int)[(eventStr) length];
-        if (eventLen >= 1) {
+        typePos = _ystrpos(eventStr, @":")+1;
+        if ((eventLen >= 14) && (typePos > 10)) {
             hexStamp = [eventStr substringWithRange:NSMakeRange( 0, 8)];
-            evtStamp = (int)strtoul(STR_oc2y(hexStamp), NULL, 16);
-            typePos = _ystrpos(eventStr, @":")+1;
-            if ((evtStamp >= _eventStamp) && (typePos > 8)) {
-                _eventStamp = evtStamp;
+            intStamp = (int)strtoul(STR_oc2y(hexStamp), NULL, 16);
+            if (intStamp >= _eventStamp) {
+                _eventStamp = intStamp;
+                binMStamp = [NSMutableData dataWithData:[[eventStr substringWithRange:NSMakeRange( 8, 2)] dataUsingEncoding:NSISOLatin1StringEncoding]];
+                msStamp = ((((u8*)([binMStamp bytes]))[0])-64) * 32 + (((u8*)([binMStamp bytes]))[1]);
+                evtStamp = intStamp + (0.001 * msStamp);
                 dataPos = _ystrpos(eventStr, @"=")+1;
                 evtType = [eventStr substringWithRange:NSMakeRange( typePos, 1)];
                 evtData = @"";
                 if (dataPos > 10) {
                     evtData = [eventStr substringWithRange:NSMakeRange( dataPos, eventLen-dataPos)];
                 }
-                _eventCallback(self, evtStamp, evtType, evtData);
+                if (_eventCallback != NULL) {
+                    _eventCallback(self, evtStamp, evtType, evtData);
+                }
             }
         }
-        arrPos = arrPos - 1;
+        arrPos = arrPos + 1;
     }
     return YAPI_SUCCESS;
 }
