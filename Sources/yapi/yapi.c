@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yapi.c 57649 2023-11-06 07:29:15Z seb $
+ * $Id: yapi.c 60391 2024-04-05 08:16:40Z seb $
  *
  * Implementation of public entry points to the low-level API
  *
@@ -407,6 +407,9 @@ static int yParseHubURL(HubURLSt *hub, const char *url, char *errmsg)
     if (p) {
         len = (int)(end - p);
         if (len > 1) {
+            if (*(end - 1) == '/') {
+                len--;
+            }
             hub->subdomain = ystrndup_s(p, len);
             //dbglog("subdomain=%s\n", hub->subdomain);
         }
@@ -4787,12 +4790,10 @@ static int yapiRequestOpenUSB(YIOHDL_internal *iohdl, HubSt *hub, YAPI_DEVICE de
     YRETCODE res;
     int firsttime = 1;
     u64 timeout;
-    int count = 0;
 
     yHashGetStr(dev & 0xffff, buffer, YOCTO_SERIAL_LEN);
     timeout = yapiGetTickCount() + YAPI_BLOCKING_USBOPEN_REQUEST_TIMEOUT;
     do {
-        count++;
         res = (YRETCODE)yUsbOpen(iohdl, buffer, errmsg);
         if (res != YAPI_DEVICE_BUSY) break;
         yapiHandleEvents_internal(errmsg);

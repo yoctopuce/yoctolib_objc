@@ -155,33 +155,49 @@
 //--- (end of generated code: YSdi12SnoopingRecord functions)
 
 
-@implementation YSdi12Sensor
+@implementation YSdi12SensorInfo
 
 
 -(id)    initWith:(YSdi12Port*)sdi12Port :(NSString*) json_str
 {
     if(!(self = [super init]))
         return nil;
-//--- (generated code: YSdi12Sensor attributes initialization)
+//--- (generated code: YSdi12SensorInfo attributes initialization)
     _valuesDesc = [NSMutableArray array];
-//--- (end of generated code: YSdi12Sensor attributes initialization)
+//--- (end of generated code: YSdi12SensorInfo attributes initialization)
     _sdi12Port = sdi12Port;
     [self _parseInfoStr:json_str];
     return self;
 }
-//--- (generated code: YSdi12Sensor yapiwrapper)
-//--- (end of generated code: YSdi12Sensor yapiwrapper)
+//--- (generated code: YSdi12SensorInfo yapiwrapper)
+//--- (end of generated code: YSdi12SensorInfo yapiwrapper)
 // destructor
 -(void)  dealloc
 {
-//--- (generated code: YSdi12Sensor cleanup)
+//--- (generated code: YSdi12SensorInfo cleanup)
     ARC_dealloc(super);
-//--- (end of generated code: YSdi12Sensor cleanup)
+//--- (end of generated code: YSdi12SensorInfo cleanup)
 }
-//--- (generated code: YSdi12Sensor private methods implementation)
 
-//--- (end of generated code: YSdi12Sensor private methods implementation)
-//--- (generated code: YSdi12Sensor public methods implementation)
+-(void) _throw:(YRETCODE)errcode :(NSString*)msg
+{
+    [_sdi12Port _throw:errcode :msg];
+}
+
+//--- (generated code: YSdi12SensorInfo private methods implementation)
+
+//--- (end of generated code: YSdi12SensorInfo private methods implementation)
+//--- (generated code: YSdi12SensorInfo public methods implementation)
+/**
+ * Returns the sensor state.
+ *
+ * @return the sensor state.
+ */
+-(bool) isValid
+{
+    return _isValid;
+}
+
 /**
  * Returns the sensor address.
  *
@@ -244,6 +260,8 @@
 
 /**
  * Returns the number of sensor measurements.
+ * This function only works if the sensor is in version 1.4 SDI-12
+ * and supports metadata commands.
  *
  * @return the number of sensor measurements.
  */
@@ -254,61 +272,81 @@
 
 /**
  * Returns the sensor measurement command.
+ * This function only works if the sensor is in version 1.4 SDI-12
+ * and supports metadata commands.
  *
  * @param measureIndex : measurement index
  *
  * @return the sensor measurement command.
+ *         On failure, throws an exception or returns an empty string.
  */
 -(NSString*) get_measureCommand:(int)measureIndex
 {
+    if (!(measureIndex < (int)[_valuesDesc count])) {[self _throw: YAPI_INVALID_ARGUMENT: @"Invalid measure index"]; return @"";}
     return [[_valuesDesc objectAtIndex:measureIndex] objectAtIndex:0];
 }
 
 /**
  * Returns sensor measurement position.
+ * This function only works if the sensor is in version 1.4 SDI-12
+ * and supports metadata commands.
  *
  * @param measureIndex : measurement index
  *
  * @return the sensor measurement command.
+ *         On failure, throws an exception or returns 0.
  */
 -(int) get_measurePosition:(int)measureIndex
 {
+    if (!(measureIndex < (int)[_valuesDesc count])) {[self _throw: YAPI_INVALID_ARGUMENT: @"Invalid measure index"]; return 0;}
     return [[[_valuesDesc objectAtIndex:measureIndex] objectAtIndex:2] intValue];
 }
 
 /**
  * Returns the measured value symbol.
+ * This function only works if the sensor is in version 1.4 SDI-12
+ * and supports metadata commands.
  *
  * @param measureIndex : measurement index
  *
  * @return the sensor measurement command.
+ *         On failure, throws an exception or returns an empty string.
  */
 -(NSString*) get_measureSymbol:(int)measureIndex
 {
+    if (!(measureIndex < (int)[_valuesDesc count])) {[self _throw: YAPI_INVALID_ARGUMENT: @"Invalid measure index"]; return @"";}
     return [[_valuesDesc objectAtIndex:measureIndex] objectAtIndex:3];
 }
 
 /**
  * Returns the unit of the measured value.
+ * This function only works if the sensor is in version 1.4 SDI-12
+ * and supports metadata commands.
  *
  * @param measureIndex : measurement index
  *
  * @return the sensor measurement command.
+ *         On failure, throws an exception or returns an empty string.
  */
 -(NSString*) get_measureUnit:(int)measureIndex
 {
+    if (!(measureIndex < (int)[_valuesDesc count])) {[self _throw: YAPI_INVALID_ARGUMENT: @"Invalid measure index"]; return @"";}
     return [[_valuesDesc objectAtIndex:measureIndex] objectAtIndex:4];
 }
 
 /**
  * Returns the description of the measured value.
+ * This function only works if the sensor is in version 1.4 SDI-12
+ * and supports metadata commands.
  *
  * @param measureIndex : measurement index
  *
  * @return the sensor measurement command.
+ *         On failure, throws an exception or returns an empty string.
  */
 -(NSString*) get_measureDescription:(int)measureIndex
 {
+    if (!(measureIndex < (int)[_valuesDesc count])) {[self _throw: YAPI_INVALID_ARGUMENT: @"Invalid measure index"]; return @"";}
     return [[_valuesDesc objectAtIndex:measureIndex] objectAtIndex:5];
 }
 
@@ -330,6 +368,7 @@
             _model = errmsg;
             _ver = errmsg;
             _sn = errmsg;
+            _isValid = NO;
         } else {
             _addr = [infoStr substringWithRange:NSMakeRange( 0, 1)];
             _proto = [infoStr substringWithRange:NSMakeRange( 1, 2)];
@@ -337,6 +376,7 @@
             _model = [infoStr substringWithRange:NSMakeRange( 11, 6)];
             _ver = [infoStr substringWithRange:NSMakeRange( 17, 3)];
             _sn = [infoStr substringWithRange:NSMakeRange( 20, (int)[(infoStr) length]-20)];
+            _isValid = YES;
         }
     }
 }
@@ -392,11 +432,11 @@
     _valuesDesc = val;
 }
 
-//--- (end of generated code: YSdi12Sensor public methods implementation)
+//--- (end of generated code: YSdi12SensorInfo public methods implementation)
 
 @end
-//--- (generated code: YSdi12Sensor functions)
-//--- (end of generated code: YSdi12Sensor functions)
+//--- (generated code: YSdi12SensorInfo functions)
+//--- (end of generated code: YSdi12SensorInfo functions)
 
 
 
@@ -1021,21 +1061,21 @@
     return [self _setAttr:@"serialMode" :rest_val];
 }
 /**
- * Retrieves a SDI12 port for a given identifier.
+ * Retrieves an SDI12 port for a given identifier.
  * The identifier can be specified using several formats:
- * <ul>
- * <li>FunctionLogicalName</li>
- * <li>ModuleSerialNumber.FunctionIdentifier</li>
- * <li>ModuleSerialNumber.FunctionLogicalName</li>
- * <li>ModuleLogicalName.FunctionIdentifier</li>
- * <li>ModuleLogicalName.FunctionLogicalName</li>
- * </ul>
+ *
+ * - FunctionLogicalName
+ * - ModuleSerialNumber.FunctionIdentifier
+ * - ModuleSerialNumber.FunctionLogicalName
+ * - ModuleLogicalName.FunctionIdentifier
+ * - ModuleLogicalName.FunctionLogicalName
+ *
  *
  * This function does not require that the SDI12 port is online at the time
  * it is invoked. The returned object is nevertheless valid.
  * Use the method YSdi12Port.isOnline() to test if the SDI12 port is
  * indeed online at a given time. In case of ambiguity when looking for
- * a SDI12 port by logical name, no error is notified: the first instance
+ * an SDI12 port by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
  *
@@ -1858,17 +1898,17 @@
  * This function is intended to be used when the serial port is configured for 'SDI-12' protocol.
  * This function work when only one sensor is connected.
  *
- * @return the reply returned by the sensor, as a YSdi12Sensor object.
+ * @return the reply returned by the sensor, as a YSdi12SensorInfo object.
  *
  * On failure, throws an exception or returns an empty string.
  */
--(YSdi12Sensor*) discoverSingleSensor
+-(YSdi12SensorInfo*) discoverSingleSensor
 {
     NSString* resStr;
 
     resStr = [self querySdi12:@"?" :@"" :5000];
     if ([resStr isEqualToString:@""]) {
-        return ARC_sendAutorelease([[YSdi12Sensor alloc] initWith:self :@"ERSensor Not Found"]);
+        return ARC_sendAutorelease([[YSdi12SensorInfo alloc] initWith:self :@"ERSensor Not Found"]);
     }
 
     return [self getSensorInformation:resStr];
@@ -1878,7 +1918,7 @@
  * Sends a discovery command to the bus, and reads all sensors information reply.
  * This function is intended to be used when the serial port is configured for 'SDI-12' protocol.
  *
- * @return all the information from every connected sensor, as an array of YSdi12Sensor object.
+ * @return all the information from every connected sensor, as an array of YSdi12SensorInfo object.
  *
  * On failure, throws an exception or returns an empty string.
  */
@@ -1977,13 +2017,13 @@
  * @param oldAddress : Actual sensor address, as a string
  * @param newAddress : New sensor address, as a string
  *
- * @return the sensor address and information , as a YSdi12Sensor object.
+ * @return the sensor address and information , as a YSdi12SensorInfo object.
  *
  * On failure, throws an exception or returns an empty string.
  */
--(YSdi12Sensor*) changeAddress:(NSString*)oldAddress :(NSString*)newAddress
+-(YSdi12SensorInfo*) changeAddress:(NSString*)oldAddress :(NSString*)newAddress
 {
-    YSdi12Sensor* addr;
+    YSdi12SensorInfo* addr;
 
     [self querySdi12:oldAddress : [NSString stringWithFormat:@"%@%@", @"A", newAddress] :1000];
     addr = [self getSensorInformation:newAddress];
@@ -2000,16 +2040,16 @@
  *
  * On failure, throws an exception or returns an empty string.
  */
--(YSdi12Sensor*) getSensorInformation:(NSString*)sensorAddr
+-(YSdi12SensorInfo*) getSensorInformation:(NSString*)sensorAddr
 {
     NSString* res;
-    YSdi12Sensor* sensor;
+    YSdi12SensorInfo* sensor;
 
     res = [self querySdi12:sensorAddr :@"I" :1000];
     if ([res isEqualToString:@""]) {
-        return ARC_sendAutorelease([[YSdi12Sensor alloc] initWith:self :@"ERSensor Not Found"]);
+        return ARC_sendAutorelease([[YSdi12SensorInfo alloc] initWith:self :@"ERSensor Not Found"]);
     }
-    sensor = ARC_sendAutorelease([[YSdi12Sensor alloc] initWith:self :res]);
+    sensor = ARC_sendAutorelease([[YSdi12SensorInfo alloc] initWith:self :res]);
     [sensor _queryValueInfo];
     return sensor;
 }
@@ -2061,12 +2101,13 @@
  *
  * @param maxWait : the maximum number of milliseconds to wait for a message if none is found
  *         in the receive buffer.
+ * @param maxMsg : the maximum number of messages to be returned by the function; up to 254.
  *
  * @return an array of YSdi12SnoopingRecord objects containing the messages found, if any.
  *
  * On failure, throws an exception or returns an empty array.
  */
--(NSMutableArray*) snoopMessages:(int)maxWait
+-(NSMutableArray*) snoopMessagesEx:(int)maxWait :(int)maxMsg
 {
     NSString* url;
     NSMutableData* msgbin;
@@ -2075,7 +2116,7 @@
     NSMutableArray* res = [NSMutableArray array];
     int idx;
 
-    url = [NSString stringWithFormat:@"rxmsg.json?pos=%d&maxw=%d&t=0", _rxptr,maxWait];
+    url = [NSString stringWithFormat:@"rxmsg.json?pos=%d&maxw=%d&t=0&len=%d", _rxptr, maxWait,maxMsg];
     msgbin = [self _download:url];
     msgarr = [self _json_get_array:msgbin];
     msglen = (int)[msgarr count];
@@ -2091,6 +2132,24 @@
         idx = idx + 1;
     }
     return res;
+}
+
+/**
+ * Retrieves messages (both direction) in the SDI12 port buffer, starting at current position.
+ *
+ * If no message is found, the search waits for one up to the specified maximum timeout
+ * (in milliseconds).
+ *
+ * @param maxWait : the maximum number of milliseconds to wait for a message if none is found
+ *         in the receive buffer.
+ *
+ * @return an array of YSdi12SnoopingRecord objects containing the messages found, if any.
+ *
+ * On failure, throws an exception or returns an empty array.
+ */
+-(NSMutableArray*) snoopMessages:(int)maxWait
+{
+    return [self snoopMessagesEx:maxWait :255];
 }
 
 

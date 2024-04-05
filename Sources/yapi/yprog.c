@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yprog.c 58592 2023-12-18 15:35:04Z seb $
+ * $Id: yprog.c 59662 2024-03-08 09:33:37Z seb $
  *
  * Implementation of firmware upgrade functions
  *
@@ -691,7 +691,7 @@ static int uSendCmd(u8 cmd, FLASH_DEVICE_STATE nextState)
 #define SET_FLASH_ERRMSG(dst, len, short_msg, long_msg) YSTRCPY(dst, len, (short_msg))
 #endif
 
-static int uFlashZone()
+static int uFlashZone(void)
 {
     u16 datasize;
     char msg[FLASH_ERRMSG_LEN];
@@ -833,7 +833,7 @@ static int uSendErase(u16 firstPage, u16 nPages, FLASH_DEVICE_STATE nextState)
     return 0;
 }
 
-static int uFlashFlash()
+static int uFlashFlash(void)
 {
     u32 addr, datasize;
     u8 buff[MAX_BYTE_IN_PACKET];

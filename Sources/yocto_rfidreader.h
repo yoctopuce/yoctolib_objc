@@ -130,14 +130,20 @@ NS_ASSUME_NONNULL_BEGIN
 -(int)     get_tagBlockSize;
 
 /**
- * Returns the index of the first usable storage block on the RFID tag.
+ * Returns the index of the block available for data storage on the RFID tag.
+ * Some tags have special block used to configure the tag behavior, these
+ * blocks must be handled with precaution. However, the  block return by
+ * get_tagFirstBlock() can be locked, use get_tagLockState()
+ * to find out  which block are locked.
  *
  * @return the index of the first usable storage block on the RFID tag
  */
 -(int)     get_tagFirstBlock;
 
 /**
- * Returns the index of the last usable storage block on the RFID tag.
+ * Returns the index of the last last black available for data storage on the RFID tag,
+ * However, this block can be locked, use get_tagLockState() to find out
+ * which block are locked.
  *
  * @return the index of the last usable storage block on the RFID tag
  */
@@ -261,11 +267,13 @@ NS_ASSUME_NONNULL_BEGIN
 #define Y_INVLD_ACCESS_MODE_COMBINATION -153
 #define Y_INVALID_SIZE                  -154
 #define Y_BAD_PASSWORD_FORMAT           -155
+#define Y_RADIO_IS_OFF                  -156
 //--- (end of generated code: YRfidStatus globals)
 
 //--- (generated code: YRfidStatus class start)
 /**
- * YRfidStatus Class: Detailled information about the result of RFID tag operations
+ * YRfidStatus Class: Detailled information about the result of RFID tag operations, allowing to find
+ * out what happened exactly after a tag operation failure.
  *
  * YRfidStatus objects provide additional information about
  * operations on RFID tags, including the range of blocks affected
@@ -274,6 +282,9 @@ NS_ASSUME_NONNULL_BEGIN
  * This makes it possible, for example, to distinguish communication
  * errors that can be recovered by an additional attempt, from
  * security or other errors on the tag.
+ * Combined with the EnableDryRun option in RfidOptions,
+ * this structure can be used to predict which blocks will be affected
+ * by a write operation.
  */
 @interface YRfidStatus : NSObject
 //--- (end of generated code: YRfidStatus class start)
@@ -366,11 +377,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 //--- (generated code: YRfidOptions class start)
 /**
- * YRfidOptions Class: Extra parameters for performing RFID tag operations
+ * YRfidOptions Class: Additional parameters for operations on RFID tags.
  *
- * YRfidOptions objects are used to provide optional
- * parameters to RFID commands that interact with tags, and in
- * particular to provide security keys when required.
+ * The YRfidOptions objects are used to specify additional
+ * optional parameters to RFID commands that interact with tags,
+ * including security keys. When instantiated,the parameters of
+ * this object are pre-initialized to a value  which corresponds
+ * to the most common usage.
  */
 @interface YRfidOptions : NSObject
 //--- (end of generated code: YRfidOptions class start)
@@ -430,7 +443,7 @@ NS_ASSUME_NONNULL_BEGIN
      * Disables the tag memory overflow test. By default, the Yoctopuce
      * library's read/write functions detect overruns and do not run
      * commands that are likely to fail. If you nevertheless wish to
-     * access more memory than the tag announces, you can try to use
+     * try to access more memory than the tag announces, you can try to use
      * this option.
      */
     bool            DisableBoundaryChecks;
@@ -474,8 +487,21 @@ typedef void (*YEventCallback)(YRfidReader *obj, double timestamp, NSString *eve
 /**
  * YRfidReader Class: RfidReader function interface
  *
- * The RfidReader class provides access detect,
- * read and write RFID tags.
+ * The YRfidReader class allows you to detect RFID tags, as well as
+ * read and write on these tags if the security settings allow it.
+ *
+ * Short reminder:
+ *
+ * - A tag's memory is generally organized in fixed-size blocks.
+ * - At tag level, each block must be read and written in its entirety.
+ * - Some blocks are special configuration blocks, and may alter the tag's behaviour
+ * tag behavior if they are rewritten with arbitrary data.
+ * - Data blocks can be set to read-only mode, but on many tags, this operation is irreversible.
+ *
+ *
+ * By default, the RfidReader class automatically manages these blocks so that
+ * arbitrary size data  can be manipulated of  without risk and without knowledge of
+ * tag architecture .
  */
 @interface YRfidReader : YFunction
 //--- (end of generated code: YRfidReader class start)
@@ -529,7 +555,8 @@ typedef void (*YEventCallback)(YRfidReader *obj, double timestamp, NSString *eve
  * Changes the present tag list refresh rate, measured in Hz. The reader will do
  * its best to respect it. Note that the reader cannot detect tag arrival or removal
  * while it is  communicating with a tag.  Maximum frequency is limited to 100Hz,
- * but in real life it will be difficult to do better than 50Hz.
+ * but in real life it will be difficult to do better than 50Hz.  A zero value
+ * will power off the device radio.
  * Remember to call the saveToFlash() method of the module if the
  * modification must be kept.
  *
@@ -545,13 +572,13 @@ typedef void (*YEventCallback)(YRfidReader *obj, double timestamp, NSString *eve
 /**
  * Retrieves a RFID reader for a given identifier.
  * The identifier can be specified using several formats:
- * <ul>
- * <li>FunctionLogicalName</li>
- * <li>ModuleSerialNumber.FunctionIdentifier</li>
- * <li>ModuleSerialNumber.FunctionLogicalName</li>
- * <li>ModuleLogicalName.FunctionIdentifier</li>
- * <li>ModuleLogicalName.FunctionLogicalName</li>
- * </ul>
+ *
+ * - FunctionLogicalName
+ * - ModuleSerialNumber.FunctionIdentifier
+ * - ModuleSerialNumber.FunctionLogicalName
+ * - ModuleLogicalName.FunctionIdentifier
+ * - ModuleLogicalName.FunctionLogicalName
+ *
  *
  * This function does not require that the RFID reader is online at the time
  * it is invoked. The returned object is nevertheless valid.
@@ -594,7 +621,7 @@ typedef void (*YEventCallback)(YRfidReader *obj, double timestamp, NSString *eve
 /**
  * Returns the list of RFID tags currently detected by the reader.
  *
- * @return a list of strings, corresponding to each tag identifier.
+ * @return a list of strings, corresponding to each tag identifier (UID).
  *
  * On failure, throws an exception or returns an empty list.
  */
@@ -686,7 +713,8 @@ typedef void (*YEventCallback)(YRfidReader *obj, double timestamp, NSString *eve
  * number of bytes is larger than the RFID tag block size. By default
  * firstBlock cannot be a special block, and any special block encountered
  * in the middle of the read operation will be skipped automatically.
- * If you rather want to read special blocks, use EnableRawAccess option.
+ * If you rather want to read special blocks, use the EnableRawAccess
+ * field from the options parameter.
  *
  * @param tagId : identifier of the tag to use
  * @param firstBlock : block number where read should start
@@ -710,7 +738,8 @@ typedef void (*YEventCallback)(YRfidReader *obj, double timestamp, NSString *eve
  * is larger than the RFID tag block size.  By default
  * firstBlock cannot be a special block, and any special block encountered
  * in the middle of the read operation will be skipped automatically.
- * If you rather want to read special blocks, use EnableRawAccess option.
+ * If you rather want to read special blocks, use the EnableRawAccess
+ * field frrm the options parameter.
  *
  * @param tagId : identifier of the tag to use
  * @param firstBlock : block number where read should start
@@ -734,7 +763,8 @@ typedef void (*YEventCallback)(YRfidReader *obj, double timestamp, NSString *eve
  * is larger than the RFID tag block size.  By default
  * firstBlock cannot be a special block, and any special block encountered
  * in the middle of the read operation will be skipped automatically.
- * If you rather want to read special blocks, use EnableRawAccess option.
+ * If you rather want to read special blocks, use the EnableRawAccess
+ * field from the options parameter.
  *
  * @param tagId : identifier of the tag to use
  * @param firstBlock : block number where read should start
@@ -758,7 +788,8 @@ typedef void (*YEventCallback)(YRfidReader *obj, double timestamp, NSString *eve
  * is larger than the RFID tag block size.  By default
  * firstBlock cannot be a special block, and any special block encountered
  * in the middle of the read operation will be skipped automatically.
- * If you rather want to read special blocks, use EnableRawAccess option.
+ * If you rather want to read special blocks, use the EnableRawAccess
+ * field from the options parameter.
  *
  * @param tagId : identifier of the tag to use
  * @param firstBlock : block number where read should start
@@ -782,8 +813,10 @@ typedef void (*YEventCallback)(YRfidReader *obj, double timestamp, NSString *eve
  * number of bytes to write is larger than the RFID tag block size.
  * By default firstBlock cannot be a special block, and any special block
  * encountered in the middle of the write operation will be skipped
- * automatically. If you rather want to rewrite special blocks as well,
- * use EnableRawAccess option.
+ * automatically. The last data block affected by the operation will
+ * be automatically padded with zeros if neccessary.  If you rather want
+ * to rewrite special blocks as well,
+ * use the EnableRawAccess field from the options parameter.
  *
  * @param tagId : identifier of the tag to use
  * @param firstBlock : block number where write should start
@@ -807,8 +840,10 @@ typedef void (*YEventCallback)(YRfidReader *obj, double timestamp, NSString *eve
  * number of bytes to write is larger than the RFID tag block size.
  * By default firstBlock cannot be a special block, and any special block
  * encountered in the middle of the write operation will be skipped
- * automatically. If you rather want to rewrite special blocks as well,
- * use EnableRawAccess option.
+ * automatically. The last data block affected by the operation will
+ * be automatically padded with zeros if neccessary.
+ * If you rather want to rewrite special blocks as well,
+ * use the EnableRawAccess field from the options parameter.
  *
  * @param tagId : identifier of the tag to use
  * @param firstBlock : block number where write should start
@@ -832,8 +867,10 @@ typedef void (*YEventCallback)(YRfidReader *obj, double timestamp, NSString *eve
  * number of bytes to write is larger than the RFID tag block size.
  * By default firstBlock cannot be a special block, and any special block
  * encountered in the middle of the write operation will be skipped
- * automatically. If you rather want to rewrite special blocks as well,
- * use EnableRawAccess option.
+ * automatically. The last data block affected by the operation will
+ * be automatically padded with zeros if neccessary.
+ * If you rather want to rewrite special blocks as well,
+ * use the EnableRawAccess field from the options parameter.
  *
  * @param tagId : identifier of the tag to use
  * @param firstBlock : block number where write should start
@@ -855,10 +892,16 @@ typedef void (*YEventCallback)(YRfidReader *obj, double timestamp, NSString *eve
  * Writes data provided as an ASCII string to an RFID tag memory.
  * The write operation may span accross multiple blocks if the
  * number of bytes to write is larger than the RFID tag block size.
+ * Note that only the characters présent  in  the provided string
+ * will be written, there is no notion of string length. If your
+ * string data have variable length, you'll have to encode the
+ * string length yourself.
  * By default firstBlock cannot be a special block, and any special block
  * encountered in the middle of the write operation will be skipped
- * automatically. If you rather want to rewrite special blocks as well,
- * use EnableRawAccess option.
+ * automatically. The last data block affected by the operation will
+ * be automatically padded with zeros if neccessary.
+ * If you rather want to rewrite special blocks as well,
+ * use the EnableRawAccess field from the options parameter.
  *
  * @param tagId : identifier of the tag to use
  * @param firstBlock : block number where write should start
@@ -875,6 +918,112 @@ typedef void (*YEventCallback)(YRfidReader *obj, double timestamp, NSString *eve
  * happens, you can get more information from the status object.
  */
 -(int)     tagWriteStr:(NSString*)tagId :(int)firstBlock :(NSString*)text :(YRfidOptions*)options :(YRfidStatus*)status;
+
+/**
+ * Reads an RFID tag AFI byte (ISO 15693 only).
+ *
+ * @param tagId : identifier of the tag to use
+ * @param options : an YRfidOptions object with the optional
+ *         command execution parameters, such as security key
+ *         if required
+ * @param status : an RfidStatus object that will contain
+ *         the detailled status of the operation
+ *
+ * @return the AFI value (0...255)
+ *
+ * On failure, throws an exception or returns a negative error code. When it
+ * happens, you can get more information from the status object.
+ */
+-(int)     tagGetAFI:(NSString*)tagId :(YRfidOptions*)options :(YRfidStatus*)status;
+
+/**
+ * Change an RFID tag AFI byte (ISO 15693 only).
+ *
+ * @param tagId : identifier of the tag to use
+ * @param afi : the AFI value to write (0...255)
+ * @param options : an YRfidOptions object with the optional
+ *         command execution parameters, such as security key
+ *         if required
+ * @param status : an RfidStatus object that will contain
+ *         the detailled status of the operation
+ *
+ * @return YAPI.SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code. When it
+ * happens, you can get more information from the status object.
+ */
+-(int)     tagSetAFI:(NSString*)tagId :(int)afi :(YRfidOptions*)options :(YRfidStatus*)status;
+
+/**
+ * Locks the RFID tag AFI byte (ISO 15693 only).
+ * This operation is definitive and irreversible.
+ *
+ * @param tagId : identifier of the tag to use
+ * @param options : an YRfidOptions object with the optional
+ *         command execution parameters, such as security key
+ *         if required
+ * @param status : an RfidStatus object that will contain
+ *         the detailled status of the operation
+ *
+ * @return YAPI.SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code. When it
+ * happens, you can get more information from the status object.
+ */
+-(int)     tagLockAFI:(NSString*)tagId :(YRfidOptions*)options :(YRfidStatus*)status;
+
+/**
+ * Reads an RFID tag DSFID byte (ISO 15693 only).
+ *
+ * @param tagId : identifier of the tag to use
+ * @param options : an YRfidOptions object with the optional
+ *         command execution parameters, such as security key
+ *         if required
+ * @param status : an RfidStatus object that will contain
+ *         the detailled status of the operation
+ *
+ * @return the DSFID value (0...255)
+ *
+ * On failure, throws an exception or returns a negative error code. When it
+ * happens, you can get more information from the status object.
+ */
+-(int)     tagGetDSFID:(NSString*)tagId :(YRfidOptions*)options :(YRfidStatus*)status;
+
+/**
+ * Change an RFID tag DSFID byte (ISO 15693 only).
+ *
+ * @param tagId : identifier of the tag to use
+ * @param dsfid : the DSFID value to write (0...255)
+ * @param options : an YRfidOptions object with the optional
+ *         command execution parameters, such as security key
+ *         if required
+ * @param status : an RfidStatus object that will contain
+ *         the detailled status of the operation
+ *
+ * @return YAPI.SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code. When it
+ * happens, you can get more information from the status object.
+ */
+-(int)     tagSetDSFID:(NSString*)tagId :(int)dsfid :(YRfidOptions*)options :(YRfidStatus*)status;
+
+/**
+ * Locks the RFID tag DSFID byte (ISO 15693 only).
+ * This operation is definitive and irreversible.
+ *
+ * @param tagId : identifier of the tag to use
+ * @param options : an YRfidOptions object with the optional
+ *         command execution parameters, such as security key
+ *         if required
+ * @param status : an RfidStatus object that will contain
+ *         the detailled status of the operation
+ *
+ * @return YAPI.SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code. When it
+ * happens, you can get more information from the status object.
+ */
+-(int)     tagLockDSFID:(NSString*)tagId :(YRfidOptions*)options :(YRfidStatus*)status;
 
 /**
  * Returns a string with last tag arrival/removal events observed.
@@ -937,13 +1086,13 @@ NS_SWIFT_NAME(FirstRfidReader());
 /**
  * Retrieves a RFID reader for a given identifier.
  * The identifier can be specified using several formats:
- * <ul>
- * <li>FunctionLogicalName</li>
- * <li>ModuleSerialNumber.FunctionIdentifier</li>
- * <li>ModuleSerialNumber.FunctionLogicalName</li>
- * <li>ModuleLogicalName.FunctionIdentifier</li>
- * <li>ModuleLogicalName.FunctionLogicalName</li>
- * </ul>
+ *
+ * - FunctionLogicalName
+ * - ModuleSerialNumber.FunctionIdentifier
+ * - ModuleSerialNumber.FunctionLogicalName
+ * - ModuleLogicalName.FunctionIdentifier
+ * - ModuleLogicalName.FunctionLogicalName
+ *
  *
  * This function does not require that the RFID reader is online at the time
  * it is invoked. The returned object is nevertheless valid.

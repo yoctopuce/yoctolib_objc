@@ -140,19 +140,20 @@ typedef enum {
 //--- (generated code: YSdi12SnoopingRecord functions declaration)
 //--- (end of generated code: YSdi12SnoopingRecord functions declaration)
 
-//--- (generated code: YSdi12Sensor class start)
+//--- (generated code: YSdi12SensorInfo class start)
 /**
- * YSdi12Sensor Class: Description of a discovered SDI12 sensor, returned by
+ * YSdi12SensorInfo Class: Description of a discovered SDI12 sensor, returned by
  * sdi12Port.discoverSingleSensor and sdi12Port.discoverAllSensors methods
  *
  *
  */
-@interface YSdi12Sensor : NSObject
-//--- (end of generated code: YSdi12Sensor class start)
+@interface YSdi12SensorInfo : NSObject
+//--- (end of generated code: YSdi12SensorInfo class start)
 {
 @protected
-//--- (generated code: YSdi12Sensor attributes declaration)
+//--- (generated code: YSdi12SensorInfo attributes declaration)
     YSdi12Port*     _sdi12Port;
+    bool            _isValid;
     NSString*       _addr;
     NSString*       _proto;
     NSString*       _mfg;
@@ -160,14 +161,23 @@ typedef enum {
     NSString*       _ver;
     NSString*       _sn;
     NSMutableArray* _valuesDesc;
-//--- (end of generated code: YSdi12Sensor attributes declaration)
+//--- (end of generated code: YSdi12SensorInfo attributes declaration)
 }
 
 -(id)    initWith:(YSdi12Port*)sdi12Port :(NSString*) json_str;
 
-//--- (generated code: YSdi12Sensor private methods declaration)
-//--- (end of generated code: YSdi12Sensor private methods declaration)
-//--- (generated code: YSdi12Sensor public methods declaration)
+-(void)  _throw:(YRETCODE)errcode :(NSString*)msg;
+
+//--- (generated code: YSdi12SensorInfo private methods declaration)
+//--- (end of generated code: YSdi12SensorInfo private methods declaration)
+//--- (generated code: YSdi12SensorInfo public methods declaration)
+/**
+ * Returns the sensor state.
+ *
+ * @return the sensor state.
+ */
+-(bool)     isValid;
+
 /**
  * Returns the sensor address.
  *
@@ -212,6 +222,8 @@ typedef enum {
 
 /**
  * Returns the number of sensor measurements.
+ * This function only works if the sensor is in version 1.4 SDI-12
+ * and supports metadata commands.
  *
  * @return the number of sensor measurements.
  */
@@ -219,46 +231,61 @@ typedef enum {
 
 /**
  * Returns the sensor measurement command.
+ * This function only works if the sensor is in version 1.4 SDI-12
+ * and supports metadata commands.
  *
  * @param measureIndex : measurement index
  *
  * @return the sensor measurement command.
+ *         On failure, throws an exception or returns an empty string.
  */
 -(NSString*)     get_measureCommand:(int)measureIndex;
 
 /**
  * Returns sensor measurement position.
+ * This function only works if the sensor is in version 1.4 SDI-12
+ * and supports metadata commands.
  *
  * @param measureIndex : measurement index
  *
  * @return the sensor measurement command.
+ *         On failure, throws an exception or returns 0.
  */
 -(int)     get_measurePosition:(int)measureIndex;
 
 /**
  * Returns the measured value symbol.
+ * This function only works if the sensor is in version 1.4 SDI-12
+ * and supports metadata commands.
  *
  * @param measureIndex : measurement index
  *
  * @return the sensor measurement command.
+ *         On failure, throws an exception or returns an empty string.
  */
 -(NSString*)     get_measureSymbol:(int)measureIndex;
 
 /**
  * Returns the unit of the measured value.
+ * This function only works if the sensor is in version 1.4 SDI-12
+ * and supports metadata commands.
  *
  * @param measureIndex : measurement index
  *
  * @return the sensor measurement command.
+ *         On failure, throws an exception or returns an empty string.
  */
 -(NSString*)     get_measureUnit:(int)measureIndex;
 
 /**
  * Returns the description of the measured value.
+ * This function only works if the sensor is in version 1.4 SDI-12
+ * and supports metadata commands.
  *
  * @param measureIndex : measurement index
  *
  * @return the sensor measurement command.
+ *         On failure, throws an exception or returns an empty string.
  */
 -(NSString*)     get_measureDescription:(int)measureIndex;
 
@@ -269,12 +296,12 @@ typedef enum {
 -(void)     _queryValueInfo;
 
 
-//--- (end of generated code: YSdi12Sensor public methods declaration)
+//--- (end of generated code: YSdi12SensorInfo public methods declaration)
 
 @end
 
-//--- (generated code: YSdi12Sensor functions declaration)
-//--- (end of generated code: YSdi12Sensor functions declaration)
+//--- (generated code: YSdi12SensorInfo functions declaration)
+//--- (end of generated code: YSdi12SensorInfo functions declaration)
 
 
 //--- (generated code: YSdi12Port class start)
@@ -574,21 +601,21 @@ typedef enum {
 -(int)     setSerialMode:(NSString*) newval;
 
 /**
- * Retrieves a SDI12 port for a given identifier.
+ * Retrieves an SDI12 port for a given identifier.
  * The identifier can be specified using several formats:
- * <ul>
- * <li>FunctionLogicalName</li>
- * <li>ModuleSerialNumber.FunctionIdentifier</li>
- * <li>ModuleSerialNumber.FunctionLogicalName</li>
- * <li>ModuleLogicalName.FunctionIdentifier</li>
- * <li>ModuleLogicalName.FunctionLogicalName</li>
- * </ul>
+ *
+ * - FunctionLogicalName
+ * - ModuleSerialNumber.FunctionIdentifier
+ * - ModuleSerialNumber.FunctionLogicalName
+ * - ModuleLogicalName.FunctionIdentifier
+ * - ModuleLogicalName.FunctionLogicalName
+ *
  *
  * This function does not require that the SDI12 port is online at the time
  * it is invoked. The returned object is nevertheless valid.
  * Use the method YSdi12Port.isOnline() to test if the SDI12 port is
  * indeed online at a given time. In case of ambiguity when looking for
- * a SDI12 port by logical name, no error is notified: the first instance
+ * an SDI12 port by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
  *
@@ -898,17 +925,17 @@ typedef enum {
  * This function is intended to be used when the serial port is configured for 'SDI-12' protocol.
  * This function work when only one sensor is connected.
  *
- * @return the reply returned by the sensor, as a YSdi12Sensor object.
+ * @return the reply returned by the sensor, as a YSdi12SensorInfo object.
  *
  * On failure, throws an exception or returns an empty string.
  */
--(YSdi12Sensor*)     discoverSingleSensor;
+-(YSdi12SensorInfo*)     discoverSingleSensor;
 
 /**
  * Sends a discovery command to the bus, and reads all sensors information reply.
  * This function is intended to be used when the serial port is configured for 'SDI-12' protocol.
  *
- * @return all the information from every connected sensor, as an array of YSdi12Sensor object.
+ * @return all the information from every connected sensor, as an array of YSdi12SensorInfo object.
  *
  * On failure, throws an exception or returns an empty string.
  */
@@ -939,11 +966,11 @@ typedef enum {
  * @param oldAddress : Actual sensor address, as a string
  * @param newAddress : New sensor address, as a string
  *
- * @return the sensor address and information , as a YSdi12Sensor object.
+ * @return the sensor address and information , as a YSdi12SensorInfo object.
  *
  * On failure, throws an exception or returns an empty string.
  */
--(YSdi12Sensor*)     changeAddress:(NSString*)oldAddress :(NSString*)newAddress;
+-(YSdi12SensorInfo*)     changeAddress:(NSString*)oldAddress :(NSString*)newAddress;
 
 /**
  * Sends a information command to the bus, and reads sensors information selected.
@@ -955,7 +982,7 @@ typedef enum {
  *
  * On failure, throws an exception or returns an empty string.
  */
--(YSdi12Sensor*)     getSensorInformation:(NSString*)sensorAddr;
+-(YSdi12SensorInfo*)     getSensorInformation:(NSString*)sensorAddr;
 
 /**
  * Sends a information command to the bus, and reads sensors information selected.
@@ -989,6 +1016,22 @@ typedef enum {
  *
  * @param maxWait : the maximum number of milliseconds to wait for a message if none is found
  *         in the receive buffer.
+ * @param maxMsg : the maximum number of messages to be returned by the function; up to 254.
+ *
+ * @return an array of YSdi12SnoopingRecord objects containing the messages found, if any.
+ *
+ * On failure, throws an exception or returns an empty array.
+ */
+-(NSMutableArray*)     snoopMessagesEx:(int)maxWait :(int)maxMsg;
+
+/**
+ * Retrieves messages (both direction) in the SDI12 port buffer, starting at current position.
+ *
+ * If no message is found, the search waits for one up to the specified maximum timeout
+ * (in milliseconds).
+ *
+ * @param maxWait : the maximum number of milliseconds to wait for a message if none is found
+ *         in the receive buffer.
  *
  * @return an array of YSdi12SnoopingRecord objects containing the messages found, if any.
  *
@@ -1000,11 +1043,11 @@ typedef enum {
 /**
  * Continues the enumeration of SDI12 ports started using yFirstSdi12Port().
  * Caution: You can't make any assumption about the returned SDI12 ports order.
- * If you want to find a specific a SDI12 port, use Sdi12Port.findSdi12Port()
+ * If you want to find a specific an SDI12 port, use Sdi12Port.findSdi12Port()
  * and a hardwareID or a logical name.
  *
  * @return a pointer to a YSdi12Port object, corresponding to
- *         a SDI12 port currently online, or a nil pointer
+ *         an SDI12 port currently online, or a nil pointer
  *         if there are no more SDI12 ports to enumerate.
  */
 -(nullable YSdi12Port*) nextSdi12Port
@@ -1026,21 +1069,21 @@ NS_SWIFT_NAME(FirstSdi12Port());
 
 //--- (generated code: YSdi12Port functions declaration)
 /**
- * Retrieves a SDI12 port for a given identifier.
+ * Retrieves an SDI12 port for a given identifier.
  * The identifier can be specified using several formats:
- * <ul>
- * <li>FunctionLogicalName</li>
- * <li>ModuleSerialNumber.FunctionIdentifier</li>
- * <li>ModuleSerialNumber.FunctionLogicalName</li>
- * <li>ModuleLogicalName.FunctionIdentifier</li>
- * <li>ModuleLogicalName.FunctionLogicalName</li>
- * </ul>
+ *
+ * - FunctionLogicalName
+ * - ModuleSerialNumber.FunctionIdentifier
+ * - ModuleSerialNumber.FunctionLogicalName
+ * - ModuleLogicalName.FunctionIdentifier
+ * - ModuleLogicalName.FunctionLogicalName
+ *
  *
  * This function does not require that the SDI12 port is online at the time
  * it is invoked. The returned object is nevertheless valid.
  * Use the method YSdi12Port.isOnline() to test if the SDI12 port is
  * indeed online at a given time. In case of ambiguity when looking for
- * a SDI12 port by logical name, no error is notified: the first instance
+ * an SDI12 port by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
  *

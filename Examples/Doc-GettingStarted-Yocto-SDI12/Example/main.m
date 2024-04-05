@@ -1,12 +1,10 @@
 /*********************************************************************
  *
- *  $Id: main.m 56393 2023-09-05 08:36:51Z seb $
+ *  $Id: main.m 59884 2024-03-14 13:28:06Z mvuilleu $
  *
- *  An example that show how to use a  Yocto-SDI12
+ *  Doc-GettingStarted-Yocto-SDI12 example
  *
  *  You can find more information on our web site:
- *   Yocto-SDI12 documentation:
- *      https://www.yoctopuce.com/EN/products/yocto-sdi12/doc.html
  *   Objective-C API Reference:
  *      https://www.yoctopuce.com/EN/doc/reference/yoctolib-objc-EN.html
  *
@@ -38,7 +36,7 @@ int main(int argc, const char * argv[])
       }
     }
     [sdi12port reset];
-    YSdi12Sensor *singleSensor = [sdi12port discoverSingleSensor];
+    YSdi12SensorInfo *singleSensor = [sdi12port discoverSingleSensor];
     NSLog(@"Sensor address : %@", [singleSensor get_sensorAddress]);
     NSLog(@"Sensor SDI-12 compatibility : %@", [singleSensor get_sensorProtocol]);
     NSLog(@"Sensor company name : %@", [singleSensor get_sensorVendor]);

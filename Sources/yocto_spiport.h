@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_spiport.h 58892 2024-01-11 11:11:28Z mvuilleu $
+ *  $Id: yocto_spiport.h 59977 2024-03-18 15:02:32Z mvuilleu $
  *
  *  Declares yFindSpiPort(), the high-level API for SpiPort functions
  *
@@ -507,21 +507,21 @@ typedef enum {
 -(int)     setShiftSampling:(Y_SHIFTSAMPLING_enum) newval;
 
 /**
- * Retrieves a SPI port for a given identifier.
+ * Retrieves an SPI port for a given identifier.
  * The identifier can be specified using several formats:
- * <ul>
- * <li>FunctionLogicalName</li>
- * <li>ModuleSerialNumber.FunctionIdentifier</li>
- * <li>ModuleSerialNumber.FunctionLogicalName</li>
- * <li>ModuleLogicalName.FunctionIdentifier</li>
- * <li>ModuleLogicalName.FunctionLogicalName</li>
- * </ul>
+ *
+ * - FunctionLogicalName
+ * - ModuleSerialNumber.FunctionIdentifier
+ * - ModuleSerialNumber.FunctionLogicalName
+ * - ModuleLogicalName.FunctionIdentifier
+ * - ModuleLogicalName.FunctionLogicalName
+ *
  *
  * This function does not require that the SPI port is online at the time
  * it is invoked. The returned object is nevertheless valid.
  * Use the method YSpiPort.isOnline() to test if the SPI port is
  * indeed online at a given time. In case of ambiguity when looking for
- * a SPI port by logical name, no error is notified: the first instance
+ * an SPI port by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
  *
@@ -832,6 +832,22 @@ typedef enum {
  *
  * @param maxWait : the maximum number of milliseconds to wait for a message if none is found
  *         in the receive buffer.
+ * @param maxMsg : the maximum number of messages to be returned by the function; up to 254.
+ *
+ * @return an array of YSpiSnoopingRecord objects containing the messages found, if any.
+ *
+ * On failure, throws an exception or returns an empty array.
+ */
+-(NSMutableArray*)     snoopMessagesEx:(int)maxWait :(int)maxMsg;
+
+/**
+ * Retrieves messages (both direction) in the SPI port buffer, starting at current position.
+ *
+ * If no message is found, the search waits for one up to the specified maximum timeout
+ * (in milliseconds).
+ *
+ * @param maxWait : the maximum number of milliseconds to wait for a message if none is found
+ *         in the receive buffer.
  *
  * @return an array of YSpiSnoopingRecord objects containing the messages found, if any.
  *
@@ -843,11 +859,11 @@ typedef enum {
 /**
  * Continues the enumeration of SPI ports started using yFirstSpiPort().
  * Caution: You can't make any assumption about the returned SPI ports order.
- * If you want to find a specific a SPI port, use SpiPort.findSpiPort()
+ * If you want to find a specific an SPI port, use SpiPort.findSpiPort()
  * and a hardwareID or a logical name.
  *
  * @return a pointer to a YSpiPort object, corresponding to
- *         a SPI port currently online, or a nil pointer
+ *         an SPI port currently online, or a nil pointer
  *         if there are no more SPI ports to enumerate.
  */
 -(nullable YSpiPort*) nextSpiPort
@@ -869,21 +885,21 @@ NS_SWIFT_NAME(FirstSpiPort());
 
 //--- (generated code: YSpiPort functions declaration)
 /**
- * Retrieves a SPI port for a given identifier.
+ * Retrieves an SPI port for a given identifier.
  * The identifier can be specified using several formats:
- * <ul>
- * <li>FunctionLogicalName</li>
- * <li>ModuleSerialNumber.FunctionIdentifier</li>
- * <li>ModuleSerialNumber.FunctionLogicalName</li>
- * <li>ModuleLogicalName.FunctionIdentifier</li>
- * <li>ModuleLogicalName.FunctionLogicalName</li>
- * </ul>
+ *
+ * - FunctionLogicalName
+ * - ModuleSerialNumber.FunctionIdentifier
+ * - ModuleSerialNumber.FunctionLogicalName
+ * - ModuleLogicalName.FunctionIdentifier
+ * - ModuleLogicalName.FunctionLogicalName
+ *
  *
  * This function does not require that the SPI port is online at the time
  * it is invoked. The returned object is nevertheless valid.
  * Use the method YSpiPort.isOnline() to test if the SPI port is
  * indeed online at a given time. In case of ambiguity when looking for
- * a SPI port by logical name, no error is notified: the first instance
+ * an SPI port by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
  *

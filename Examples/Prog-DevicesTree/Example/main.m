@@ -140,7 +140,7 @@ static RootDevice* addRootDevice(NSString* serial, NSString* url)
 
 }
 
-static void showNetwork()
+static void showNetwork(void)
 {
   NSLog(@"**** device inventory *****");
   for (RootDevice * rootdev in __rootDevices) {
