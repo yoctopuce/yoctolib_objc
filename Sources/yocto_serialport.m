@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_serialport.m 59977 2024-03-18 15:02:32Z mvuilleu $
+ * $Id: yocto_serialport.m 63508 2024-11-28 10:46:01Z seb $
  *
  * Implements the high-level API for SerialPort functions
  *
@@ -830,7 +830,7 @@ static void yInternalEventCallback(YSerialPort *obj, NSString *value)
     obj = (YSerialPort*) [YFunction _FindFromCache:@"SerialPort" :func];
     if (obj == nil) {
         obj = ARC_sendAutorelease([[YSerialPort alloc] initWith:func]);
-        [YFunction _AddToCache:@"SerialPort" : func :obj];
+        [YFunction _AddToCache:@"SerialPort" :func :obj];
     }
     return obj;
 }
@@ -948,7 +948,7 @@ static void yInternalEventCallback(YSerialPort *obj, NSString *value)
     NSMutableArray* res = [NSMutableArray array];
     int idx;
 
-    url = [NSString stringWithFormat:@"rxmsg.json?pos=%d&maxw=%d&pat=%@", _rxptr, maxWait,pattern];
+    url = [NSString stringWithFormat:@"rxmsg.json?pos=%d&maxw=%d&pat=%@",_rxptr,maxWait,pattern];
     msgbin = [self _download:url];
     msgarr = [self _json_get_array:msgbin];
     msglen = (int)[msgarr count];
@@ -1007,7 +1007,7 @@ static void yInternalEventCallback(YSerialPort *obj, NSString *value)
     databin = [self _download:[NSString stringWithFormat:@"rxcnt.bin?pos=%d",_rxptr]];
     availPosStr = ARC_sendAutorelease([[NSString alloc] initWithData:databin encoding:NSISOLatin1StringEncoding]);
     atPos = _ystrpos(availPosStr, @"@");
-    res = [[availPosStr substringWithRange:NSMakeRange( 0, atPos)] intValue];
+    res = [[availPosStr substringWithRange:NSMakeRange(0, atPos)] intValue];
     return res;
 }
 
@@ -1021,7 +1021,7 @@ static void yInternalEventCallback(YSerialPort *obj, NSString *value)
     databin = [self _download:[NSString stringWithFormat:@"rxcnt.bin?pos=%d",_rxptr]];
     availPosStr = ARC_sendAutorelease([[NSString alloc] initWithData:databin encoding:NSISOLatin1StringEncoding]);
     atPos = _ystrpos(availPosStr, @"@");
-    res = [[availPosStr substringWithRange:NSMakeRange( atPos+1, (int)[(availPosStr) length]-atPos-1)] intValue];
+    res = [[availPosStr substringWithRange:NSMakeRange(atPos+1, (int)[(availPosStr) length]-atPos-1)] intValue];
     return res;
 }
 
@@ -1047,12 +1047,12 @@ static void yInternalEventCallback(YSerialPort *obj, NSString *value)
     NSString* res;
     if ((int)[(query) length] <= 80) {
         // fast query
-        url = [NSString stringWithFormat:@"rxmsg.json?len=1&maxw=%d&cmd=!%@", maxWait,[self _escapeAttr:query]];
+        url = [NSString stringWithFormat:@"rxmsg.json?len=1&maxw=%d&cmd=!%@",maxWait,[self _escapeAttr:query]];
     } else {
         // long query
         prevpos = [self end_tell];
         [self _upload:@"txdata" :[NSMutableData dataWithData:[[NSString stringWithFormat:@"%@%@", query, @"\r\n"] dataUsingEncoding:NSISOLatin1StringEncoding]]];
-        url = [NSString stringWithFormat:@"rxmsg.json?len=1&maxw=%d&pos=%d", maxWait,prevpos];
+        url = [NSString stringWithFormat:@"rxmsg.json?len=1&maxw=%d&pos=%d",maxWait,prevpos];
     }
 
     msgbin = [self _download:url];
@@ -1094,12 +1094,12 @@ static void yInternalEventCallback(YSerialPort *obj, NSString *value)
     NSString* res;
     if ((int)[(hexString) length] <= 80) {
         // fast query
-        url = [NSString stringWithFormat:@"rxmsg.json?len=1&maxw=%d&cmd=$%@", maxWait,hexString];
+        url = [NSString stringWithFormat:@"rxmsg.json?len=1&maxw=%d&cmd=$%@",maxWait,hexString];
     } else {
         // long query
         prevpos = [self end_tell];
         [self _upload:@"txdata" :[YAPI _hexStr2Bin:hexString]];
-        url = [NSString stringWithFormat:@"rxmsg.json?len=1&maxw=%d&pos=%d", maxWait,prevpos];
+        url = [NSString stringWithFormat:@"rxmsg.json?len=1&maxw=%d&pos=%d",maxWait,prevpos];
     }
 
     msgbin = [self _download:url];
@@ -1254,7 +1254,7 @@ static void yInternalEventCallback(YSerialPort *obj, NSString *value)
     idx = 0;
     while (idx < bufflen) {
         hexb = [[byteList objectAtIndex:idx] intValue];
-        (((u8*)([buff mutableBytes]))[ idx]) = hexb;
+        (((u8*)([buff mutableBytes]))[idx]) = hexb;
         idx = idx + 1;
     }
 
@@ -1282,12 +1282,12 @@ static void yInternalEventCallback(YSerialPort *obj, NSString *value)
     if (bufflen < 100) {
         return [self sendCommand:[NSString stringWithFormat:@"$%@",hexString]];
     }
-    bufflen = ((bufflen) >> (1));
+    bufflen = (bufflen >> 1);
     buff = [NSMutableData dataWithLength:bufflen];
     idx = 0;
     while (idx < bufflen) {
-        hexb = (int)strtoul(STR_oc2y([hexString substringWithRange:NSMakeRange( 2 * idx, 2)]), NULL, 16);
-        (((u8*)([buff mutableBytes]))[ idx]) = hexb;
+        hexb = (int)strtoul(STR_oc2y([hexString substringWithRange:NSMakeRange(2 * idx, 2)]), NULL, 16);
+        (((u8*)([buff mutableBytes]))[idx]) = hexb;
         idx = idx + 1;
     }
 
@@ -1423,7 +1423,7 @@ static void yInternalEventCallback(YSerialPort *obj, NSString *value)
         nChars = 65535;
     }
 
-    buff = [self _download:[NSString stringWithFormat:@"rxdata.bin?pos=%d&len=%d", _rxptr,nChars]];
+    buff = [self _download:[NSString stringWithFormat:@"rxdata.bin?pos=%d&len=%d",_rxptr,nChars]];
     bufflen = (int)[buff length] - 1;
     endpos = 0;
     mult = 1;
@@ -1433,7 +1433,7 @@ static void yInternalEventCallback(YSerialPort *obj, NSString *value)
         bufflen = bufflen - 1;
     }
     _rxptr = endpos;
-    res = [ARC_sendAutorelease([[NSString alloc] initWithData:buff encoding:NSISOLatin1StringEncoding]) substringWithRange:NSMakeRange( 0, bufflen)];
+    res = [ARC_sendAutorelease([[NSString alloc] initWithData:buff encoding:NSISOLatin1StringEncoding]) substringWithRange:NSMakeRange(0, bufflen)];
     return res;
 }
 
@@ -1460,7 +1460,7 @@ static void yInternalEventCallback(YSerialPort *obj, NSString *value)
         nChars = 65535;
     }
 
-    buff = [self _download:[NSString stringWithFormat:@"rxdata.bin?pos=%d&len=%d", _rxptr,nChars]];
+    buff = [self _download:[NSString stringWithFormat:@"rxdata.bin?pos=%d&len=%d",_rxptr,nChars]];
     bufflen = (int)[buff length] - 1;
     endpos = 0;
     mult = 1;
@@ -1473,7 +1473,7 @@ static void yInternalEventCallback(YSerialPort *obj, NSString *value)
     res = [NSMutableData dataWithLength:bufflen];
     idx = 0;
     while (idx < bufflen) {
-        (((u8*)([res mutableBytes]))[ idx]) = (((u8*)([buff bytes]))[idx]);
+        (((u8*)([res mutableBytes]))[idx]) = (((u8*)([buff bytes]))[idx]);
         idx = idx + 1;
     }
     return res;
@@ -1503,7 +1503,7 @@ static void yInternalEventCallback(YSerialPort *obj, NSString *value)
         nChars = 65535;
     }
 
-    buff = [self _download:[NSString stringWithFormat:@"rxdata.bin?pos=%d&len=%d", _rxptr,nChars]];
+    buff = [self _download:[NSString stringWithFormat:@"rxdata.bin?pos=%d&len=%d",_rxptr,nChars]];
     bufflen = (int)[buff length] - 1;
     endpos = 0;
     mult = 1;
@@ -1546,7 +1546,7 @@ static void yInternalEventCallback(YSerialPort *obj, NSString *value)
         nBytes = 65535;
     }
 
-    buff = [self _download:[NSString stringWithFormat:@"rxdata.bin?pos=%d&len=%d", _rxptr,nBytes]];
+    buff = [self _download:[NSString stringWithFormat:@"rxdata.bin?pos=%d&len=%d",_rxptr,nBytes]];
     bufflen = (int)[buff length] - 1;
     endpos = 0;
     mult = 1;
@@ -1559,11 +1559,11 @@ static void yInternalEventCallback(YSerialPort *obj, NSString *value)
     res = @"";
     ofs = 0;
     while (ofs + 3 < bufflen) {
-        res = [NSString stringWithFormat:@"%@%02X%02X%02X%02X", res, (((u8*)([buff bytes]))[ofs]), (((u8*)([buff bytes]))[ofs + 1]), (((u8*)([buff bytes]))[ofs + 2]),(((u8*)([buff bytes]))[ofs + 3])];
+        res = [NSString stringWithFormat:@"%@%02X%02X%02X%02X",res,(((u8*)([buff bytes]))[ofs]),(((u8*)([buff bytes]))[ofs + 1]),(((u8*)([buff bytes]))[ofs + 2]),(((u8*)([buff bytes]))[ofs + 3])];
         ofs = ofs + 4;
     }
     while (ofs < bufflen) {
-        res = [NSString stringWithFormat:@"%@%02X", res,(((u8*)([buff bytes]))[ofs])];
+        res = [NSString stringWithFormat:@"%@%02X",res,(((u8*)([buff bytes]))[ofs])];
         ofs = ofs + 1;
     }
     return res;
@@ -1615,7 +1615,7 @@ static void yInternalEventCallback(YSerialPort *obj, NSString *value)
     int res;
 
     buff = [self _download:@"cts.txt"];
-    if (!((int)[buff length] == 1)) {[self _throw: YAPI_IO_ERROR: @"invalid CTS reply"]; return YAPI_IO_ERROR;}
+    if (!((int)[buff length] == 1)) {[self _throw:YAPI_IO_ERROR:@"invalid CTS reply"]; return YAPI_IO_ERROR;}
     res = (((u8*)([buff bytes]))[0]) - 48;
     return res;
 }
@@ -1646,7 +1646,7 @@ static void yInternalEventCallback(YSerialPort *obj, NSString *value)
     NSMutableArray* res = [NSMutableArray array];
     int idx;
 
-    url = [NSString stringWithFormat:@"rxmsg.json?pos=%d&maxw=%d&t=0&len=%d", _rxptr, maxWait,maxMsg];
+    url = [NSString stringWithFormat:@"rxmsg.json?pos=%d&maxw=%d&t=0&len=%d",_rxptr,maxWait,maxMsg];
     msgbin = [self _download:url];
     msgarr = [self _json_get_array:msgbin];
     msglen = (int)[msgarr count];
@@ -1760,7 +1760,7 @@ static void yInternalEventCallback(YSerialPort *obj, NSString *value)
 -(int) writeStxEtx:(NSString*)text
 {
     NSMutableData* buff;
-    buff = [NSMutableData dataWithData:[[NSString stringWithFormat:@"%c%@%c", 2, text,3] dataUsingEncoding:NSISOLatin1StringEncoding]];
+    buff = [NSMutableData dataWithData:[[NSString stringWithFormat:@"%c%@%c",2,text,3] dataUsingEncoding:NSISOLatin1StringEncoding]];
     // send string using file upload
     return [self _upload:@"txdata" :buff];
 }
@@ -1809,30 +1809,30 @@ static void yInternalEventCallback(YSerialPort *obj, NSString *value)
     int replen;
     int hexb;
     funCode = [[pduBytes objectAtIndex:0] intValue];
-    nib = ((funCode) >> (4));
-    pat = [NSString stringWithFormat:@"%02X[%X%X]%X.*", slaveNo, nib, (nib+8),((funCode) & (15))];
-    cmd = [NSString stringWithFormat:@"%02X%02X", slaveNo,funCode];
+    nib = (funCode >> 4);
+    pat = [NSString stringWithFormat:@"%02X[%X%X]%X.*",slaveNo,nib,(nib+8),(funCode & 15)];
+    cmd = [NSString stringWithFormat:@"%02X%02X",slaveNo,funCode];
     i = 1;
     while (i < (int)[pduBytes count]) {
-        cmd = [NSString stringWithFormat:@"%@%02X", cmd,(([[pduBytes objectAtIndex:i] intValue]) & (0xff))];
+        cmd = [NSString stringWithFormat:@"%@%02X",cmd,(([[pduBytes objectAtIndex:i] intValue]) & 0xff)];
         i = i + 1;
     }
     if ((int)[(cmd) length] <= 80) {
         // fast query
-        url = [NSString stringWithFormat:@"rxmsg.json?cmd=:%@&pat=:%@", cmd,pat];
+        url = [NSString stringWithFormat:@"rxmsg.json?cmd=:%@&pat=:%@",cmd,pat];
     } else {
         // long query
         prevpos = [self end_tell];
         [self _upload:@"txdata:" :[YAPI _hexStr2Bin:cmd]];
-        url = [NSString stringWithFormat:@"rxmsg.json?pos=%d&maxw=2000&pat=:%@", prevpos,pat];
+        url = [NSString stringWithFormat:@"rxmsg.json?pos=%d&maxw=2000&pat=:%@",prevpos,pat];
     }
 
     msgs = [self _download:url];
     reps = [self _json_get_array:msgs];
-    if (!((int)[reps count] > 1)) {[self _throw: YAPI_IO_ERROR: @"no reply from MODBUS slave"]; return res;}
+    if (!((int)[reps count] > 1)) {[self _throw:YAPI_IO_ERROR:@"no reply from MODBUS slave"]; return res;}
     if ((int)[reps count] > 1) {
         rep = [self _json_get_string:[NSMutableData dataWithData:[[reps objectAtIndex:0] dataUsingEncoding:NSISOLatin1StringEncoding]]];
-        replen = (((int)[(rep) length] - 3) >> (1));
+        replen = (((int)[(rep) length] - 3) >> 1);
         i = 0;
         while (i < replen) {
             hexb = (int)strtoul(STR_oc2y([rep substringWithRange:NSMakeRange(2 * i + 3, 2)]), NULL, 16);
@@ -1841,10 +1841,10 @@ static void yInternalEventCallback(YSerialPort *obj, NSString *value)
         }
         if ([[res objectAtIndex:0] intValue] != funCode) {
             i = [[res objectAtIndex:1] intValue];
-            if (!(i > 1)) {[self _throw: YAPI_NOT_SUPPORTED: @"MODBUS error: unsupported function code"]; return res;}
-            if (!(i > 2)) {[self _throw: YAPI_INVALID_ARGUMENT: @"MODBUS error: illegal data address"]; return res;}
-            if (!(i > 3)) {[self _throw: YAPI_INVALID_ARGUMENT: @"MODBUS error: illegal data value"]; return res;}
-            if (!(i > 4)) {[self _throw: YAPI_INVALID_ARGUMENT: @"MODBUS error: failed to execute function"]; return res;}
+            if (!(i > 1)) {[self _throw:YAPI_NOT_SUPPORTED:@"MODBUS error: unsupported function code"]; return res;}
+            if (!(i > 2)) {[self _throw:YAPI_INVALID_ARGUMENT:@"MODBUS error: illegal data address"]; return res;}
+            if (!(i > 3)) {[self _throw:YAPI_INVALID_ARGUMENT:@"MODBUS error: illegal data value"]; return res;}
+            if (!(i > 4)) {[self _throw:YAPI_INVALID_ARGUMENT:@"MODBUS error: failed to execute function"]; return res;}
         }
     }
     return res;
@@ -1872,10 +1872,10 @@ static void yInternalEventCallback(YSerialPort *obj, NSString *value)
     int val;
     int mask;
     [pdu addObject:[NSNumber numberWithLong:0x01]];
-    [pdu addObject:[NSNumber numberWithLong:((pduAddr) >> (8))]];
-    [pdu addObject:[NSNumber numberWithLong:((pduAddr) & (0xff))]];
-    [pdu addObject:[NSNumber numberWithLong:((nBits) >> (8))]];
-    [pdu addObject:[NSNumber numberWithLong:((nBits) & (0xff))]];
+    [pdu addObject:[NSNumber numberWithLong:(pduAddr >> 8)]];
+    [pdu addObject:[NSNumber numberWithLong:(pduAddr & 0xff)]];
+    [pdu addObject:[NSNumber numberWithLong:(nBits >> 8)]];
+    [pdu addObject:[NSNumber numberWithLong:(nBits & 0xff)]];
 
     reply = [self queryMODBUS:slaveNo :pdu];
     if ((int)[reply count] == 0) {
@@ -1889,7 +1889,7 @@ static void yInternalEventCallback(YSerialPort *obj, NSString *value)
     val = [[reply objectAtIndex:idx] intValue];
     mask = 1;
     while (bitpos < nBits) {
-        if (((val) & (mask)) == 0) {
+        if ((val & mask) == 0) {
             [res addObject:[NSNumber numberWithLong:0]];
         } else {
             [res addObject:[NSNumber numberWithLong:1]];
@@ -1900,7 +1900,7 @@ static void yInternalEventCallback(YSerialPort *obj, NSString *value)
             val = [[reply objectAtIndex:idx] intValue];
             mask = 1;
         } else {
-            mask = ((mask) << (1));
+            mask = (mask << 1);
         }
     }
     return res;
@@ -1928,10 +1928,10 @@ static void yInternalEventCallback(YSerialPort *obj, NSString *value)
     int val;
     int mask;
     [pdu addObject:[NSNumber numberWithLong:0x02]];
-    [pdu addObject:[NSNumber numberWithLong:((pduAddr) >> (8))]];
-    [pdu addObject:[NSNumber numberWithLong:((pduAddr) & (0xff))]];
-    [pdu addObject:[NSNumber numberWithLong:((nBits) >> (8))]];
-    [pdu addObject:[NSNumber numberWithLong:((nBits) & (0xff))]];
+    [pdu addObject:[NSNumber numberWithLong:(pduAddr >> 8)]];
+    [pdu addObject:[NSNumber numberWithLong:(pduAddr & 0xff)]];
+    [pdu addObject:[NSNumber numberWithLong:(nBits >> 8)]];
+    [pdu addObject:[NSNumber numberWithLong:(nBits & 0xff)]];
 
     reply = [self queryMODBUS:slaveNo :pdu];
     if ((int)[reply count] == 0) {
@@ -1945,7 +1945,7 @@ static void yInternalEventCallback(YSerialPort *obj, NSString *value)
     val = [[reply objectAtIndex:idx] intValue];
     mask = 1;
     while (bitpos < nBits) {
-        if (((val) & (mask)) == 0) {
+        if ((val & mask) == 0) {
             [res addObject:[NSNumber numberWithLong:0]];
         } else {
             [res addObject:[NSNumber numberWithLong:1]];
@@ -1956,7 +1956,7 @@ static void yInternalEventCallback(YSerialPort *obj, NSString *value)
             val = [[reply objectAtIndex:idx] intValue];
             mask = 1;
         } else {
-            mask = ((mask) << (1));
+            mask = (mask << 1);
         }
     }
     return res;
@@ -1982,12 +1982,12 @@ static void yInternalEventCallback(YSerialPort *obj, NSString *value)
     int regpos;
     int idx;
     int val;
-    if (!(nWords<=256)) {[self _throw: YAPI_INVALID_ARGUMENT: @"Cannot read more than 256 words"]; return res;}
+    if (!(nWords<=256)) {[self _throw:YAPI_INVALID_ARGUMENT:@"Cannot read more than 256 words"]; return res;}
     [pdu addObject:[NSNumber numberWithLong:0x03]];
-    [pdu addObject:[NSNumber numberWithLong:((pduAddr) >> (8))]];
-    [pdu addObject:[NSNumber numberWithLong:((pduAddr) & (0xff))]];
-    [pdu addObject:[NSNumber numberWithLong:((nWords) >> (8))]];
-    [pdu addObject:[NSNumber numberWithLong:((nWords) & (0xff))]];
+    [pdu addObject:[NSNumber numberWithLong:(pduAddr >> 8)]];
+    [pdu addObject:[NSNumber numberWithLong:(pduAddr & 0xff)]];
+    [pdu addObject:[NSNumber numberWithLong:(nWords >> 8)]];
+    [pdu addObject:[NSNumber numberWithLong:(nWords & 0xff)]];
 
     reply = [self queryMODBUS:slaveNo :pdu];
     if ((int)[reply count] == 0) {
@@ -1999,7 +1999,7 @@ static void yInternalEventCallback(YSerialPort *obj, NSString *value)
     regpos = 0;
     idx = 2;
     while (regpos < nWords) {
-        val = (([[reply objectAtIndex:idx] intValue]) << (8));
+        val = (([[reply objectAtIndex:idx] intValue]) << 8);
         idx = idx + 1;
         val = val + [[reply objectAtIndex:idx] intValue];
         idx = idx + 1;
@@ -2030,10 +2030,10 @@ static void yInternalEventCallback(YSerialPort *obj, NSString *value)
     int idx;
     int val;
     [pdu addObject:[NSNumber numberWithLong:0x04]];
-    [pdu addObject:[NSNumber numberWithLong:((pduAddr) >> (8))]];
-    [pdu addObject:[NSNumber numberWithLong:((pduAddr) & (0xff))]];
-    [pdu addObject:[NSNumber numberWithLong:((nWords) >> (8))]];
-    [pdu addObject:[NSNumber numberWithLong:((nWords) & (0xff))]];
+    [pdu addObject:[NSNumber numberWithLong:(pduAddr >> 8)]];
+    [pdu addObject:[NSNumber numberWithLong:(pduAddr & 0xff)]];
+    [pdu addObject:[NSNumber numberWithLong:(nWords >> 8)]];
+    [pdu addObject:[NSNumber numberWithLong:(nWords & 0xff)]];
 
     reply = [self queryMODBUS:slaveNo :pdu];
     if ((int)[reply count] == 0) {
@@ -2045,7 +2045,7 @@ static void yInternalEventCallback(YSerialPort *obj, NSString *value)
     regpos = 0;
     idx = 2;
     while (regpos < nWords) {
-        val = (([[reply objectAtIndex:idx] intValue]) << (8));
+        val = (([[reply objectAtIndex:idx] intValue]) << 8);
         idx = idx + 1;
         val = val + [[reply objectAtIndex:idx] intValue];
         idx = idx + 1;
@@ -2077,8 +2077,8 @@ static void yInternalEventCallback(YSerialPort *obj, NSString *value)
         value = 0xff;
     }
     [pdu addObject:[NSNumber numberWithLong:0x05]];
-    [pdu addObject:[NSNumber numberWithLong:((pduAddr) >> (8))]];
-    [pdu addObject:[NSNumber numberWithLong:((pduAddr) & (0xff))]];
+    [pdu addObject:[NSNumber numberWithLong:(pduAddr >> 8)]];
+    [pdu addObject:[NSNumber numberWithLong:(pduAddr & 0xff)]];
     [pdu addObject:[NSNumber numberWithLong:value]];
     [pdu addObject:[NSNumber numberWithLong:0x00]];
 
@@ -2117,19 +2117,19 @@ static void yInternalEventCallback(YSerialPort *obj, NSString *value)
     int res;
     res = 0;
     nBits = (int)[bits count];
-    nBytes = (((nBits + 7)) >> (3));
+    nBytes = ((nBits + 7) >> 3);
     [pdu addObject:[NSNumber numberWithLong:0x0f]];
-    [pdu addObject:[NSNumber numberWithLong:((pduAddr) >> (8))]];
-    [pdu addObject:[NSNumber numberWithLong:((pduAddr) & (0xff))]];
-    [pdu addObject:[NSNumber numberWithLong:((nBits) >> (8))]];
-    [pdu addObject:[NSNumber numberWithLong:((nBits) & (0xff))]];
+    [pdu addObject:[NSNumber numberWithLong:(pduAddr >> 8)]];
+    [pdu addObject:[NSNumber numberWithLong:(pduAddr & 0xff)]];
+    [pdu addObject:[NSNumber numberWithLong:(nBits >> 8)]];
+    [pdu addObject:[NSNumber numberWithLong:(nBits & 0xff)]];
     [pdu addObject:[NSNumber numberWithLong:nBytes]];
     bitpos = 0;
     val = 0;
     mask = 1;
     while (bitpos < nBits) {
         if ([[bits objectAtIndex:bitpos] intValue] != 0) {
-            val = ((val) | (mask));
+            val = (val | mask);
         }
         bitpos = bitpos + 1;
         if (mask == 0x80) {
@@ -2137,7 +2137,7 @@ static void yInternalEventCallback(YSerialPort *obj, NSString *value)
             val = 0;
             mask = 1;
         } else {
-            mask = ((mask) << (1));
+            mask = (mask << 1);
         }
     }
     if (mask != 1) {
@@ -2151,7 +2151,7 @@ static void yInternalEventCallback(YSerialPort *obj, NSString *value)
     if ([[reply objectAtIndex:0] intValue] != [[pdu objectAtIndex:0] intValue]) {
         return res;
     }
-    res = (([[reply objectAtIndex:3] intValue]) << (8));
+    res = (([[reply objectAtIndex:3] intValue]) << 8);
     res = res + [[reply objectAtIndex:4] intValue];
     return res;
 }
@@ -2175,10 +2175,10 @@ static void yInternalEventCallback(YSerialPort *obj, NSString *value)
     int res;
     res = 0;
     [pdu addObject:[NSNumber numberWithLong:0x06]];
-    [pdu addObject:[NSNumber numberWithLong:((pduAddr) >> (8))]];
-    [pdu addObject:[NSNumber numberWithLong:((pduAddr) & (0xff))]];
-    [pdu addObject:[NSNumber numberWithLong:((value) >> (8))]];
-    [pdu addObject:[NSNumber numberWithLong:((value) & (0xff))]];
+    [pdu addObject:[NSNumber numberWithLong:(pduAddr >> 8)]];
+    [pdu addObject:[NSNumber numberWithLong:(pduAddr & 0xff)]];
+    [pdu addObject:[NSNumber numberWithLong:(value >> 8)]];
+    [pdu addObject:[NSNumber numberWithLong:(value & 0xff)]];
 
     reply = [self queryMODBUS:slaveNo :pdu];
     if ((int)[reply count] == 0) {
@@ -2216,16 +2216,16 @@ static void yInternalEventCallback(YSerialPort *obj, NSString *value)
     nWords = (int)[values count];
     nBytes = 2 * nWords;
     [pdu addObject:[NSNumber numberWithLong:0x10]];
-    [pdu addObject:[NSNumber numberWithLong:((pduAddr) >> (8))]];
-    [pdu addObject:[NSNumber numberWithLong:((pduAddr) & (0xff))]];
-    [pdu addObject:[NSNumber numberWithLong:((nWords) >> (8))]];
-    [pdu addObject:[NSNumber numberWithLong:((nWords) & (0xff))]];
+    [pdu addObject:[NSNumber numberWithLong:(pduAddr >> 8)]];
+    [pdu addObject:[NSNumber numberWithLong:(pduAddr & 0xff)]];
+    [pdu addObject:[NSNumber numberWithLong:(nWords >> 8)]];
+    [pdu addObject:[NSNumber numberWithLong:(nWords & 0xff)]];
     [pdu addObject:[NSNumber numberWithLong:nBytes]];
     regpos = 0;
     while (regpos < nWords) {
         val = [[values objectAtIndex:regpos] intValue];
-        [pdu addObject:[NSNumber numberWithLong:((val) >> (8))]];
-        [pdu addObject:[NSNumber numberWithLong:((val) & (0xff))]];
+        [pdu addObject:[NSNumber numberWithLong:(val >> 8)]];
+        [pdu addObject:[NSNumber numberWithLong:(val & 0xff)]];
         regpos = regpos + 1;
     }
 
@@ -2236,7 +2236,7 @@ static void yInternalEventCallback(YSerialPort *obj, NSString *value)
     if ([[reply objectAtIndex:0] intValue] != [[pdu objectAtIndex:0] intValue]) {
         return res;
     }
-    res = (([[reply objectAtIndex:3] intValue]) << (8));
+    res = (([[reply objectAtIndex:3] intValue]) << 8);
     res = res + [[reply objectAtIndex:4] intValue];
     return res;
 }
@@ -2269,20 +2269,20 @@ static void yInternalEventCallback(YSerialPort *obj, NSString *value)
     nWriteWords = (int)[values count];
     nBytes = 2 * nWriteWords;
     [pdu addObject:[NSNumber numberWithLong:0x17]];
-    [pdu addObject:[NSNumber numberWithLong:((pduReadAddr) >> (8))]];
-    [pdu addObject:[NSNumber numberWithLong:((pduReadAddr) & (0xff))]];
-    [pdu addObject:[NSNumber numberWithLong:((nReadWords) >> (8))]];
-    [pdu addObject:[NSNumber numberWithLong:((nReadWords) & (0xff))]];
-    [pdu addObject:[NSNumber numberWithLong:((pduWriteAddr) >> (8))]];
-    [pdu addObject:[NSNumber numberWithLong:((pduWriteAddr) & (0xff))]];
-    [pdu addObject:[NSNumber numberWithLong:((nWriteWords) >> (8))]];
-    [pdu addObject:[NSNumber numberWithLong:((nWriteWords) & (0xff))]];
+    [pdu addObject:[NSNumber numberWithLong:(pduReadAddr >> 8)]];
+    [pdu addObject:[NSNumber numberWithLong:(pduReadAddr & 0xff)]];
+    [pdu addObject:[NSNumber numberWithLong:(nReadWords >> 8)]];
+    [pdu addObject:[NSNumber numberWithLong:(nReadWords & 0xff)]];
+    [pdu addObject:[NSNumber numberWithLong:(pduWriteAddr >> 8)]];
+    [pdu addObject:[NSNumber numberWithLong:(pduWriteAddr & 0xff)]];
+    [pdu addObject:[NSNumber numberWithLong:(nWriteWords >> 8)]];
+    [pdu addObject:[NSNumber numberWithLong:(nWriteWords & 0xff)]];
     [pdu addObject:[NSNumber numberWithLong:nBytes]];
     regpos = 0;
     while (regpos < nWriteWords) {
         val = [[values objectAtIndex:regpos] intValue];
-        [pdu addObject:[NSNumber numberWithLong:((val) >> (8))]];
-        [pdu addObject:[NSNumber numberWithLong:((val) & (0xff))]];
+        [pdu addObject:[NSNumber numberWithLong:(val >> 8)]];
+        [pdu addObject:[NSNumber numberWithLong:(val & 0xff)]];
         regpos = regpos + 1;
     }
 
@@ -2296,7 +2296,7 @@ static void yInternalEventCallback(YSerialPort *obj, NSString *value)
     regpos = 0;
     idx = 2;
     while (regpos < nReadWords) {
-        val = (([[reply objectAtIndex:idx] intValue]) << (8));
+        val = (([[reply objectAtIndex:idx] intValue]) << 8);
         idx = idx + 1;
         val = val + [[reply objectAtIndex:idx] intValue];
         idx = idx + 1;

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_motor.m 59977 2024-03-18 15:02:32Z mvuilleu $
+ *  $Id: yocto_motor.m 63508 2024-11-28 10:46:01Z seb $
  *
  *  Implements the high-level API for Motor functions
  *
@@ -600,7 +600,7 @@
     obj = (YMotor*) [YFunction _FindFromCache:@"Motor" :func];
     if (obj == nil) {
         obj = ARC_sendAutorelease([[YMotor alloc] initWith:func]);
-        [YFunction _AddToCache:@"Motor" : func :obj];
+        [YFunction _AddToCache:@"Motor" :func :obj];
     }
     return obj;
 }

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_hubport.m 59977 2024-03-18 15:02:32Z mvuilleu $
+ *  $Id: yocto_hubport.m 63508 2024-11-28 10:46:01Z seb $
  *
  *  Implements the high-level API for HubPort functions
  *
@@ -222,7 +222,7 @@
     obj = (YHubPort*) [YFunction _FindFromCache:@"HubPort" :func];
     if (obj == nil) {
         obj = ARC_sendAutorelease([[YHubPort alloc] initWith:func]);
-        [YFunction _AddToCache:@"HubPort" : func :obj];
+        [YFunction _AddToCache:@"HubPort" :func :obj];
     }
     return obj;
 }

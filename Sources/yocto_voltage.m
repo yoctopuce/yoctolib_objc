@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_voltage.m 59977 2024-03-18 15:02:32Z mvuilleu $
+ *  $Id: yocto_voltage.m 63508 2024-11-28 10:46:01Z seb $
  *
  *  Implements the high-level API for Voltage functions
  *
@@ -163,7 +163,7 @@
     obj = (YVoltage*) [YFunction _FindFromCache:@"Voltage" :func];
     if (obj == nil) {
         obj = ARC_sendAutorelease([[YVoltage alloc] initWith:func]);
-        [YFunction _AddToCache:@"Voltage" : func :obj];
+        [YFunction _AddToCache:@"Voltage" :func :obj];
     }
     return obj;
 }

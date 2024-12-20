@@ -278,7 +278,7 @@
     obj = (YThreshold*) [YFunction _FindFromCache:@"Threshold" :func];
     if (obj == nil) {
         obj = ARC_sendAutorelease([[YThreshold alloc] initWith:func]);
-        [YFunction _AddToCache:@"Threshold" : func :obj];
+        [YFunction _AddToCache:@"Threshold" :func :obj];
     }
     return obj;
 }

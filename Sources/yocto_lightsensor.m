@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_lightsensor.m 59977 2024-03-18 15:02:32Z mvuilleu $
+ *  $Id: yocto_lightsensor.m 63508 2024-11-28 10:46:01Z seb $
  *
  *  Implements the high-level API for LightSensor functions
  *
@@ -198,7 +198,7 @@
     obj = (YLightSensor*) [YFunction _FindFromCache:@"LightSensor" :func];
     if (obj == nil) {
         obj = ARC_sendAutorelease([[YLightSensor alloc] initWith:func]);
-        [YFunction _AddToCache:@"LightSensor" : func :obj];
+        [YFunction _AddToCache:@"LightSensor" :func :obj];
     }
     return obj;
 }

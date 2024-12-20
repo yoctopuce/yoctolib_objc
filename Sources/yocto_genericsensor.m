@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_genericsensor.m 59977 2024-03-18 15:02:32Z mvuilleu $
+ *  $Id: yocto_genericsensor.m 63508 2024-11-28 10:46:01Z seb $
  *
  *  Implements the high-level API for GenericSensor functions
  *
@@ -308,7 +308,7 @@
 
 /**
  * Changes the electric signal bias for zero shift adjustment.
- * If your electric signal reads positive when it should be zero, setup
+ * If your electric signal reads positive when it should be zero, set up
  * a positive signalBias of the same value to fix the zero shift.
  * Remember to call the saveToFlash()
  * method of the module if the modification must be kept.
@@ -501,7 +501,7 @@
     obj = (YGenericSensor*) [YFunction _FindFromCache:@"GenericSensor" :func];
     if (obj == nil) {
         obj = ARC_sendAutorelease([[YGenericSensor alloc] initWith:func]);
-        [YFunction _AddToCache:@"GenericSensor" : func :obj];
+        [YFunction _AddToCache:@"GenericSensor" :func :obj];
     }
     return obj;
 }

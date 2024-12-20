@@ -638,7 +638,7 @@
             errMsg = @"Radio is OFF (refreshRate=0).";
         }
         if (errBlk >= 0) {
-            errMsg = [NSString stringWithFormat:@"%@ (block %d)", errMsg,errBlk];
+            errMsg = [NSString stringWithFormat:@"%@ (block %d)",errMsg,errBlk];
         }
     }
     _tagId = tagId;
@@ -687,20 +687,20 @@
         opt = 0;
     }
     if (ForceMultiBlockAccess) {
-        opt = ((opt) | (2));
+        opt = (opt | 2);
     }
     if (EnableRawAccess) {
-        opt = ((opt) | (4));
+        opt = (opt | 4);
     }
     if (DisableBoundaryChecks) {
-        opt = ((opt) | (8));
+        opt = (opt | 8);
     }
     if (EnableDryRun) {
-        opt = ((opt) | (16));
+        opt = (opt | 16);
     }
     res = [NSString stringWithFormat:@"&o=%d",opt];
     if (KeyType != 0) {
-        res = [NSString stringWithFormat:@"%@&k=%02x:%@", res, KeyType,HexKey];
+        res = [NSString stringWithFormat:@"%@&k=%02x:%@",res,KeyType,HexKey];
     }
     return res;
 }
@@ -869,7 +869,7 @@ static void yInternalEventCallback(YRfidReader *obj, NSString *value)
     obj = (YRfidReader*) [YFunction _FindFromCache:@"RfidReader" :func];
     if (obj == nil) {
         obj = ARC_sendAutorelease([[YRfidReader alloc] initWith:func]);
-        [YFunction _AddToCache:@"RfidReader" : func :obj];
+        [YFunction _AddToCache:@"RfidReader" :func :obj];
     }
     return obj;
 }
@@ -940,9 +940,9 @@ static void yInternalEventCallback(YRfidReader *obj, NSString *value)
             lab = -1;
         }
     }
-    [status imm_init:tagId : errCode : errBlk : fab :lab];
+    [status imm_init:tagId :errCode :errBlk :fab :lab];
     retcode = [status get_yapiError];
-    if (!(retcode == YAPI_SUCCESS)) {[self _throw: retcode: [status get_errorMessage]]; return retcode;}
+    if (!(retcode == YAPI_SUCCESS)) {[self _throw:retcode:[status get_errorMessage]]; return retcode;}
     return YAPI_SUCCESS;
 }
 
@@ -953,7 +953,7 @@ static void yInternalEventCallback(YRfidReader *obj, NSString *value)
     status = ARC_sendAutorelease([[YRfidStatus alloc] init]);
 
     json = [self _download:@"rfid.json?a=reset"];
-    return [self _chkerror:@"" : json :status];
+    return [self _chkerror:@"" :json :status];
 }
 
 /**
@@ -1007,7 +1007,7 @@ static void yInternalEventCallback(YRfidReader *obj, NSString *value)
     url = [NSString stringWithFormat:@"rfid.json?a=info&t=%@",tagId];
 
     json = [self _download:url];
-    [self _chkerror:tagId : json :status];
+    [self _chkerror:tagId :json :status];
     tagType = [[self _json_get_key:json :@"type"] intValue];
     size = [[self _json_get_key:json :@"size"] intValue];
     usable = [[self _json_get_key:json :@"usable"] intValue];
@@ -1015,7 +1015,7 @@ static void yInternalEventCallback(YRfidReader *obj, NSString *value)
     fblk = [[self _json_get_key:json :@"fblk"] intValue];
     lblk = [[self _json_get_key:json :@"lblk"] intValue];
     res = ARC_sendAutorelease([[YRfidTagInfo alloc] init]);
-    [res imm_init:tagId : tagType : size : usable : blksize : fblk :lblk];
+    [res imm_init:tagId :tagType :size :usable :blksize :fblk :lblk];
     return res;
 }
 
@@ -1048,7 +1048,7 @@ static void yInternalEventCallback(YRfidReader *obj, NSString *value)
     url = [NSString stringWithFormat:@"rfid.json?a=lock&t=%@&b=%d&n=%d%@",tagId,firstBlock,nBlocks,optstr];
 
     json = [self _download:url];
-    return [self _chkerror:tagId : json :status];
+    return [self _chkerror:tagId :json :status];
 }
 
 /**
@@ -1085,15 +1085,15 @@ static void yInternalEventCallback(YRfidReader *obj, NSString *value)
     url = [NSString stringWithFormat:@"rfid.json?a=chkl&t=%@&b=%d&n=%d%@",tagId,firstBlock,nBlocks,optstr];
 
     json = [self _download:url];
-    [self _chkerror:tagId : json :status];
+    [self _chkerror:tagId :json :status];
     if ([status get_yapiError] != YAPI_SUCCESS) {
         return res;
     }
     binRes = [YAPI _hexStr2Bin:[self _json_get_key:json :@"bitmap"]];
     idx = 0;
     while (idx < nBlocks) {
-        val = (((u8*)([binRes bytes]))[((idx) >> (3))]);
-        isLocked = (((val) & (((1) << (((idx) & (7)))))) != 0);
+        val = (((u8*)([binRes bytes]))[(idx >> 3)]);
+        isLocked = ((val & (1 << (idx & 7))) != 0);
         [res addObject:[NSNumber numberWithLong:isLocked]];
         idx = idx + 1;
     }
@@ -1133,15 +1133,15 @@ static void yInternalEventCallback(YRfidReader *obj, NSString *value)
     url = [NSString stringWithFormat:@"rfid.json?a=chks&t=%@&b=%d&n=%d%@",tagId,firstBlock,nBlocks,optstr];
 
     json = [self _download:url];
-    [self _chkerror:tagId : json :status];
+    [self _chkerror:tagId :json :status];
     if ([status get_yapiError] != YAPI_SUCCESS) {
         return res;
     }
     binRes = [YAPI _hexStr2Bin:[self _json_get_key:json :@"bitmap"]];
     idx = 0;
     while (idx < nBlocks) {
-        val = (((u8*)([binRes bytes]))[((idx) >> (3))]);
-        isLocked = (((val) & (((1) << (((idx) & (7)))))) != 0);
+        val = (((u8*)([binRes bytes]))[(idx >> 3)]);
+        isLocked = ((val & (1 << (idx & 7))) != 0);
         [res addObject:[NSNumber numberWithLong:isLocked]];
         idx = idx + 1;
     }
@@ -1181,7 +1181,7 @@ static void yInternalEventCallback(YRfidReader *obj, NSString *value)
     url = [NSString stringWithFormat:@"rfid.json?a=read&t=%@&b=%d&n=%d%@",tagId,firstBlock,nBytes,optstr];
 
     json = [self _download:url];
-    [self _chkerror:tagId : json :status];
+    [self _chkerror:tagId :json :status];
     if ([status get_yapiError] == YAPI_SUCCESS) {
         hexbuf = [self _json_get_key:json :@"res"];
     } else {
@@ -1215,7 +1215,7 @@ static void yInternalEventCallback(YRfidReader *obj, NSString *value)
  */
 -(NSMutableData*) tagReadBin:(NSString*)tagId :(int)firstBlock :(int)nBytes :(YRfidOptions*)options :(YRfidStatus*)status
 {
-    return [YAPI _hexStr2Bin:[self tagReadHex:tagId : firstBlock : nBytes : options :status]];
+    return [YAPI _hexStr2Bin:[self tagReadHex:tagId :firstBlock :nBytes :options :status]];
 }
 
 /**
@@ -1247,7 +1247,7 @@ static void yInternalEventCallback(YRfidReader *obj, NSString *value)
     int idx;
     int endidx;
     NSMutableArray* res = [NSMutableArray array];
-    blk = [self tagReadBin:tagId : firstBlock : nBytes : options :status];
+    blk = [self tagReadBin:tagId :firstBlock :nBytes :options :status];
     endidx = (int)[blk length];
     idx = 0;
     while (idx < endidx) {
@@ -1282,7 +1282,7 @@ static void yInternalEventCallback(YRfidReader *obj, NSString *value)
  */
 -(NSString*) tagReadStr:(NSString*)tagId :(int)firstBlock :(int)nChars :(YRfidOptions*)options :(YRfidStatus*)status
 {
-    return ARC_sendAutorelease([[NSString alloc] initWithData:[self tagReadBin:tagId : firstBlock : nChars : options :status] encoding:NSISOLatin1StringEncoding]);
+    return ARC_sendAutorelease([[NSString alloc] initWithData:[self tagReadBin:tagId :firstBlock :nChars :options :status] encoding:NSISOLatin1StringEncoding]);
 }
 
 /**
@@ -1321,13 +1321,13 @@ static void yInternalEventCallback(YRfidReader *obj, NSString *value)
     if (buflen <= 16) {
         // short data, use an URL-based command
         hexstr = [YAPI _bin2HexStr:buff];
-        return [self tagWriteHex:tagId : firstBlock : hexstr : options :status];
+        return [self tagWriteHex:tagId :firstBlock :hexstr :options :status];
     } else {
         // long data, use an upload command
         optstr = [options imm_getParams];
         fname = [NSString stringWithFormat:@"Rfid:t=%@&b=%d&n=%d%@",tagId,firstBlock,buflen,optstr];
         json = [self _uploadEx:fname :buff];
-        return [self _chkerror:tagId : json :status];
+        return [self _chkerror:tagId :json :status];
     }
 }
 
@@ -1367,11 +1367,11 @@ static void yInternalEventCallback(YRfidReader *obj, NSString *value)
     idx = 0;
     while (idx < bufflen) {
         hexb = [[byteList objectAtIndex:idx] intValue];
-        (((u8*)([buff mutableBytes]))[ idx]) = hexb;
+        (((u8*)([buff mutableBytes]))[idx]) = hexb;
         idx = idx + 1;
     }
 
-    return [self tagWriteBin:tagId : firstBlock : buff : options :status];
+    return [self tagWriteBin:tagId :firstBlock :buff :options :status];
 }
 
 /**
@@ -1409,23 +1409,23 @@ static void yInternalEventCallback(YRfidReader *obj, NSString *value)
     int idx;
     int hexb;
     bufflen = (int)[(hexString) length];
-    bufflen = ((bufflen) >> (1));
+    bufflen = (bufflen >> 1);
     if (bufflen <= 16) {
         // short data, use an URL-based command
         optstr = [options imm_getParams];
         url = [NSString stringWithFormat:@"rfid.json?a=writ&t=%@&b=%d&w=%@%@",tagId,firstBlock,hexString,optstr];
         json = [self _download:url];
-        return [self _chkerror:tagId : json :status];
+        return [self _chkerror:tagId :json :status];
     } else {
         // long data, use an upload command
         buff = [NSMutableData dataWithLength:bufflen];
         idx = 0;
         while (idx < bufflen) {
-            hexb = (int)strtoul(STR_oc2y([hexString substringWithRange:NSMakeRange( 2 * idx, 2)]), NULL, 16);
-            (((u8*)([buff mutableBytes]))[ idx]) = hexb;
+            hexb = (int)strtoul(STR_oc2y([hexString substringWithRange:NSMakeRange(2 * idx, 2)]), NULL, 16);
+            (((u8*)([buff mutableBytes]))[idx]) = hexb;
             idx = idx + 1;
         }
-        return [self tagWriteBin:tagId : firstBlock : buff : options :status];
+        return [self tagWriteBin:tagId :firstBlock :buff :options :status];
     }
 }
 
@@ -1436,13 +1436,19 @@ static void yInternalEventCallback(YRfidReader *obj, NSString *value)
  * Note that only the characters présent  in  the provided string
  * will be written, there is no notion of string length. If your
  * string data have variable length, you'll have to encode the
- * string length yourself.
+ * string length yourself, with a terminal zero for instannce.
+ *
+ * This function only works with ISO-latin characters, if you wish to
+ * write strings encoded with alternate character sets, you'll have to
+ * use tagWriteBin() function.
+ *
  * By default firstBlock cannot be a special block, and any special block
  * encountered in the middle of the write operation will be skipped
  * automatically. The last data block affected by the operation will
  * be automatically padded with zeros if neccessary.
  * If you rather want to rewrite special blocks as well,
- * use the EnableRawAccess field from the options parameter.
+ * use the EnableRawAccess field from the options parameter
+ * (definitely not recommanded).
  *
  * @param tagId : identifier of the tag to use
  * @param firstBlock : block number where write should start
@@ -1463,7 +1469,7 @@ static void yInternalEventCallback(YRfidReader *obj, NSString *value)
     NSMutableData* buff;
     buff = [NSMutableData dataWithData:[text dataUsingEncoding:NSISOLatin1StringEncoding]];
 
-    return [self tagWriteBin:tagId : firstBlock : buff : options :status];
+    return [self tagWriteBin:tagId :firstBlock :buff :options :status];
 }
 
 /**
@@ -1491,7 +1497,7 @@ static void yInternalEventCallback(YRfidReader *obj, NSString *value)
     url = [NSString stringWithFormat:@"rfid.json?a=rdsf&t=%@&b=0%@",tagId,optstr];
 
     json = [self _download:url];
-    [self _chkerror:tagId : json :status];
+    [self _chkerror:tagId :json :status];
     if ([status get_yapiError] == YAPI_SUCCESS) {
         res = [[self _json_get_key:json :@"res"] intValue];
     } else {
@@ -1525,7 +1531,7 @@ static void yInternalEventCallback(YRfidReader *obj, NSString *value)
     url = [NSString stringWithFormat:@"rfid.json?a=wrsf&t=%@&b=0&v=%d%@",tagId,afi,optstr];
 
     json = [self _download:url];
-    return [self _chkerror:tagId : json :status];
+    return [self _chkerror:tagId :json :status];
 }
 
 /**
@@ -1553,7 +1559,7 @@ static void yInternalEventCallback(YRfidReader *obj, NSString *value)
     url = [NSString stringWithFormat:@"rfid.json?a=lksf&t=%@&b=0%@",tagId,optstr];
 
     json = [self _download:url];
-    return [self _chkerror:tagId : json :status];
+    return [self _chkerror:tagId :json :status];
 }
 
 /**
@@ -1581,7 +1587,7 @@ static void yInternalEventCallback(YRfidReader *obj, NSString *value)
     url = [NSString stringWithFormat:@"rfid.json?a=rdsf&t=%@&b=1%@",tagId,optstr];
 
     json = [self _download:url];
-    [self _chkerror:tagId : json :status];
+    [self _chkerror:tagId :json :status];
     if ([status get_yapiError] == YAPI_SUCCESS) {
         res = [[self _json_get_key:json :@"res"] intValue];
     } else {
@@ -1615,7 +1621,7 @@ static void yInternalEventCallback(YRfidReader *obj, NSString *value)
     url = [NSString stringWithFormat:@"rfid.json?a=wrsf&t=%@&b=1&v=%d%@",tagId,dsfid,optstr];
 
     json = [self _download:url];
-    return [self _chkerror:tagId : json :status];
+    return [self _chkerror:tagId :json :status];
 }
 
 /**
@@ -1643,7 +1649,7 @@ static void yInternalEventCallback(YRfidReader *obj, NSString *value)
     url = [NSString stringWithFormat:@"rfid.json?a=lksf&t=%@&b=1%@",tagId,optstr];
 
     json = [self _download:url];
-    return [self _chkerror:tagId : json :status];
+    return [self _chkerror:tagId :json :status];
 }
 
 /**
@@ -1713,8 +1719,8 @@ static void yInternalEventCallback(YRfidReader *obj, NSString *value)
     NSString* evtData;
     // detect possible power cycle of the reader to clear event pointer
     cbPos = [cbVal intValue];
-    cbPos = ((cbPos) / (1000));
-    cbDPos = ((cbPos - _prevCbPos) & (0x7ffff));
+    cbPos = (cbPos / 1000);
+    cbDPos = ((cbPos - _prevCbPos) & 0x7ffff);
     _prevCbPos = cbPos;
     if (cbDPos > 16384) {
         _eventPos = 0;
@@ -1731,11 +1737,11 @@ static void yInternalEventCallback(YRfidReader *obj, NSString *value)
         contentStr = ARC_sendAutorelease([[NSString alloc] initWithData:content encoding:NSISOLatin1StringEncoding]);
         eventArr = [NSMutableArray arrayWithArray:[contentStr componentsSeparatedByString:@"\n"]];
         arrLen = (int)[eventArr count];
-        if (!(arrLen > 0)) {[self _throw: YAPI_IO_ERROR: @"fail to download events"]; return YAPI_IO_ERROR;}
+        if (!(arrLen > 0)) {[self _throw:YAPI_IO_ERROR:@"fail to download events"]; return YAPI_IO_ERROR;}
         // first element of array is the new position preceeded by '@'
         arrPos = 1;
         lenStr = [eventArr objectAtIndex:0];
-        lenStr = [lenStr substringWithRange:NSMakeRange( 1, (int)[(lenStr) length]-1)];
+        lenStr = [lenStr substringWithRange:NSMakeRange(1, (int)[(lenStr) length]-1)];
         // update processed event position pointer
         _eventPos = [lenStr intValue];
     } else {
@@ -1745,12 +1751,12 @@ static void yInternalEventCallback(YRfidReader *obj, NSString *value)
         contentStr = ARC_sendAutorelease([[NSString alloc] initWithData:content encoding:NSISOLatin1StringEncoding]);
         eventArr = [NSMutableArray arrayWithArray:[contentStr componentsSeparatedByString:@"\n"]];
         arrLen = (int)[eventArr count];
-        if (!(arrLen > 0)) {[self _throw: YAPI_IO_ERROR: @"fail to download events"]; return YAPI_IO_ERROR;}
+        if (!(arrLen > 0)) {[self _throw:YAPI_IO_ERROR:@"fail to download events"]; return YAPI_IO_ERROR;}
         // last element of array is the new position preceeded by '@'
         arrPos = 0;
         arrLen = arrLen - 1;
         lenStr = [eventArr objectAtIndex:arrLen];
-        lenStr = [lenStr substringWithRange:NSMakeRange( 1, (int)[(lenStr) length]-1)];
+        lenStr = [lenStr substringWithRange:NSMakeRange(1, (int)[(lenStr) length]-1)];
         // update processed event position pointer
         _eventPos = [lenStr intValue];
     }
@@ -1760,18 +1766,18 @@ static void yInternalEventCallback(YRfidReader *obj, NSString *value)
         eventLen = (int)[(eventStr) length];
         typePos = _ystrpos(eventStr, @":")+1;
         if ((eventLen >= 14) && (typePos > 10)) {
-            hexStamp = [eventStr substringWithRange:NSMakeRange( 0, 8)];
+            hexStamp = [eventStr substringWithRange:NSMakeRange(0, 8)];
             intStamp = (int)strtoul(STR_oc2y(hexStamp), NULL, 16);
             if (intStamp >= _eventStamp) {
                 _eventStamp = intStamp;
-                binMStamp = [NSMutableData dataWithData:[[eventStr substringWithRange:NSMakeRange( 8, 2)] dataUsingEncoding:NSISOLatin1StringEncoding]];
+                binMStamp = [NSMutableData dataWithData:[[eventStr substringWithRange:NSMakeRange(8, 2)] dataUsingEncoding:NSISOLatin1StringEncoding]];
                 msStamp = ((((u8*)([binMStamp bytes]))[0])-64) * 32 + (((u8*)([binMStamp bytes]))[1]);
                 evtStamp = intStamp + (0.001 * msStamp);
                 dataPos = _ystrpos(eventStr, @"=")+1;
-                evtType = [eventStr substringWithRange:NSMakeRange( typePos, 1)];
+                evtType = [eventStr substringWithRange:NSMakeRange(typePos, 1)];
                 evtData = @"";
                 if (dataPos > 10) {
-                    evtData = [eventStr substringWithRange:NSMakeRange( dataPos, eventLen-dataPos)];
+                    evtData = [eventStr substringWithRange:NSMakeRange(dataPos, eventLen-dataPos)];
                 }
                 if (_eventCallback != NULL) {
                     _eventCallback(self, evtStamp, evtType, evtData);

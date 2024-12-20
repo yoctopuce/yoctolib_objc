@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_accelerometer.m 59977 2024-03-18 15:02:32Z mvuilleu $
+ *  $Id: yocto_accelerometer.m 63508 2024-11-28 10:46:01Z seb $
  *
  *  Implements the high-level API for Accelerometer functions
  *
@@ -284,7 +284,7 @@
     obj = (YAccelerometer*) [YFunction _FindFromCache:@"Accelerometer" :func];
     if (obj == nil) {
         obj = ARC_sendAutorelease([[YAccelerometer alloc] initWith:func]);
-        [YFunction _AddToCache:@"Accelerometer" : func :obj];
+        [YFunction _AddToCache:@"Accelerometer" :func :obj];
     }
     return obj;
 }

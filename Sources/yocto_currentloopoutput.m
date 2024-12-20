@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_currentloopoutput.m 59977 2024-03-18 15:02:32Z mvuilleu $
+ *  $Id: yocto_currentloopoutput.m 63508 2024-11-28 10:46:01Z seb $
  *
  *  Implements the high-level API for CurrentLoopOutput functions
  *
@@ -280,7 +280,7 @@
     obj = (YCurrentLoopOutput*) [YFunction _FindFromCache:@"CurrentLoopOutput" :func];
     if (obj == nil) {
         obj = ARC_sendAutorelease([[YCurrentLoopOutput alloc] initWith:func]);
-        [YFunction _AddToCache:@"CurrentLoopOutput" : func :obj];
+        [YFunction _AddToCache:@"CurrentLoopOutput" :func :obj];
     }
     return obj;
 }
@@ -344,7 +344,7 @@
     if (mA_target > 21.0) {
         mA_target = 21.0;
     }
-    newval = [NSString stringWithFormat:@"%d:%d", (int) floor(mA_target*65536+0.5),ms_duration];
+    newval = [NSString stringWithFormat:@"%d:%d",(int) floor(mA_target*65536+0.5),ms_duration];
 
     return [self set_currentTransition:newval];
 }

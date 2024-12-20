@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_realtimeclock.m 59977 2024-03-18 15:02:32Z mvuilleu $
+ *  $Id: yocto_realtimeclock.m 63508 2024-11-28 10:46:01Z seb $
  *
  *  Implements the high-level API for RealTimeClock functions
  *
@@ -334,7 +334,7 @@
     obj = (YRealTimeClock*) [YFunction _FindFromCache:@"RealTimeClock" :func];
     if (obj == nil) {
         obj = ARC_sendAutorelease([[YRealTimeClock alloc] initWith:func]);
-        [YFunction _AddToCache:@"RealTimeClock" : func :obj];
+        [YFunction _AddToCache:@"RealTimeClock" :func :obj];
     }
     return obj;
 }

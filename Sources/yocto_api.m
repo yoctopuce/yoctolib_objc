@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.m 59977 2024-03-18 15:02:32Z mvuilleu $
+ * $Id: yocto_api.m 63508 2024-11-28 10:46:01Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -1441,7 +1441,7 @@ static const char* hexArray = "0123456789ABCDEF";
  *
  * From an operating system standpoint, it is generally not required to call
  * this function since the OS will automatically free allocated resources
- * once your program is completed. However there are two situations when
+ * once your program is completed. However, there are two situations when
  * you may really want to use that function:
  *
  * - Free all dynamically allocated memory blocks in order to
@@ -1613,7 +1613,7 @@ static const char* hexArray = "0123456789ABCDEF";
 
 
 /**
- * Setup the Yoctopuce library to use modules connected on a given machine. Idealy this
+ * Set up the Yoctopuce library to use modules connected on a given machine. Idealy this
  * call will be made once at the begining of your application.  The
  * parameter will determine how the API will work. Use the following values:
  *
@@ -1645,7 +1645,7 @@ static const char* hexArray = "0123456789ABCDEF";
  * while trying to access the USB modules. In particular, this means
  * that you must stop the VirtualHub software before starting
  * an application that uses direct USB access. The workaround
- * for this limitation is to setup the library to use the VirtualHub
+ * for this limitation is to set up the library to use the VirtualHub
  * rather than direct USB access.
  *
  * If access control has been activated on the hub, virtual or not, you want to
@@ -1710,7 +1710,7 @@ static const char* hexArray = "0123456789ABCDEF";
 }
 
 /**
- * Setup the Yoctopuce library to no more use modules connected on a previously
+ * Set up the Yoctopuce library to no more use modules connected on a previously
  * registered machine with RegisterHub.
  *
  * @param url : a string containing either "usb" or the
@@ -1938,7 +1938,7 @@ static const char* hexArray = "0123456789ABCDEF";
 /**
  * Checks if a given string is valid as logical name for a module or a function.
  * A valid logical name has a maximum of 19 characters, all among
- * A..Z, a..z, 0..9, _, and -.
+ * A...Z, a...z, 0...9, _, and -.
  * If you try to configure a logical name with an incorrect string,
  * the invalid characters are ignored.
  *
@@ -3212,7 +3212,7 @@ static const char* hexArray = "0123456789ABCDEF";
     obj = (YFunction*) [YFunction _FindFromCache:@"Function" :func];
     if (obj == nil) {
         obj = ARC_sendAutorelease([[YFunction alloc] initWith:func]);
-        [YFunction _AddToCache:@"Function" : func :obj];
+        [YFunction _AddToCache:@"Function" :func :obj];
     }
     return obj;
 }
@@ -3301,7 +3301,7 @@ static const char* hexArray = "0123456789ABCDEF";
 {
     NSString* url;
     NSMutableData* attrVal;
-    url = [NSString stringWithFormat:@"api/%@/%@", [self get_functionId],attrName];
+    url = [NSString stringWithFormat:@"api/%@/%@",[self get_functionId],attrName];
     attrVal = [self _download:url];
     return ARC_sendAutorelease([[NSString alloc] initWithData:attrVal encoding:NSISOLatin1StringEncoding]);
 }
@@ -4474,7 +4474,7 @@ static const char* hexArray = "0123456789ABCDEF";
     obj = (YSensor*) [YFunction _FindFromCache:@"Sensor" :func];
     if (obj == nil) {
         obj = ARC_sendAutorelease([[YSensor alloc] initWith:func]);
-        [YFunction _AddToCache:@"Sensor" : func :obj];
+        [YFunction _AddToCache:@"Sensor" :func :obj];
     }
     return obj;
 }
@@ -4548,7 +4548,7 @@ static const char* hexArray = "0123456789ABCDEF";
     if (_ystrpos(_calibrationParam, @",") >= 0) {
         // Plain text format
         iCalib = [YAPI _decodeFloats:_calibrationParam];
-        _caltyp = (([[iCalib objectAtIndex:0] intValue]) / (1000));
+        _caltyp = (([[iCalib objectAtIndex:0] intValue]) / 1000);
         if (_caltyp > 0) {
             if (_caltyp < YOCTO_CALIB_TYPE_OFS) {
                 // Unknown calibration type: calibrated value will be provided by the device
@@ -4694,7 +4694,7 @@ static const char* hexArray = "0123456789ABCDEF";
     NSMutableData* res;
 
     res = [self _download:@"api/dataLogger/recording?recording=1"];
-    if (!((int)[res length] > 0)) {[self _throw: YAPI_IO_ERROR: @"unable to start datalogger"]; return YAPI_IO_ERROR;}
+    if (!((int)[res length] > 0)) {[self _throw:YAPI_IO_ERROR:@"unable to start datalogger"]; return YAPI_IO_ERROR;}
     return YAPI_SUCCESS;
 }
 
@@ -4708,7 +4708,7 @@ static const char* hexArray = "0123456789ABCDEF";
     NSMutableData* res;
 
     res = [self _download:@"api/dataLogger/recording?recording=0"];
-    if (!((int)[res length] > 0)) {[self _throw: YAPI_IO_ERROR: @"unable to stop datalogger"]; return YAPI_IO_ERROR;}
+    if (!((int)[res length] > 0)) {[self _throw:YAPI_IO_ERROR:@"unable to stop datalogger"]; return YAPI_IO_ERROR;}
     return YAPI_SUCCESS;
 }
 
@@ -4879,7 +4879,7 @@ static const char* hexArray = "0123456789ABCDEF";
     res = [NSString stringWithFormat:@"%d",YOCTO_CALIB_TYPE_OFS];
     idx = 0;
     while (idx < npt) {
-        res = [NSString stringWithFormat:@"%@,%g,%g", res, [[rawValues objectAtIndex:idx] doubleValue],[[refValues objectAtIndex:idx] doubleValue]];
+        res = [NSString stringWithFormat:@"%@,%g,%g",res,[[rawValues objectAtIndex:idx] doubleValue],[[refValues objectAtIndex:idx] doubleValue]];
         idx = idx + 1;
     }
     return res;
@@ -4899,7 +4899,7 @@ static const char* hexArray = "0123456789ABCDEF";
     if (!(_calhdl != NULL)) {
         return Y_CURRENTVALUE_INVALID;
     }
-    return [_calhdl yCalibrationHandler: rawValue: _caltyp: _calpar: _calraw:_calref];
+    return [_calhdl yCalibrationHandler:rawValue:_caltyp:_calpar:_calraw:_calref];
 }
 
 -(YMeasure*) _decodeTimedReport:(double)timestamp :(double)duration :(NSMutableArray*)report
@@ -4940,20 +4940,20 @@ static const char* hexArray = "0123456789ABCDEF";
             poww = poww * 0x100;
             i = i + 1;
         }
-        if (((byteVal) & (0x80)) != 0) {
+        if ((byteVal & 0x80) != 0) {
             avgRaw = avgRaw - poww;
         }
         avgVal = avgRaw / 1000.0;
         if (_caltyp != 0) {
             if (_calhdl != NULL) {
-                avgVal = [_calhdl yCalibrationHandler: avgVal: _caltyp: _calpar: _calraw:_calref];
+                avgVal = [_calhdl yCalibrationHandler:avgVal:_caltyp:_calpar:_calraw:_calref];
             }
         }
         minVal = avgVal;
         maxVal = avgVal;
     } else {
         // averaged report: avg,avg-min,max-avg
-        sublen = 1 + (([[report objectAtIndex:1] intValue]) & (3));
+        sublen = 1 + (([[report objectAtIndex:1] intValue]) & 3);
         poww = 1;
         avgRaw = 0;
         byteVal = 0;
@@ -4965,10 +4965,10 @@ static const char* hexArray = "0123456789ABCDEF";
             i = i + 1;
             sublen = sublen - 1;
         }
-        if (((byteVal) & (0x80)) != 0) {
+        if ((byteVal & 0x80) != 0) {
             avgRaw = avgRaw - poww;
         }
-        sublen = 1 + (((([[report objectAtIndex:1] intValue]) >> (2))) & (3));
+        sublen = 1 + ((([[report objectAtIndex:1] intValue]) >> 2) & 3);
         poww = 1;
         difRaw = 0;
         while ((sublen > 0) && (i < (int)[report count])) {
@@ -4979,7 +4979,7 @@ static const char* hexArray = "0123456789ABCDEF";
             sublen = sublen - 1;
         }
         minRaw = avgRaw - difRaw;
-        sublen = 1 + (((([[report objectAtIndex:1] intValue]) >> (4))) & (3));
+        sublen = 1 + ((([[report objectAtIndex:1] intValue]) >> 4) & 3);
         poww = 1;
         difRaw = 0;
         while ((sublen > 0) && (i < (int)[report count])) {
@@ -4995,9 +4995,9 @@ static const char* hexArray = "0123456789ABCDEF";
         maxVal = maxRaw / 1000.0;
         if (_caltyp != 0) {
             if (_calhdl != NULL) {
-                avgVal = [_calhdl yCalibrationHandler: avgVal: _caltyp: _calpar: _calraw:_calref];
-                minVal = [_calhdl yCalibrationHandler: minVal: _caltyp: _calpar: _calraw:_calref];
-                maxVal = [_calhdl yCalibrationHandler: maxVal: _caltyp: _calpar: _calraw:_calref];
+                avgVal = [_calhdl yCalibrationHandler:avgVal:_caltyp:_calpar:_calraw:_calref];
+                minVal = [_calhdl yCalibrationHandler:minVal:_caltyp:_calpar:_calraw:_calref];
+                maxVal = [_calhdl yCalibrationHandler:maxVal:_caltyp:_calpar:_calraw:_calref];
             }
         }
     }
@@ -5010,7 +5010,7 @@ static const char* hexArray = "0123456789ABCDEF";
     val = w;
     if (_caltyp != 0) {
         if (_calhdl != NULL) {
-            val = [_calhdl yCalibrationHandler: val:_caltyp: _calpar: _calraw:_calref];
+            val = [_calhdl yCalibrationHandler:val:_caltyp:_calpar:_calraw:_calref];
         }
     }
     return val;
@@ -5022,7 +5022,7 @@ static const char* hexArray = "0123456789ABCDEF";
     val = dw;
     if (_caltyp != 0) {
         if (_calhdl != NULL) {
-            val = [_calhdl yCalibrationHandler: val: _caltyp: _calpar: _calraw:_calref];
+            val = [_calhdl yCalibrationHandler:val:_caltyp:_calpar:_calraw:_calref];
         }
     }
     return val;
@@ -5658,7 +5658,7 @@ static const char* hexArray = "0123456789ABCDEF";
     obj = (YModule*) [YFunction _FindFromCache:@"Module" :cleanHwId];
     if (obj == nil) {
         obj = ARC_sendAutorelease([[YModule alloc] initWith:cleanHwId]);
-        [YFunction _AddToCache:@"Module" : cleanHwId :obj];
+        [YFunction _AddToCache:@"Module" :cleanHwId :obj];
     }
     return obj;
 }
@@ -5712,7 +5712,7 @@ static const char* hexArray = "0123456789ABCDEF";
     prodname = [self get_productName];
     prodrel = [self get_productRelease];
     if (prodrel > 1) {
-        fullname = [NSString stringWithFormat:@"%@ rev. %c", prodname,64 + prodrel];
+        fullname = [NSString stringWithFormat:@"%@ rev. %c",prodname,64 + prodrel];
     } else {
         fullname = prodname;
     }
@@ -5903,7 +5903,7 @@ static const char* hexArray = "0123456789ABCDEF";
     }
     //may throw an exception
     serial = [self get_serialNumber];
-    tmp_res = [YFirmwareUpdate CheckFirmware:serial : path :release];
+    tmp_res = [YFirmwareUpdate CheckFirmware:serial :path :release];
     if (_ystrpos(tmp_res, @"error:") == 0) {
         [self _throw:YAPI_INVALID_ARGUMENT :tmp_res];
     }
@@ -5979,18 +5979,18 @@ static const char* hexArray = "0123456789ABCDEF";
     ext_settings = @", \"extras\":[";
     templist = [self get_functionIds:@"Temperature"];
     sep = @"";
-    for (NSString* _each  in  templist) {
+    for (NSString* _each  in templist) {
         if ([[self get_firmwareRelease] intValue] > 9000) {
             url = [NSString stringWithFormat:@"api/%@/sensorType",_each];
             t_type = ARC_sendAutorelease([[NSString alloc] initWithData:[self _download:url] encoding:NSISOLatin1StringEncoding]);
             if ([t_type isEqualToString:@"RES_NTC"] || [t_type isEqualToString:@"RES_LINEAR"]) {
-                id = [_each substringWithRange:NSMakeRange( 11, (int)[(_each) length] - 11)];
+                id = [_each substringWithRange:NSMakeRange(11, (int)[(_each) length] - 11)];
                 if ([id isEqualToString:@""]) {
                     id = @"1";
                 }
                 temp_data_bin = [self _download:[NSString stringWithFormat:@"extra.json?page=%@",id]];
                 if ((int)[temp_data_bin length] > 0) {
-                    item = [NSString stringWithFormat:@"%@{\"fid\":\"%@\", \"json\":%@}\n", sep, _each,ARC_sendAutorelease([[NSString alloc] initWithData:temp_data_bin encoding:NSISOLatin1StringEncoding])];
+                    item = [NSString stringWithFormat:@"%@{\"fid\":\"%@\", \"json\":%@}\n",sep,_each,ARC_sendAutorelease([[NSString alloc] initWithData:temp_data_bin encoding:NSISOLatin1StringEncoding])];
                     ext_settings = [NSString stringWithFormat:@"%@%@", ext_settings, item];
                     sep = @",";
                 }
@@ -6005,12 +6005,12 @@ static const char* hexArray = "0123456789ABCDEF";
         }
         filelist = [self _json_get_array:json];
         sep = @"";
-        for (NSString* _each  in  filelist) {
+        for (NSString* _each  in filelist) {
             name = [self _json_get_key:[NSMutableData dataWithData:[_each dataUsingEncoding:NSISOLatin1StringEncoding]] :@"name"];
             if (((int)[(name) length] > 0) && !([name isEqualToString:@"startupConf.json"])) {
                 file_data_bin = [self _download:[self _escapeAttr:name]];
                 file_data = [YAPI _bin2HexStr:file_data_bin];
-                item = [NSString stringWithFormat:@"%@{\"name\":\"%@\", \"data\":\"%@\"}\n", sep, name,file_data];
+                item = [NSString stringWithFormat:@"%@{\"name\":\"%@\", \"data\":\"%@\"}\n",sep,name,file_data];
                 ext_settings = [NSString stringWithFormat:@"%@%@", ext_settings, item];
                 sep = @",";
             }
@@ -6038,7 +6038,7 @@ static const char* hexArray = "0123456789ABCDEF";
     while (ofs + 1 < size) {
         curr = [values objectAtIndex:ofs];
         currTemp = [values objectAtIndex:ofs + 1];
-        url = [NSString stringWithFormat:@"api/%@.json?command=m%@:%@", funcId, curr,currTemp];
+        url = [NSString stringWithFormat:@"api/%@.json?command=m%@:%@",funcId,curr,currTemp];
         [self _download:url];
         ofs = ofs + 2;
     }
@@ -6051,7 +6051,7 @@ static const char* hexArray = "0123456789ABCDEF";
     NSString* functionId;
     NSString* data;
     extras = [self _json_get_array:[NSMutableData dataWithData:[jsonExtra dataUsingEncoding:NSISOLatin1StringEncoding]]];
-    for (NSString* _each  in  extras) {
+    for (NSString* _each  in extras) {
         functionId = [self _get_json_path:_each :@"fid"];
         functionId = [self _decode_json_string:functionId];
         data = [self _get_json_path:_each :@"json"];
@@ -6103,10 +6103,10 @@ static const char* hexArray = "0123456789ABCDEF";
         down = [self _download:@"files.json?a=format"];
         res = [self _get_json_path:ARC_sendAutorelease([[NSString alloc] initWithData:down encoding:NSISOLatin1StringEncoding]) :@"res"];
         res = [self _decode_json_string:res];
-        if (!([res isEqualToString:@"ok"])) {[self _throw: YAPI_IO_ERROR: @"format failed"]; return YAPI_IO_ERROR;}
+        if (!([res isEqualToString:@"ok"])) {[self _throw:YAPI_IO_ERROR:@"format failed"]; return YAPI_IO_ERROR;}
         json_files = [self _get_json_path:json :@"files"];
         files = [self _json_get_array:[NSMutableData dataWithData:[json_files dataUsingEncoding:NSISOLatin1StringEncoding]]];
-        for (NSString* _each  in  files) {
+        for (NSString* _each  in files) {
             name = [self _get_json_path:_each :@"name"];
             name = [self _decode_json_string:name];
             data = [self _get_json_path:_each :@"data"];
@@ -6120,7 +6120,7 @@ static const char* hexArray = "0123456789ABCDEF";
     }
     // Apply settings a second time for file-dependent settings and dynamic sensor nodes
     globalres = [self set_allSettings:[NSMutableData dataWithData:[json_api dataUsingEncoding:NSISOLatin1StringEncoding]]];
-    if (!(fuperror == 0)) {[self _throw: YAPI_IO_ERROR: @"Error during file upload"]; return YAPI_IO_ERROR;}
+    if (!(fuperror == 0)) {[self _throw:YAPI_IO_ERROR:@"Error during file upload"]; return YAPI_IO_ERROR;}
     return globalres;
 }
 
@@ -6374,10 +6374,10 @@ static const char* hexArray = "0123456789ABCDEF";
         while (i < (int)[calibData count]) {
             if (paramScale > 0) {
                 // scalar decoding
-                [calibData replaceObjectAtIndex: i withObject:[NSNumber numberWithDouble:([[calibData objectAtIndex:i] doubleValue] - paramOffset) / paramScale]];
+                [calibData replaceObjectAtIndex:i withObject:[NSNumber numberWithDouble:([[calibData objectAtIndex:i] doubleValue] - paramOffset) / paramScale]];
             } else {
                 // floating-point decoding
-                [calibData replaceObjectAtIndex: i withObject:[NSNumber numberWithDouble:[YAPI _decimalToDouble:(int) floor([[calibData objectAtIndex:i] doubleValue]+0.5)]]];
+                [calibData replaceObjectAtIndex:i withObject:[NSNumber numberWithDouble:[YAPI _decimalToDouble:(int) floor([[calibData objectAtIndex:i] doubleValue]+0.5)]]];
             }
             i = i + 1;
         }
@@ -6402,7 +6402,7 @@ static const char* hexArray = "0123456789ABCDEF";
             param = [NSString stringWithFormat:@"%d",30 + calibType];
             i = 0;
             while (i < (int)[calibData count]) {
-                if (((i) & (1)) > 0) {
+                if ((i & 1) > 0) {
                     param = [NSString stringWithFormat:@"%@%@", param, @":"];
                 } else {
                     param = [NSString stringWithFormat:@"%@%@", param, @" "];
@@ -6415,7 +6415,7 @@ static const char* hexArray = "0123456789ABCDEF";
     } else {
         if (funVer >= 1) {
             // Encode parameters for older devices
-            nPoints = (((int)[calibData count]) / (2));
+            nPoints = (((int)[calibData count]) / 2);
             param = [NSString stringWithFormat:@"%d",nPoints];
             i = 0;
             while (i < 2 * nPoints) {
@@ -6529,9 +6529,9 @@ static const char* hexArray = "0123456789ABCDEF";
             [self _throw:YAPI_INVALID_ARGUMENT :@"Invalid settings"];
             return YAPI_INVALID_ARGUMENT;
         }
-        jpath = [each_str substringWithRange:NSMakeRange( 0, eqpos)];
+        jpath = [each_str substringWithRange:NSMakeRange(0, eqpos)];
         eqpos = eqpos + 1;
-        value = [each_str substringWithRange:NSMakeRange( eqpos, leng - eqpos)];
+        value = [each_str substringWithRange:NSMakeRange(eqpos, leng - eqpos)];
         [old_jpath addObject:jpath];
         [old_jpath_len addObject:[NSNumber numberWithLong:(int)[(jpath) length]]];
         [old_val_arr addObject:value];
@@ -6557,9 +6557,9 @@ static const char* hexArray = "0123456789ABCDEF";
             [self _throw:YAPI_INVALID_ARGUMENT :@"Invalid settings"];
             return YAPI_INVALID_ARGUMENT;
         }
-        jpath = [each_str substringWithRange:NSMakeRange( 0, eqpos)];
+        jpath = [each_str substringWithRange:NSMakeRange(0, eqpos)];
         eqpos = eqpos + 1;
-        value = [each_str substringWithRange:NSMakeRange( eqpos, leng - eqpos)];
+        value = [each_str substringWithRange:NSMakeRange(eqpos, leng - eqpos)];
         [new_jpath addObject:jpath];
         [new_jpath_len addObject:[NSNumber numberWithLong:(int)[(jpath) length]]];
         [new_val_arr addObject:value];
@@ -6572,9 +6572,9 @@ static const char* hexArray = "0123456789ABCDEF";
         if ((cpos < 0) || (leng == 0)) {
             continue;
         }
-        fun = [njpath substringWithRange:NSMakeRange( 0, cpos)];
+        fun = [njpath substringWithRange:NSMakeRange(0, cpos)];
         cpos = cpos + 1;
-        attr = [njpath substringWithRange:NSMakeRange( cpos, leng - cpos)];
+        attr = [njpath substringWithRange:NSMakeRange(cpos, leng - cpos)];
         do_update = YES;
         if ([fun isEqualToString:@"services"]) {
             do_update = NO;
@@ -6747,7 +6747,7 @@ static const char* hexArray = "0123456789ABCDEF";
                     }
                     j = j + 1;
                 }
-                newval = [self calibConvert:old_calib : [new_val_arr objectAtIndex:i] : unit_name :sensorType];
+                newval = [self calibConvert:old_calib :[new_val_arr objectAtIndex:i] :unit_name :sensorType];
                 url = [NSString stringWithFormat:@"%@%@%@%@%@%@", @"api/", fun, @".json?", attr, @"=", [self _escapeAttr:newval]];
                 subres = [self _tryExec:url];
                 if ((res == YAPI_SUCCESS) && (subres != YAPI_SUCCESS)) {
@@ -7184,7 +7184,7 @@ static const char* hexArray = "0123456789ABCDEF";
             return res;
         }
         _progress_c = res;
-        _progress = ((_progress_c * 9) / (10));
+        _progress = ((_progress_c * 9) / 10);
         _progress_msg = STR_y2oc(errmsg);
     } else {
         if (((int)[_settings length] != 0) && ( _progress_c != 101)) {
@@ -7194,7 +7194,7 @@ static const char* hexArray = "0123456789ABCDEF";
                 return _progress;
             }
             if (_progress < 95) {
-                prod_prefix = [[m get_productName] substringWithRange:NSMakeRange( 0, 8)];
+                prod_prefix = [[m get_productName] substringWithRange:NSMakeRange(0, 8)];
                 if ([prod_prefix isEqualToString:@"YoctoHub"]) {
                     [YAPI Sleep:1000 :NULL];
                     _progress = _progress + 1;
@@ -7356,7 +7356,7 @@ static const char* hexArray = "0123456789ABCDEF";
     leng = (int)[(err) length];
     if ((leng >= 6) && ([@"error:" isEqualToString:[err substringWithRange:NSMakeRange(0, 6)]])) {
         _progress = -1;
-        _progress_msg = [err substringWithRange:NSMakeRange( 6, leng - 6)];
+        _progress_msg = [err substringWithRange:NSMakeRange(6, leng - 6)];
     } else {
         _progress = 0;
         _progress_c = 0;
@@ -7455,15 +7455,15 @@ static const char* hexArray = "0123456789ABCDEF";
     double fRef;
     NSMutableArray* iCalib = [NSMutableArray array];
     // decode sequence header to extract data
-    _runNo = [[encoded objectAtIndex:0] intValue] + ((([[encoded objectAtIndex:1] intValue]) << (16)));
-    _utcStamp = [[encoded objectAtIndex:2] intValue] + ((([[encoded objectAtIndex:3] intValue]) << (16)));
+    _runNo = [[encoded objectAtIndex:0] intValue] + ((([[encoded objectAtIndex:1] intValue]) << 16));
+    _utcStamp = [[encoded objectAtIndex:2] intValue] + ((([[encoded objectAtIndex:3] intValue]) << 16));
     val = [[encoded objectAtIndex:4] intValue];
-    _isAvg = (((val) & (0x100)) == 0);
-    samplesPerHour = ((val) & (0xff));
-    if (((val) & (0x100)) != 0) {
+    _isAvg = ((val & 0x100) == 0);
+    samplesPerHour = (val & 0xff);
+    if ((val & 0x100) != 0) {
         samplesPerHour = samplesPerHour * 3600;
     } else {
-        if (((val) & (0x200)) != 0) {
+        if ((val & 0x200) != 0) {
             samplesPerHour = samplesPerHour * 60;
         }
     }
@@ -7535,9 +7535,9 @@ static const char* hexArray = "0123456789ABCDEF";
     }
     // decode min/avg/max values for the sequence
     if (_nRows > 0) {
-        _avgVal = [self _decodeAvg:[[encoded objectAtIndex:8] intValue] + ((((([[encoded objectAtIndex:9] intValue]) ^ (0x8000))) << (16))) :1];
-        _minVal = [self _decodeVal:[[encoded objectAtIndex:10] intValue] + ((([[encoded objectAtIndex:11] intValue]) << (16)))];
-        _maxVal = [self _decodeVal:[[encoded objectAtIndex:12] intValue] + ((([[encoded objectAtIndex:13] intValue]) << (16)))];
+        _avgVal = [self _decodeAvg:[[encoded objectAtIndex:8] intValue] + (((([[encoded objectAtIndex:9] intValue]) ^ 0x8000) << 16)) :1];
+        _minVal = [self _decodeVal:[[encoded objectAtIndex:10] intValue] + ((([[encoded objectAtIndex:11] intValue]) << 16))];
+        _maxVal = [self _decodeVal:[[encoded objectAtIndex:12] intValue] + ((([[encoded objectAtIndex:13] intValue]) << 16))];
     }
     return 0;
 }
@@ -7566,9 +7566,9 @@ static const char* hexArray = "0123456789ABCDEF";
                 [dat addObject:[NSNumber numberWithDouble:NAN]];
                 [dat addObject:[NSNumber numberWithDouble:NAN]];
             } else {
-                [dat addObject:[NSNumber numberWithDouble:[self _decodeVal:[[udat objectAtIndex:idx + 2] intValue] + ((([[udat objectAtIndex:idx + 3] intValue]) << (16)))]]];
-                [dat addObject:[NSNumber numberWithDouble:[self _decodeAvg:[[udat objectAtIndex:idx] intValue] + ((((([[udat objectAtIndex:idx + 1] intValue]) ^ (0x8000))) << (16))) :1]]];
-                [dat addObject:[NSNumber numberWithDouble:[self _decodeVal:[[udat objectAtIndex:idx + 4] intValue] + ((([[udat objectAtIndex:idx + 5] intValue]) << (16)))]]];
+                [dat addObject:[NSNumber numberWithDouble:[self _decodeVal:[[udat objectAtIndex:idx + 2] intValue] + ((([[udat objectAtIndex:idx + 3] intValue]) << 16))]]];
+                [dat addObject:[NSNumber numberWithDouble:[self _decodeAvg:[[udat objectAtIndex:idx] intValue] + (((([[udat objectAtIndex:idx + 1] intValue]) ^ 0x8000) << 16)) :1]]];
+                [dat addObject:[NSNumber numberWithDouble:[self _decodeVal:[[udat objectAtIndex:idx + 4] intValue] + ((([[udat objectAtIndex:idx + 5] intValue]) << 16))]]];
             }
             idx = idx + 6;
             [_values addObject:[dat copy]];
@@ -7579,7 +7579,7 @@ static const char* hexArray = "0123456789ABCDEF";
             if (([[udat objectAtIndex:idx] intValue] == 65535) && ([[udat objectAtIndex:idx + 1] intValue] == 65535)) {
                 [dat addObject:[NSNumber numberWithDouble:NAN]];
             } else {
-                [dat addObject:[NSNumber numberWithDouble:[self _decodeAvg:[[udat objectAtIndex:idx] intValue] + ((((([[udat objectAtIndex:idx + 1] intValue]) ^ (0x8000))) << (16))) :1]]];
+                [dat addObject:[NSNumber numberWithDouble:[self _decodeAvg:[[udat objectAtIndex:idx] intValue] + (((([[udat objectAtIndex:idx + 1] intValue]) ^ 0x8000) << 16)) :1]]];
             }
             [_values addObject:[dat copy]];
             idx = idx + 2;
@@ -7599,16 +7599,14 @@ static const char* hexArray = "0123456789ABCDEF";
 -(NSString*) _get_url
 {
     NSString* url;
-    url = [NSString stringWithFormat:@"logger.json?id=%@&run=%d&utc=%lu",
-    _functionId,_runNo,_utcStamp];
+    url = [NSString stringWithFormat:@"logger.json?id=%@&run=%d&utc=%lu",_functionId,_runNo,_utcStamp];
     return url;
 }
 
 -(NSString*) _get_baseurl
 {
     NSString* url;
-    url = [NSString stringWithFormat:@"logger.json?id=%@&run=%d&utc=",
-    _functionId,_runNo];
+    url = [NSString stringWithFormat:@"logger.json?id=%@&run=%d&utc=",_functionId,_runNo];
     return url;
 }
 
@@ -7631,7 +7629,7 @@ static const char* hexArray = "0123456789ABCDEF";
     val = val / 1000.0;
     if (_caltyp != 0) {
         if (_calhdl != NULL) {
-            val = [_calhdl yCalibrationHandler: val:_caltyp: _calpar: _calraw:_calref];
+            val = [_calhdl yCalibrationHandler:val:_caltyp:_calpar:_calraw:_calref];
         }
     }
     return val;
@@ -7644,7 +7642,7 @@ static const char* hexArray = "0123456789ABCDEF";
     val = val / 1000.0;
     if (_caltyp != 0) {
         if (_calhdl != NULL) {
-            val = [_calhdl yCalibrationHandler: val: _caltyp: _calpar: _calraw:_calref];
+            val = [_calhdl yCalibrationHandler:val:_caltyp:_calpar:_calraw:_calref];
         }
     }
     return val;
@@ -8242,7 +8240,7 @@ static const char* hexArray = "0123456789ABCDEF";
     summaryStopMs = YAPI_MIN_DOUBLE;
 
     // Parse complete streams
-    for (YDataStream* _each  in  _streams) {
+    for (YDataStream* _each  in _streams) {
         streamStartTimeMs = floor([_each get_realStartTimeUTC] * 1000+0.5);
         streamDuration = [_each get_realDuration];
         streamEndTimeMs = streamStartTimeMs + floor(streamDuration * 1000+0.5);
@@ -8492,7 +8490,7 @@ static const char* hexArray = "0123456789ABCDEF";
         return _hardwareId;
     }
     mo = [_parent get_module];
-    _hardwareId = [NSString stringWithFormat:@"%@.%@", [mo get_serialNumber],[self get_functionId]];
+    _hardwareId = [NSString stringWithFormat:@"%@.%@",[mo get_serialNumber],[self get_functionId]];
     return _hardwareId;
 }
 
@@ -8586,7 +8584,7 @@ static const char* hexArray = "0123456789ABCDEF";
     if (_progress >= (int)[_streams count]) {
         return 100;
     }
-    return ((1 + (1 + _progress) * 98) / ((1 + (int)[_streams count])));
+    return ((1 + (1 + _progress) * 98) / (1 + (int)[_streams count]));
 }
 
 /**
@@ -8915,19 +8913,19 @@ static const char* hexArray = "0123456789ABCDEF";
         currnexttim = [[_nexttim objectAtIndex:s] doubleValue];
         if (currnexttim == 0) {
             idx = [[_nextidx objectAtIndex:s] intValue];
-            measures = [((YDataSet*) [_datasets objectAtIndex:s]) get_measures];
+            measures = [((YDataSet*)[_datasets objectAtIndex:s]) get_measures];
             currprogress = [[_progresss objectAtIndex:s] intValue];
             while ((idx >= (int)[measures count]) && (currprogress < 100)) {
-                currprogress = [((YDataSet*) [_datasets objectAtIndex:s]) loadMore];
+                currprogress = [((YDataSet*)[_datasets objectAtIndex:s]) loadMore];
                 if (currprogress < 0) {
                     currprogress = 100;
                 }
-                [_progresss replaceObjectAtIndex: s withObject:[NSNumber numberWithLong:currprogress]];
-                measures = [((YDataSet*) [_datasets objectAtIndex:s]) get_measures];
+                [_progresss replaceObjectAtIndex:s withObject:[NSNumber numberWithLong:currprogress]];
+                measures = [((YDataSet*)[_datasets objectAtIndex:s]) get_measures];
             }
             if (idx < (int)[measures count]) {
-                currnexttim = [((YMeasure*) [measures objectAtIndex:idx]) get_endTimeUTC];
-                [_nexttim replaceObjectAtIndex: s withObject:[NSNumber numberWithDouble:currnexttim]];
+                currnexttim = [((YMeasure*)[measures objectAtIndex:idx]) get_endTimeUTC];
+                [_nexttim replaceObjectAtIndex:s withObject:[NSNumber numberWithDouble:currnexttim]];
             }
         }
         if (currnexttim > 0) {
@@ -8950,11 +8948,11 @@ static const char* hexArray = "0123456789ABCDEF";
     while (s < _nsensors) {
         if ([[_nexttim objectAtIndex:s] doubleValue] == nexttime) {
             idx = [[_nextidx objectAtIndex:s] intValue];
-            measures = [((YDataSet*) [_datasets objectAtIndex:s]) get_measures];
-            newvalue = [((YMeasure*) [measures objectAtIndex:idx]) get_averageValue];
+            measures = [((YDataSet*)[_datasets objectAtIndex:s]) get_measures];
+            newvalue = [((YMeasure*)[measures objectAtIndex:idx]) get_averageValue];
             [datarec addObject:[NSNumber numberWithDouble:newvalue]];
-            [_nexttim replaceObjectAtIndex: s withObject:[NSNumber numberWithDouble:0.0]];
-            [_nextidx replaceObjectAtIndex: s withObject:[NSNumber numberWithLong:idx + 1]];
+            [_nexttim replaceObjectAtIndex:s withObject:[NSNumber numberWithDouble:0.0]];
+            [_nextidx replaceObjectAtIndex:s withObject:[NSNumber numberWithLong:idx + 1]];
         } else {
             [datarec addObject:[NSNumber numberWithDouble:NAN]];
         }
@@ -8963,7 +8961,7 @@ static const char* hexArray = "0123456789ABCDEF";
         s = s + 1;
     }
     if (globprogress > 0) {
-        globprogress = ((globprogress) / (_nsensors));
+        globprogress = (globprogress / _nsensors);
         if (globprogress > 99) {
             globprogress = 99;
         }
@@ -9423,7 +9421,7 @@ static const char* hexArray = "0123456789ABCDEF";
     obj = (YDataLogger*) [YFunction _FindFromCache:@"DataLogger" :func];
     if (obj == nil) {
         obj = ARC_sendAutorelease([[YDataLogger alloc] initWith:func]);
-        [YFunction _AddToCache:@"DataLogger" : func :obj];
+        [YFunction _AddToCache:@"DataLogger" :func :obj];
     }
     return obj;
 }
@@ -9591,7 +9589,7 @@ YRETCODE yInitAPI(int mode, NSError** errmsg)
  *
  * From an operating system standpoint, it is generally not required to call
  * this function since the OS will automatically free allocated resources
- * once your program is completed. However there are two situations when
+ * once your program is completed. However, there are two situations when
  * you may really want to use that function:
  *
  * - Free all dynamically allocated memory blocks in order to
@@ -9648,7 +9646,7 @@ void yDisableExceptions(void) { [YAPI DisableExceptions]; }
 void yEnableExceptions(void)  { [YAPI EnableExceptions]; }
 
 /**
- * Setup the Yoctopuce library to use modules connected on a given machine. Idealy this
+ * Set up the Yoctopuce library to use modules connected on a given machine. Idealy this
  * call will be made once at the begining of your application.  The
  * parameter will determine how the API will work. Use the following values:
  *
@@ -9680,7 +9678,7 @@ void yEnableExceptions(void)  { [YAPI EnableExceptions]; }
  * while trying to access the USB modules. In particular, this means
  * that you must stop the VirtualHub software before starting
  * an application that uses direct USB access. The workaround
- * for this limitation is to setup the library to use the VirtualHub
+ * for this limitation is to set up the library to use the VirtualHub
  * rather than direct USB access.
  *
  * If access control has been activated on the hub, virtual or not, you want to
@@ -9721,7 +9719,7 @@ YRETCODE yRegisterHub(NSString * url, NSError** errmsg) { return [YAPI RegisterH
 YRETCODE yPreregisterHub(NSString * url, NSError** errmsg) { return [YAPI PreregisterHub:url:errmsg]; }
 
 /**
- * Setup the Yoctopuce library to no more use modules connected on a previously
+ * Set up the Yoctopuce library to no more use modules connected on a previously
  * registered machine with RegisterHub.
  *
  * @param url : a string containing either "usb" or the
@@ -9820,7 +9818,7 @@ u64 yGetTickCount(void) { return [YAPI GetTickCount]; }
 /**
  * Checks if a given string is valid as logical name for a module or a function.
  * A valid logical name has a maximum of 19 characters, all among
- * A..Z, a..z, 0..9, _, and -.
+ * A...Z, a...z, 0...9, _, and -.
  * If you try to configure a logical name with an incorrect string,
  * the invalid characters are ignored.
  *

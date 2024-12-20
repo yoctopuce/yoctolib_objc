@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_oscontrol.m 59977 2024-03-18 15:02:32Z mvuilleu $
+ *  $Id: yocto_oscontrol.m 63508 2024-11-28 10:46:01Z seb $
  *
  *  Implements the high-level API for OsControl functions
  *
@@ -149,7 +149,7 @@
     obj = (YOsControl*) [YFunction _FindFromCache:@"OsControl" :func];
     if (obj == nil) {
         obj = ARC_sendAutorelease([[YOsControl alloc] initWith:func]);
-        [YFunction _AddToCache:@"OsControl" : func :obj];
+        [YFunction _AddToCache:@"OsControl" :func :obj];
     }
     return obj;
 }
@@ -206,6 +206,20 @@
 -(int) shutdown:(int)secBeforeShutDown
 {
     return [self set_shutdownCountdown:secBeforeShutDown];
+}
+
+/**
+ * Schedules an OS reboot after a given number of seconds.
+ *
+ * @param secBeforeReboot : number of seconds before reboot
+ *
+ * @return YAPI.SUCCESS when the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) reboot:(int)secBeforeReboot
+{
+    return [self set_shutdownCountdown:0 - secBeforeReboot];
 }
 
 

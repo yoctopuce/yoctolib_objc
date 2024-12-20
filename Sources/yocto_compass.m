@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_compass.m 59977 2024-03-18 15:02:32Z mvuilleu $
+ *  $Id: yocto_compass.m 63508 2024-11-28 10:46:01Z seb $
  *
  *  Implements the high-level API for Compass functions
  *
@@ -213,7 +213,7 @@
     obj = (YCompass*) [YFunction _FindFromCache:@"Compass" :func];
     if (obj == nil) {
         obj = ARC_sendAutorelease([[YCompass alloc] initWith:func]);
-        [YFunction _AddToCache:@"Compass" : func :obj];
+        [YFunction _AddToCache:@"Compass" :func :obj];
     }
     return obj;
 }

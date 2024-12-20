@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: ytcp.c 57627 2023-11-03 09:37:28Z seb $
+ * $Id: ytcp.c 63516 2024-11-29 08:21:47Z seb $
  *
  * Implementation of a client TCP stack
  *
@@ -61,6 +61,7 @@ typedef int socklen_t;
 #include "ytcp.h"
 #include "yproto.h"
 #include "yhash.h"
+#include <stdio.h>
 
 #ifdef WIN32
 #ifndef WINCE
@@ -1498,7 +1499,7 @@ static int yWSOpenReqEx(struct _RequestSt *req, int tcpchan, u64 mstimeout, char
     memset(&req->ws, 0, sizeof(WSReqSt));
     // merge first line and header
     headlen = YSTRLEN(req->headerbuf);
-    req->ws.requestsize = headlen + 4 + req->bodysize;
+    req->ws.requestsize = headlen + (req->bodysize ? req->bodysize : 4);
     req->ws.requestbuf = yMalloc(req->ws.requestsize);
     p = req->ws.requestbuf;
     memcpy(p, req->headerbuf, headlen);
@@ -2811,6 +2812,11 @@ static int ws_processRequests(HubSt *hub, char *errmsg)
                 }
                 if (req->ws.requestpos == 0) {
                     req->ws.first_write_tm = yapiGetTickCount();
+                } else if (req->ws.requestpos < 180 && req->ws.requestpos + datalen >= 192) {
+                    // on a YoctoHub, the input FIFO is limited to 192, and we can only
+                    // accept a frame if it fits entirely in the input FIFO. So make sure
+                    // the beginning of the request gets delivered entirely
+                    datalen = 191 - req->ws.requestpos;
                 }
 
                 if (req->ws.asyncId && (req->ws.requestpos + datalen == req->ws.requestsize)) {
@@ -2826,7 +2832,7 @@ static int ws_processRequests(HubSt *hub, char *errmsg)
                             ySetEvent(&req->finished);
                             return res;
                         }
-                        WSLOG("ws_req:%p: send %d bytes on chan%d (%d/%d)\n", req, datalen, tcpchan, req->ws.requestpos, req->ws.requestsize);
+                        WSLOG("\n++++ ws_req:%p: send %d bytes on chan%d (%d/%d)\n", req, datalen, tcpchan, req->ws.requestpos, req->ws.requestsize);
                         req->ws.requestpos += datalen;
                         datalen = 0;
                     }
@@ -2836,13 +2842,13 @@ static int ws_processRequests(HubSt *hub, char *errmsg)
                     }
                     tmp_data[datalen] = req->ws.asyncId;
                     res = ws_sendFrame(hub, stream, tcpchan, tmp_data, datalen + 1, errmsg);
-                    WSLOG("req(%s:%p) sent async close chan%d:%d\n", req->hub->url.org_url, req, tcpchan, req->ws.asyncId);
+                    WSLOG("\n++++ ws_req(%p) sent %d bytes with async close chan%d:%d (%d/%d)\n", req, datalen, tcpchan, req->ws.asyncId, req->ws.requestpos, req->ws.requestsize);
                     //dumpReqQueue("as_c", req->hub, tcpchan);
                     req->ws.last_write_tm = yapiGetTickCount();
                 } else {
                     res = ws_sendFrame(hub, stream, tcpchan, req->ws.requestbuf + req->ws.requestpos, datalen, errmsg);
                     req->ws.last_write_tm = yapiGetTickCount();
-                    //WSLOG("ws_req:%p: sent %d bytes on chan%d (%d/%d)\n", req, datalen, tcpchan, req->ws.requestpos, req->ws.requestsize);
+                    WSLOG("\n++++ ws_req:%p: sent %d bytes on chan%d:%d (%d/%d)\n", req, datalen, tcpchan, req->ws.asyncId, req->ws.requestpos, req->ws.requestsize);
                 }
                 if (YISERR(res)) {
                     req->errcode = res;
@@ -3377,9 +3383,10 @@ YSTATIC int yDetectNetworkInterfaces(u32 only_ip, os_ifaces *interfaces, int max
     }
     if (WSAIoctl(sock, SIO_GET_INTERFACE_LIST, NULL, 0, winIfaces, sizeof(winIfaces), &returnedSize, NULL, NULL) < 0) {
         yNetLogErr();
+        closesocket(sock);
         return -1;
     }
-
+    closesocket(sock);
     nbifaces = returnedSize / sizeof(INTERFACE_INFO);
 #ifdef DEBUG_NET_DETECTION
     dbglog("windows returned %d interfaces\n", nbifaces);
@@ -3467,7 +3474,7 @@ YSTATIC int yDetectNetworkInterfaces(u32 only_ip, os_ifaces *interfaces, int max
         }
         p = p->ifa_next;
     }
-
+    freeifaddrs(if_addrs);
 #else
     int nbDetectedIfaces = 1;
     memset(interfaces, 0, max_nb_interfaces * sizeof(os_ifaces));

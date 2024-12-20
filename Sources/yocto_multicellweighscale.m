@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_multicellweighscale.m 59977 2024-03-18 15:02:32Z mvuilleu $
+ *  $Id: yocto_multicellweighscale.m 63508 2024-11-28 10:46:01Z seb $
  *
  *  Implements the high-level API for MultiCellWeighScale functions
  *
@@ -594,7 +594,7 @@
     obj = (YMultiCellWeighScale*) [YFunction _FindFromCache:@"MultiCellWeighScale" :func];
     if (obj == nil) {
         obj = ARC_sendAutorelease([[YMultiCellWeighScale alloc] initWith:func]);
-        [YFunction _AddToCache:@"MultiCellWeighScale" : func :obj];
+        [YFunction _AddToCache:@"MultiCellWeighScale" :func :obj];
     }
     return obj;
 }
@@ -700,7 +700,7 @@
  */
 -(int) setupSpan:(double)currWeight :(double)maxWeight
 {
-    return [self set_command:[NSString stringWithFormat:@"S%d:%d", (int) floor(1000*currWeight+0.5),(int) floor(1000*maxWeight+0.5)]];
+    return [self set_command:[NSString stringWithFormat:@"S%d:%d",(int) floor(1000*currWeight+0.5),(int) floor(1000*maxWeight+0.5)]];
 }
 
 

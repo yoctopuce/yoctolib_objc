@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_digitalio.m 59977 2024-03-18 15:02:32Z mvuilleu $
+ *  $Id: yocto_digitalio.m 63508 2024-11-28 10:46:01Z seb $
  *
  *  Implements the high-level API for DigitalIO functions
  *
@@ -331,11 +331,11 @@
     return [self _setAttr:@"portPolarity" :rest_val];
 }
 /**
- * Returns the port state diagnostics (Yocto-IO and Yocto-MaxiIO-V2 only). Bit 0 indicates a shortcut on
- * output 0, etc. Bit 8 indicates a power failure, and bit 9 signals overheating (overcurrent).
+ * Returns the port state diagnostics. Bit 0 indicates a shortcut on output 0, etc.
+ * Bit 8 indicates a power failure, and bit 9 signals overheating (overcurrent).
  * During normal use, all diagnostic bits should stay clear.
  *
- * @return an integer corresponding to the port state diagnostics (Yocto-IO and Yocto-MaxiIO-V2 only)
+ * @return an integer corresponding to the port state diagnostics
  *
  * On failure, throws an exception or returns YDigitalIO.PORTDIAGS_INVALID.
  */
@@ -489,7 +489,7 @@
     obj = (YDigitalIO*) [YFunction _FindFromCache:@"DigitalIO" :func];
     if (obj == nil) {
         obj = ARC_sendAutorelease([[YDigitalIO alloc] initWith:func]);
-        [YFunction _AddToCache:@"DigitalIO" : func :obj];
+        [YFunction _AddToCache:@"DigitalIO" :func :obj];
     }
     return obj;
 }
@@ -546,8 +546,8 @@
  */
 -(int) set_bitState:(int)bitno :(int)bitstate
 {
-    if (!(bitstate >= 0)) {[self _throw: YAPI_INVALID_ARGUMENT: @"invalid bit state"]; return YAPI_INVALID_ARGUMENT;}
-    if (!(bitstate <= 1)) {[self _throw: YAPI_INVALID_ARGUMENT: @"invalid bit state"]; return YAPI_INVALID_ARGUMENT;}
+    if (!(bitstate >= 0)) {[self _throw:YAPI_INVALID_ARGUMENT:@"invalid bit state"]; return YAPI_INVALID_ARGUMENT;}
+    if (!(bitstate <= 1)) {[self _throw:YAPI_INVALID_ARGUMENT:@"invalid bit state"]; return YAPI_INVALID_ARGUMENT;}
     return [self set_command:[NSString stringWithFormat:@"%c%d",82+bitstate,bitno]];
 }
 
@@ -564,7 +564,7 @@
 {
     int portVal;
     portVal = [self get_portState];
-    return ((((portVal) >> (bitno))) & (1));
+    return ((portVal >> bitno) & 1);
 }
 
 /**
@@ -594,8 +594,8 @@
  */
 -(int) set_bitDirection:(int)bitno :(int)bitdirection
 {
-    if (!(bitdirection >= 0)) {[self _throw: YAPI_INVALID_ARGUMENT: @"invalid direction"]; return YAPI_INVALID_ARGUMENT;}
-    if (!(bitdirection <= 1)) {[self _throw: YAPI_INVALID_ARGUMENT: @"invalid direction"]; return YAPI_INVALID_ARGUMENT;}
+    if (!(bitdirection >= 0)) {[self _throw:YAPI_INVALID_ARGUMENT:@"invalid direction"]; return YAPI_INVALID_ARGUMENT;}
+    if (!(bitdirection <= 1)) {[self _throw:YAPI_INVALID_ARGUMENT:@"invalid direction"]; return YAPI_INVALID_ARGUMENT;}
     return [self set_command:[NSString stringWithFormat:@"%c%d",73+6*bitdirection,bitno]];
 }
 
@@ -613,7 +613,7 @@
 {
     int portDir;
     portDir = [self get_portDirection];
-    return ((((portDir) >> (bitno))) & (1));
+    return ((portDir >> bitno) & 1);
 }
 
 /**
@@ -630,8 +630,8 @@
  */
 -(int) set_bitPolarity:(int)bitno :(int)bitpolarity
 {
-    if (!(bitpolarity >= 0)) {[self _throw: YAPI_INVALID_ARGUMENT: @"invalid bit polarity"]; return YAPI_INVALID_ARGUMENT;}
-    if (!(bitpolarity <= 1)) {[self _throw: YAPI_INVALID_ARGUMENT: @"invalid bit polarity"]; return YAPI_INVALID_ARGUMENT;}
+    if (!(bitpolarity >= 0)) {[self _throw:YAPI_INVALID_ARGUMENT:@"invalid bit polarity"]; return YAPI_INVALID_ARGUMENT;}
+    if (!(bitpolarity <= 1)) {[self _throw:YAPI_INVALID_ARGUMENT:@"invalid bit polarity"]; return YAPI_INVALID_ARGUMENT;}
     return [self set_command:[NSString stringWithFormat:@"%c%d",110+4*bitpolarity,bitno]];
 }
 
@@ -649,7 +649,7 @@
 {
     int portPol;
     portPol = [self get_portPolarity];
-    return ((((portPol) >> (bitno))) & (1));
+    return ((portPol >> bitno) & 1);
 }
 
 /**
@@ -666,8 +666,8 @@
  */
 -(int) set_bitOpenDrain:(int)bitno :(int)opendrain
 {
-    if (!(opendrain >= 0)) {[self _throw: YAPI_INVALID_ARGUMENT: @"invalid state"]; return YAPI_INVALID_ARGUMENT;}
-    if (!(opendrain <= 1)) {[self _throw: YAPI_INVALID_ARGUMENT: @"invalid state"]; return YAPI_INVALID_ARGUMENT;}
+    if (!(opendrain >= 0)) {[self _throw:YAPI_INVALID_ARGUMENT:@"invalid state"]; return YAPI_INVALID_ARGUMENT;}
+    if (!(opendrain <= 1)) {[self _throw:YAPI_INVALID_ARGUMENT:@"invalid state"]; return YAPI_INVALID_ARGUMENT;}
     return [self set_command:[NSString stringWithFormat:@"%c%d",100-32*opendrain,bitno]];
 }
 
@@ -686,7 +686,7 @@
 {
     int portOpenDrain;
     portOpenDrain = [self get_portOpenDrain];
-    return ((((portOpenDrain) >> (bitno))) & (1));
+    return ((portOpenDrain >> bitno) & 1);
 }
 
 /**
@@ -703,7 +703,7 @@
  */
 -(int) pulse:(int)bitno :(int)ms_duration
 {
-    return [self set_command:[NSString stringWithFormat:@"Z%d,0,%d", bitno,ms_duration]];
+    return [self set_command:[NSString stringWithFormat:@"Z%d,0,%d",bitno,ms_duration]];
 }
 
 /**

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_weighscale.m 59977 2024-03-18 15:02:32Z mvuilleu $
+ *  $Id: yocto_weighscale.m 63508 2024-11-28 10:46:01Z seb $
  *
  *  Implements the high-level API for WeighScale functions
  *
@@ -486,7 +486,7 @@
     obj = (YWeighScale*) [YFunction _FindFromCache:@"WeighScale" :func];
     if (obj == nil) {
         obj = ARC_sendAutorelease([[YWeighScale alloc] initWith:func]);
-        [YFunction _AddToCache:@"WeighScale" : func :obj];
+        [YFunction _AddToCache:@"WeighScale" :func :obj];
     }
     return obj;
 }
@@ -592,7 +592,7 @@
  */
 -(int) setupSpan:(double)currWeight :(double)maxWeight
 {
-    return [self set_command:[NSString stringWithFormat:@"S%d:%d", (int) floor(1000*currWeight+0.5),(int) floor(1000*maxWeight+0.5)]];
+    return [self set_command:[NSString stringWithFormat:@"S%d:%d",(int) floor(1000*currWeight+0.5),(int) floor(1000*maxWeight+0.5)]];
 }
 
 -(int) setCompensationTable:(int)tableIndex :(NSMutableArray*)tempValues :(NSMutableArray*)compValues
@@ -606,11 +606,11 @@
     double currComp;
     double idxTemp;
     siz = (int)[tempValues count];
-    if (!(siz != 1)) {[self _throw: YAPI_INVALID_ARGUMENT: @"thermal compensation table must have at least two points"]; return YAPI_INVALID_ARGUMENT;}
-    if (!(siz == (int)[compValues count])) {[self _throw: YAPI_INVALID_ARGUMENT: @"table sizes mismatch"]; return YAPI_INVALID_ARGUMENT;}
+    if (!(siz != 1)) {[self _throw:YAPI_INVALID_ARGUMENT:@"thermal compensation table must have at least two points"]; return YAPI_INVALID_ARGUMENT;}
+    if (!(siz == (int)[compValues count])) {[self _throw:YAPI_INVALID_ARGUMENT:@"table sizes mismatch"]; return YAPI_INVALID_ARGUMENT;}
 
     res = [self set_command:[NSString stringWithFormat:@"%dZ",tableIndex]];
-    if (!(res==YAPI_SUCCESS)) {[self _throw: YAPI_IO_ERROR: @"unable to reset thermal compensation table"]; return YAPI_IO_ERROR;}
+    if (!(res==YAPI_SUCCESS)) {[self _throw:YAPI_IO_ERROR:@"unable to reset thermal compensation table"]; return YAPI_IO_ERROR;}
     // add records in growing temperature value
     found = 1;
     prev = -999999.0;
@@ -629,8 +629,8 @@
             idx = idx + 1;
         }
         if (found > 0) {
-            res = [self set_command:[NSString stringWithFormat:@"%dm%d:%d", tableIndex, (int) floor(1000*curr+0.5),(int) floor(1000*currComp+0.5)]];
-            if (!(res==YAPI_SUCCESS)) {[self _throw: YAPI_IO_ERROR: @"unable to set thermal compensation table"]; return YAPI_IO_ERROR;}
+            res = [self set_command:[NSString stringWithFormat:@"%dm%d:%d",tableIndex,(int) floor(1000*curr+0.5),(int) floor(1000*currComp+0.5)]];
+            if (!(res==YAPI_SUCCESS)) {[self _throw:YAPI_IO_ERROR:@"unable to set thermal compensation table"]; return YAPI_IO_ERROR;}
             prev = curr;
         }
     }
@@ -648,11 +648,11 @@
     double comp;
 
     id = [self get_functionId];
-    id = [id substringWithRange:NSMakeRange( 10, (int)[(id) length] - 10)];
+    id = [id substringWithRange:NSMakeRange(10, (int)[(id) length] - 10)];
     bin_json = [self _download:[NSString stringWithFormat:@"extra.json?page=%d",(4*[id intValue])+tableIndex]];
     paramlist = [self _json_get_array:bin_json];
     // convert all values to float and append records
-    siz = (((int)[paramlist count]) >> (1));
+    siz = (((int)[paramlist count]) >> 1);
     [tempValues removeAllObjects];
     [compValues removeAllObjects];
     idx = 0;
@@ -683,7 +683,7 @@
  */
 -(int) set_offsetAvgCompensationTable:(NSMutableArray*)tempValues :(NSMutableArray*)compValues
 {
-    return [self setCompensationTable:0 : tempValues :compValues];
+    return [self setCompensationTable:0 :tempValues :compValues];
 }
 
 /**
@@ -703,7 +703,7 @@
  */
 -(int) loadOffsetAvgCompensationTable:(NSMutableArray*)tempValues :(NSMutableArray*)compValues
 {
-    return [self loadCompensationTable:0 : tempValues :compValues];
+    return [self loadCompensationTable:0 :tempValues :compValues];
 }
 
 /**
@@ -723,7 +723,7 @@
  */
 -(int) set_offsetChgCompensationTable:(NSMutableArray*)tempValues :(NSMutableArray*)compValues
 {
-    return [self setCompensationTable:1 : tempValues :compValues];
+    return [self setCompensationTable:1 :tempValues :compValues];
 }
 
 /**
@@ -743,7 +743,7 @@
  */
 -(int) loadOffsetChgCompensationTable:(NSMutableArray*)tempValues :(NSMutableArray*)compValues
 {
-    return [self loadCompensationTable:1 : tempValues :compValues];
+    return [self loadCompensationTable:1 :tempValues :compValues];
 }
 
 /**
@@ -763,7 +763,7 @@
  */
 -(int) set_spanAvgCompensationTable:(NSMutableArray*)tempValues :(NSMutableArray*)compValues
 {
-    return [self setCompensationTable:2 : tempValues :compValues];
+    return [self setCompensationTable:2 :tempValues :compValues];
 }
 
 /**
@@ -783,7 +783,7 @@
  */
 -(int) loadSpanAvgCompensationTable:(NSMutableArray*)tempValues :(NSMutableArray*)compValues
 {
-    return [self loadCompensationTable:2 : tempValues :compValues];
+    return [self loadCompensationTable:2 :tempValues :compValues];
 }
 
 /**
@@ -803,7 +803,7 @@
  */
 -(int) set_spanChgCompensationTable:(NSMutableArray*)tempValues :(NSMutableArray*)compValues
 {
-    return [self setCompensationTable:3 : tempValues :compValues];
+    return [self setCompensationTable:3 :tempValues :compValues];
 }
 
 /**
@@ -823,7 +823,7 @@
  */
 -(int) loadSpanChgCompensationTable:(NSMutableArray*)tempValues :(NSMutableArray*)compValues
 {
-    return [self loadCompensationTable:3 : tempValues :compValues];
+    return [self loadCompensationTable:3 :tempValues :compValues];
 }
 
 

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_temperature.m 59977 2024-03-18 15:02:32Z mvuilleu $
+ *  $Id: yocto_temperature.m 63508 2024-11-28 10:46:01Z seb $
  *
  *  Implements the high-level API for Temperature functions
  *
@@ -308,7 +308,7 @@
     obj = (YTemperature*) [YFunction _FindFromCache:@"Temperature" :func];
     if (obj == nil) {
         obj = ARC_sendAutorelease([[YTemperature alloc] initWith:func]);
-        [YFunction _AddToCache:@"Temperature" : func :obj];
+        [YFunction _AddToCache:@"Temperature" :func :obj];
     }
     return obj;
 }
@@ -446,11 +446,11 @@
     double currTemp;
     double idxres;
     siz = (int)[tempValues count];
-    if (!(siz >= 2)) {[self _throw: YAPI_INVALID_ARGUMENT: @"thermistor response table must have at least two points"]; return YAPI_INVALID_ARGUMENT;}
-    if (!(siz == (int)[resValues count])) {[self _throw: YAPI_INVALID_ARGUMENT: @"table sizes mismatch"]; return YAPI_INVALID_ARGUMENT;}
+    if (!(siz >= 2)) {[self _throw:YAPI_INVALID_ARGUMENT:@"thermistor response table must have at least two points"]; return YAPI_INVALID_ARGUMENT;}
+    if (!(siz == (int)[resValues count])) {[self _throw:YAPI_INVALID_ARGUMENT:@"table sizes mismatch"]; return YAPI_INVALID_ARGUMENT;}
 
     res = [self set_command:@"Z"];
-    if (!(res==YAPI_SUCCESS)) {[self _throw: YAPI_IO_ERROR: @"unable to reset thermistor parameters"]; return YAPI_IO_ERROR;}
+    if (!(res==YAPI_SUCCESS)) {[self _throw:YAPI_IO_ERROR:@"unable to reset thermistor parameters"]; return YAPI_IO_ERROR;}
     // add records in growing resistance value
     found = 1;
     prev = 0.0;
@@ -469,8 +469,8 @@
             idx = idx + 1;
         }
         if (found > 0) {
-            res = [self set_command:[NSString stringWithFormat:@"m%d:%d", (int) floor(1000*curr+0.5),(int) floor(1000*currTemp+0.5)]];
-            if (!(res==YAPI_SUCCESS)) {[self _throw: YAPI_IO_ERROR: @"unable to reset thermistor parameters"]; return YAPI_IO_ERROR;}
+            res = [self set_command:[NSString stringWithFormat:@"m%d:%d",(int) floor(1000*curr+0.5),(int) floor(1000*currTemp+0.5)]];
+            if (!(res==YAPI_SUCCESS)) {[self _throw:YAPI_IO_ERROR:@"unable to reset thermistor parameters"]; return YAPI_IO_ERROR;}
             prev = curr;
         }
     }
@@ -510,14 +510,14 @@
     [resValues removeAllObjects];
 
     id = [self get_functionId];
-    id = [id substringWithRange:NSMakeRange( 11, (int)[(id) length] - 11)];
+    id = [id substringWithRange:NSMakeRange(11, (int)[(id) length] - 11)];
     if ([id isEqualToString:@""]) {
         id = @"1";
     }
     bin_json = [self _download:[NSString stringWithFormat:@"extra.json?page=%@",id]];
     paramlist = [self _json_get_array:bin_json];
     // first convert all temperatures to float
-    siz = (((int)[paramlist count]) >> (1));
+    siz = (((int)[paramlist count]) >> 1);
     [templist removeAllObjects];
     idx = 0;
     while (idx < siz) {

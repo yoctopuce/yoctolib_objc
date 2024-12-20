@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_altitude.m 59977 2024-03-18 15:02:32Z mvuilleu $
+ *  $Id: yocto_altitude.m 63508 2024-11-28 10:46:01Z seb $
  *
  *  Implements the high-level API for Altitude functions
  *
@@ -224,7 +224,7 @@
     obj = (YAltitude*) [YFunction _FindFromCache:@"Altitude" :func];
     if (obj == nil) {
         obj = ARC_sendAutorelease([[YAltitude alloc] initWith:func]);
-        [YFunction _AddToCache:@"Altitude" : func :obj];
+        [YFunction _AddToCache:@"Altitude" :func :obj];
     }
     return obj;
 }

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_wireless.m 59977 2024-03-18 15:02:32Z mvuilleu $
+ * $Id: yocto_wireless.m 63508 2024-11-28 10:46:01Z seb $
  *
  * Implements yFindWireless(), the high-level API for Wireless functions
  *
@@ -474,7 +474,7 @@
     obj = (YWireless*) [YFunction _FindFromCache:@"Wireless" :func];
     if (obj == nil) {
         obj = ARC_sendAutorelease([[YWireless alloc] initWith:func]);
-        [YFunction _AddToCache:@"Wireless" : func :obj];
+        [YFunction _AddToCache:@"Wireless" :func :obj];
     }
     return obj;
 }
@@ -551,7 +551,7 @@
  */
 -(int) joinNetwork:(NSString*)ssid :(NSString*)securityKey
 {
-    return [self set_wlanConfig:[NSString stringWithFormat:@"INFRA:%@\\%@", ssid,securityKey]];
+    return [self set_wlanConfig:[NSString stringWithFormat:@"INFRA:%@\\%@",ssid,securityKey]];
 }
 
 /**
@@ -577,7 +577,7 @@
  */
 -(int) adhocNetwork:(NSString*)ssid :(NSString*)securityKey
 {
-    return [self set_wlanConfig:[NSString stringWithFormat:@"ADHOC:%@\\%@", ssid,securityKey]];
+    return [self set_wlanConfig:[NSString stringWithFormat:@"ADHOC:%@\\%@",ssid,securityKey]];
 }
 
 /**
@@ -604,7 +604,7 @@
  */
 -(int) softAPNetwork:(NSString*)ssid :(NSString*)securityKey
 {
-    return [self set_wlanConfig:[NSString stringWithFormat:@"SOFTAP:%@\\%@", ssid,securityKey]];
+    return [self set_wlanConfig:[NSString stringWithFormat:@"SOFTAP:%@\\%@",ssid,securityKey]];
 }
 
 /**

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_refframe.m 59977 2024-03-18 15:02:32Z mvuilleu $
+ *  $Id: yocto_refframe.m 63508 2024-11-28 10:46:01Z seb $
  *
  *  Implements the high-level API for RefFrame functions
  *
@@ -151,7 +151,7 @@
  * indicated by the compass is the difference between the measured magnetic
  * heading and the reference bearing indicated here.
  *
- * For instance, if you setup as reference bearing the value of the earth
+ * For instance, if you set up as reference bearing the value of the earth
  * magnetic declination, the compass will provide the orientation relative
  * to the geographic North.
  *
@@ -317,7 +317,7 @@
     obj = (YRefFrame*) [YFunction _FindFromCache:@"RefFrame" :func];
     if (obj == nil) {
         obj = ARC_sendAutorelease([[YRefFrame alloc] initWith:func]);
-        [YFunction _AddToCache:@"RefFrame" : func :obj];
+        [YFunction _AddToCache:@"RefFrame" :func :obj];
     }
     return obj;
 }
@@ -382,7 +382,7 @@
     if (position < 0) {
         return Y_MOUNTPOSITION_INVALID;
     }
-    return (Y_MOUNTPOSITION) ((position) >> (2));
+    return (Y_MOUNTPOSITION) (position >> 2);
 }
 
 /**
@@ -407,7 +407,7 @@
     if (position < 0) {
         return Y_MOUNTORIENTATION_INVALID;
     }
-    return (Y_MOUNTORIENTATION) ((position) & (3));
+    return (Y_MOUNTORIENTATION) (position & 3);
 }
 
 /**
@@ -438,7 +438,7 @@
 -(int) set_mountPosition:(Y_MOUNTPOSITION)position :(Y_MOUNTORIENTATION)orientation
 {
     int mixedPos;
-    mixedPos = ((position) << (2)) + orientation;
+    mixedPos = (position << 2) + orientation;
     return [self set_mountPos:mixedPos];
 }
 
@@ -465,11 +465,11 @@
 
     calibParam = [self get_calibrationParam];
     iCalib = [YAPI _decodeFloats:calibParam];
-    caltyp = (([[iCalib objectAtIndex:0] intValue]) / (1000));
+    caltyp = (([[iCalib objectAtIndex:0] intValue]) / 1000);
     if (caltyp != 33) {
         return YAPI_NOT_SUPPORTED;
     }
-    res = (([[iCalib objectAtIndex:1] intValue]) / (1000));
+    res = (([[iCalib objectAtIndex:1] intValue]) / 1000);
     return res;
 }
 
@@ -495,11 +495,11 @@
 
     calibParam = [self get_calibrationParam];
     iCalib = [YAPI _decodeFloats:calibParam];
-    caltyp = (([[iCalib objectAtIndex:0] intValue]) / (1000));
+    caltyp = (([[iCalib objectAtIndex:0] intValue]) / 1000);
     if (caltyp != 33) {
         return YAPI_NOT_SUPPORTED;
     }
-    res = (([[iCalib objectAtIndex:2] intValue]) / (1000));
+    res = (([[iCalib objectAtIndex:2] intValue]) / 1000);
     return res;
 }
 
@@ -520,20 +520,20 @@
         while (idx < stopidx) {
             b = [[_calibDataAcc objectAtIndex:idx] doubleValue];
             if (a > b) {
-                [_calibDataAcc replaceObjectAtIndex: idx-1 withObject:[NSNumber numberWithDouble:b]];
-                [_calibDataAcc replaceObjectAtIndex: idx withObject:[NSNumber numberWithDouble:a]];
+                [_calibDataAcc replaceObjectAtIndex:idx-1 withObject:[NSNumber numberWithDouble:b]];
+                [_calibDataAcc replaceObjectAtIndex:idx withObject:[NSNumber numberWithDouble:a]];
                 xa = [[_calibDataAccX objectAtIndex:idx-1] doubleValue];
                 xb = [[_calibDataAccX objectAtIndex:idx] doubleValue];
-                [_calibDataAccX replaceObjectAtIndex: idx-1 withObject:[NSNumber numberWithDouble:xb]];
-                [_calibDataAccX replaceObjectAtIndex: idx withObject:[NSNumber numberWithDouble:xa]];
+                [_calibDataAccX replaceObjectAtIndex:idx-1 withObject:[NSNumber numberWithDouble:xb]];
+                [_calibDataAccX replaceObjectAtIndex:idx withObject:[NSNumber numberWithDouble:xa]];
                 xa = [[_calibDataAccY objectAtIndex:idx-1] doubleValue];
                 xb = [[_calibDataAccY objectAtIndex:idx] doubleValue];
-                [_calibDataAccY replaceObjectAtIndex: idx-1 withObject:[NSNumber numberWithDouble:xb]];
-                [_calibDataAccY replaceObjectAtIndex: idx withObject:[NSNumber numberWithDouble:xa]];
+                [_calibDataAccY replaceObjectAtIndex:idx-1 withObject:[NSNumber numberWithDouble:xb]];
+                [_calibDataAccY replaceObjectAtIndex:idx withObject:[NSNumber numberWithDouble:xa]];
                 xa = [[_calibDataAccZ objectAtIndex:idx-1] doubleValue];
                 xb = [[_calibDataAccZ objectAtIndex:idx] doubleValue];
-                [_calibDataAccZ replaceObjectAtIndex: idx-1 withObject:[NSNumber numberWithDouble:xb]];
-                [_calibDataAccZ replaceObjectAtIndex: idx withObject:[NSNumber numberWithDouble:xa]];
+                [_calibDataAccZ replaceObjectAtIndex:idx-1 withObject:[NSNumber numberWithDouble:xb]];
+                [_calibDataAccZ replaceObjectAtIndex:idx withObject:[NSNumber numberWithDouble:xa]];
                 changed = changed + 1;
             } else {
                 a = b;
@@ -577,7 +577,7 @@
     _calibStageProgress = 0;
     _calibProgress = 1;
     _calibInternalPos = 0;
-    _calibPrevTick = (int) (([YAPI GetTickCount]) & (0x7FFFFFFF));
+    _calibPrevTick = (int) (([YAPI GetTickCount]) & 0x7FFFFFFF);
     [_calibOrient removeAllObjects];
     [_calibDataAccX removeAllObjects];
     [_calibDataAccY removeAllObjects];
@@ -627,14 +627,14 @@
         return YAPI_SUCCESS;
     }
     // make sure we leave at least 160 ms between samples
-    currTick =  (int) (([YAPI GetTickCount]) & (0x7FFFFFFF));
-    if (((currTick - _calibPrevTick) & (0x7FFFFFFF)) < 160) {
+    currTick =  (int) (([YAPI GetTickCount]) & 0x7FFFFFFF);
+    if (((currTick - _calibPrevTick) & 0x7FFFFFFF) < 160) {
         return YAPI_SUCCESS;
     }
     // load current accelerometer values, make sure we are on a straight angle
     // (default timeout to 0,5 sec without reading measure when out of range)
     _calibStageHint = @"Set down the device on a steady horizontal surface";
-    _calibPrevTick = ((currTick + 500) & (0x7FFFFFFF));
+    _calibPrevTick = ((currTick + 500) & 0x7FFFFFFF);
     jsonData = [self _download:@"api/accelerometer.json"];
     xVal = [[self _json_get_key:jsonData :@"xValue"] intValue] / 65536.0;
     yVal = [[self _json_get_key:jsonData :@"yValue"] intValue] / 65536.0;
@@ -718,23 +718,21 @@
     [_calibDataAccZ addObject:[NSNumber numberWithDouble:zVal]];
     [_calibDataAcc addObject:[NSNumber numberWithDouble:norm]];
     _calibInternalPos = _calibInternalPos + 1;
-    _calibProgress = 1 + 16 * (_calibStage - 1) + ((16 * _calibInternalPos) / (_calibCount));
+    _calibProgress = 1 + 16 * (_calibStage - 1) + ((16 * _calibInternalPos) / _calibCount);
     if (_calibInternalPos < _calibCount) {
-        _calibStageProgress = 1 + ((99 * _calibInternalPos) / (_calibCount));
+        _calibStageProgress = 1 + ((99 * _calibInternalPos) / _calibCount);
         return YAPI_SUCCESS;
     }
     // Stage done, compute preliminary result
     intpos = (_calibStage - 1) * _calibCount;
     [self _calibSort:intpos :intpos + _calibCount];
-    intpos = intpos + ((_calibCount) / (2));
-    _calibLogMsg = [NSString stringWithFormat:@"Stage %d: median is %d,%d,%d", _calibStage,
-    (int) floor(1000*[[_calibDataAccX objectAtIndex:intpos] doubleValue]+0.5),
-    (int) floor(1000*[[_calibDataAccY objectAtIndex:intpos] doubleValue]+0.5),(int) floor(1000*[[_calibDataAccZ objectAtIndex:intpos] doubleValue]+0.5)];
+    intpos = intpos + (_calibCount / 2);
+    _calibLogMsg = [NSString stringWithFormat:@"Stage %d: median is %d,%d,%d",_calibStage,(int) floor(1000*[[_calibDataAccX objectAtIndex:intpos] doubleValue]+0.5),(int) floor(1000*[[_calibDataAccY objectAtIndex:intpos] doubleValue]+0.5),(int) floor(1000*[[_calibDataAccZ objectAtIndex:intpos] doubleValue]+0.5)];
     // move to next stage
     _calibStage = _calibStage + 1;
     if (_calibStage < 7) {
         _calibStageHint = @"Turn the device on another face";
-        _calibPrevTick = ((currTick + 500) & (0x7FFFFFFF));
+        _calibPrevTick = ((currTick + 500) & 0x7FFFFFFF);
         _calibStageProgress = 0;
         _calibInternalPos = 0;
         return YAPI_SUCCESS;
@@ -745,7 +743,7 @@
     zVal = 0;
     idx = 0;
     while (idx < 6) {
-        intpos = idx * _calibCount + ((_calibCount) / (2));
+        intpos = idx * _calibCount + (_calibCount / 2);
         orient = [[_calibOrient objectAtIndex:idx] intValue];
         if (orient == 0 || orient == 1) {
             zVal = zVal + [[_calibDataAccZ objectAtIndex:intpos] doubleValue];
@@ -768,7 +766,7 @@
         yVal = [[_calibDataAccY objectAtIndex:intpos] doubleValue] - _calibAccYOfs;
         zVal = [[_calibDataAccZ objectAtIndex:intpos] doubleValue] - _calibAccZOfs;
         norm = sqrt(xVal * xVal + yVal * yVal + zVal * zVal);
-        [_calibDataAcc replaceObjectAtIndex: intpos withObject:[NSNumber numberWithDouble:norm]];
+        [_calibDataAcc replaceObjectAtIndex:intpos withObject:[NSNumber numberWithDouble:norm]];
         intpos = intpos + 1;
     }
     idx = 0;
@@ -783,7 +781,7 @@
     zVal = 0;
     idx = 0;
     while (idx < 6) {
-        intpos = idx * _calibCount + ((_calibCount) / (2));
+        intpos = idx * _calibCount + (_calibCount / 2);
         orient = [[_calibOrient objectAtIndex:idx] intValue];
         if (orient == 0 || orient == 1) {
             zVal = zVal + [[_calibDataAcc objectAtIndex:intpos] doubleValue];
@@ -823,11 +821,11 @@
     }
     // make sure we don't start before previous calibration is cleared
     if (_calibStage == 1) {
-        currTick = (int) (([YAPI GetTickCount]) & (0x7FFFFFFF));
-        currTick = ((currTick - _calibPrevTick) & (0x7FFFFFFF));
+        currTick = (int) (([YAPI GetTickCount]) & 0x7FFFFFFF);
+        currTick = ((currTick - _calibPrevTick) & 0x7FFFFFFF);
         if (currTick < 1600) {
             _calibStageHint = @"Set down the device on a steady horizontal surface";
-            _calibStageProgress = ((currTick) / (40));
+            _calibStageProgress = (currTick / 40);
             _calibProgress = 1;
             return YAPI_SUCCESS;
         }
@@ -835,9 +833,9 @@
 
     calibParam = [self _download:@"api/refFrame/calibrationParam.txt"];
     iCalib = [YAPI _decodeFloats:ARC_sendAutorelease([[NSString alloc] initWithData:calibParam encoding:NSISOLatin1StringEncoding])];
-    cal3 = (([[iCalib objectAtIndex:1] intValue]) / (1000));
-    calAcc = ((cal3) / (100));
-    calMag = ((cal3) / (10)) - 10*calAcc;
+    cal3 = (([[iCalib objectAtIndex:1] intValue]) / 1000);
+    calAcc = (cal3 / 100);
+    calMag = (cal3 / 10) - 10*calAcc;
     calGyr = ((cal3) % (10));
     if (calGyr < 3) {
         _calibStageHint = @"Set down the device on a steady horizontal surface";
@@ -982,9 +980,9 @@
         }
     }
     if (scaleExp > 0) {
-        scaleX = ((scaleX) >> (scaleExp));
-        scaleY = ((scaleY) >> (scaleExp));
-        scaleZ = ((scaleZ) >> (scaleExp));
+        scaleX = (scaleX >> scaleExp);
+        scaleY = (scaleY >> scaleExp);
+        scaleZ = (scaleZ >> scaleExp);
     }
     if (scaleX < 0) {
         scaleX = scaleX + 1024;
@@ -995,10 +993,10 @@
     if (scaleZ < 0) {
         scaleZ = scaleZ + 1024;
     }
-    scaleLo = ((((scaleY) & (15))) << (12)) + ((scaleX) << (2)) + scaleExp;
-    scaleHi = ((scaleZ) << (6)) + ((scaleY) >> (4));
+    scaleLo = ((scaleY & 15) << 12) + (scaleX << 2) + scaleExp;
+    scaleHi = (scaleZ << 6) + (scaleY >> 4);
     // Save calibration parameters
-    newcalib = [NSString stringWithFormat:@"5,%d,%d,%d,%d,%d", shiftX, shiftY, shiftZ, scaleLo,scaleHi];
+    newcalib = [NSString stringWithFormat:@"5,%d,%d,%d,%d,%d",shiftX,shiftY,shiftZ,scaleLo,scaleHi];
     _calibStage = 0;
     return [self set_calibrationParam:newcalib];
 }

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_wakeupschedule.m 59977 2024-03-18 15:02:32Z mvuilleu $
+ *  $Id: yocto_wakeupschedule.m 63508 2024-11-28 10:46:01Z seb $
  *
  *  Implements the high-level API for WakeUpSchedule functions
  *
@@ -504,7 +504,7 @@
     obj = (YWakeUpSchedule*) [YFunction _FindFromCache:@"WakeUpSchedule" :func];
     if (obj == nil) {
         obj = ARC_sendAutorelease([[YWakeUpSchedule alloc] initWith:func]);
-        [YFunction _AddToCache:@"WakeUpSchedule" : func :obj];
+        [YFunction _AddToCache:@"WakeUpSchedule" :func :obj];
     }
     return obj;
 }
@@ -557,7 +557,7 @@
     s64 res;
 
     res = [self get_minutesB];
-    res = ((res) << (30));
+    res = (res << 30);
     res = res + [self get_minutesA];
     return res;
 }
@@ -573,9 +573,9 @@
  */
 -(int) set_minutes:(s64)bitmap
 {
-    [self set_minutesA:(int)(((bitmap) & (0x3fffffff)))];
-    bitmap = ((bitmap) >> (30));
-    return [self set_minutesB:(int)(((bitmap) & (0x3fffffff)))];
+    [self set_minutesA:(int)((bitmap & 0x3fffffff))];
+    bitmap = (bitmap >> 30);
+    return [self set_minutesB:(int)((bitmap & 0x3fffffff))];
 }
 
 

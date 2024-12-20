@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_audioin.m 59977 2024-03-18 15:02:32Z mvuilleu $
+ *  $Id: yocto_audioin.m 63508 2024-11-28 10:46:01Z seb $
  *
  *  Implements the high-level API for AudioIn functions
  *
@@ -306,7 +306,7 @@
     obj = (YAudioIn*) [YFunction _FindFromCache:@"AudioIn" :func];
     if (obj == nil) {
         obj = ARC_sendAutorelease([[YAudioIn alloc] initWith:func]);
-        [YFunction _AddToCache:@"AudioIn" : func :obj];
+        [YFunction _AddToCache:@"AudioIn" :func :obj];
     }
     return obj;
 }

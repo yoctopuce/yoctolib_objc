@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_cellular.m 59977 2024-03-18 15:02:32Z mvuilleu $
+ * $Id: yocto_cellular.m 63508 2024-11-28 10:46:01Z seb $
  *
  * Implements the high-level API for Cellular functions
  *
@@ -1031,7 +1031,7 @@
     obj = (YCellular*) [YFunction _FindFromCache:@"Cellular" :func];
     if (obj == nil) {
         obj = ARC_sendAutorelease([[YCellular alloc] initWith:func]);
-        [YFunction _AddToCache:@"Cellular" : func :obj];
+        [YFunction _AddToCache:@"Cellular" :func :obj];
     }
     return obj;
 }
@@ -1078,7 +1078,7 @@
 
 /**
  * Sends a PUK code to unlock the SIM card after three failed PIN code attempts, and
- * setup a new PIN into the SIM card. Only ten consecutive tentatives are permitted:
+ * set up a new PIN into the SIM card. Only ten consecutive tentatives are permitted:
  * after that, the SIM card will be blocked permanently without any mean of recovery
  * to use it again. Note that after calling this method, you have usually to invoke
  * method set_pin() to tell the YoctoHub which PIN to use in the future.
@@ -1094,7 +1094,7 @@
 {
     NSString* gsmMsg;
     gsmMsg = [self get_message];
-    if (!([[gsmMsg substringWithRange:NSMakeRange(0, 13)] isEqualToString:@"Enter SIM PUK"])) {[self _throw:YAPI_INVALID_ARGUMENT: @"PUK not expected at self time"]; return YAPI_INVALID_ARGUMENT;}
+    if (!([[gsmMsg substringWithRange:NSMakeRange(0, 13)] isEqualToString:@"Enter SIM PUK"])) {[self _throw:YAPI_INVALID_ARGUMENT:@"PUK not expected at self time"]; return YAPI_INVALID_ARGUMENT;}
     if ([newPin isEqualToString:@""]) {
         return [self set_command:[NSString stringWithFormat:@"AT+CPIN=%@,0000;+CLCK=SC,0,0000",puk]];
     }
@@ -1163,19 +1163,19 @@
     cmdLen = (int)[(cmd) length];
     chrPos = _ystrpos(cmd, @"#");
     while (chrPos >= 0) {
-        cmd = [NSString stringWithFormat:@"%@%c23%@", [cmd substringWithRange:NSMakeRange( 0, chrPos)], 37,[cmd substringWithRange:NSMakeRange( chrPos+1, cmdLen-chrPos-1)]];
+        cmd = [NSString stringWithFormat:@"%@%c23%@",[cmd substringWithRange:NSMakeRange(0, chrPos)],37,[cmd substringWithRange:NSMakeRange(chrPos+1, cmdLen-chrPos-1)]];
         cmdLen = cmdLen + 2;
         chrPos = _ystrpos(cmd, @"#");
     }
     chrPos = _ystrpos(cmd, @"+");
     while (chrPos >= 0) {
-        cmd = [NSString stringWithFormat:@"%@%c2B%@", [cmd substringWithRange:NSMakeRange( 0, chrPos)], 37,[cmd substringWithRange:NSMakeRange( chrPos+1, cmdLen-chrPos-1)]];
+        cmd = [NSString stringWithFormat:@"%@%c2B%@",[cmd substringWithRange:NSMakeRange(0, chrPos)],37,[cmd substringWithRange:NSMakeRange(chrPos+1, cmdLen-chrPos-1)]];
         cmdLen = cmdLen + 2;
         chrPos = _ystrpos(cmd, @"+");
     }
     chrPos = _ystrpos(cmd, @"=");
     while (chrPos >= 0) {
-        cmd = [NSString stringWithFormat:@"%@%c3D%@", [cmd substringWithRange:NSMakeRange( 0, chrPos)], 37,[cmd substringWithRange:NSMakeRange( chrPos+1, cmdLen-chrPos-1)]];
+        cmd = [NSString stringWithFormat:@"%@%c3D%@",[cmd substringWithRange:NSMakeRange(0, chrPos)],37,[cmd substringWithRange:NSMakeRange(chrPos+1, cmdLen-chrPos-1)]];
         cmdLen = cmdLen + 2;
         chrPos = _ystrpos(cmd, @"=");
     }
@@ -1195,14 +1195,14 @@
         if ((((u8*)([buff bytes]))[idx]) == 64) {
             // continuation detected
             suffixlen = bufflen - idx;
-            cmd = [NSString stringWithFormat:@"at.txt?cmd=%@",[buffstr substringWithRange:NSMakeRange( buffstrlen - suffixlen, suffixlen)]];
-            buffstr = [buffstr substringWithRange:NSMakeRange( 0, buffstrlen - suffixlen)];
+            cmd = [NSString stringWithFormat:@"at.txt?cmd=%@",[buffstr substringWithRange:NSMakeRange(buffstrlen - suffixlen, suffixlen)]];
+            buffstr = [buffstr substringWithRange:NSMakeRange(0, buffstrlen - suffixlen)];
             waitMore = waitMore - 1;
         } else {
             // request complete
             waitMore = 0;
         }
-        res = [NSString stringWithFormat:@"%@%@", res,buffstr];
+        res = [NSString stringWithFormat:@"%@%@",res,buffstr];
     }
     return res;
 }
@@ -1229,14 +1229,14 @@
     idx = _ystrpos(cops, @"(");
     while (idx >= 0) {
         slen = slen - (idx+1);
-        cops = [cops substringWithRange:NSMakeRange( idx+1, slen)];
+        cops = [cops substringWithRange:NSMakeRange(idx+1, slen)];
         idx = _ystrpos(cops, @"\"");
         if (idx > 0) {
             slen = slen - (idx+1);
-            cops = [cops substringWithRange:NSMakeRange( idx+1, slen)];
+            cops = [cops substringWithRange:NSMakeRange(idx+1, slen)];
             idx = _ystrpos(cops, @"\"");
             if (idx > 0) {
-                [res addObject:[cops substringWithRange:NSMakeRange( 0, idx)]];
+                [res addObject:[cops substringWithRange:NSMakeRange(0, idx)]];
             }
         }
         idx = _ystrpos(cops, @"(");
@@ -5796,14 +5796,14 @@
     profiles = [self _AT:@"+UMNOPROF=?"];
     lines = [NSMutableArray arrayWithArray:[profiles componentsSeparatedByString:@"\n"]];
     nlines = (int)[lines count];
-    if (!(nlines > 0)) {[self _throw: YAPI_IO_ERROR: @"fail to retrieve profile list"]; return res;}
+    if (!(nlines > 0)) {[self _throw:YAPI_IO_ERROR:@"fail to retrieve profile list"]; return res;}
     [res removeAllObjects];
     idx = 0;
     while (idx < nlines) {
         line = [lines objectAtIndex:idx];
         cpos = _ystrpos(line, @":");
         if (cpos > 0) {
-            profno = [[line substringWithRange:NSMakeRange( 0, cpos)] intValue];
+            profno = [[line substringWithRange:NSMakeRange(0, cpos)] intValue];
             if (profno > 1) {
                 [res addObject:line];
             }

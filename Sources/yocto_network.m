@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_network.m 59977 2024-03-18 15:02:32Z mvuilleu $
+ *  $Id: yocto_network.m 63508 2024-11-28 10:46:01Z seb $
  *
  *  Implements the high-level API for Network functions
  *
@@ -452,7 +452,7 @@
 /**
  * Returns the IP configuration of the network interface.
  *
- * If the network interface is setup to use a static IP address, the string starts with "STATIC:" and
+ * If the network interface is set up to use a static IP address, the string starts with "STATIC:" and
  * is followed by three
  * parameters, separated by "/". The first is the device IP address, followed by the subnet mask
  * length, and finally the
@@ -1471,7 +1471,7 @@
     obj = (YNetwork*) [YFunction _FindFromCache:@"Network" :func];
     if (obj == nil) {
         obj = ARC_sendAutorelease([[YNetwork alloc] initWith:func]);
-        [YFunction _AddToCache:@"Network" : func :obj];
+        [YFunction _AddToCache:@"Network" :func :obj];
     }
     return obj;
 }
@@ -1533,7 +1533,7 @@
  */
 -(int) useDHCP:(NSString*)fallbackIpAddr :(int)fallbackSubnetMaskLen :(NSString*)fallbackRouter
 {
-    return [self set_ipConfig:[NSString stringWithFormat:@"DHCP:%@/%d/%@", fallbackIpAddr, fallbackSubnetMaskLen,fallbackRouter]];
+    return [self set_ipConfig:[NSString stringWithFormat:@"DHCP:%@/%d/%@",fallbackIpAddr,fallbackSubnetMaskLen,fallbackRouter]];
 }
 
 /**
@@ -1565,7 +1565,7 @@
  */
 -(int) useStaticIP:(NSString*)ipAddress :(int)subnetMaskLen :(NSString*)router
 {
-    return [self set_ipConfig:[NSString stringWithFormat:@"STATIC:%@/%d/%@", ipAddress, subnetMaskLen,router]];
+    return [self set_ipConfig:[NSString stringWithFormat:@"STATIC:%@/%d/%@",ipAddress,subnetMaskLen,router]];
 }
 
 /**
@@ -1601,7 +1601,7 @@
 }
 
 /**
- * Setup periodic HTTP callbacks (simplified function).
+ * Set up periodic HTTP callbacks (simplified function).
  *
  * @param interval : a string representing the callback periodicity, expressed in
  *         seconds, minutes or hours, eg. "60s", "5m", "1h", "48h".

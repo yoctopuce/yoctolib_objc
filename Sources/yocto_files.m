@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_files.m 59977 2024-03-18 15:02:32Z mvuilleu $
+ * $Id: yocto_files.m 63508 2024-11-28 10:46:01Z seb $
  *
  * Implements yFindFiles(), the high-level API for Files functions
  *
@@ -269,7 +269,7 @@
     obj = (YFiles*) [YFunction _FindFromCache:@"Files" :func];
     if (obj == nil) {
         obj = ARC_sendAutorelease([[YFiles alloc] initWith:func]);
-        [YFunction _AddToCache:@"Files" : func :obj];
+        [YFunction _AddToCache:@"Files" :func :obj];
     }
     return obj;
 }
@@ -336,7 +336,7 @@
     NSString* res;
     json = [self sendCommand:@"format"];
     res = [self _json_get_key:json :@"res"];
-    if (!([res isEqualToString:@"ok"])) {[self _throw: YAPI_IO_ERROR: @"format failed"]; return YAPI_IO_ERROR;}
+    if (!([res isEqualToString:@"ok"])) {[self _throw:YAPI_IO_ERROR:@"format failed"]; return YAPI_IO_ERROR;}
     return YAPI_SUCCESS;
 }
 
@@ -441,7 +441,7 @@
     NSString* res;
     json = [self sendCommand:[NSString stringWithFormat:@"del&f=%@",pathname]];
     res  = [self _json_get_key:json :@"res"];
-    if (!([res isEqualToString:@"ok"])) {[self _throw: YAPI_IO_ERROR: @"unable to remove file"]; return YAPI_IO_ERROR;}
+    if (!([res isEqualToString:@"ok"])) {[self _throw:YAPI_IO_ERROR:@"unable to remove file"]; return YAPI_IO_ERROR;}
     return YAPI_SUCCESS;
 }
 

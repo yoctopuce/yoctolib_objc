@@ -658,7 +658,7 @@ static void yInternalEventCallback(YInputChain *obj, NSString *value)
     obj = (YInputChain*) [YFunction _FindFromCache:@"InputChain" :func];
     if (obj == nil) {
         obj = ARC_sendAutorelease([[YInputChain alloc] initWith:func]);
-        [YFunction _AddToCache:@"InputChain" : func :obj];
+        [YFunction _AddToCache:@"InputChain" :func :obj];
     }
     return obj;
 }
@@ -705,7 +705,7 @@ static void yInternalEventCallback(YInputChain *obj, NSString *value)
 
 /**
  * Resets the application watchdog countdown.
- * If you have setup a non-zero watchdogPeriod, you should
+ * If you have set up a non-zero watchdogPeriod, you should
  * call this function on a regular basis to prevent the application
  * inactivity error to be triggered.
  *
@@ -808,11 +808,11 @@ static void yInternalEventCallback(YInputChain *obj, NSString *value)
     contentStr = ARC_sendAutorelease([[NSString alloc] initWithData:content encoding:NSISOLatin1StringEncoding]);
     eventArr = [NSMutableArray arrayWithArray:[contentStr componentsSeparatedByString:@"\n"]];
     arrLen = (int)[eventArr count];
-    if (!(arrLen > 0)) {[self _throw: YAPI_IO_ERROR: @"fail to download events"]; return YAPI_IO_ERROR;}
+    if (!(arrLen > 0)) {[self _throw:YAPI_IO_ERROR:@"fail to download events"]; return YAPI_IO_ERROR;}
     // last element of array is the new position preceeded by '@'
     arrLen = arrLen - 1;
     lenStr = [eventArr objectAtIndex:arrLen];
-    lenStr = [lenStr substringWithRange:NSMakeRange( 1, (int)[(lenStr) length]-1)];
+    lenStr = [lenStr substringWithRange:NSMakeRange(1, (int)[(lenStr) length]-1)];
     // update processed event position pointer
     _eventPos = [lenStr intValue];
     // now generate callbacks for each event received
@@ -821,21 +821,21 @@ static void yInternalEventCallback(YInputChain *obj, NSString *value)
         eventStr = [eventArr objectAtIndex:arrPos];
         eventLen = (int)[(eventStr) length];
         if (eventLen >= 1) {
-            hexStamp = [eventStr substringWithRange:NSMakeRange( 0, 8)];
+            hexStamp = [eventStr substringWithRange:NSMakeRange(0, 8)];
             evtStamp = (int)strtoul(STR_oc2y(hexStamp), NULL, 16);
             typePos = _ystrpos(eventStr, @":")+1;
             if ((evtStamp >= _eventStamp) && (typePos > 8)) {
                 _eventStamp = evtStamp;
                 dataPos = _ystrpos(eventStr, @"=")+1;
-                evtType = [eventStr substringWithRange:NSMakeRange( typePos, 1)];
+                evtType = [eventStr substringWithRange:NSMakeRange(typePos, 1)];
                 evtData = @"";
                 evtChange = @"";
                 if (dataPos > 10) {
-                    evtData = [eventStr substringWithRange:NSMakeRange( dataPos, (int)[(eventStr) length]-dataPos)];
+                    evtData = [eventStr substringWithRange:NSMakeRange(dataPos, (int)[(eventStr) length]-dataPos)];
                     if (_ystrpos(@"1234567", evtType) >= 0) {
                         chainIdx = [evtType intValue] - 1;
                         evtChange = [self _strXor:evtData :[_eventChains objectAtIndex:chainIdx]];
-                        [_eventChains replaceObjectAtIndex: chainIdx withObject:evtData];
+                        [_eventChains replaceObjectAtIndex:chainIdx withObject:evtData];
                     }
                 }
                 _stateChangeCallback(self, evtStamp, evtType, evtData, evtChange);
@@ -858,19 +858,19 @@ static void yInternalEventCallback(YInputChain *obj, NSString *value)
     lenA = (int)[(a) length];
     lenB = (int)[(b) length];
     if (lenA > lenB) {
-        res = [a substringWithRange:NSMakeRange( 0, lenA-lenB)];
-        a = [a substringWithRange:NSMakeRange( lenA-lenB, lenB)];
+        res = [a substringWithRange:NSMakeRange(0, lenA-lenB)];
+        a = [a substringWithRange:NSMakeRange(lenA-lenB, lenB)];
         lenA = lenB;
     } else {
         res = @"";
-        b = [b substringWithRange:NSMakeRange( lenA-lenB, lenA)];
+        b = [b substringWithRange:NSMakeRange(lenA-lenB, lenA)];
     }
     // scan strings and compare digit by digit
     idx = 0;
     while (idx < lenA) {
-        digitA = (int)strtoul(STR_oc2y([a substringWithRange:NSMakeRange( idx, 1)]), NULL, 16);
-        digitB = (int)strtoul(STR_oc2y([b substringWithRange:NSMakeRange( idx, 1)]), NULL, 16);
-        res = [NSString stringWithFormat:@"%@%x", res,((digitA) ^ (digitB))];
+        digitA = (int)strtoul(STR_oc2y([a substringWithRange:NSMakeRange(idx, 1)]), NULL, 16);
+        digitB = (int)strtoul(STR_oc2y([b substringWithRange:NSMakeRange(idx, 1)]), NULL, 16);
+        res = [NSString stringWithFormat:@"%@%x",res,(digitA ^ digitB)];
         idx = idx + 1;
     }
     return res;
@@ -887,11 +887,11 @@ static void yInternalEventCallback(YInputChain *obj, NSString *value)
     idx = hexlen;
     while (idx > 0) {
         idx = idx - 1;
-        digit = (int)strtoul(STR_oc2y([hexstr substringWithRange:NSMakeRange( idx, 1)]), NULL, 16);
-        [res addObject:[NSNumber numberWithLong:((digit) & (1))]];
-        [res addObject:[NSNumber numberWithLong:((((digit) >> (1))) & (1))]];
-        [res addObject:[NSNumber numberWithLong:((((digit) >> (2))) & (1))]];
-        [res addObject:[NSNumber numberWithLong:((((digit) >> (3))) & (1))]];
+        digit = (int)strtoul(STR_oc2y([hexstr substringWithRange:NSMakeRange(idx, 1)]), NULL, 16);
+        [res addObject:[NSNumber numberWithLong:(digit & 1)]];
+        [res addObject:[NSNumber numberWithLong:((digit >> 1) & 1)]];
+        [res addObject:[NSNumber numberWithLong:((digit >> 2) & 1)]];
+        [res addObject:[NSNumber numberWithLong:((digit >> 3) & 1)]];
     }
     return res;
 }

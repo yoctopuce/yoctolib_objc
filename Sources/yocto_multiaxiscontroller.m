@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_multiaxiscontroller.m 59977 2024-03-18 15:02:32Z mvuilleu $
+ *  $Id: yocto_multiaxiscontroller.m 63508 2024-11-28 10:46:01Z seb $
  *
  *  Implements the high-level API for MultiAxisController functions
  *
@@ -227,7 +227,7 @@
     obj = (YMultiAxisController*) [YFunction _FindFromCache:@"MultiAxisController" :func];
     if (obj == nil) {
         obj = ARC_sendAutorelease([[YMultiAxisController alloc] initWith:func]);
-        [YFunction _AddToCache:@"MultiAxisController" : func :obj];
+        [YFunction _AddToCache:@"MultiAxisController" :func :obj];
     }
     return obj;
 }
@@ -282,9 +282,9 @@
     retBin = [self _download:url];
     res = (((u8*)([retBin bytes]))[0]);
     if (res < 58) {
-        if (!(res == 48)) {[self _throw: YAPI_DEVICE_BUSY: @"Motor command pipeline is full, try again later"]; return YAPI_DEVICE_BUSY;}
+        if (!(res == 48)) {[self _throw:YAPI_DEVICE_BUSY:@"Motor command pipeline is full, try again later"]; return YAPI_DEVICE_BUSY;}
     } else {
-        if (!(res == 48)) {[self _throw: YAPI_IO_ERROR: @"Motor command failed permanently"]; return YAPI_IO_ERROR;}
+        if (!(res == 48)) {[self _throw:YAPI_IO_ERROR:@"Motor command failed permanently"]; return YAPI_IO_ERROR;}
     }
     return YAPI_SUCCESS;
 }
@@ -317,7 +317,7 @@
     cmd = [NSString stringWithFormat:@"H%d",(int) floor(1000*[[speed objectAtIndex:0] intValue]+0.5)];
     i = 1;
     while (i < ndim) {
-        cmd = [NSString stringWithFormat:@"%@,%d", cmd,(int) floor(1000*[[speed objectAtIndex:i] intValue]+0.5)];
+        cmd = [NSString stringWithFormat:@"%@,%d",cmd,(int) floor(1000*[[speed objectAtIndex:i] intValue]+0.5)];
         i = i + 1;
     }
     return [self sendCommand:cmd];
@@ -343,7 +343,7 @@
     cmd = [NSString stringWithFormat:@"M%d",(int) floor(16*[[absPos objectAtIndex:0] intValue]+0.5)];
     i = 1;
     while (i < ndim) {
-        cmd = [NSString stringWithFormat:@"%@,%d", cmd,(int) floor(16*[[absPos objectAtIndex:i] intValue]+0.5)];
+        cmd = [NSString stringWithFormat:@"%@,%d",cmd,(int) floor(16*[[absPos objectAtIndex:i] intValue]+0.5)];
         i = i + 1;
     }
     return [self sendCommand:cmd];
@@ -369,7 +369,7 @@
     cmd = [NSString stringWithFormat:@"m%d",(int) floor(16*[[relPos objectAtIndex:0] intValue]+0.5)];
     i = 1;
     while (i < ndim) {
-        cmd = [NSString stringWithFormat:@"%@,%d", cmd,(int) floor(16*[[relPos objectAtIndex:i] intValue]+0.5)];
+        cmd = [NSString stringWithFormat:@"%@,%d",cmd,(int) floor(16*[[relPos objectAtIndex:i] intValue]+0.5)];
         i = i + 1;
     }
     return [self sendCommand:cmd];

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_relay.m 59977 2024-03-18 15:02:32Z mvuilleu $
+ *  $Id: yocto_relay.m 63508 2024-11-28 10:46:01Z seb $
  *
  *  Implements the high-level API for Relay functions
  *
@@ -538,7 +538,7 @@
     obj = (YRelay*) [YFunction _FindFromCache:@"Relay" :func];
     if (obj == nil) {
         obj = ARC_sendAutorelease([[YRelay alloc] initWith:func]);
-        [YFunction _AddToCache:@"Relay" : func :obj];
+        [YFunction _AddToCache:@"Relay" :func :obj];
     }
     return obj;
 }

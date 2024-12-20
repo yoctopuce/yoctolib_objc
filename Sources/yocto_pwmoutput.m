@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_pwmoutput.m 59977 2024-03-18 15:02:32Z mvuilleu $
+ *  $Id: yocto_pwmoutput.m 63508 2024-11-28 10:46:01Z seb $
  *
  *  Implements the high-level API for PwmOutput functions
  *
@@ -565,7 +565,7 @@
     obj = (YPwmOutput*) [YFunction _FindFromCache:@"PwmOutput" :func];
     if (obj == nil) {
         obj = ARC_sendAutorelease([[YPwmOutput alloc] initWith:func]);
-        [YFunction _AddToCache:@"PwmOutput" : func :obj];
+        [YFunction _AddToCache:@"PwmOutput" :func :obj];
     }
     return obj;
 }
@@ -628,7 +628,7 @@
     if (ms_target < 0.0) {
         ms_target = 0.0;
     }
-    newval = [NSString stringWithFormat:@"%dms:%d", (int) floor(ms_target*65536+0.5),ms_duration];
+    newval = [NSString stringWithFormat:@"%dms:%d",(int) floor(ms_target*65536+0.5),ms_duration];
     return [self set_pwmTransition:newval];
 }
 
@@ -653,7 +653,7 @@
     if (target > 100.0) {
         target = 100.0;
     }
-    newval = [NSString stringWithFormat:@"%d:%d", (int) floor(target*65536+0.5),ms_duration];
+    newval = [NSString stringWithFormat:@"%d:%d",(int) floor(target*65536+0.5),ms_duration];
     return [self set_pwmTransition:newval];
 }
 
@@ -674,7 +674,7 @@
     if (target < 0.001) {
         target = 0.001;
     }
-    newval = [NSString stringWithFormat:@"%gHz:%d", target,ms_duration];
+    newval = [NSString stringWithFormat:@"%gHz:%d",target,ms_duration];
     return [self set_pwmTransition:newval];
 }
 
@@ -695,7 +695,7 @@
 -(int) phaseMove:(double)target :(int)ms_duration
 {
     NSString* newval;
-    newval = [NSString stringWithFormat:@"%gps:%d", target,ms_duration];
+    newval = [NSString stringWithFormat:@"%gps:%d",target,ms_duration];
     return [self set_pwmTransition:newval];
 }
 
@@ -717,7 +717,7 @@
     if (ms_target < 0.0) {
         ms_target = 0.0;
     }
-    newval = [NSString stringWithFormat:@"%dms*%d", (int) floor(ms_target*65536+0.5),n_pulses];
+    newval = [NSString stringWithFormat:@"%dms*%d",(int) floor(ms_target*65536+0.5),n_pulses];
     return [self set_pwmTransition:newval];
 }
 
@@ -742,7 +742,7 @@
     if (target > 100.0) {
         target = 100.0;
     }
-    newval = [NSString stringWithFormat:@"%d*%d", (int) floor(target*65536+0.5),n_pulses];
+    newval = [NSString stringWithFormat:@"%d*%d",(int) floor(target*65536+0.5),n_pulses];
     return [self set_pwmTransition:newval];
 }
 
@@ -763,7 +763,7 @@
     if (target < 0.001) {
         target = 0.001;
     }
-    newval = [NSString stringWithFormat:@"%gHz*%d", target,n_pulses];
+    newval = [NSString stringWithFormat:@"%gHz*%d",target,n_pulses];
     return [self set_pwmTransition:newval];
 }
 

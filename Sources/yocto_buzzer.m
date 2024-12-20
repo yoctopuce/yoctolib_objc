@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_buzzer.m 59977 2024-03-18 15:02:32Z mvuilleu $
+ *  $Id: yocto_buzzer.m 63508 2024-11-28 10:46:01Z seb $
  *
  *  Implements the high-level API for Buzzer functions
  *
@@ -338,7 +338,7 @@
     obj = (YBuzzer*) [YFunction _FindFromCache:@"Buzzer" :func];
     if (obj == nil) {
         obj = ARC_sendAutorelease([[YBuzzer alloc] initWith:func]);
-        [YFunction _AddToCache:@"Buzzer" : func :obj];
+        [YFunction _AddToCache:@"Buzzer" :func :obj];
     }
     return obj;
 }
@@ -550,7 +550,7 @@
         }
         if (ch == 46) {
             // . (duration modifier)
-            num = ((num * 2) / (3));
+            num = ((num * 2) / 3);
         }
         if (((ch == 32) || (i+1 == notesLen)) && ((note > -99) || (typ != 3))) {
             if (num == 0) {
@@ -571,7 +571,7 @@
                 }
                 pitch = prevPitch + dNote;
                 freq = (int) floor(440 * exp(pitch * 0.05776226504666)+0.5);
-                ms16 = ((ms) >> (4));
+                ms16 = (ms >> 4);
                 rest = 0;
                 if (typ == 3) {
                     rest = 2 * ms16;

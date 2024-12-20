@@ -282,7 +282,7 @@
  */
 -(NSString*) get_measureCommand:(int)measureIndex
 {
-    if (!(measureIndex < (int)[_valuesDesc count])) {[self _throw: YAPI_INVALID_ARGUMENT: @"Invalid measure index"]; return @"";}
+    if (!(measureIndex < (int)[_valuesDesc count])) {[self _throw:YAPI_INVALID_ARGUMENT:@"Invalid measure index"]; return @"";}
     return [[_valuesDesc objectAtIndex:measureIndex] objectAtIndex:0];
 }
 
@@ -298,7 +298,7 @@
  */
 -(int) get_measurePosition:(int)measureIndex
 {
-    if (!(measureIndex < (int)[_valuesDesc count])) {[self _throw: YAPI_INVALID_ARGUMENT: @"Invalid measure index"]; return 0;}
+    if (!(measureIndex < (int)[_valuesDesc count])) {[self _throw:YAPI_INVALID_ARGUMENT:@"Invalid measure index"]; return 0;}
     return [[[_valuesDesc objectAtIndex:measureIndex] objectAtIndex:2] intValue];
 }
 
@@ -314,7 +314,7 @@
  */
 -(NSString*) get_measureSymbol:(int)measureIndex
 {
-    if (!(measureIndex < (int)[_valuesDesc count])) {[self _throw: YAPI_INVALID_ARGUMENT: @"Invalid measure index"]; return @"";}
+    if (!(measureIndex < (int)[_valuesDesc count])) {[self _throw:YAPI_INVALID_ARGUMENT:@"Invalid measure index"]; return @"";}
     return [[_valuesDesc objectAtIndex:measureIndex] objectAtIndex:3];
 }
 
@@ -330,7 +330,7 @@
  */
 -(NSString*) get_measureUnit:(int)measureIndex
 {
-    if (!(measureIndex < (int)[_valuesDesc count])) {[self _throw: YAPI_INVALID_ARGUMENT: @"Invalid measure index"]; return @"";}
+    if (!(measureIndex < (int)[_valuesDesc count])) {[self _throw:YAPI_INVALID_ARGUMENT:@"Invalid measure index"]; return @"";}
     return [[_valuesDesc objectAtIndex:measureIndex] objectAtIndex:4];
 }
 
@@ -346,7 +346,7 @@
  */
 -(NSString*) get_measureDescription:(int)measureIndex
 {
-    if (!(measureIndex < (int)[_valuesDesc count])) {[self _throw: YAPI_INVALID_ARGUMENT: @"Invalid measure index"]; return @"";}
+    if (!(measureIndex < (int)[_valuesDesc count])) {[self _throw:YAPI_INVALID_ARGUMENT:@"Invalid measure index"]; return @"";}
     return [[_valuesDesc objectAtIndex:measureIndex] objectAtIndex:5];
 }
 
@@ -360,8 +360,8 @@
     NSString* errmsg;
 
     if ((int)[(infoStr) length] > 1) {
-        if ([[infoStr substringWithRange:NSMakeRange( 0, 2)] isEqualToString:@"ER"]) {
-            errmsg = [infoStr substringWithRange:NSMakeRange( 2, (int)[(infoStr) length]-2)];
+        if ([[infoStr substringWithRange:NSMakeRange(0, 2)] isEqualToString:@"ER"]) {
+            errmsg = [infoStr substringWithRange:NSMakeRange(2, (int)[(infoStr) length]-2)];
             _addr = errmsg;
             _proto = errmsg;
             _mfg = errmsg;
@@ -370,12 +370,12 @@
             _sn = errmsg;
             _isValid = NO;
         } else {
-            _addr = [infoStr substringWithRange:NSMakeRange( 0, 1)];
-            _proto = [infoStr substringWithRange:NSMakeRange( 1, 2)];
-            _mfg = [infoStr substringWithRange:NSMakeRange( 3, 8)];
-            _model = [infoStr substringWithRange:NSMakeRange( 11, 6)];
-            _ver = [infoStr substringWithRange:NSMakeRange( 17, 3)];
-            _sn = [infoStr substringWithRange:NSMakeRange( 20, (int)[(infoStr) length]-20)];
+            _addr = [infoStr substringWithRange:NSMakeRange(0, 1)];
+            _proto = [infoStr substringWithRange:NSMakeRange(1, 2)];
+            _mfg = [infoStr substringWithRange:NSMakeRange(3, 8)];
+            _model = [infoStr substringWithRange:NSMakeRange(11, 6)];
+            _ver = [infoStr substringWithRange:NSMakeRange(17, 3)];
+            _sn = [infoStr substringWithRange:NSMakeRange(20, (int)[(infoStr) length]-20)];
             _isValid = YES;
         }
     }
@@ -399,16 +399,16 @@
     k = 0;
     size = 4;
     while (k < 10) {
-        infoNbVal = [_sdi12Port querySdi12:_addr : [NSString stringWithFormat:@"IM%d",k] :5000];
+        infoNbVal = [_sdi12Port querySdi12:_addr :[NSString stringWithFormat:@"IM%d",k] :5000];
         if ((int)[(infoNbVal) length] > 1) {
-            value = [infoNbVal substringWithRange:NSMakeRange( 4, (int)[(infoNbVal) length]-4)];
+            value = [infoNbVal substringWithRange:NSMakeRange(4, (int)[(infoNbVal) length]-4)];
             nbVal = [value intValue];
             if (nbVal != 0) {
                 [val removeAllObjects];
                 i = 0;
                 while (i < nbVal) {
-                    cmd = [NSString stringWithFormat:@"IM%d_00%d", k,i+1];
-                    infoVal = [_sdi12Port querySdi12:_addr : cmd :5000];
+                    cmd = [NSString stringWithFormat:@"IM%d_00%d",k,i+1];
+                    infoVal = [_sdi12Port querySdi12:_addr :cmd :5000];
                     data = [NSMutableArray arrayWithArray:[infoVal componentsSeparatedByString:@";"]];
                     data = [NSMutableArray arrayWithArray:[[data objectAtIndex:0] componentsSeparatedByString:@","]];
                     [listVal removeAllObjects];
@@ -1094,7 +1094,7 @@
     obj = (YSdi12Port*) [YFunction _FindFromCache:@"Sdi12Port" :func];
     if (obj == nil) {
         obj = ARC_sendAutorelease([[YSdi12Port alloc] initWith:func]);
-        [YFunction _AddToCache:@"Sdi12Port" : func :obj];
+        [YFunction _AddToCache:@"Sdi12Port" :func :obj];
     }
     return obj;
 }
@@ -1212,7 +1212,7 @@
     NSMutableArray* res = [NSMutableArray array];
     int idx;
 
-    url = [NSString stringWithFormat:@"rxmsg.json?pos=%d&maxw=%d&pat=%@", _rxptr, maxWait,pattern];
+    url = [NSString stringWithFormat:@"rxmsg.json?pos=%d&maxw=%d&pat=%@",_rxptr,maxWait,pattern];
     msgbin = [self _download:url];
     msgarr = [self _json_get_array:msgbin];
     msglen = (int)[msgarr count];
@@ -1271,7 +1271,7 @@
     databin = [self _download:[NSString stringWithFormat:@"rxcnt.bin?pos=%d",_rxptr]];
     availPosStr = ARC_sendAutorelease([[NSString alloc] initWithData:databin encoding:NSISOLatin1StringEncoding]);
     atPos = _ystrpos(availPosStr, @"@");
-    res = [[availPosStr substringWithRange:NSMakeRange( 0, atPos)] intValue];
+    res = [[availPosStr substringWithRange:NSMakeRange(0, atPos)] intValue];
     return res;
 }
 
@@ -1285,7 +1285,7 @@
     databin = [self _download:[NSString stringWithFormat:@"rxcnt.bin?pos=%d",_rxptr]];
     availPosStr = ARC_sendAutorelease([[NSString alloc] initWithData:databin encoding:NSISOLatin1StringEncoding]);
     atPos = _ystrpos(availPosStr, @"@");
-    res = [[availPosStr substringWithRange:NSMakeRange( atPos+1, (int)[(availPosStr) length]-atPos-1)] intValue];
+    res = [[availPosStr substringWithRange:NSMakeRange(atPos+1, (int)[(availPosStr) length]-atPos-1)] intValue];
     return res;
 }
 
@@ -1311,12 +1311,12 @@
     NSString* res;
     if ((int)[(query) length] <= 80) {
         // fast query
-        url = [NSString stringWithFormat:@"rxmsg.json?len=1&maxw=%d&cmd=!%@", maxWait,[self _escapeAttr:query]];
+        url = [NSString stringWithFormat:@"rxmsg.json?len=1&maxw=%d&cmd=!%@",maxWait,[self _escapeAttr:query]];
     } else {
         // long query
         prevpos = [self end_tell];
         [self _upload:@"txdata" :[NSMutableData dataWithData:[[NSString stringWithFormat:@"%@%@", query, @"\r\n"] dataUsingEncoding:NSISOLatin1StringEncoding]]];
-        url = [NSString stringWithFormat:@"rxmsg.json?len=1&maxw=%d&pos=%d", maxWait,prevpos];
+        url = [NSString stringWithFormat:@"rxmsg.json?len=1&maxw=%d&pos=%d",maxWait,prevpos];
     }
 
     msgbin = [self _download:url];
@@ -1358,12 +1358,12 @@
     NSString* res;
     if ((int)[(hexString) length] <= 80) {
         // fast query
-        url = [NSString stringWithFormat:@"rxmsg.json?len=1&maxw=%d&cmd=$%@", maxWait,hexString];
+        url = [NSString stringWithFormat:@"rxmsg.json?len=1&maxw=%d&cmd=$%@",maxWait,hexString];
     } else {
         // long query
         prevpos = [self end_tell];
         [self _upload:@"txdata" :[YAPI _hexStr2Bin:hexString]];
-        url = [NSString stringWithFormat:@"rxmsg.json?len=1&maxw=%d&pos=%d", maxWait,prevpos];
+        url = [NSString stringWithFormat:@"rxmsg.json?len=1&maxw=%d&pos=%d",maxWait,prevpos];
     }
 
     msgbin = [self _download:url];
@@ -1518,7 +1518,7 @@
     idx = 0;
     while (idx < bufflen) {
         hexb = [[byteList objectAtIndex:idx] intValue];
-        (((u8*)([buff mutableBytes]))[ idx]) = hexb;
+        (((u8*)([buff mutableBytes]))[idx]) = hexb;
         idx = idx + 1;
     }
 
@@ -1546,12 +1546,12 @@
     if (bufflen < 100) {
         return [self sendCommand:[NSString stringWithFormat:@"$%@",hexString]];
     }
-    bufflen = ((bufflen) >> (1));
+    bufflen = (bufflen >> 1);
     buff = [NSMutableData dataWithLength:bufflen];
     idx = 0;
     while (idx < bufflen) {
-        hexb = (int)strtoul(STR_oc2y([hexString substringWithRange:NSMakeRange( 2 * idx, 2)]), NULL, 16);
-        (((u8*)([buff mutableBytes]))[ idx]) = hexb;
+        hexb = (int)strtoul(STR_oc2y([hexString substringWithRange:NSMakeRange(2 * idx, 2)]), NULL, 16);
+        (((u8*)([buff mutableBytes]))[idx]) = hexb;
         idx = idx + 1;
     }
 
@@ -1687,7 +1687,7 @@
         nChars = 65535;
     }
 
-    buff = [self _download:[NSString stringWithFormat:@"rxdata.bin?pos=%d&len=%d", _rxptr,nChars]];
+    buff = [self _download:[NSString stringWithFormat:@"rxdata.bin?pos=%d&len=%d",_rxptr,nChars]];
     bufflen = (int)[buff length] - 1;
     endpos = 0;
     mult = 1;
@@ -1697,7 +1697,7 @@
         bufflen = bufflen - 1;
     }
     _rxptr = endpos;
-    res = [ARC_sendAutorelease([[NSString alloc] initWithData:buff encoding:NSISOLatin1StringEncoding]) substringWithRange:NSMakeRange( 0, bufflen)];
+    res = [ARC_sendAutorelease([[NSString alloc] initWithData:buff encoding:NSISOLatin1StringEncoding]) substringWithRange:NSMakeRange(0, bufflen)];
     return res;
 }
 
@@ -1724,7 +1724,7 @@
         nChars = 65535;
     }
 
-    buff = [self _download:[NSString stringWithFormat:@"rxdata.bin?pos=%d&len=%d", _rxptr,nChars]];
+    buff = [self _download:[NSString stringWithFormat:@"rxdata.bin?pos=%d&len=%d",_rxptr,nChars]];
     bufflen = (int)[buff length] - 1;
     endpos = 0;
     mult = 1;
@@ -1737,7 +1737,7 @@
     res = [NSMutableData dataWithLength:bufflen];
     idx = 0;
     while (idx < bufflen) {
-        (((u8*)([res mutableBytes]))[ idx]) = (((u8*)([buff bytes]))[idx]);
+        (((u8*)([res mutableBytes]))[idx]) = (((u8*)([buff bytes]))[idx]);
         idx = idx + 1;
     }
     return res;
@@ -1767,7 +1767,7 @@
         nChars = 65535;
     }
 
-    buff = [self _download:[NSString stringWithFormat:@"rxdata.bin?pos=%d&len=%d", _rxptr,nChars]];
+    buff = [self _download:[NSString stringWithFormat:@"rxdata.bin?pos=%d&len=%d",_rxptr,nChars]];
     bufflen = (int)[buff length] - 1;
     endpos = 0;
     mult = 1;
@@ -1810,7 +1810,7 @@
         nBytes = 65535;
     }
 
-    buff = [self _download:[NSString stringWithFormat:@"rxdata.bin?pos=%d&len=%d", _rxptr,nBytes]];
+    buff = [self _download:[NSString stringWithFormat:@"rxdata.bin?pos=%d&len=%d",_rxptr,nBytes]];
     bufflen = (int)[buff length] - 1;
     endpos = 0;
     mult = 1;
@@ -1823,11 +1823,11 @@
     res = @"";
     ofs = 0;
     while (ofs + 3 < bufflen) {
-        res = [NSString stringWithFormat:@"%@%02X%02X%02X%02X", res, (((u8*)([buff bytes]))[ofs]), (((u8*)([buff bytes]))[ofs + 1]), (((u8*)([buff bytes]))[ofs + 2]),(((u8*)([buff bytes]))[ofs + 3])];
+        res = [NSString stringWithFormat:@"%@%02X%02X%02X%02X",res,(((u8*)([buff bytes]))[ofs]),(((u8*)([buff bytes]))[ofs + 1]),(((u8*)([buff bytes]))[ofs + 2]),(((u8*)([buff bytes]))[ofs + 3])];
         ofs = ofs + 4;
     }
     while (ofs < bufflen) {
-        res = [NSString stringWithFormat:@"%@%02X", res,(((u8*)([buff bytes]))[ofs])];
+        res = [NSString stringWithFormat:@"%@%02X",res,(((u8*)([buff bytes]))[ofs])];
         ofs = ofs + 1;
     }
     return res;
@@ -1859,7 +1859,7 @@
 
     pattern = sensorAddr;
     if ((int)[(cmd) length] > 0) {
-        cmdChar = [cmd substringWithRange:NSMakeRange( 0, 1)];
+        cmdChar = [cmd substringWithRange:NSMakeRange(0, 1)];
     }
     if ([sensorAddr isEqualToString:@"?"]) {
         pattern = @"..*";
@@ -1871,8 +1871,8 @@
         }
     }
     pattern = [self _escapeAttr:pattern];
-    fullCmd = [self _escapeAttr:[NSString stringWithFormat:@"+%@%@!", sensorAddr,cmd]];
-    url = [NSString stringWithFormat:@"rxmsg.json?len=1&maxw=%d&cmd=%@&pat=%@", maxWait, fullCmd,pattern];
+    fullCmd = [self _escapeAttr:[NSString stringWithFormat:@"+%@%@!",sensorAddr,cmd]];
+    url = [NSString stringWithFormat:@"rxmsg.json?len=1&maxw=%d&cmd=%@&pat=%@",maxWait,fullCmd,pattern];
 
     msgbin = [self _download:url];
     if ((int)[msgbin length]<2) {
@@ -2025,7 +2025,7 @@
 {
     YSdi12SensorInfo* addr;
 
-    [self querySdi12:oldAddress : [NSString stringWithFormat:@"%@%@", @"A", newAddress] :1000];
+    [self querySdi12:oldAddress :[NSString stringWithFormat:@"%@%@", @"A", newAddress] :1000];
     addr = [self getSensorInformation:newAddress];
     return addr;
 }
@@ -2088,7 +2088,7 @@
     NSString* wait;
 
     wait = [self querySdi12:sensorAddr :@"C" :1000];
-    wait = [wait substringWithRange:NSMakeRange( 1, 3)];
+    wait = [wait substringWithRange:NSMakeRange(1, 3)];
     timewait = [wait intValue] * 1000;
     return timewait;
 }
@@ -2116,7 +2116,7 @@
     NSMutableArray* res = [NSMutableArray array];
     int idx;
 
-    url = [NSString stringWithFormat:@"rxmsg.json?pos=%d&maxw=%d&t=0&len=%d", _rxptr, maxWait,maxMsg];
+    url = [NSString stringWithFormat:@"rxmsg.json?pos=%d&maxw=%d&t=0&len=%d",_rxptr,maxWait,maxMsg];
     msgbin = [self _download:url];
     msgarr = [self _json_get_array:msgbin];
     msglen = (int)[msgarr count];

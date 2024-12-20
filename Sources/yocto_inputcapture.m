@@ -171,15 +171,15 @@
     double v;
 
     buffSize = (int)[sdata length];
-    if (!(buffSize >= 24)) {[self _throw: YAPI_INVALID_ARGUMENT: @"Invalid snapshot data (too short)"]; return YAPI_INVALID_ARGUMENT;}
+    if (!(buffSize >= 24)) {[self _throw:YAPI_INVALID_ARGUMENT:@"Invalid snapshot data (too short)"]; return YAPI_INVALID_ARGUMENT;}
     _fmt = (((u8*)([sdata bytes]))[0]);
     _var1size = (((u8*)([sdata bytes]))[1]) - 48;
     _var2size = (((u8*)([sdata bytes]))[2]) - 48;
     _var3size = (((u8*)([sdata bytes]))[3]) - 48;
-    if (!(_fmt == 83)) {[self _throw: YAPI_INVALID_ARGUMENT: @"Unsupported snapshot format"]; return YAPI_INVALID_ARGUMENT;}
-    if (!((_var1size >= 2) && (_var1size <= 4))) {[self _throw: YAPI_INVALID_ARGUMENT: @"Invalid sample size"]; return YAPI_INVALID_ARGUMENT;}
-    if (!((_var2size >= 0) && (_var1size <= 4))) {[self _throw: YAPI_INVALID_ARGUMENT: @"Invalid sample size"]; return YAPI_INVALID_ARGUMENT;}
-    if (!((_var3size >= 0) && (_var1size <= 4))) {[self _throw: YAPI_INVALID_ARGUMENT: @"Invalid sample size"]; return YAPI_INVALID_ARGUMENT;}
+    if (!(_fmt == 83)) {[self _throw:YAPI_INVALID_ARGUMENT:@"Unsupported snapshot format"]; return YAPI_INVALID_ARGUMENT;}
+    if (!((_var1size >= 2) && (_var1size <= 4))) {[self _throw:YAPI_INVALID_ARGUMENT:@"Invalid sample size"]; return YAPI_INVALID_ARGUMENT;}
+    if (!((_var2size >= 0) && (_var1size <= 4))) {[self _throw:YAPI_INVALID_ARGUMENT:@"Invalid sample size"]; return YAPI_INVALID_ARGUMENT;}
+    if (!((_var3size >= 0) && (_var1size <= 4))) {[self _throw:YAPI_INVALID_ARGUMENT:@"Invalid sample size"]; return YAPI_INVALID_ARGUMENT;}
     if (_var2size == 0) {
         _nVars = 1;
     } else {
@@ -194,31 +194,31 @@
     _nRecs = [self _decodeU16:sdata :6];
     _samplesPerSec = [self _decodeU16:sdata :8];
     _trigType = [self _decodeU16:sdata :10];
-    _trigVal = [self _decodeVal:sdata : 12 :4] / 1000;
+    _trigVal = [self _decodeVal:sdata :12 :4] / 1000;
     _trigPos = [self _decodeU16:sdata :16];
     ms = [self _decodeU16:sdata :18];
-    _trigUTC = [self _decodeVal:sdata : 20 :4];
+    _trigUTC = [self _decodeVal:sdata :20 :4];
     _trigUTC = _trigUTC + (ms / 1000.0);
     recOfs = 24;
     while ((((u8*)([sdata bytes]))[recOfs]) >= 32) {
-        _var1unit = [NSString stringWithFormat:@"%@%c", _var1unit,(((u8*)([sdata bytes]))[recOfs])];
+        _var1unit = [NSString stringWithFormat:@"%@%c",_var1unit,(((u8*)([sdata bytes]))[recOfs])];
         recOfs = recOfs + 1;
     }
     if (_var2size > 0) {
         recOfs = recOfs + 1;
         while ((((u8*)([sdata bytes]))[recOfs]) >= 32) {
-            _var2unit = [NSString stringWithFormat:@"%@%c", _var2unit,(((u8*)([sdata bytes]))[recOfs])];
+            _var2unit = [NSString stringWithFormat:@"%@%c",_var2unit,(((u8*)([sdata bytes]))[recOfs])];
             recOfs = recOfs + 1;
         }
     }
     if (_var3size > 0) {
         recOfs = recOfs + 1;
         while ((((u8*)([sdata bytes]))[recOfs]) >= 32) {
-            _var3unit = [NSString stringWithFormat:@"%@%c", _var3unit,(((u8*)([sdata bytes]))[recOfs])];
+            _var3unit = [NSString stringWithFormat:@"%@%c",_var3unit,(((u8*)([sdata bytes]))[recOfs])];
             recOfs = recOfs + 1;
         }
     }
-    if (((recOfs) & (1)) == 1) {
+    if ((recOfs & 1) == 1) {
         // align to next word
         recOfs = recOfs + 1;
     }
@@ -241,7 +241,7 @@
     recOfs = _recOfs;
     count = _nRecs;
     while ((count > 0) && (recOfs + _var1size <= buffSize)) {
-        v = [self _decodeVal:sdata : recOfs :_var1size] / 1000.0;
+        v = [self _decodeVal:sdata :recOfs :_var1size] / 1000.0;
         [_var1samples addObject:[NSNumber numberWithDouble:v*mult1]];
         recOfs = recOfs + recSize;
     }
@@ -249,7 +249,7 @@
         recOfs = _recOfs + _var1size;
         count = _nRecs;
         while ((count > 0) && (recOfs + _var2size <= buffSize)) {
-            v = [self _decodeVal:sdata : recOfs :_var2size] / 1000.0;
+            v = [self _decodeVal:sdata :recOfs :_var2size] / 1000.0;
             [_var2samples addObject:[NSNumber numberWithDouble:v*mult2]];
             recOfs = recOfs + recSize;
         }
@@ -258,7 +258,7 @@
         recOfs = _recOfs + _var1size + _var2size;
         count = _nRecs;
         while ((count > 0) && (recOfs + _var3size <= buffSize)) {
-            v = [self _decodeVal:sdata : recOfs :_var3size] / 1000.0;
+            v = [self _decodeVal:sdata :recOfs :_var3size] / 1000.0;
             [_var3samples addObject:[NSNumber numberWithDouble:v*mult3]];
             recOfs = recOfs + recSize;
         }
@@ -378,7 +378,7 @@
  */
 -(NSString*) get_serie2Unit
 {
-    if (!(_nVars >= 2)) {[self _throw: YAPI_INVALID_ARGUMENT: @"There is no serie 2 in self capture data"]; return @"";}
+    if (!(_nVars >= 2)) {[self _throw:YAPI_INVALID_ARGUMENT:@"There is no serie 2 in self capture data"]; return @"";}
     return _var2unit;
 }
 
@@ -391,7 +391,7 @@
  */
 -(NSString*) get_serie3Unit
 {
-    if (!(_nVars >= 3)) {[self _throw: YAPI_INVALID_ARGUMENT: @"There is no serie 3 in self capture data"]; return @"";}
+    if (!(_nVars >= 3)) {[self _throw:YAPI_INVALID_ARGUMENT:@"There is no serie 3 in self capture data"]; return @"";}
     return _var3unit;
 }
 
@@ -422,7 +422,7 @@
  */
 -(NSMutableArray*) get_serie2Values
 {
-    if (!(_nVars >= 2)) {[self _throw: YAPI_INVALID_ARGUMENT: @"There is no serie 2 in self capture data"]; return _var2samples;}
+    if (!(_nVars >= 2)) {[self _throw:YAPI_INVALID_ARGUMENT:@"There is no serie 2 in self capture data"]; return _var2samples;}
     return _var2samples;
 }
 
@@ -438,7 +438,7 @@
  */
 -(NSMutableArray*) get_serie3Values
 {
-    if (!(_nVars >= 3)) {[self _throw: YAPI_INVALID_ARGUMENT: @"There is no serie 3 in self capture data"]; return _var3samples;}
+    if (!(_nVars >= 3)) {[self _throw:YAPI_INVALID_ARGUMENT:@"There is no serie 3 in self capture data"]; return _var3samples;}
     return _var3samples;
 }
 
@@ -939,7 +939,7 @@
     obj = (YInputCapture*) [YFunction _FindFromCache:@"InputCapture" :func];
     if (obj == nil) {
         obj = ARC_sendAutorelease([[YInputCapture alloc] initWith:func]);
-        [YFunction _AddToCache:@"InputCapture" : func :obj];
+        [YFunction _AddToCache:@"InputCapture" :func :obj];
     }
     return obj;
 }
@@ -1020,8 +1020,8 @@
     if (msDuration > 1000) {
         msDuration = 1000;
     }
-    snapStart = ((-msDuration) / (2));
-    snapUrl = [NSString stringWithFormat:@"snap.bin?t=%d&d=%d", snapStart,msDuration];
+    snapStart = ((-msDuration) / 2);
+    snapUrl = [NSString stringWithFormat:@"snap.bin?t=%d&d=%d",snapStart,msDuration];
 
     snapData = [self _download:snapUrl];
     return ARC_sendAutorelease([[YInputCaptureData alloc] initWith:self :snapData]);

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_messagebox.m 59977 2024-03-18 15:02:32Z mvuilleu $
+ * $Id: yocto_messagebox.m 63508 2024-11-28 10:46:01Z seb $
  *
  * Implements the high-level API for MessageBox functions
  *
@@ -120,15 +120,15 @@
 
 -(int) get_msgClass
 {
-    if (((_mclass) & (16)) == 0) {
+    if ((_mclass & 16) == 0) {
         return -1;
     }
-    return ((_mclass) & (3));
+    return (_mclass & 3);
 }
 
 -(int) get_dcs
 {
-    return ((_mclass) | ((((_alphab) << (2)))));
+    return (_mclass | ((_alphab << 2)));
 }
 
 -(NSString*) get_timestamp
@@ -162,11 +162,11 @@
     }
     if (_alphab == 2) {
         // using UCS-2 alphabet
-        isosize = (((int)[_udata length]) >> (1));
+        isosize = (((int)[_udata length]) >> 1);
         isolatin = [NSMutableData dataWithLength:isosize];
         i = 0;
         while (i < isosize) {
-            (((u8*)([isolatin mutableBytes]))[ i]) = (((u8*)([_udata bytes]))[2*i+1]);
+            (((u8*)([isolatin mutableBytes]))[i]) = (((u8*)([_udata bytes]))[2*i+1]);
             i = i + 1;
         }
         return ARC_sendAutorelease([[NSString alloc] initWithData:isolatin encoding:NSISOLatin1StringEncoding]);
@@ -187,7 +187,7 @@
     }
     if (_alphab == 2) {
         // using UCS-2 alphabet
-        unisize = (((int)[_udata length]) >> (1));
+        unisize = (((int)[_udata length]) >> 1);
         [res removeAllObjects];
         i = 0;
         while (i < unisize) {
@@ -323,8 +323,8 @@
 
 -(int) set_dcs:(int)val
 {
-    _alphab = (((((val) >> (2)))) & (3));
-    _mclass = ((val) & (16+3));
+    _alphab = (((val >> 2)) & 3);
+    _mclass = (val & (16+3));
     _npdu = 0;
     return YAPI_SUCCESS;
 }
@@ -418,12 +418,12 @@
         udata = [NSMutableData dataWithLength:udatalen + 2*newdatalen];
         i = 0;
         while (i < udatalen) {
-            (((u8*)([udata mutableBytes]))[ i]) = (((u8*)([_udata bytes]))[i]);
+            (((u8*)([udata mutableBytes]))[i]) = (((u8*)([_udata bytes]))[i]);
             i = i + 1;
         }
         i = 0;
         while (i < newdatalen) {
-            (((u8*)([udata mutableBytes]))[ udatalen+1]) = (((u8*)([newdata bytes]))[i]);
+            (((u8*)([udata mutableBytes]))[udatalen+1]) = (((u8*)([newdata bytes]))[i]);
             udatalen = udatalen + 2;
             i = i + 1;
         }
@@ -432,12 +432,12 @@
         udata = [NSMutableData dataWithLength:udatalen+newdatalen];
         i = 0;
         while (i < udatalen) {
-            (((u8*)([udata mutableBytes]))[ i]) = (((u8*)([_udata bytes]))[i]);
+            (((u8*)([udata mutableBytes]))[i]) = (((u8*)([_udata bytes]))[i]);
             i = i + 1;
         }
         i = 0;
         while (i < newdatalen) {
-            (((u8*)([udata mutableBytes]))[ udatalen]) = (((u8*)([newdata bytes]))[i]);
+            (((u8*)([udata mutableBytes]))[udatalen]) = (((u8*)([newdata bytes]))[i]);
             udatalen = udatalen + 1;
             i = i + 1;
         }
@@ -481,7 +481,7 @@
     udata = [NSMutableData dataWithLength:udatalen+2*newdatalen];
     i = 0;
     while (i < udatalen) {
-        (((u8*)([udata mutableBytes]))[ i]) = (((u8*)([_udata bytes]))[i]);
+        (((u8*)([udata mutableBytes]))[i]) = (((u8*)([_udata bytes]))[i]);
         i = i + 1;
     }
     i = 0;
@@ -489,14 +489,14 @@
         uni = [[val objectAtIndex:i] intValue];
         if (uni >= 65536) {
             surrogate = uni - 65536;
-            uni = (((((surrogate) >> (10))) & (1023))) + 55296;
-            (((u8*)([udata mutableBytes]))[ udatalen]) = ((uni) >> (8));
-            (((u8*)([udata mutableBytes]))[ udatalen+1]) = ((uni) & (255));
+            uni = (((surrogate >> 10) & 1023)) + 55296;
+            (((u8*)([udata mutableBytes]))[udatalen]) = (uni >> 8);
+            (((u8*)([udata mutableBytes]))[udatalen+1]) = (uni & 255);
             udatalen = udatalen + 2;
-            uni = (((surrogate) & (1023))) + 56320;
+            uni = ((surrogate & 1023)) + 56320;
         }
-        (((u8*)([udata mutableBytes]))[ udatalen]) = ((uni) >> (8));
-        (((u8*)([udata mutableBytes]))[ udatalen+1]) = ((uni) & (255));
+        (((u8*)([udata mutableBytes]))[udatalen]) = (uni >> 8);
+        (((u8*)([udata mutableBytes]))[udatalen+1]) = (uni & 255);
         udatalen = udatalen + 2;
         i = i + 1;
     }
@@ -567,7 +567,7 @@
         subdata = [subsms get_userData];
         i = 0;
         while (i < (int)[subdata length]) {
-            (((u8*)([res mutableBytes]))[ totsize]) = (((u8*)([subdata bytes]))[i]);
+            (((u8*)([res mutableBytes]))[totsize]) = (((u8*)([subdata bytes]))[i]);
             totsize = totsize + 1;
             i = i + 1;
         }
@@ -599,15 +599,15 @@
     }
     if (numlen == 0) {
         res = [NSMutableData dataWithLength:1];
-        (((u8*)([res mutableBytes]))[ 0]) = 0;
+        (((u8*)([res mutableBytes]))[0]) = 0;
         return res;
     }
-    res = [NSMutableData dataWithLength:2+((numlen+1) >> (1))];
-    (((u8*)([res mutableBytes]))[ 0]) = numlen;
+    res = [NSMutableData dataWithLength:2+((numlen+1) >> 1)];
+    (((u8*)([res mutableBytes]))[0]) = numlen;
     if ((((u8*)([bytes bytes]))[0]) == 43) {
-        (((u8*)([res mutableBytes]))[ 1]) = 145;
+        (((u8*)([res mutableBytes]))[1]) = 145;
     } else {
-        (((u8*)([res mutableBytes]))[ 1]) = 129;
+        (((u8*)([res mutableBytes]))[1]) = 129;
     }
     numlen = 4;
     digit = 0;
@@ -615,18 +615,18 @@
     while (i < srclen) {
         val = (((u8*)([bytes bytes]))[i]);
         if ((val >= 48) && (val < 58)) {
-            if (((numlen) & (1)) == 0) {
+            if ((numlen & 1) == 0) {
                 digit = val - 48;
             } else {
-                (((u8*)([res mutableBytes]))[ ((numlen) >> (1))]) = digit + 16*(val-48);
+                (((u8*)([res mutableBytes]))[(numlen >> 1)]) = digit + 16*(val-48);
             }
             numlen = numlen + 1;
         }
         i = i + 1;
     }
     // pad with F if needed
-    if (((numlen) & (1)) != 0) {
-        (((u8*)([res mutableBytes]))[ ((numlen) >> (1))]) = digit + 240;
+    if ((numlen & 1) != 0) {
+        (((u8*)([res mutableBytes]))[(numlen >> 1)]) = digit + 240;
     }
     return res;
 }
@@ -645,10 +645,10 @@
         return @"";
     }
     res = @"";
-    addrType = (((((u8*)([addr bytes]))[ofs])) & (112));
+    addrType = ((((u8*)([addr bytes]))[ofs]) & 112);
     if (addrType == 80) {
         // alphanumeric number
-        siz = ((4*siz) / (7));
+        siz = ((4*siz) / 7);
         gsm7 = [NSMutableData dataWithLength:siz];
         rpos = 1;
         carry = 0;
@@ -656,14 +656,14 @@
         i = 0;
         while (i < siz) {
             if (nbits == 7) {
-                (((u8*)([gsm7 mutableBytes]))[ i]) = carry;
+                (((u8*)([gsm7 mutableBytes]))[i]) = carry;
                 carry = 0;
                 nbits = 0;
             } else {
                 byt = (((u8*)([addr bytes]))[ofs+rpos]);
                 rpos = rpos + 1;
-                (((u8*)([gsm7 mutableBytes]))[ i]) = ((carry) | ((((((byt) << (nbits)))) & (127))));
-                carry = ((byt) >> ((7 - nbits)));
+                (((u8*)([gsm7 mutableBytes]))[i]) = (carry | (((byt << nbits)) & 127));
+                carry = (byt >> (7 - nbits));
                 nbits = nbits + 1;
             }
             i = i + 1;
@@ -674,16 +674,16 @@
         if (addrType == 16) {
             res = @"+";
         }
-        siz = (((siz+1)) >> (1));
+        siz = ((siz+1) >> 1);
         i = 0;
         while (i < siz) {
             byt = (((u8*)([addr bytes]))[ofs+i+1]);
-            res = [NSString stringWithFormat:@"%@%x%x", res, ((byt) & (15)),((byt) >> (4))];
+            res = [NSString stringWithFormat:@"%@%x%x",res,(byt & 15),(byt >> 4)];
             i = i + 1;
         }
         // remove padding digit if needed
-        if ((((((u8*)([addr bytes]))[ofs+siz])) >> (4)) == 15) {
-            res = [res substringWithRange:NSMakeRange( 0, (int)[(res) length]-1)];
+        if (((((u8*)([addr bytes]))[ofs+siz]) >> 4) == 15) {
+            res = [res substringWithRange:NSMakeRange(0, (int)[(res) length]-1)];
         }
         return res;
     }
@@ -707,15 +707,15 @@
         n = [[exp substringWithRange:NSMakeRange(1, explen-1)] intValue];
         res = [NSMutableData dataWithLength:1];
         if (n > 30*86400) {
-            n = 192+(((n+6*86400)) / ((7*86400)));
+            n = 192+((n+6*86400) / (7*86400));
         } else {
             if (n > 86400) {
-                n = 166+(((n+86399)) / (86400));
+                n = 166+((n+86399) / 86400);
             } else {
                 if (n > 43200) {
-                    n = 143+(((n-43200+1799)) / (1800));
+                    n = 143+((n-43200+1799) / 1800);
                 } else {
-                    n = -1+(((n+299)) / (300));
+                    n = -1+((n+299) / 300);
                 }
             }
         }
@@ -727,7 +727,7 @@
     }
     if ([[exp substringWithRange:NSMakeRange(4, 1)] isEqualToString:@"-"] || [[exp substringWithRange:NSMakeRange(4, 1)] isEqualToString:@"/"]) {
         // ignore century
-        exp = [exp substringWithRange:NSMakeRange( 2, explen-2)];
+        exp = [exp substringWithRange:NSMakeRange(2, explen-2)];
         explen = (int)[(exp) length];
     }
     expasc = [NSMutableData dataWithData:[exp dataUsingEncoding:NSISOLatin1StringEncoding]];
@@ -741,7 +741,7 @@
             if ((v2 >= 48) && (v2 < 58)) {
                 v1 = v1 - 48;
                 v2 = v2 - 48;
-                (((u8*)([res mutableBytes]))[ n]) = (((v2) << (4))) + v1;
+                (((u8*)([res mutableBytes]))[n]) = ((v2 << 4)) + v1;
                 n = n + 1;
                 i = i + 1;
             }
@@ -749,7 +749,7 @@
         i = i + 1;
     }
     while (n < 7) {
-        (((u8*)([res mutableBytes]))[ n]) = 0;
+        (((u8*)([res mutableBytes]))[n]) = 0;
         n = n + 1;
     }
     if (i+2 < explen) {
@@ -760,13 +760,13 @@
             v1 = (((u8*)([expasc bytes]))[i+1]);
             v2 = (((u8*)([expasc bytes]))[i+2]);
             if ((v1 >= 48) && (v1 < 58) && (v1 >= 48) && (v1 < 58)) {
-                v1 = (((10*(v1 - 48)+(v2 - 48))) / (15));
+                v1 = ((10*(v1 - 48)+(v2 - 48)) / 15);
                 n = n - 1;
                 v2 = 4 * (((u8*)([res bytes]))[n]) + v1;
                 if ((((u8*)([expasc bytes]))[i-3]) == 45) {
                     v2 = v2 + 128;
                 }
-                (((u8*)([res mutableBytes]))[ n]) = v2;
+                (((u8*)([res mutableBytes]))[n]) = v2;
             }
         }
     }
@@ -806,7 +806,7 @@
     i = 0;
     while ((i < siz) && (i < 6)) {
         byt = (((u8*)([exp bytes]))[ofs+i]);
-        res = [NSString stringWithFormat:@"%@%x%x", res, ((byt) & (15)),((byt) >> (4))];
+        res = [NSString stringWithFormat:@"%@%x%x",res,(byt & 15),(byt >> 4)];
         if (i < 3) {
             if (i < 2) {
                 res = [NSString stringWithFormat:@"%@-",res];
@@ -823,20 +823,20 @@
     if (siz == 7) {
         byt = (((u8*)([exp bytes]))[ofs+i]);
         sign = @"+";
-        if (((byt) & (8)) != 0) {
+        if ((byt & 8) != 0) {
             byt = byt - 8;
             sign = @"-";
         }
-        byt = (10*(((byt) & (15)))) + (((byt) >> (4)));
-        hh = [NSString stringWithFormat:@"%d",((byt) >> (2))];
-        ss = [NSString stringWithFormat:@"%d",15*(((byt) & (3)))];
+        byt = (10*((byt & 15))) + ((byt >> 4));
+        hh = [NSString stringWithFormat:@"%d",(byt >> 2)];
+        ss = [NSString stringWithFormat:@"%d",15*((byt & 3))];
         if ((int)[(hh) length]<2) {
             hh = [NSString stringWithFormat:@"0%@",hh];
         }
         if ((int)[(ss) length]<2) {
             ss = [NSString stringWithFormat:@"0%@",ss];
         }
-        res = [NSString stringWithFormat:@"%@%@%@:%@", res, sign, hh,ss];
+        res = [NSString stringWithFormat:@"%@%@%@:%@",res,sign,hh,ss];
     }
     return res;
 }
@@ -849,9 +849,9 @@
     res = (int)[_udata length];
     if (_alphab == 0) {
         if (udhsize > 0) {
-            res = res + (((8 + 8*udhsize + 6)) / (7));
+            res = res + ((8 + 8*udhsize + 6) / 7);
         }
-        res = (((res * 7 + 7)) / (8));
+        res = ((res * 7 + 7) / 8);
     } else {
         if (udhsize > 0) {
             res = res + 1 + udhsize;
@@ -884,22 +884,22 @@
     if (_alphab == 0) {
         // 7-bit encoding
         if (udhsize > 0) {
-            udhlen = (((8 + 8*udhsize + 6)) / (7));
+            udhlen = ((8 + 8*udhsize + 6) / 7);
             nbits = 7*udhlen - 8 - 8*udhsize;
         }
-        (((u8*)([res mutableBytes]))[ 0]) = udhlen+udlen;
+        (((u8*)([res mutableBytes]))[0]) = udhlen+udlen;
     } else {
         // 8-bit encoding
-        (((u8*)([res mutableBytes]))[ 0]) = udsize;
+        (((u8*)([res mutableBytes]))[0]) = udsize;
     }
     // 2. Encode UDHL and UDL
     wpos = 1;
     if (udhsize > 0) {
-        (((u8*)([res mutableBytes]))[ wpos]) = udhsize;
+        (((u8*)([res mutableBytes]))[wpos]) = udhsize;
         wpos = wpos + 1;
         i = 0;
         while (i < udhsize) {
-            (((u8*)([res mutableBytes]))[ wpos]) = (((u8*)([_udh bytes]))[i]);
+            (((u8*)([res mutableBytes]))[wpos]) = (((u8*)([_udh bytes]))[i]);
             wpos = wpos + 1;
             i = i + 1;
         }
@@ -914,21 +914,21 @@
                 nbits = 7;
             } else {
                 thi_b = (((u8*)([_udata bytes]))[i]);
-                (((u8*)([res mutableBytes]))[ wpos]) = ((carry) | ((((((thi_b) << (nbits)))) & (255))));
+                (((u8*)([res mutableBytes]))[wpos]) = (carry | (((thi_b << nbits)) & 255));
                 wpos = wpos + 1;
                 nbits = nbits - 1;
-                carry = ((thi_b) >> ((7 - nbits)));
+                carry = (thi_b >> (7 - nbits));
             }
             i = i + 1;
         }
         if (nbits > 0) {
-            (((u8*)([res mutableBytes]))[ wpos]) = carry;
+            (((u8*)([res mutableBytes]))[wpos]) = carry;
         }
     } else {
         // 8-bit encoding
         i = 0;
         while (i < udlen) {
-            (((u8*)([res mutableBytes]))[ wpos]) = (((u8*)([_udata bytes]))[i]);
+            (((u8*)([res mutableBytes]))[wpos]) = (((u8*)([_udata bytes]))[i]);
             wpos = wpos + 1;
             i = i + 1;
         }
@@ -952,23 +952,23 @@
     udlen = (int)[_udata length];
     mss = 140 - 1 - 5 - udhsize;
     if (_alphab == 0) {
-        mss = (((mss * 8 - 6)) / (7));
+        mss = ((mss * 8 - 6) / 7);
     }
-    _npdu = (((udlen+mss-1)) / (mss));
+    _npdu = ((udlen+mss-1) / mss);
     [_parts removeAllObjects];
     partno = 0;
     wpos = 0;
     while (wpos < udlen) {
         partno = partno + 1;
         newudh = [NSMutableData dataWithLength:5+udhsize];
-        (((u8*)([newudh mutableBytes]))[ 0]) = 0;           // IEI: concatenated message
-        (((u8*)([newudh mutableBytes]))[ 1]) = 3;           // IEDL: 3 bytes
-        (((u8*)([newudh mutableBytes]))[ 2]) = _mref;
-        (((u8*)([newudh mutableBytes]))[ 3]) = _npdu;
-        (((u8*)([newudh mutableBytes]))[ 4]) = partno;
+        (((u8*)([newudh mutableBytes]))[0]) = 0;           // IEI: concatenated message
+        (((u8*)([newudh mutableBytes]))[1]) = 3;           // IEDL: 3 bytes
+        (((u8*)([newudh mutableBytes]))[2]) = _mref;
+        (((u8*)([newudh mutableBytes]))[3]) = _npdu;
+        (((u8*)([newudh mutableBytes]))[4]) = partno;
         i = 0;
         while (i < udhsize) {
-            (((u8*)([newudh mutableBytes]))[ 5+i]) = (((u8*)([_udh bytes]))[i]);
+            (((u8*)([newudh mutableBytes]))[5+i]) = (((u8*)([_udh bytes]))[i]);
             i = i + 1;
         }
         if (wpos+mss < udlen) {
@@ -979,7 +979,7 @@
         newud = [NSMutableData dataWithLength:partlen];
         i = 0;
         while (i < partlen) {
-            (((u8*)([newud mutableBytes]))[ i]) = (((u8*)([_udata bytes]))[wpos]);
+            (((u8*)([newud mutableBytes]))[i]) = (((u8*)([_udata bytes]))[wpos]);
             wpos = wpos + 1;
             i = i + 1;
         }
@@ -1018,7 +1018,7 @@
     }
     sca = [self encodeAddress:_smsc];
     if ((int)[sca length] > 0) {
-        (((u8*)([sca mutableBytes]))[ 0]) = (int)[sca length]-1;
+        (((u8*)([sca mutableBytes]))[0]) = (int)[sca length]-1;
     }
     stamp = [self encodeTimeStamp:_stamp];
     udata = [self encodeUserData];
@@ -1048,35 +1048,35 @@
     pdulen = 0;
     i = 0;
     while (i < (int)[sca length]) {
-        (((u8*)([_pdu mutableBytes]))[ pdulen]) = (((u8*)([sca bytes]))[i]);
+        (((u8*)([_pdu mutableBytes]))[pdulen]) = (((u8*)([sca bytes]))[i]);
         pdulen = pdulen + 1;
         i = i + 1;
     }
     i = 0;
     while (i < (int)[hdr length]) {
-        (((u8*)([_pdu mutableBytes]))[ pdulen]) = (((u8*)([hdr bytes]))[i]);
+        (((u8*)([_pdu mutableBytes]))[pdulen]) = (((u8*)([hdr bytes]))[i]);
         pdulen = pdulen + 1;
         i = i + 1;
     }
     i = 0;
     while (i < (int)[addr length]) {
-        (((u8*)([_pdu mutableBytes]))[ pdulen]) = (((u8*)([addr bytes]))[i]);
+        (((u8*)([_pdu mutableBytes]))[pdulen]) = (((u8*)([addr bytes]))[i]);
         pdulen = pdulen + 1;
         i = i + 1;
     }
-    (((u8*)([_pdu mutableBytes]))[ pdulen]) = _pid;
+    (((u8*)([_pdu mutableBytes]))[pdulen]) = _pid;
     pdulen = pdulen + 1;
-    (((u8*)([_pdu mutableBytes]))[ pdulen]) = [self get_dcs];
+    (((u8*)([_pdu mutableBytes]))[pdulen]) = [self get_dcs];
     pdulen = pdulen + 1;
     i = 0;
     while (i < (int)[stamp length]) {
-        (((u8*)([_pdu mutableBytes]))[ pdulen]) = (((u8*)([stamp bytes]))[i]);
+        (((u8*)([_pdu mutableBytes]))[pdulen]) = (((u8*)([stamp bytes]))[i]);
         pdulen = pdulen + 1;
         i = i + 1;
     }
     i = 0;
     while (i < (int)[udata length]) {
-        (((u8*)([_pdu mutableBytes]))[ pdulen]) = (((u8*)([udata bytes]))[i]);
+        (((u8*)([_pdu mutableBytes]))[pdulen]) = (((u8*)([udata bytes]))[i]);
         pdulen = pdulen + 1;
         i = i + 1;
     }
@@ -1103,16 +1103,14 @@
         if (i + ielen <= udhlen) {
             if ((iei == 0) && (ielen == 3)) {
                 // concatenated SMS, 8-bit ref
-                sig = [NSString stringWithFormat:@"%@-%@-%02x-%02x", _orig, _dest,
-                _mref,(((u8*)([_udh bytes]))[i])];
+                sig = [NSString stringWithFormat:@"%@-%@-%02x-%02x",_orig,_dest,_mref,(((u8*)([_udh bytes]))[i])];
                 _aggSig = sig;
                 _aggCnt = (((u8*)([_udh bytes]))[i+1]);
                 _aggIdx = (((u8*)([_udh bytes]))[i+2]);
             }
             if ((iei == 8) && (ielen == 4)) {
                 // concatenated SMS, 16-bit ref
-                sig = [NSString stringWithFormat:@"%@-%@-%02x-%02x%02x", _orig, _dest,
-                _mref, (((u8*)([_udh bytes]))[i]),(((u8*)([_udh bytes]))[i+1])];
+                sig = [NSString stringWithFormat:@"%@-%@-%02x-%02x%02x",_orig,_dest,_mref,(((u8*)([_udh bytes]))[i]),(((u8*)([_udh bytes]))[i+1])];
                 _aggSig = sig;
                 _aggCnt = (((u8*)([_udh bytes]))[i+2]);
                 _aggIdx = (((u8*)([_udh bytes]))[i+3]);
@@ -1140,15 +1138,15 @@
     _pdu = [NSMutableData dataWithData:pdu];
     _npdu = 1;
     // parse meta-data
-    _smsc = [self decodeAddress:pdu : 1 :2*((((u8*)([pdu bytes]))[0])-1)];
+    _smsc = [self decodeAddress:pdu :1 :2*((((u8*)([pdu bytes]))[0])-1)];
     rpos = 1+(((u8*)([pdu bytes]))[0]);
     pdutyp = (((u8*)([pdu bytes]))[rpos]);
     rpos = rpos + 1;
-    _deliv = (((pdutyp) & (3)) == 0);
+    _deliv = ((pdutyp & 3) == 0);
     if (_deliv) {
         addrlen = (((u8*)([pdu bytes]))[rpos]);
         rpos = rpos + 1;
-        _orig = [self decodeAddress:pdu : rpos :addrlen];
+        _orig = [self decodeAddress:pdu :rpos :addrlen];
         _dest = @"";
         tslen = 7;
     } else {
@@ -1156,10 +1154,10 @@
         rpos = rpos + 1;
         addrlen = (((u8*)([pdu bytes]))[rpos]);
         rpos = rpos + 1;
-        _dest = [self decodeAddress:pdu : rpos :addrlen];
+        _dest = [self decodeAddress:pdu :rpos :addrlen];
         _orig = @"";
-        if ((((pdutyp) & (16))) != 0) {
-            if ((((pdutyp) & (8))) != 0) {
+        if (((pdutyp & 16)) != 0) {
+            if (((pdutyp & 8)) != 0) {
                 tslen = 7;
             } else {
                 tslen= 1;
@@ -1168,38 +1166,38 @@
             tslen = 0;
         }
     }
-    rpos = rpos + ((((addrlen+3)) >> (1)));
+    rpos = rpos + (((addrlen+3) >> 1));
     _pid = (((u8*)([pdu bytes]))[rpos]);
     rpos = rpos + 1;
     dcs = (((u8*)([pdu bytes]))[rpos]);
     rpos = rpos + 1;
-    _alphab = (((((dcs) >> (2)))) & (3));
-    _mclass = ((dcs) & (16+3));
-    _stamp = [self decodeTimeStamp:pdu : rpos :tslen];
+    _alphab = (((dcs >> 2)) & 3);
+    _mclass = (dcs & (16+3));
+    _stamp = [self decodeTimeStamp:pdu :rpos :tslen];
     rpos = rpos + tslen;
     // parse user data (including udh)
     nbits = 0;
     carry = 0;
     udlen = (((u8*)([pdu bytes]))[rpos]);
     rpos = rpos + 1;
-    if (((pdutyp) & (64)) != 0) {
+    if ((pdutyp & 64) != 0) {
         udhsize = (((u8*)([pdu bytes]))[rpos]);
         rpos = rpos + 1;
         _udh = [NSMutableData dataWithLength:udhsize];
         i = 0;
         while (i < udhsize) {
-            (((u8*)([_udh mutableBytes]))[ i]) = (((u8*)([pdu bytes]))[rpos]);
+            (((u8*)([_udh mutableBytes]))[i]) = (((u8*)([pdu bytes]))[rpos]);
             rpos = rpos + 1;
             i = i + 1;
         }
         if (_alphab == 0) {
             // 7-bit encoding
-            udhlen = (((8 + 8*udhsize + 6)) / (7));
+            udhlen = ((8 + 8*udhsize + 6) / 7);
             nbits = 7*udhlen - 8 - 8*udhsize;
             if (nbits > 0) {
                 thi_b = (((u8*)([pdu bytes]))[rpos]);
                 rpos = rpos + 1;
-                carry = ((thi_b) >> (nbits));
+                carry = (thi_b >> nbits);
                 nbits = 8 - nbits;
             }
         } else {
@@ -1217,14 +1215,14 @@
         i = 0;
         while (i < udlen) {
             if (nbits == 7) {
-                (((u8*)([_udata mutableBytes]))[ i]) = carry;
+                (((u8*)([_udata mutableBytes]))[i]) = carry;
                 carry = 0;
                 nbits = 0;
             } else {
                 thi_b = (((u8*)([pdu bytes]))[rpos]);
                 rpos = rpos + 1;
-                (((u8*)([_udata mutableBytes]))[ i]) = ((carry) | ((((((thi_b) << (nbits)))) & (127))));
-                carry = ((thi_b) >> ((7 - nbits)));
+                (((u8*)([_udata mutableBytes]))[i]) = (carry | (((thi_b << nbits)) & 127));
+                carry = (thi_b >> (7 - nbits));
                 nbits = nbits + 1;
             }
             i = i + 1;
@@ -1233,7 +1231,7 @@
         // 8-bit encoding
         i = 0;
         while (i < udlen) {
-            (((u8*)([_udata mutableBytes]))[ i]) = (((u8*)([pdu bytes]))[rpos]);
+            (((u8*)([_udata mutableBytes]))[i]) = (((u8*)([pdu bytes]))[rpos]);
             rpos = rpos + 1;
             i = i + 1;
         }
@@ -1659,7 +1657,7 @@
     obj = (YMessageBox*) [YFunction _FindFromCache:@"MessageBox" :func];
     if (obj == nil) {
         obj = ARC_sendAutorelease([[YMessageBox alloc] initWith:func]);
-        [YFunction _AddToCache:@"MessageBox" : func :obj];
+        [YFunction _AddToCache:@"MessageBox" :func :obj];
     }
     return obj;
 }
@@ -1725,10 +1723,10 @@
         [self clearCache];
         bitmapStr = [self get_slotsBitmap];
         newBitmap = [YAPI _hexStr2Bin:bitmapStr];
-        idx = ((slot) >> (3));
+        idx = (slot >> 3);
         if (idx < (int)[newBitmap length]) {
-            bitVal = ((1) << ((((slot) & (7)))));
-            if (((((((u8*)([newBitmap bytes]))[idx])) & (bitVal))) != 0) {
+            bitVal = (1 << ((slot & 7)));
+            if ((((((u8*)([newBitmap bytes]))[idx]) & bitVal)) != 0) {
                 _prevBitmapStr = @"";
                 int_res = [self set_command:[NSString stringWithFormat:@"DS%d",slot]];
                 if (int_res < 0) {
@@ -1763,19 +1761,19 @@
     cmdLen = (int)[(cmd) length];
     chrPos = _ystrpos(cmd, @"#");
     while (chrPos >= 0) {
-        cmd = [NSString stringWithFormat:@"%@%c23%@", [cmd substringWithRange:NSMakeRange( 0, chrPos)], 37,[cmd substringWithRange:NSMakeRange( chrPos+1, cmdLen-chrPos-1)]];
+        cmd = [NSString stringWithFormat:@"%@%c23%@",[cmd substringWithRange:NSMakeRange(0, chrPos)],37,[cmd substringWithRange:NSMakeRange(chrPos+1, cmdLen-chrPos-1)]];
         cmdLen = cmdLen + 2;
         chrPos = _ystrpos(cmd, @"#");
     }
     chrPos = _ystrpos(cmd, @"+");
     while (chrPos >= 0) {
-        cmd = [NSString stringWithFormat:@"%@%c2B%@", [cmd substringWithRange:NSMakeRange( 0, chrPos)], 37,[cmd substringWithRange:NSMakeRange( chrPos+1, cmdLen-chrPos-1)]];
+        cmd = [NSString stringWithFormat:@"%@%c2B%@",[cmd substringWithRange:NSMakeRange(0, chrPos)],37,[cmd substringWithRange:NSMakeRange(chrPos+1, cmdLen-chrPos-1)]];
         cmdLen = cmdLen + 2;
         chrPos = _ystrpos(cmd, @"+");
     }
     chrPos = _ystrpos(cmd, @"=");
     while (chrPos >= 0) {
-        cmd = [NSString stringWithFormat:@"%@%c3D%@", [cmd substringWithRange:NSMakeRange( 0, chrPos)], 37,[cmd substringWithRange:NSMakeRange( chrPos+1, cmdLen-chrPos-1)]];
+        cmd = [NSString stringWithFormat:@"%@%c3D%@",[cmd substringWithRange:NSMakeRange(0, chrPos)],37,[cmd substringWithRange:NSMakeRange(chrPos+1, cmdLen-chrPos-1)]];
         cmdLen = cmdLen + 2;
         chrPos = _ystrpos(cmd, @"=");
     }
@@ -1795,14 +1793,14 @@
         if ((((u8*)([buff bytes]))[idx]) == 64) {
             // continuation detected
             suffixlen = bufflen - idx;
-            cmd = [NSString stringWithFormat:@"at.txt?cmd=%@",[buffstr substringWithRange:NSMakeRange( buffstrlen - suffixlen, suffixlen)]];
-            buffstr = [buffstr substringWithRange:NSMakeRange( 0, buffstrlen - suffixlen)];
+            cmd = [NSString stringWithFormat:@"at.txt?cmd=%@",[buffstr substringWithRange:NSMakeRange(buffstrlen - suffixlen, suffixlen)]];
+            buffstr = [buffstr substringWithRange:NSMakeRange(0, buffstrlen - suffixlen)];
             waitMore = waitMore - 1;
         } else {
             // request complete
             waitMore = 0;
         }
-        res = [NSString stringWithFormat:@"%@%@", res,buffstr];
+        res = [NSString stringWithFormat:@"%@%@",res,buffstr];
     }
     return res;
 }
@@ -1871,14 +1869,14 @@
         i = i + 1;
     }
     // exceptions in range 20-7A
-    [_gsm2unicode replaceObjectAtIndex: 36 withObject:[NSNumber numberWithLong:164]];
-    [_gsm2unicode replaceObjectAtIndex: 64 withObject:[NSNumber numberWithLong:161]];
-    [_gsm2unicode replaceObjectAtIndex: 91 withObject:[NSNumber numberWithLong:196]];
-    [_gsm2unicode replaceObjectAtIndex: 92 withObject:[NSNumber numberWithLong:214]];
-    [_gsm2unicode replaceObjectAtIndex: 93 withObject:[NSNumber numberWithLong:209]];
-    [_gsm2unicode replaceObjectAtIndex: 94 withObject:[NSNumber numberWithLong:220]];
-    [_gsm2unicode replaceObjectAtIndex: 95 withObject:[NSNumber numberWithLong:167]];
-    [_gsm2unicode replaceObjectAtIndex: 96 withObject:[NSNumber numberWithLong:191]];
+    [_gsm2unicode replaceObjectAtIndex:36 withObject:[NSNumber numberWithLong:164]];
+    [_gsm2unicode replaceObjectAtIndex:64 withObject:[NSNumber numberWithLong:161]];
+    [_gsm2unicode replaceObjectAtIndex:91 withObject:[NSNumber numberWithLong:196]];
+    [_gsm2unicode replaceObjectAtIndex:92 withObject:[NSNumber numberWithLong:214]];
+    [_gsm2unicode replaceObjectAtIndex:93 withObject:[NSNumber numberWithLong:209]];
+    [_gsm2unicode replaceObjectAtIndex:94 withObject:[NSNumber numberWithLong:220]];
+    [_gsm2unicode replaceObjectAtIndex:95 withObject:[NSNumber numberWithLong:167]];
+    [_gsm2unicode replaceObjectAtIndex:96 withObject:[NSNumber numberWithLong:191]];
     // 7B-7F
     [_gsm2unicode addObject:[NSNumber numberWithLong:228]];
     [_gsm2unicode addObject:[NSNumber numberWithLong:246]];
@@ -1891,15 +1889,15 @@
     while (i <= 127) {
         uni = [[_gsm2unicode objectAtIndex:i] intValue];
         if (uni <= 255) {
-            (((u8*)([_iso2gsm mutableBytes]))[ uni]) = i;
+            (((u8*)([_iso2gsm mutableBytes]))[uni]) = i;
         }
         i = i + 1;
     }
     i = 0;
     while (i < 4) {
         // mark escape sequences
-        (((u8*)([_iso2gsm mutableBytes]))[ 91+i]) = 27;
-        (((u8*)([_iso2gsm mutableBytes]))[ 123+i]) = 27;
+        (((u8*)([_iso2gsm mutableBytes]))[91+i]) = 27;
+        (((u8*)([_iso2gsm mutableBytes]))[123+i]) = 27;
         i = i + 1;
     }
     // Done
@@ -2070,7 +2068,7 @@
             }
         }
         if ((uni > 0) && (uni < 256)) {
-            (((u8*)([resbin mutableBytes]))[ reslen]) = uni;
+            (((u8*)([resbin mutableBytes]))[reslen]) = uni;
             reslen = reslen + 1;
         }
         i = i + 1;
@@ -2118,7 +2116,7 @@
     while (i < asclen) {
         ch = (((u8*)([asc bytes]))[i]);
         gsm7 = (((u8*)([_iso2gsm bytes]))[ch]);
-        (((u8*)([res mutableBytes]))[ wpos]) = gsm7;
+        (((u8*)([res mutableBytes]))[wpos]) = gsm7;
         wpos = wpos + 1;
         if (gsm7 == 27) {
             if (ch < 100) {
@@ -2150,7 +2148,7 @@
                     }
                 }
             }
-            (((u8*)([res mutableBytes]))[ wpos]) = gsm7;
+            (((u8*)([res mutableBytes]))[wpos]) = gsm7;
             wpos = wpos + 1;
         }
         i = i + 1;
@@ -2196,10 +2194,10 @@
     while (pduIdx < (int)[_pdus count]) {
         sms = [_pdus objectAtIndex:pduIdx];
         slot = [sms get_slot];
-        idx = ((slot) >> (3));
+        idx = (slot >> 3);
         if (idx < (int)[newBitmap length]) {
-            bitVal = ((1) << ((((slot) & (7)))));
-            if (((((((u8*)([newBitmap bytes]))[idx])) & (bitVal))) != 0) {
+            bitVal = (1 << ((slot & 7)));
+            if ((((((u8*)([newBitmap bytes]))[idx]) & bitVal)) != 0) {
                 [newArr addObject:sms];
                 if ([sms get_concatCount] == 0) {
                     [newMsg addObject:sms];
@@ -2224,13 +2222,13 @@
     // receive new messages
     slot = 0;
     while (slot < nslots) {
-        idx = ((slot) >> (3));
-        bitVal = ((1) << ((((slot) & (7)))));
+        idx = (slot >> 3);
+        bitVal = (1 << ((slot & 7)));
         prevBit = 0;
         if (idx < (int)[prevBitmap length]) {
-            prevBit = (((((u8*)([prevBitmap bytes]))[idx])) & (bitVal));
+            prevBit = ((((u8*)([prevBitmap bytes]))[idx]) & bitVal);
         }
-        if (((((((u8*)([newBitmap bytes]))[idx])) & (bitVal))) != 0) {
+        if ((((((u8*)([newBitmap bytes]))[idx]) & bitVal)) != 0) {
             if (prevBit == 0) {
                 sms = [self fetchPdu:slot];
                 [newArr addObject:sms];

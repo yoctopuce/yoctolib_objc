@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_current.m 59977 2024-03-18 15:02:32Z mvuilleu $
+ *  $Id: yocto_current.m 63508 2024-11-28 10:46:01Z seb $
  *
  *  Implements the high-level API for Current functions
  *
@@ -163,7 +163,7 @@
     obj = (YCurrent*) [YFunction _FindFromCache:@"Current" :func];
     if (obj == nil) {
         obj = ARC_sendAutorelease([[YCurrent alloc] initWith:func]);
-        [YFunction _AddToCache:@"Current" : func :obj];
+        [YFunction _AddToCache:@"Current" :func :obj];
     }
     return obj;
 }

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_colorledcluster.m 59977 2024-03-18 15:02:32Z mvuilleu $
+ *  $Id: yocto_colorledcluster.m 63508 2024-11-28 10:46:01Z seb $
  *
  *  Implements the high-level API for ColorLedCluster functions
  *
@@ -371,7 +371,7 @@
     obj = (YColorLedCluster*) [YFunction _FindFromCache:@"ColorLedCluster" :func];
     if (obj == nil) {
         obj = ARC_sendAutorelease([[YColorLedCluster alloc] initWith:func]);
-        [YFunction _AddToCache:@"ColorLedCluster" : func :obj];
+        [YFunction _AddToCache:@"ColorLedCluster" :func :obj];
     }
     return obj;
 }
@@ -851,9 +851,9 @@
     idx = 0;
     while (idx < listlen) {
         rgb = [[rgbList objectAtIndex:idx] intValue];
-        (((u8*)([buff mutableBytes]))[ 3*idx]) = ((((rgb) >> (16))) & (255));
-        (((u8*)([buff mutableBytes]))[ 3*idx+1]) = ((((rgb) >> (8))) & (255));
-        (((u8*)([buff mutableBytes]))[ 3*idx+2]) = ((rgb) & (255));
+        (((u8*)([buff mutableBytes]))[3*idx]) = ((rgb >> 16) & 255);
+        (((u8*)([buff mutableBytes]))[3*idx+1]) = ((rgb >> 8) & 255);
+        (((u8*)([buff mutableBytes]))[3*idx+2]) = (rgb & 255);
         idx = idx + 1;
     }
 
@@ -886,9 +886,9 @@
     idx = 0;
     while (idx < listlen) {
         rgb = [[rgbList objectAtIndex:idx] intValue];
-        (((u8*)([buff mutableBytes]))[ 3*idx]) = ((((rgb) >> (16))) & (255));
-        (((u8*)([buff mutableBytes]))[ 3*idx+1]) = ((((rgb) >> (8))) & (255));
-        (((u8*)([buff mutableBytes]))[ 3*idx+2]) = ((rgb) & (255));
+        (((u8*)([buff mutableBytes]))[3*idx]) = ((rgb >> 16) & 255);
+        (((u8*)([buff mutableBytes]))[3*idx+1]) = ((rgb >> 8) & 255);
+        (((u8*)([buff mutableBytes]))[3*idx+2]) = (rgb & 255);
         idx = idx + 1;
     }
 
@@ -957,9 +957,9 @@
     idx = 0;
     while (idx < listlen) {
         hsl = [[hslList objectAtIndex:idx] intValue];
-        (((u8*)([buff mutableBytes]))[ 3*idx]) = ((((hsl) >> (16))) & (255));
-        (((u8*)([buff mutableBytes]))[ 3*idx+1]) = ((((hsl) >> (8))) & (255));
-        (((u8*)([buff mutableBytes]))[ 3*idx+2]) = ((hsl) & (255));
+        (((u8*)([buff mutableBytes]))[3*idx]) = ((hsl >> 16) & 255);
+        (((u8*)([buff mutableBytes]))[3*idx+1]) = ((hsl >> 8) & 255);
+        (((u8*)([buff mutableBytes]))[3*idx+2]) = (hsl & 255);
         idx = idx + 1;
     }
 
@@ -1012,9 +1012,9 @@
     idx = 0;
     while (idx < listlen) {
         hsl = [[hslList objectAtIndex:idx] intValue];
-        (((u8*)([buff mutableBytes]))[ 3*idx]) = ((((hsl) >> (16))) & (255));
-        (((u8*)([buff mutableBytes]))[ 3*idx+1]) = ((((hsl) >> (8))) & (255));
-        (((u8*)([buff mutableBytes]))[ 3*idx+2]) = ((hsl) & (255));
+        (((u8*)([buff mutableBytes]))[3*idx]) = ((hsl >> 16) & 255);
+        (((u8*)([buff mutableBytes]))[3*idx+1]) = ((hsl >> 8) & 255);
+        (((u8*)([buff mutableBytes]))[3*idx+2]) = (hsl & 255);
         idx = idx + 1;
     }
 
@@ -1167,7 +1167,7 @@
         hl = (((u8*)([buff bytes]))[4*idx+1]);
         lh = (((u8*)([buff bytes]))[4*idx+2]);
         ll = (((u8*)([buff bytes]))[4*idx+3]);
-        [res addObject:[NSNumber numberWithLong:((hh) << (24))+((hl) << (16))+((lh) << (8))+ll]];
+        [res addObject:[NSNumber numberWithLong:(hh << 24)+(hl << 16)+(lh << 8)+ll]];
         idx = idx + 1;
     }
     return res;
@@ -1197,7 +1197,7 @@
     while (idx < count) {
         lh = (((u8*)([buff bytes]))[2*idx]);
         ll = (((u8*)([buff bytes]))[2*idx+1]);
-        [res addObject:[NSNumber numberWithLong:((lh) << (8))+ll]];
+        [res addObject:[NSNumber numberWithLong:(lh << 8)+ll]];
         idx = idx + 1;
     }
     return res;
@@ -1262,15 +1262,15 @@
 -(int) hsl2rgbInt:(int)temp1 :(int)temp2 :(int)temp3
 {
     if (temp3 >= 170) {
-        return (((temp1 + 127)) / (255));
+        return ((temp1 + 127) / 255);
     }
     if (temp3 > 42) {
         if (temp3 <= 127) {
-            return (((temp2 + 127)) / (255));
+            return ((temp2 + 127) / 255);
         }
         temp3 = 170 - temp3;
     }
-    return (((temp1*255 + (temp2-temp1) * (6 * temp3) + 32512)) / (65025));
+    return ((temp1*255 + (temp2-temp1) * (6 * temp3) + 32512) / 65025);
 }
 
 -(int) hsl2rgb:(int)hslValue
@@ -1285,11 +1285,11 @@
     int temp2;
     int temp3;
     int res;
-    L = ((hslValue) & (0xff));
-    S = ((((hslValue) >> (8))) & (0xff));
-    H = ((((hslValue) >> (16))) & (0xff));
+    L = (hslValue & 0xff);
+    S = ((hslValue >> 8) & 0xff);
+    H = ((hslValue >> 16) & 0xff);
     if (S==0) {
-        res = ((L) << (16))+((L) << (8))+L;
+        res = (L << 16)+(L << 8)+L;
         return res;
     }
     if (L<=127) {
@@ -1303,20 +1303,20 @@
     if (temp3 > 255) {
         temp3 = temp3-255;
     }
-    R = [self hsl2rgbInt:temp1 : temp2 :temp3];
+    R = [self hsl2rgbInt:temp1 :temp2 :temp3];
     // G
     temp3 = H;
     if (temp3 > 255) {
         temp3 = temp3-255;
     }
-    G = [self hsl2rgbInt:temp1 : temp2 :temp3];
+    G = [self hsl2rgbInt:temp1 :temp2 :temp3];
     // B
     if (H >= 85) {
         temp3 = H - 85 ;
     } else {
         temp3 = H + 170;
     }
-    B = [self hsl2rgbInt:temp1 : temp2 :temp3];
+    B = [self hsl2rgbInt:temp1 :temp2 :temp3];
     // just in case
     if (R>255) {
         R=255;
@@ -1327,7 +1327,7 @@
     if (B>255) {
         B=255;
     }
-    res = ((R) << (16))+((G) << (8))+B;
+    res = (R << 16)+(G << 8)+B;
     return res;
 }
 

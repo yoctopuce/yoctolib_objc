@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_magnetometer.m 59977 2024-03-18 15:02:32Z mvuilleu $
+ *  $Id: yocto_magnetometer.m 63508 2024-11-28 10:46:01Z seb $
  *
  *  Implements the high-level API for Magnetometer functions
  *
@@ -253,7 +253,7 @@
     obj = (YMagnetometer*) [YFunction _FindFromCache:@"Magnetometer" :func];
     if (obj == nil) {
         obj = ARC_sendAutorelease([[YMagnetometer alloc] initWith:func]);
-        [YFunction _AddToCache:@"Magnetometer" : func :obj];
+        [YFunction _AddToCache:@"Magnetometer" :func :obj];
     }
     return obj;
 }

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_i2cport.m 59977 2024-03-18 15:02:32Z mvuilleu $
+ *  $Id: yocto_i2cport.m 63508 2024-11-28 10:46:01Z seb $
  *
  *  Implements the high-level API for I2cPort functions
  *
@@ -796,7 +796,7 @@
     obj = (YI2cPort*) [YFunction _FindFromCache:@"I2cPort" :func];
     if (obj == nil) {
         obj = ARC_sendAutorelease([[YI2cPort alloc] initWith:func]);
-        [YFunction _AddToCache:@"I2cPort" : func :obj];
+        [YFunction _AddToCache:@"I2cPort" :func :obj];
     }
     return obj;
 }
@@ -914,7 +914,7 @@
     NSMutableArray* res = [NSMutableArray array];
     int idx;
 
-    url = [NSString stringWithFormat:@"rxmsg.json?pos=%d&maxw=%d&pat=%@", _rxptr, maxWait,pattern];
+    url = [NSString stringWithFormat:@"rxmsg.json?pos=%d&maxw=%d&pat=%@",_rxptr,maxWait,pattern];
     msgbin = [self _download:url];
     msgarr = [self _json_get_array:msgbin];
     msglen = (int)[msgarr count];
@@ -973,7 +973,7 @@
     databin = [self _download:[NSString stringWithFormat:@"rxcnt.bin?pos=%d",_rxptr]];
     availPosStr = ARC_sendAutorelease([[NSString alloc] initWithData:databin encoding:NSISOLatin1StringEncoding]);
     atPos = _ystrpos(availPosStr, @"@");
-    res = [[availPosStr substringWithRange:NSMakeRange( 0, atPos)] intValue];
+    res = [[availPosStr substringWithRange:NSMakeRange(0, atPos)] intValue];
     return res;
 }
 
@@ -987,7 +987,7 @@
     databin = [self _download:[NSString stringWithFormat:@"rxcnt.bin?pos=%d",_rxptr]];
     availPosStr = ARC_sendAutorelease([[NSString alloc] initWithData:databin encoding:NSISOLatin1StringEncoding]);
     atPos = _ystrpos(availPosStr, @"@");
-    res = [[availPosStr substringWithRange:NSMakeRange( atPos+1, (int)[(availPosStr) length]-atPos-1)] intValue];
+    res = [[availPosStr substringWithRange:NSMakeRange(atPos+1, (int)[(availPosStr) length]-atPos-1)] intValue];
     return res;
 }
 
@@ -1013,12 +1013,12 @@
     NSString* res;
     if ((int)[(query) length] <= 80) {
         // fast query
-        url = [NSString stringWithFormat:@"rxmsg.json?len=1&maxw=%d&cmd=!%@", maxWait,[self _escapeAttr:query]];
+        url = [NSString stringWithFormat:@"rxmsg.json?len=1&maxw=%d&cmd=!%@",maxWait,[self _escapeAttr:query]];
     } else {
         // long query
         prevpos = [self end_tell];
         [self _upload:@"txdata" :[NSMutableData dataWithData:[[NSString stringWithFormat:@"%@%@", query, @"\r\n"] dataUsingEncoding:NSISOLatin1StringEncoding]]];
-        url = [NSString stringWithFormat:@"rxmsg.json?len=1&maxw=%d&pos=%d", maxWait,prevpos];
+        url = [NSString stringWithFormat:@"rxmsg.json?len=1&maxw=%d&pos=%d",maxWait,prevpos];
     }
 
     msgbin = [self _download:url];
@@ -1060,12 +1060,12 @@
     NSString* res;
     if ((int)[(hexString) length] <= 80) {
         // fast query
-        url = [NSString stringWithFormat:@"rxmsg.json?len=1&maxw=%d&cmd=$%@", maxWait,hexString];
+        url = [NSString stringWithFormat:@"rxmsg.json?len=1&maxw=%d&cmd=$%@",maxWait,hexString];
     } else {
         // long query
         prevpos = [self end_tell];
         [self _upload:@"txdata" :[YAPI _hexStr2Bin:hexString]];
-        url = [NSString stringWithFormat:@"rxmsg.json?len=1&maxw=%d&pos=%d", maxWait,prevpos];
+        url = [NSString stringWithFormat:@"rxmsg.json?len=1&maxw=%d&pos=%d",maxWait,prevpos];
     }
 
     msgbin = [self _download:url];
@@ -1156,16 +1156,16 @@
     idx = 0;
     while (idx < nBytes) {
         val = (((u8*)([buff bytes]))[idx]);
-        msg = [NSString stringWithFormat:@"%@%02x", msg,val];
+        msg = [NSString stringWithFormat:@"%@%02x",msg,val];
         idx = idx + 1;
     }
 
     reply = [self queryLine:msg :1000];
-    if (!((int)[(reply) length] > 0)) {[self _throw: YAPI_IO_ERROR: @"No response from I2C device"]; return YAPI_IO_ERROR;}
+    if (!((int)[(reply) length] > 0)) {[self _throw:YAPI_IO_ERROR:@"No response from I2C device"]; return YAPI_IO_ERROR;}
     idx = _ystrpos(reply, @"[N]!");
-    if (!(idx < 0)) {[self _throw: YAPI_IO_ERROR: @"No I2C ACK received"]; return YAPI_IO_ERROR;}
+    if (!(idx < 0)) {[self _throw:YAPI_IO_ERROR:@"No I2C ACK received"]; return YAPI_IO_ERROR;}
     idx = _ystrpos(reply, @"!");
-    if (!(idx < 0)) {[self _throw: YAPI_IO_ERROR: @"I2C protocol error"]; return YAPI_IO_ERROR;}
+    if (!(idx < 0)) {[self _throw:YAPI_IO_ERROR:@"I2C protocol error"]; return YAPI_IO_ERROR;}
     return YAPI_SUCCESS;
 }
 
@@ -1192,16 +1192,16 @@
     idx = 0;
     while (idx < nBytes) {
         val = [[values objectAtIndex:idx] intValue];
-        msg = [NSString stringWithFormat:@"%@%02x", msg,val];
+        msg = [NSString stringWithFormat:@"%@%02x",msg,val];
         idx = idx + 1;
     }
 
     reply = [self queryLine:msg :1000];
-    if (!((int)[(reply) length] > 0)) {[self _throw: YAPI_IO_ERROR: @"No response from I2C device"]; return YAPI_IO_ERROR;}
+    if (!((int)[(reply) length] > 0)) {[self _throw:YAPI_IO_ERROR:@"No response from I2C device"]; return YAPI_IO_ERROR;}
     idx = _ystrpos(reply, @"[N]!");
-    if (!(idx < 0)) {[self _throw: YAPI_IO_ERROR: @"No I2C ACK received"]; return YAPI_IO_ERROR;}
+    if (!(idx < 0)) {[self _throw:YAPI_IO_ERROR:@"No I2C ACK received"]; return YAPI_IO_ERROR;}
     idx = _ystrpos(reply, @"!");
-    if (!(idx < 0)) {[self _throw: YAPI_IO_ERROR: @"I2C protocol error"]; return YAPI_IO_ERROR;}
+    if (!(idx < 0)) {[self _throw:YAPI_IO_ERROR:@"I2C protocol error"]; return YAPI_IO_ERROR;}
     return YAPI_SUCCESS;
 }
 
@@ -1227,13 +1227,13 @@
     NSString* reply;
     NSMutableData* rcvbytes;
     rcvbytes = [NSMutableData dataWithLength:0];
-    if (!(rcvCount<=512)) {[self _throw: YAPI_INVALID_ARGUMENT: @"Cannot read more than 512 bytes"]; return rcvbytes;}
+    if (!(rcvCount<=512)) {[self _throw:YAPI_INVALID_ARGUMENT:@"Cannot read more than 512 bytes"]; return rcvbytes;}
     msg = [NSString stringWithFormat:@"@%02x:",slaveAddr];
     nBytes = (int)[buff length];
     idx = 0;
     while (idx < nBytes) {
         val = (((u8*)([buff bytes]))[idx]);
-        msg = [NSString stringWithFormat:@"%@%02x", msg,val];
+        msg = [NSString stringWithFormat:@"%@%02x",msg,val];
         idx = idx + 1;
     }
     idx = 0;
@@ -1243,7 +1243,7 @@
             idx = idx + 255;
         }
         if (rcvCount - idx > 2) {
-            msg = [NSString stringWithFormat:@"%@xx*%02X", msg,(rcvCount - idx)];
+            msg = [NSString stringWithFormat:@"%@xx*%02X",msg,(rcvCount - idx)];
             idx = rcvCount;
         }
     }
@@ -1253,12 +1253,12 @@
     }
 
     reply = [self queryLine:msg :1000];
-    if (!((int)[(reply) length] > 0)) {[self _throw: YAPI_IO_ERROR: @"No response from I2C device"]; return rcvbytes;}
+    if (!((int)[(reply) length] > 0)) {[self _throw:YAPI_IO_ERROR:@"No response from I2C device"]; return rcvbytes;}
     idx = _ystrpos(reply, @"[N]!");
-    if (!(idx < 0)) {[self _throw: YAPI_IO_ERROR: @"No I2C ACK received"]; return rcvbytes;}
+    if (!(idx < 0)) {[self _throw:YAPI_IO_ERROR:@"No I2C ACK received"]; return rcvbytes;}
     idx = _ystrpos(reply, @"!");
-    if (!(idx < 0)) {[self _throw: YAPI_IO_ERROR: @"I2C protocol error"]; return rcvbytes;}
-    reply = [reply substringWithRange:NSMakeRange( (int)[(reply) length]-2*rcvCount, 2*rcvCount)];
+    if (!(idx < 0)) {[self _throw:YAPI_IO_ERROR:@"I2C protocol error"]; return rcvbytes;}
+    reply = [reply substringWithRange:NSMakeRange((int)[(reply) length]-2*rcvCount, 2*rcvCount)];
     rcvbytes = [YAPI _hexStr2Bin:reply];
     return rcvbytes;
 }
@@ -1286,13 +1286,13 @@
     NSMutableData* rcvbytes;
     NSMutableArray* res = [NSMutableArray array];
     [res removeAllObjects];
-    if (!(rcvCount<=512)) {[self _throw: YAPI_INVALID_ARGUMENT: @"Cannot read more than 512 bytes"]; return res;}
+    if (!(rcvCount<=512)) {[self _throw:YAPI_INVALID_ARGUMENT:@"Cannot read more than 512 bytes"]; return res;}
     msg = [NSString stringWithFormat:@"@%02x:",slaveAddr];
     nBytes = (int)[values count];
     idx = 0;
     while (idx < nBytes) {
         val = [[values objectAtIndex:idx] intValue];
-        msg = [NSString stringWithFormat:@"%@%02x", msg,val];
+        msg = [NSString stringWithFormat:@"%@%02x",msg,val];
         idx = idx + 1;
     }
     idx = 0;
@@ -1302,7 +1302,7 @@
             idx = idx + 255;
         }
         if (rcvCount - idx > 2) {
-            msg = [NSString stringWithFormat:@"%@xx*%02X", msg,(rcvCount - idx)];
+            msg = [NSString stringWithFormat:@"%@xx*%02X",msg,(rcvCount - idx)];
             idx = rcvCount;
         }
     }
@@ -1312,12 +1312,12 @@
     }
 
     reply = [self queryLine:msg :1000];
-    if (!((int)[(reply) length] > 0)) {[self _throw: YAPI_IO_ERROR: @"No response from I2C device"]; return res;}
+    if (!((int)[(reply) length] > 0)) {[self _throw:YAPI_IO_ERROR:@"No response from I2C device"]; return res;}
     idx = _ystrpos(reply, @"[N]!");
-    if (!(idx < 0)) {[self _throw: YAPI_IO_ERROR: @"No I2C ACK received"]; return res;}
+    if (!(idx < 0)) {[self _throw:YAPI_IO_ERROR:@"No I2C ACK received"]; return res;}
     idx = _ystrpos(reply, @"!");
-    if (!(idx < 0)) {[self _throw: YAPI_IO_ERROR: @"I2C protocol error"]; return res;}
-    reply = [reply substringWithRange:NSMakeRange( (int)[(reply) length]-2*rcvCount, 2*rcvCount)];
+    if (!(idx < 0)) {[self _throw:YAPI_IO_ERROR:@"I2C protocol error"]; return res;}
+    reply = [reply substringWithRange:NSMakeRange((int)[(reply) length]-2*rcvCount, 2*rcvCount)];
     rcvbytes = [YAPI _hexStr2Bin:reply];
     [res removeAllObjects];
     idx = 0;
@@ -1471,7 +1471,7 @@
     idx = 0;
     while (idx < nBytes) {
         val = (((u8*)([buff bytes]))[idx]);
-        msg = [NSString stringWithFormat:@"%@%02x", msg,val];
+        msg = [NSString stringWithFormat:@"%@%02x",msg,val];
         idx = idx + 1;
     }
 
@@ -1500,7 +1500,7 @@
     idx = 0;
     while (idx < nBytes) {
         val = [[byteList objectAtIndex:idx] intValue];
-        msg = [NSString stringWithFormat:@"%@%02x", msg,val];
+        msg = [NSString stringWithFormat:@"%@%02x",msg,val];
         idx = idx + 1;
     }
 
@@ -1530,7 +1530,7 @@
     NSMutableArray* res = [NSMutableArray array];
     int idx;
 
-    url = [NSString stringWithFormat:@"rxmsg.json?pos=%d&maxw=%d&t=0&len=%d", _rxptr, maxWait,maxMsg];
+    url = [NSString stringWithFormat:@"rxmsg.json?pos=%d&maxw=%d&t=0&len=%d",_rxptr,maxWait,maxMsg];
     msgbin = [self _download:url];
     msgarr = [self _json_get_array:msgbin];
     msglen = (int)[msgarr count];

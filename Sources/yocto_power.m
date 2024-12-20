@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_power.m 59977 2024-03-18 15:02:32Z mvuilleu $
+ *  $Id: yocto_power.m 63508 2024-11-28 10:46:01Z seb $
  *
  *  Implements the high-level API for Power functions
  *
@@ -317,7 +317,7 @@
     obj = (YPower*) [YFunction _FindFromCache:@"Power" :func];
     if (obj == nil) {
         obj = ARC_sendAutorelease([[YPower alloc] initWith:func]);
-        [YFunction _AddToCache:@"Power" : func :obj];
+        [YFunction _AddToCache:@"Power" :func :obj];
     }
     return obj;
 }

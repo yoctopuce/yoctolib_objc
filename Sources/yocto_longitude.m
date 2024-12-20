@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_longitude.m 59977 2024-03-18 15:02:32Z mvuilleu $
+ *  $Id: yocto_longitude.m 63508 2024-11-28 10:46:01Z seb $
  *
  *  Implements the high-level API for Longitude functions
  *
@@ -107,7 +107,7 @@
     obj = (YLongitude*) [YFunction _FindFromCache:@"Longitude" :func];
     if (obj == nil) {
         obj = ARC_sendAutorelease([[YLongitude alloc] initWith:func]);
-        [YFunction _AddToCache:@"Longitude" : func :obj];
+        [YFunction _AddToCache:@"Longitude" :func :obj];
     }
     return obj;
 }

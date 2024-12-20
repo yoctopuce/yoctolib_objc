@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_wakeupmonitor.m 59977 2024-03-18 15:02:32Z mvuilleu $
+ *  $Id: yocto_wakeupmonitor.m 63508 2024-11-28 10:46:01Z seb $
  *
  *  Implements the high-level API for WakeUpMonitor functions
  *
@@ -358,7 +358,7 @@
     obj = (YWakeUpMonitor*) [YFunction _FindFromCache:@"WakeUpMonitor" :func];
     if (obj == nil) {
         obj = ARC_sendAutorelease([[YWakeUpMonitor alloc] initWith:func]);
-        [YFunction _AddToCache:@"WakeUpMonitor" : func :obj];
+        [YFunction _AddToCache:@"WakeUpMonitor" :func :obj];
     }
     return obj;
 }
@@ -425,7 +425,7 @@
 {
     int currTime;
     currTime = (int)([self get_rtcTime]);
-    if (!(currTime != 0)) {[self _throw: YAPI_RTC_NOT_READY: @"RTC time not set"]; return YAPI_RTC_NOT_READY;}
+    if (!(currTime != 0)) {[self _throw:YAPI_RTC_NOT_READY:@"RTC time not set"]; return YAPI_RTC_NOT_READY;}
     [self set_nextWakeUp:_endOfTime];
     [self set_sleepCountdown:secBeforeSleep];
     return YAPI_SUCCESS;
@@ -447,7 +447,7 @@
 {
     int currTime;
     currTime = (int)([self get_rtcTime]);
-    if (!(currTime != 0)) {[self _throw: YAPI_RTC_NOT_READY: @"RTC time not set"]; return YAPI_RTC_NOT_READY;}
+    if (!(currTime != 0)) {[self _throw:YAPI_RTC_NOT_READY:@"RTC time not set"]; return YAPI_RTC_NOT_READY;}
     [self set_nextWakeUp:currTime+secUntilWakeUp];
     [self set_sleepCountdown:secBeforeSleep];
     return YAPI_SUCCESS;
@@ -469,7 +469,7 @@
 {
     int currTime;
     currTime = (int)([self get_rtcTime]);
-    if (!(currTime != 0)) {[self _throw: YAPI_RTC_NOT_READY: @"RTC time not set"]; return YAPI_RTC_NOT_READY;}
+    if (!(currTime != 0)) {[self _throw:YAPI_RTC_NOT_READY:@"RTC time not set"]; return YAPI_RTC_NOT_READY;}
     [self set_nextWakeUp:wakeUpTime];
     [self set_sleepCountdown:secBeforeSleep];
     return YAPI_SUCCESS;

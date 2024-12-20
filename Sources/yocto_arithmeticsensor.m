@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_arithmeticsensor.m 59977 2024-03-18 15:02:32Z mvuilleu $
+ *  $Id: yocto_arithmeticsensor.m 63508 2024-11-28 10:46:01Z seb $
  *
  *  Implements the high-level API for ArithmeticSensor functions
  *
@@ -201,7 +201,7 @@
     obj = (YArithmeticSensor*) [YFunction _FindFromCache:@"ArithmeticSensor" :func];
     if (obj == nil) {
         obj = ARC_sendAutorelease([[YArithmeticSensor alloc] initWith:func]);
-        [YFunction _AddToCache:@"ArithmeticSensor" : func :obj];
+        [YFunction _AddToCache:@"ArithmeticSensor" :func :obj];
     }
     return obj;
 }
@@ -301,14 +301,14 @@
     NSString* diags;
     double resval;
     id = [self get_functionId];
-    id = [id substringWithRange:NSMakeRange( 16, (int)[(id) length] - 16)];
+    id = [id substringWithRange:NSMakeRange(16, (int)[(id) length] - 16)];
     fname = [NSString stringWithFormat:@"arithmExpr%@.txt",id];
 
-    content = [NSString stringWithFormat:@"// %@\n%@", descr,expr];
+    content = [NSString stringWithFormat:@"// %@\n%@",descr,expr];
     data = [self _uploadEx:fname :[NSMutableData dataWithData:[content dataUsingEncoding:NSISOLatin1StringEncoding]]];
     diags = ARC_sendAutorelease([[NSString alloc] initWithData:data encoding:NSISOLatin1StringEncoding]);
-    if (!([[diags substringWithRange:NSMakeRange(0, 8)] isEqualToString:@"Result: "])) {[self _throw: YAPI_INVALID_ARGUMENT: diags]; return YAPI_INVALID_DOUBLE;}
-    resval = [[diags substringWithRange:NSMakeRange( 8, (int)[(diags) length]-8)] doubleValue];
+    if (!([[diags substringWithRange:NSMakeRange(0, 8)] isEqualToString:@"Result: "])) {[self _throw:YAPI_INVALID_ARGUMENT:diags]; return YAPI_INVALID_DOUBLE;}
+    resval = [[diags substringWithRange:NSMakeRange(8, (int)[(diags) length]-8)] doubleValue];
     return resval;
 }
 
@@ -327,13 +327,13 @@
     NSString* content;
     int idx;
     id = [self get_functionId];
-    id = [id substringWithRange:NSMakeRange( 16, (int)[(id) length] - 16)];
+    id = [id substringWithRange:NSMakeRange(16, (int)[(id) length] - 16)];
     fname = [NSString stringWithFormat:@"arithmExpr%@.txt",id];
 
     content = ARC_sendAutorelease([[NSString alloc] initWithData:[self _download:fname] encoding:NSISOLatin1StringEncoding]);
     idx = _ystrpos(content, @"\n");
     if (idx > 0) {
-        content = [content substringWithRange:NSMakeRange( idx+1, (int)[(content) length]-(idx+1))];
+        content = [content substringWithRange:NSMakeRange(idx+1, (int)[(content) length]-(idx+1))];
     }
     return content;
 }
@@ -364,14 +364,14 @@
     double outputVal;
     NSString* fname;
     siz = (int)[inputValues count];
-    if (!(siz > 1)) {[self _throw: YAPI_INVALID_ARGUMENT: @"auxiliary function must be defined by at least two points"]; return YAPI_INVALID_ARGUMENT;}
-    if (!(siz == (int)[outputValues count])) {[self _throw: YAPI_INVALID_ARGUMENT: @"table sizes mismatch"]; return YAPI_INVALID_ARGUMENT;}
+    if (!(siz > 1)) {[self _throw:YAPI_INVALID_ARGUMENT:@"auxiliary function must be defined by at least two points"]; return YAPI_INVALID_ARGUMENT;}
+    if (!(siz == (int)[outputValues count])) {[self _throw:YAPI_INVALID_ARGUMENT:@"table sizes mismatch"]; return YAPI_INVALID_ARGUMENT;}
     defstr = @"";
     idx = 0;
     while (idx < siz) {
         inputVal = [[inputValues objectAtIndex:idx] doubleValue];
         outputVal = [[outputValues objectAtIndex:idx] doubleValue];
-        defstr = [NSString stringWithFormat:@"%@%g:%g\n", defstr, inputVal,outputVal];
+        defstr = [NSString stringWithFormat:@"%@%g:%g\n",defstr,inputVal,outputVal];
         idx = idx + 1;
     }
     fname = [NSString stringWithFormat:@"userMap%@.txt",name];
@@ -402,7 +402,7 @@
     fname = [NSString stringWithFormat:@"userMap%@.txt",name];
     defbin = [self _download:fname];
     siz = (int)[defbin length];
-    if (!(siz > 0)) {[self _throw: YAPI_INVALID_ARGUMENT: @"auxiliary function does not exist"]; return YAPI_INVALID_ARGUMENT;}
+    if (!(siz > 0)) {[self _throw:YAPI_INVALID_ARGUMENT:@"auxiliary function does not exist"]; return YAPI_INVALID_ARGUMENT;}
     [inputValues removeAllObjects];
     [outputValues removeAllObjects];
     // FIXME: decode line by line

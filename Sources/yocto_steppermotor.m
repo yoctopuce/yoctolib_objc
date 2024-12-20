@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_steppermotor.m 59977 2024-03-18 15:02:32Z mvuilleu $
+ *  $Id: yocto_steppermotor.m 63508 2024-11-28 10:46:01Z seb $
  *
  *  Implements the high-level API for StepperMotor functions
  *
@@ -227,7 +227,7 @@
 
 /**
  * Changes the current logical motor position, measured in steps.
- * This command does not cause any motor move, as its purpose is only to setup
+ * This command does not cause any motor move, as its purpose is only to set up
  * the origin of the position counter. The fractional part of the position,
  * that corresponds to the physical position of the rotor, is not changed.
  * To trigger a motor move, use methods moveTo() or moveRel()
@@ -780,7 +780,7 @@
     obj = (YStepperMotor*) [YFunction _FindFromCache:@"StepperMotor" :func];
     if (obj == nil) {
         obj = ARC_sendAutorelease([[YStepperMotor alloc] initWith:func]);
-        [YFunction _AddToCache:@"StepperMotor" : func :obj];
+        [YFunction _AddToCache:@"StepperMotor" :func :obj];
     }
     return obj;
 }
@@ -832,15 +832,15 @@
     NSMutableData* retBin;
     int res;
     id = [self get_functionId];
-    id = [id substringWithRange:NSMakeRange( 12, 1)];
-    url = [NSString stringWithFormat:@"cmd.txt?%@=%@", id,command];
+    id = [id substringWithRange:NSMakeRange(12, 1)];
+    url = [NSString stringWithFormat:@"cmd.txt?%@=%@",id,command];
     //may throw an exception
     retBin = [self _download:url];
     res = (((u8*)([retBin bytes]))[0]);
     if (res < 58) {
-        if (!(res == 48)) {[self _throw: YAPI_DEVICE_BUSY: @"Motor command pipeline is full, try again later"]; return YAPI_DEVICE_BUSY;}
+        if (!(res == 48)) {[self _throw:YAPI_DEVICE_BUSY:@"Motor command pipeline is full, try again later"]; return YAPI_DEVICE_BUSY;}
     } else {
-        if (!(res == 48)) {[self _throw: YAPI_IO_ERROR: @"Motor command failed permanently"]; return YAPI_IO_ERROR;}
+        if (!(res == 48)) {[self _throw:YAPI_IO_ERROR:@"Motor command failed permanently"]; return YAPI_IO_ERROR;}
     }
     return YAPI_SUCCESS;
 }
@@ -979,7 +979,7 @@
  */
 -(int) alertStepDir:(int)dir
 {
-    if (!(dir != 0)) {[self _throw: YAPI_INVALID_ARGUMENT: @"direction must be +1 or -1"]; return YAPI_INVALID_ARGUMENT;}
+    if (!(dir != 0)) {[self _throw:YAPI_INVALID_ARGUMENT:@"direction must be +1 or -1"]; return YAPI_INVALID_ARGUMENT;}
     if (dir > 0) {
         return [self set_command:@".+"];
     }

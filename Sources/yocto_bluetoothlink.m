@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_bluetoothlink.m 59977 2024-03-18 15:02:32Z mvuilleu $
+ *  $Id: yocto_bluetoothlink.m 63508 2024-11-28 10:46:01Z seb $
  *
  *  Implements the high-level API for BluetoothLink functions
  *
@@ -547,7 +547,7 @@
     obj = (YBluetoothLink*) [YFunction _FindFromCache:@"BluetoothLink" :func];
     if (obj == nil) {
         obj = ARC_sendAutorelease([[YBluetoothLink alloc] initWith:func]);
-        [YFunction _AddToCache:@"BluetoothLink" : func :obj];
+        [YFunction _AddToCache:@"BluetoothLink" :func :obj];
     }
     return obj;
 }

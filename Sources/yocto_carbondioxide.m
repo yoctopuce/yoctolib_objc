@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_carbondioxide.m 59977 2024-03-18 15:02:32Z mvuilleu $
+ *  $Id: yocto_carbondioxide.m 63508 2024-11-28 10:46:01Z seb $
  *
  *  Implements the high-level API for CarbonDioxide functions
  *
@@ -201,7 +201,7 @@
     obj = (YCarbonDioxide*) [YFunction _FindFromCache:@"CarbonDioxide" :func];
     if (obj == nil) {
         obj = ARC_sendAutorelease([[YCarbonDioxide alloc] initWith:func]);
-        [YFunction _AddToCache:@"CarbonDioxide" : func :obj];
+        [YFunction _AddToCache:@"CarbonDioxide" :func :obj];
     }
     return obj;
 }

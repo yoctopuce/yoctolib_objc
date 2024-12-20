@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_poweroutput.m 59977 2024-03-18 15:02:32Z mvuilleu $
+ *  $Id: yocto_poweroutput.m 63508 2024-11-28 10:46:01Z seb $
  *
  *  Implements the high-level API for PowerOutput functions
  *
@@ -163,7 +163,7 @@
     obj = (YPowerOutput*) [YFunction _FindFromCache:@"PowerOutput" :func];
     if (obj == nil) {
         obj = ARC_sendAutorelease([[YPowerOutput alloc] initWith:func]);
-        [YFunction _AddToCache:@"PowerOutput" : func :obj];
+        [YFunction _AddToCache:@"PowerOutput" :func :obj];
     }
     return obj;
 }

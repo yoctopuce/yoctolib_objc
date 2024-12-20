@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_gyro.m 59977 2024-03-18 15:02:32Z mvuilleu $
+ * $Id: yocto_gyro.m 63508 2024-11-28 10:46:01Z seb $
  *
  * Implements the high-level API for Gyro functions
  *
@@ -107,7 +107,7 @@
     obj = (YQt*) [YFunction _FindFromCache:@"Qt" :func];
     if (obj == nil) {
         obj = ARC_sendAutorelease([[YQt alloc] initWith:func]);
-        [YFunction _AddToCache:@"Qt" : func :obj];
+        [YFunction _AddToCache:@"Qt" :func :obj];
     }
     return obj;
 }
@@ -463,7 +463,7 @@ static void yInternalGyroCallback(YQt *obj, NSString *value)
     obj = (YGyro*) [YFunction _FindFromCache:@"Gyro" :func];
     if (obj == nil) {
         obj = ARC_sendAutorelease([[YGyro alloc] initWith:func]);
-        [YFunction _AddToCache:@"Gyro" : func :obj];
+        [YFunction _AddToCache:@"Gyro" :func :obj];
     }
     return obj;
 }
@@ -546,8 +546,8 @@ static void yInternalGyroCallback(YQt *obj, NSString *value)
 {
     int now_stamp;
     int age_ms;
-    now_stamp = (int) (([YAPI GetTickCount]) & (0x7FFFFFFF));
-    age_ms = (((now_stamp - _qt_stamp)) & (0x7FFFFFFF));
+    now_stamp = (int) (([YAPI GetTickCount]) & 0x7FFFFFFF);
+    age_ms = ((now_stamp - _qt_stamp) & 0x7FFFFFFF);
     if ((age_ms >= 10) || (_qt_stamp == 0)) {
         if ([self load:10] != YAPI_SUCCESS) {
             return YAPI_DEVICE_NOT_FOUND;
@@ -833,7 +833,7 @@ static void yInternalGyroCallback(YQt *obj, NSString *value)
     if (qtIndex < 4) {
         return 0;
     }
-    _qt_stamp = (int) (([YAPI GetTickCount]) & (0x7FFFFFFF));
+    _qt_stamp = (int) (([YAPI GetTickCount]) & 0x7FFFFFFF);
     if (_quatCallback != NULL) {
         _quatCallback(self, _w, _x, _y, _z);
     }

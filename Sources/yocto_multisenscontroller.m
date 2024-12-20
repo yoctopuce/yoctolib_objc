@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_multisenscontroller.m 59977 2024-03-18 15:02:32Z mvuilleu $
+ *  $Id: yocto_multisenscontroller.m 63508 2024-11-28 10:46:01Z seb $
  *
  *  Implements the high-level API for MultiSensController functions
  *
@@ -316,7 +316,7 @@
     obj = (YMultiSensController*) [YFunction _FindFromCache:@"MultiSensController" :func];
     if (obj == nil) {
         obj = ARC_sendAutorelease([[YMultiSensController alloc] initWith:func]);
-        [YFunction _AddToCache:@"MultiSensController" : func :obj];
+        [YFunction _AddToCache:@"MultiSensController" :func :obj];
     }
     return obj;
 }
@@ -382,11 +382,11 @@
     int res;
     cmd = [NSString stringWithFormat:@"A%d",addr];
     res = [self set_command:cmd];
-    if (!(res == YAPI_SUCCESS)) {[self _throw: YAPI_IO_ERROR: @"unable to trigger address change"]; return YAPI_IO_ERROR;}
+    if (!(res == YAPI_SUCCESS)) {[self _throw:YAPI_IO_ERROR:@"unable to trigger address change"]; return YAPI_IO_ERROR;}
     [YAPI Sleep:1500 :NULL];
     res = [self get_lastAddressDetected];
-    if (!(res > 0)) {[self _throw: YAPI_IO_ERROR: @"IR sensor not found"]; return YAPI_IO_ERROR;}
-    if (!(res == addr)) {[self _throw: YAPI_IO_ERROR: @"address change failed"]; return YAPI_IO_ERROR;}
+    if (!(res > 0)) {[self _throw:YAPI_IO_ERROR:@"IR sensor not found"]; return YAPI_IO_ERROR;}
+    if (!(res == addr)) {[self _throw:YAPI_IO_ERROR:@"address change failed"]; return YAPI_IO_ERROR;}
     return YAPI_SUCCESS;
 }
 
@@ -403,7 +403,7 @@
 {
     int res;
     res = [self set_command:@"a"];
-    if (!(res == YAPI_SUCCESS)) {[self _throw: YAPI_IO_ERROR: @"unable to trigger address detection"]; return res;}
+    if (!(res == YAPI_SUCCESS)) {[self _throw:YAPI_IO_ERROR:@"unable to trigger address detection"]; return res;}
     [YAPI Sleep:1000 :NULL];
     res = [self get_lastAddressDetected];
     return res;

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_display.m 59977 2024-03-18 15:02:32Z mvuilleu $
+ * $Id: yocto_display.m 63508 2024-11-28 10:46:01Z seb $
  *
  * Implements yFindDisplay(), the high-level API for Display functions
  *
@@ -1160,7 +1160,7 @@
     obj = (YDisplay*) [YFunction _FindFromCache:@"Display" :func];
     if (obj == nil) {
         obj = ARC_sendAutorelease([[YDisplay alloc] initWith:func]);
-        [YFunction _AddToCache:@"Display" : func :obj];
+        [YFunction _AddToCache:@"Display" :func :obj];
     }
     return obj;
 }
@@ -1400,7 +1400,7 @@
     int layercount;
     int idx;
     layercount = [self get_layerCount];
-    if (!((layerId >= 0) && (layerId < layercount))) {[self _throw: YAPI_INVALID_ARGUMENT: @"invalid DisplayLayer index"]; return nil;}
+    if (!((layerId >= 0) && (layerId < layercount))) {[self _throw:YAPI_INVALID_ARGUMENT:@"invalid DisplayLayer index"]; return nil;}
     if ((int)[_allDisplayLayers count] == 0) {
         idx = 0;
         while (idx < layercount) {

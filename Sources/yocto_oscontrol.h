@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_oscontrol.h 59977 2024-03-18 15:02:32Z mvuilleu $
+ *  $Id: yocto_oscontrol.h 61335 2024-06-10 14:24:20Z seb $
  *
  *  Declares yFindOsControl(), the high-level API for OsControl functions
  *
@@ -45,7 +45,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 //--- (YOsControl globals)
 typedef void (*YOsControlValueCallback)(YOsControl *func, NSString *functionValue);
-#define Y_SHUTDOWNCOUNTDOWN_INVALID     YAPI_INVALID_UINT
+#define Y_SHUTDOWNCOUNTDOWN_INVALID     YAPI_INVALID_INT
 //--- (end of YOsControl globals)
 
 //--- (YOsControl class start)
@@ -147,6 +147,17 @@ typedef void (*YOsControlValueCallback)(YOsControl *func, NSString *functionValu
  * On failure, throws an exception or returns a negative error code.
  */
 -(int)     shutdown:(int)secBeforeShutDown;
+
+/**
+ * Schedules an OS reboot after a given number of seconds.
+ *
+ * @param secBeforeReboot : number of seconds before reboot
+ *
+ * @return YAPI.SUCCESS when the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     reboot:(int)secBeforeReboot;
 
 
 /**
