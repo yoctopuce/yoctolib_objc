@@ -981,8 +981,8 @@ static void yInternalEventCallback(YRfidReader *obj, NSString *value)
 }
 
 /**
- * Retourne la description des propriétés d'un tag RFID présent.
- * Cette fonction peut causer des communications avec le tag.
+ * Returns a description of the properties of an existing RFID tag.
+ * This function can cause communications with the tag.
  *
  * @param tagId : identifier of the tag to check
  * @param status : an RfidStatus object that will contain
@@ -1020,7 +1020,7 @@ static void yInternalEventCallback(YRfidReader *obj, NSString *value)
 }
 
 /**
- * Change an RFID tag configuration to prevents any further write to
+ * Changes an RFID tag configuration to prevents any further write to
  * the selected blocks. This operation is definitive and irreversible.
  * Depending on the tag type and block index, adjascent blocks may become
  * read-only as well, based on the locking granularity.
@@ -1433,7 +1433,7 @@ static void yInternalEventCallback(YRfidReader *obj, NSString *value)
  * Writes data provided as an ASCII string to an RFID tag memory.
  * The write operation may span accross multiple blocks if the
  * number of bytes to write is larger than the RFID tag block size.
- * Note that only the characters présent  in  the provided string
+ * Note that only the characters present in the provided string
  * will be written, there is no notion of string length. If your
  * string data have variable length, you'll have to encode the
  * string length yourself, with a terminal zero for instannce.
@@ -1507,7 +1507,7 @@ static void yInternalEventCallback(YRfidReader *obj, NSString *value)
 }
 
 /**
- * Change an RFID tag AFI byte (ISO 15693 only).
+ * Changes an RFID tag AFI byte (ISO 15693 only).
  *
  * @param tagId : identifier of the tag to use
  * @param afi : the AFI value to write (0...255)
@@ -1597,7 +1597,7 @@ static void yInternalEventCallback(YRfidReader *obj, NSString *value)
 }
 
 /**
- * Change an RFID tag DSFID byte (ISO 15693 only).
+ * Changes an RFID tag DSFID byte (ISO 15693 only).
  *
  * @param tagId : identifier of the tag to use
  * @param dsfid : the DSFID value to write (0...255)

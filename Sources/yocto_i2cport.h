@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_i2cport.h 59977 2024-03-18 15:02:32Z mvuilleu $
+ *  $Id: yocto_i2cport.h 64093 2025-01-08 10:53:52Z seb $
  *
  *  Declares yFindI2cPort(), the high-level API for I2cPort functions
  *
@@ -675,8 +675,7 @@ typedef enum {
 -(int)     writeStr:(NSString*)codes;
 
 /**
- * Sends a text-encoded I2C code stream to the I2C bus, and terminate
- * the message en relâchant le bus.
+ * Sends a text-encoded I2C code stream to the I2C bus, and release the bus.
  * An I2C code stream is a string made of hexadecimal data bytes,
  * but that may also include the I2C state transitions code:
  * "{S}" to emit a start condition,

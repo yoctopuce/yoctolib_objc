@@ -45,6 +45,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 //--- (YSpectralSensor globals)
 typedef void (*YSpectralSensorValueCallback)(YSpectralSensor *func, NSString *functionValue);
+#ifndef _Y_ESTIMATIONMODEL_ENUM
+#define _Y_ESTIMATIONMODEL_ENUM
+typedef enum {
+    Y_ESTIMATIONMODEL_REFLECTION = 0,
+    Y_ESTIMATIONMODEL_EMISSION = 1,
+    Y_ESTIMATIONMODEL_INVALID = -1,
+} Y_ESTIMATIONMODEL_enum;
+#endif
 #define Y_LEDCURRENT_INVALID            YAPI_INVALID_INT
 #define Y_RESOLUTION_INVALID            YAPI_INVALID_DOUBLE
 #define Y_INTEGRATIONTIME_INVALID       YAPI_INVALID_INT
@@ -54,7 +62,11 @@ typedef void (*YSpectralSensorValueCallback)(YSpectralSensor *func, NSString *fu
 #define Y_ESTIMATEDHSL_INVALID          YAPI_INVALID_UINT
 #define Y_ESTIMATEDXYZ_INVALID          YAPI_INVALID_STRING
 #define Y_ESTIMATEDOKLAB_INVALID        YAPI_INVALID_STRING
-#define Y_ESTIMATEDRAL_INVALID          YAPI_INVALID_STRING
+#define Y_NEARRAL1_INVALID              YAPI_INVALID_STRING
+#define Y_NEARRAL2_INVALID              YAPI_INVALID_STRING
+#define Y_NEARRAL3_INVALID              YAPI_INVALID_STRING
+#define Y_NEARHTMLCOLOR_INVALID         YAPI_INVALID_STRING
+#define Y_NEARSIMPLECOLOR_INVALID       YAPI_INVALID_STRING
 #define Y_LEDCURRENTATPOWERON_INVALID   YAPI_INVALID_INT
 #define Y_INTEGRATIONTIMEATPOWERON_INVALID YAPI_INVALID_INT
 #define Y_GAINATPOWERON_INVALID         YAPI_INVALID_INT
@@ -77,12 +89,17 @@ typedef void (*YSpectralSensorValueCallback)(YSpectralSensor *func, NSString *fu
     double          _resolution;
     int             _integrationTime;
     int             _gain;
+    Y_ESTIMATIONMODEL_enum _estimationModel;
     int             _saturation;
     int             _estimatedRGB;
     int             _estimatedHSL;
     NSString*       _estimatedXYZ;
     NSString*       _estimatedOkLab;
-    NSString*       _estimatedRAL;
+    NSString*       _nearRAL1;
+    NSString*       _nearRAL2;
+    NSString*       _nearRAL3;
+    NSString*       _nearHTMLColor;
+    NSString*       _nearSimpleColor;
     int             _ledCurrentAtPowerOn;
     int             _integrationTimeAtPowerOn;
     int             _gainAtPowerOn;
@@ -115,9 +132,7 @@ typedef void (*YSpectralSensorValueCallback)(YSpectralSensor *func, NSString *fu
 -(int) ledCurrent;
 /**
  * Changes the luminosity of the module leds. The parameter is a
- * value between 0 and 100.
- * Remember to call the saveToFlash() method of the module if the
- * modification must be kept.
+ * value between 0 and 254.
  *
  * @param newval : an integer corresponding to the luminosity of the module leds
  *
@@ -142,15 +157,6 @@ typedef void (*YSpectralSensorValueCallback)(YSpectralSensor *func, NSString *fu
 -(int)     set_resolution:(double) newval;
 -(int)     setResolution:(double) newval;
 
-/**
- * Returns the resolution of the measured values. The resolution corresponds to the numerical precision
- * of the measures, which is not always the same as the actual precision of the sensor.
- * Remember to call the saveToFlash() method of the module if the modification must be kept.
- *
- * @return a floating point number corresponding to the resolution of the measured values
- *
- * On failure, throws an exception or returns YSpectralSensor.RESOLUTION_INVALID.
- */
 -(double)     get_resolution;
 
 
@@ -211,6 +217,32 @@ typedef void (*YSpectralSensorValueCallback)(YSpectralSensor *func, NSString *fu
 -(int)     setGain:(int) newval;
 
 /**
+ * Returns the model for color estimation.
+ *
+ * @return either YSpectralSensor.ESTIMATIONMODEL_REFLECTION or
+ * YSpectralSensor.ESTIMATIONMODEL_EMISSION, according to the model for color estimation
+ *
+ * On failure, throws an exception or returns YSpectralSensor.ESTIMATIONMODEL_INVALID.
+ */
+-(Y_ESTIMATIONMODEL_enum)     get_estimationModel;
+
+
+-(Y_ESTIMATIONMODEL_enum) estimationModel;
+/**
+ * Changes the model for color estimation.
+ * Remember to call the saveToFlash() method of the module if the modification must be kept.
+ *
+ * @param newval : either YSpectralSensor.ESTIMATIONMODEL_REFLECTION or
+ * YSpectralSensor.ESTIMATIONMODEL_EMISSION, according to the model for color estimation
+ *
+ * @return YAPI.SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     set_estimationModel:(Y_ESTIMATIONMODEL_enum) newval;
+-(int)     setEstimationModel:(Y_ESTIMATIONMODEL_enum) newval;
+
+/**
  * Returns the current saturation of the sensor.
  * This function updates the sensor's saturation value.
  *
@@ -223,11 +255,11 @@ typedef void (*YSpectralSensorValueCallback)(YSpectralSensor *func, NSString *fu
 
 -(int) saturation;
 /**
- * Returns the estimated color in RGB format.
+ * Returns the estimated color in RGB format (0xRRGGBB).
  * This method retrieves the estimated color values
  * and returns them as an RGB object or structure.
  *
- * @return an integer corresponding to the estimated color in RGB format
+ * @return an integer corresponding to the estimated color in RGB format (0xRRGGBB)
  *
  * On failure, throws an exception or returns YSpectralSensor.ESTIMATEDRGB_INVALID.
  */
@@ -236,11 +268,11 @@ typedef void (*YSpectralSensorValueCallback)(YSpectralSensor *func, NSString *fu
 
 -(int) estimatedRGB;
 /**
- * Returns the estimated color in HSL format.
+ * Returns the estimated color in HSL (Hue, Saturation, Lightness) format.
  * This method retrieves the estimated color values
  * and returns them as an HSL object or structure.
  *
- * @return an integer corresponding to the estimated color in HSL format
+ * @return an integer corresponding to the estimated color in HSL (Hue, Saturation, Lightness) format
  *
  * On failure, throws an exception or returns YSpectralSensor.ESTIMATEDHSL_INVALID.
  */
@@ -274,10 +306,35 @@ typedef void (*YSpectralSensorValueCallback)(YSpectralSensor *func, NSString *fu
 
 
 -(NSString*) estimatedOkLab;
--(NSString*)     get_estimatedRAL;
+-(NSString*)     get_nearRAL1;
 
 
--(NSString*) estimatedRAL;
+-(NSString*) nearRAL1;
+-(NSString*)     get_nearRAL2;
+
+
+-(NSString*) nearRAL2;
+-(NSString*)     get_nearRAL3;
+
+
+-(NSString*) nearRAL3;
+-(NSString*)     get_nearHTMLColor;
+
+
+-(NSString*) nearHTMLColor;
+/**
+ * Returns the estimated color.
+ * This method retrieves the estimated color values
+ * and returns them as the color name.
+ *
+ * @return a string corresponding to the estimated color
+ *
+ * On failure, throws an exception or returns YSpectralSensor.NEARSIMPLECOLOR_INVALID.
+ */
+-(NSString*)     get_nearSimpleColor;
+
+
+-(NSString*) nearSimpleColor;
 -(int)     get_ledCurrentAtPowerOn;
 
 
@@ -311,7 +368,8 @@ typedef void (*YSpectralSensorValueCallback)(YSpectralSensor *func, NSString *fu
 -(int) integrationTimeAtPowerOn;
 /**
  * Sets the integration time at power-on.
- * This method takes a parameter `val` and assigns it to startupIntegTime, representing the integration time
+ * This method takes a parameter `val` and assigns it to integrationTimeAtPowerOn, representing the
+ * integration time
  * defined at startup.
  * Remember to call the saveToFlash() method of the module if the modification must be kept.
  *

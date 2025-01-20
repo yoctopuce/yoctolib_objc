@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.m 63508 2024-11-28 10:46:01Z seb $
+ * $Id: yocto_api.m 64033 2025-01-06 15:30:13Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -6499,6 +6499,8 @@ static const char* hexArray = "0123456789ABCDEF";
     NSString* fun;
     NSString* attr;
     NSString* value;
+    NSString* old_serial;
+    NSString* new_serial;
     NSString* url;
     NSString* tmp;
     NSString* new_calib;
@@ -6516,6 +6518,7 @@ static const char* hexArray = "0123456789ABCDEF";
     if (!([tmp isEqualToString:@""])) {
         settings = [NSMutableData dataWithData:[tmp dataUsingEncoding:NSISOLatin1StringEncoding]];
     }
+    old_serial = @"";
     oldval = @"";
     newval = @"";
     old_json_flat = [self _flattenJsonStruct:settings];
@@ -6535,6 +6538,9 @@ static const char* hexArray = "0123456789ABCDEF";
         [old_jpath addObject:jpath];
         [old_jpath_len addObject:[NSNumber numberWithLong:(int)[(jpath) length]]];
         [old_val_arr addObject:value];
+        if ([jpath isEqualToString:@"module/serialNumber"]) {
+            old_serial = value;
+        }
     }
 
     @try {
@@ -6544,6 +6550,10 @@ static const char* hexArray = "0123456789ABCDEF";
         // retry silently after a short wait
         [YAPI Sleep:500 :NULL];
         actualSettings = [self _download:@"api.json"];
+    }
+    new_serial = [self get_serialNumber];
+    if ([old_serial isEqualToString:new_serial] || [old_serial isEqualToString:@""]) {
+        old_serial = @"_NO_SERIAL_FILTER_";
     }
     actualSettings = [self _flattenJsonStruct:actualSettings];
     new_dslist = [self _json_get_array:actualSettings];
@@ -6698,14 +6708,14 @@ static const char* hexArray = "0123456789ABCDEF";
         }
         if (do_update) {
             do_update = NO;
-            newval = [new_val_arr objectAtIndex:i];
             j = 0;
             found = NO;
+            newval = [new_val_arr objectAtIndex:i];
             while ((j < (int)[old_jpath count]) && !(found)) {
                 if (([[new_jpath_len objectAtIndex:i] intValue] == [[old_jpath_len objectAtIndex:j] intValue]) && ([[new_jpath objectAtIndex:i] isEqualToString:[old_jpath objectAtIndex:j]])) {
                     found = YES;
                     oldval = [old_val_arr objectAtIndex:j];
-                    if (!([newval isEqualToString:oldval])) {
+                    if (!([newval isEqualToString:oldval]) && !([oldval isEqualToString:old_serial])) {
                         do_update = YES;
                     }
                 }

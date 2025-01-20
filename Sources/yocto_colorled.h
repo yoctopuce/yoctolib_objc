@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_colorled.h 59977 2024-03-18 15:02:32Z mvuilleu $
+ *  $Id: yocto_colorled.h 64080 2025-01-07 09:33:07Z seb $
  *
  *  Declares yFindColorLed(), the high-level API for ColorLed functions
  *
@@ -201,8 +201,9 @@ typedef struct _YMove {
 -(int) rgbColorAtPowerOn;
 /**
  * Changes the color that the LED displays by default when the module is turned on.
- * Remember to call the saveToFlash()
- * method of the module if the modification must be kept.
+ * Remember to call the saveLedsConfigAtPowerOn() method of the module if the modification must be kept.
+ * Note: for the original modules Yocto-Color (version 1) et Yocto-PowerColor, the  saveToFlash()
+ * method must be used instead.
  *
  * @param newval : an integer corresponding to the color that the LED displays by default when the
  * module is turned on
@@ -353,6 +354,15 @@ typedef struct _YMove {
  *         On failure, throws an exception or returns a negative error code.
  */
 -(int)     resetBlinkSeq;
+
+/**
+ * Saves the LEDs power-on configuration.  Warning: this method is not supported by
+ * Yocto-Color (version 1) and Yocto-PowerColor modules. For these devices, the saveToFlash()
+ * method of the module must be used instead.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     saveLedsConfigAtPowerOn;
 
 
 /**

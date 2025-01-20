@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_cellular.m 63508 2024-11-28 10:46:01Z seb $
+ * $Id: yocto_cellular.m 64093 2025-01-08 10:53:52Z seb $
  *
  * Implements the high-level API for Cellular functions
  *
@@ -1440,7 +1440,7 @@
                                         return @"SFR";
                                     }
                                     if (plmnid == 20814) {
-                                        return @"SNCF Réseau";
+                                        return @"SNCF Reseau";
                                     }
                                 } else {
                                     if (plmnid == 20815) {
@@ -1844,7 +1844,7 @@
                                         return @"DNA";
                                     }
                                     if (plmnid == 24414) {
-                                        return @"Ålcom";
+                                        return @"Alcom";
                                     }
                                 } else {
                                     if (plmnid < 24601) {
@@ -1984,7 +1984,7 @@
                                         return @"Moldcell";
                                     }
                                     if (plmnid == 25905) {
-                                        return @"Unité";
+                                        return @"Unite";
                                     }
                                 } else {
                                     if (plmnid < 26002) {
@@ -2089,7 +2089,7 @@
                                 } else {
                                     if (plmnid < 27404) {
                                         if (plmnid == 27401) {
-                                            return @"Síminn";
+                                            return @"Siminn";
                                         }
                                         if (plmnid == 27402) {
                                             return @"Vodafone IS";
@@ -2201,10 +2201,10 @@
                                         return @"Vodafone TR";
                                     }
                                     if (plmnid == 28603) {
-                                        return @"Türk Telekom";
+                                        return @"Turk Telekom";
                                     }
                                     if (plmnid == 28801) {
-                                        return @"Føroya Tele";
+                                        return @"Foroya Tele";
                                     }
                                     if (plmnid == 28802) {
                                         return @"Hey";
@@ -2286,10 +2286,10 @@
                                         return @"Orange GF";
                                     }
                                     if (plmnid == 34002) {
-                                        return @"SFR Caraïbe BL/GF/GP/MF/MQ";
+                                        return @"SFR Caraibe BL/GF/GP/MF/MQ";
                                     }
                                     if (plmnid == 34002) {
-                                        return @"SFR Caraïbe GF";
+                                        return @"SFR Caraibe GF";
                                     }
                                     if (plmnid == 34003) {
                                         return @"Chippie BL/GF/GP/MF/MQ";
@@ -3942,7 +3942,7 @@
                                         return @"GreenN";
                                     }
                                     if (plmnid == 61207) {
-                                        return @"café";
+                                        return @"cafe";
                                     }
                                 } else {
                                     if (plmnid < 61303) {
@@ -4437,7 +4437,7 @@
                                             return @"Orange YT/RE";
                                         }
                                         if (plmnid == 64701) {
-                                            return @"Maoré Mobile";
+                                            return @"Maore Mobile";
                                         }
                                         if (plmnid == 64702) {
                                             return @"Only";
@@ -4452,7 +4452,7 @@
                                         return @"Free YT/RE";
                                     }
                                     if (plmnid == 64710) {
-                                        return @"SFR Réunion";
+                                        return @"SFR Reunion";
                                     }
                                     if (plmnid == 64801) {
                                         return @"Net*One";
@@ -4606,10 +4606,10 @@
                                         }
                                     } else {
                                         if (plmnid == 71201) {
-                                            return @"Kölbi ICE";
+                                            return @"Kolbi ICE";
                                         }
                                         if (plmnid == 71202) {
-                                            return @"Kölbi ICE";
+                                            return @"Kolbi ICE";
                                         }
                                         if (plmnid == 71203) {
                                             return @"Claro CR";

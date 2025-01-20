@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_colorledcluster.m 63508 2024-11-28 10:46:01Z seb $
+ *  $Id: yocto_colorledcluster.m 64093 2025-01-08 10:53:52Z seb $
  *
  *  Implements the high-level API for ColorLedCluster functions
  *
@@ -514,9 +514,9 @@
 /**
  * Allows you to modify the current color of a group of adjacent LEDs  to another color, in a seamless and
  * autonomous manner. The transition is performed in the HSL space. In HSL, hue is a circular
- * value (0..360°). There are always two paths to perform the transition: by increasing
+ * value (0..360 deg). There are always two paths to perform the transition: by increasing
  * or by decreasing the hue. The module selects the shortest transition.
- * If the difference is exactly 180°, the module selects the transition which increases
+ * If the difference is exactly 180 deg, the module selects the transition which increases
  * the hue.
  *
  * @param ledIndex :  index of the first affected LED.
