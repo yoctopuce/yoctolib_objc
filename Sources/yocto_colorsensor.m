@@ -2,7 +2,7 @@
  *
  *  $Id: svn_id $
  *
- *  Implements the high-level API for SpectralSensor functions
+ *  Implements the high-level API for ColorSensor functions
  *
  *  - - - - - - - - - License information: - - - - - - - - -
  *
@@ -38,25 +38,26 @@
  *********************************************************************/
 
 
-#import "yocto_spectralsensor.h"
+#import "yocto_colorsensor.h"
 #include "yapi/yjson.h"
 #include "yapi/yapi.h"
 
 
-@implementation YSpectralSensor
-// Constructor is protected, use yFindSpectralSensor factory function to instantiate
+@implementation YColorSensor
+// Constructor is protected, use yFindColorSensor factory function to instantiate
 -(id)              initWith:(NSString*) func
 {
    if(!(self = [super initWith:func]))
           return nil;
-    _className = @"SpectralSensor";
-//--- (YSpectralSensor attributes initialization)
+    _className = @"ColorSensor";
+//--- (YColorSensor attributes initialization)
+    _estimationModel = Y_ESTIMATIONMODEL_INVALID;
+    _workingMode = Y_WORKINGMODE_INVALID;
+    _saturation = Y_SATURATION_INVALID;
     _ledCurrent = Y_LEDCURRENT_INVALID;
-    _resolution = Y_RESOLUTION_INVALID;
+    _ledCalibration = Y_LEDCALIBRATION_INVALID;
     _integrationTime = Y_INTEGRATIONTIME_INVALID;
     _gain = Y_GAIN_INVALID;
-    _estimationModel = Y_ESTIMATIONMODEL_INVALID;
-    _saturation = Y_SATURATION_INVALID;
     _estimatedRGB = Y_ESTIMATEDRGB_INVALID;
     _estimatedHSL = Y_ESTIMATEDHSL_INVALID;
     _estimatedXYZ = Y_ESTIMATEDXYZ_INVALID;
@@ -66,19 +67,17 @@
     _nearRAL3 = Y_NEARRAL3_INVALID;
     _nearHTMLColor = Y_NEARHTMLCOLOR_INVALID;
     _nearSimpleColor = Y_NEARSIMPLECOLOR_INVALID;
-    _ledCurrentAtPowerOn = Y_LEDCURRENTATPOWERON_INVALID;
-    _integrationTimeAtPowerOn = Y_INTEGRATIONTIMEATPOWERON_INVALID;
-    _gainAtPowerOn = Y_GAINATPOWERON_INVALID;
-    _valueCallbackSpectralSensor = NULL;
-//--- (end of YSpectralSensor attributes initialization)
+    _nearSimpleColorIndex = Y_NEARSIMPLECOLORINDEX_INVALID;
+    _valueCallbackColorSensor = NULL;
+//--- (end of YColorSensor attributes initialization)
     return self;
 }
-//--- (YSpectralSensor yapiwrapper)
-//--- (end of YSpectralSensor yapiwrapper)
+//--- (YColorSensor yapiwrapper)
+//--- (end of YColorSensor yapiwrapper)
 // destructor
 -(void)  dealloc
 {
-//--- (YSpectralSensor cleanup)
+//--- (YColorSensor cleanup)
     ARC_release(_estimatedXYZ);
     _estimatedXYZ = nil;
     ARC_release(_estimatedOkLab);
@@ -94,20 +93,35 @@
     ARC_release(_nearSimpleColor);
     _nearSimpleColor = nil;
     ARC_dealloc(super);
-//--- (end of YSpectralSensor cleanup)
+//--- (end of YColorSensor cleanup)
 }
-//--- (YSpectralSensor private methods implementation)
+//--- (YColorSensor private methods implementation)
 
 -(int) _parseAttr:(yJsonStateMachine*) j
 {
+    if(!strcmp(j->token, "estimationModel")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _estimationModel =  atoi(j->token);
+        return 1;
+    }
+    if(!strcmp(j->token, "workingMode")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _workingMode =  atoi(j->token);
+        return 1;
+    }
+    if(!strcmp(j->token, "saturation")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _saturation =  atoi(j->token);
+        return 1;
+    }
     if(!strcmp(j->token, "ledCurrent")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
         _ledCurrent =  atoi(j->token);
         return 1;
     }
-    if(!strcmp(j->token, "resolution")) {
+    if(!strcmp(j->token, "ledCalibration")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-        _resolution =  floor(atof(j->token) / 65.536 + 0.5) / 1000.0;
+        _ledCalibration =  atoi(j->token);
         return 1;
     }
     if(!strcmp(j->token, "integrationTime")) {
@@ -118,16 +132,6 @@
     if(!strcmp(j->token, "gain")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
         _gain =  atoi(j->token);
-        return 1;
-    }
-    if(!strcmp(j->token, "estimationModel")) {
-        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-        _estimationModel =  atoi(j->token);
-        return 1;
-    }
-    if(!strcmp(j->token, "saturation")) {
-        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-        _saturation =  atoi(j->token);
         return 1;
     }
     if(!strcmp(j->token, "estimatedRGB")) {
@@ -189,33 +193,140 @@
         ARC_retain(_nearSimpleColor);
         return 1;
     }
-    if(!strcmp(j->token, "ledCurrentAtPowerOn")) {
+    if(!strcmp(j->token, "nearSimpleColorIndex")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-        _ledCurrentAtPowerOn =  atoi(j->token);
-        return 1;
-    }
-    if(!strcmp(j->token, "integrationTimeAtPowerOn")) {
-        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-        _integrationTimeAtPowerOn =  atoi(j->token);
-        return 1;
-    }
-    if(!strcmp(j->token, "gainAtPowerOn")) {
-        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
-        _gainAtPowerOn =  atoi(j->token);
+        _nearSimpleColorIndex =  atoi(j->token);
         return 1;
     }
     return [super _parseAttr:j];
 }
-//--- (end of YSpectralSensor private methods implementation)
-//--- (YSpectralSensor public methods implementation)
+//--- (end of YColorSensor private methods implementation)
+//--- (YColorSensor public methods implementation)
+/**
+ * Returns the model for color estimation.
+ *
+ * @return either YColorSensor.ESTIMATIONMODEL_REFLECTION or YColorSensor.ESTIMATIONMODEL_EMISSION,
+ * according to the model for color estimation
+ *
+ * On failure, throws an exception or returns YColorSensor.ESTIMATIONMODEL_INVALID.
+ */
+-(Y_ESTIMATIONMODEL_enum) get_estimationModel
+{
+    Y_ESTIMATIONMODEL_enum res;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
+            return Y_ESTIMATIONMODEL_INVALID;
+        }
+    }
+    res = _estimationModel;
+    return res;
+}
+
+
+-(Y_ESTIMATIONMODEL_enum) estimationModel
+{
+    return [self get_estimationModel];
+}
+
+/**
+ * Changes the model for color estimation.
+ * Remember to call the saveToFlash() method of the module if the modification must be kept.
+ *
+ * @param newval : either YColorSensor.ESTIMATIONMODEL_REFLECTION or
+ * YColorSensor.ESTIMATIONMODEL_EMISSION, according to the model for color estimation
+ *
+ * @return YAPI.SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) set_estimationModel:(Y_ESTIMATIONMODEL_enum) newval
+{
+    return [self setEstimationModel:newval];
+}
+-(int) setEstimationModel:(Y_ESTIMATIONMODEL_enum) newval
+{
+    NSString* rest_val;
+    rest_val = [NSString stringWithFormat:@"%d", newval];
+    return [self _setAttr:@"estimationModel" :rest_val];
+}
+/**
+ * Returns the active working mode.
+ *
+ * @return either YColorSensor.WORKINGMODE_AUTO or YColorSensor.WORKINGMODE_EXPERT, according to the
+ * active working mode
+ *
+ * On failure, throws an exception or returns YColorSensor.WORKINGMODE_INVALID.
+ */
+-(Y_WORKINGMODE_enum) get_workingMode
+{
+    Y_WORKINGMODE_enum res;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
+            return Y_WORKINGMODE_INVALID;
+        }
+    }
+    res = _workingMode;
+    return res;
+}
+
+
+-(Y_WORKINGMODE_enum) workingMode
+{
+    return [self get_workingMode];
+}
+
+/**
+ * Changes the operating mode.
+ * Remember to call the saveToFlash() method of the module if the modification must be kept.
+ *
+ * @param newval : either YColorSensor.WORKINGMODE_AUTO or YColorSensor.WORKINGMODE_EXPERT, according
+ * to the operating mode
+ *
+ * @return YAPI.SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) set_workingMode:(Y_WORKINGMODE_enum) newval
+{
+    return [self setWorkingMode:newval];
+}
+-(int) setWorkingMode:(Y_WORKINGMODE_enum) newval
+{
+    NSString* rest_val;
+    rest_val = [NSString stringWithFormat:@"%d", newval];
+    return [self _setAttr:@"workingMode" :rest_val];
+}
+/**
+ * Returns the current saturation of the sensor.
+ * This function updates the sensor's saturation value.
+ *
+ * @return an integer corresponding to the current saturation of the sensor
+ *
+ * On failure, throws an exception or returns YColorSensor.SATURATION_INVALID.
+ */
+-(int) get_saturation
+{
+    int res;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
+            return Y_SATURATION_INVALID;
+        }
+    }
+    res = _saturation;
+    return res;
+}
+
+
+-(int) saturation
+{
+    return [self get_saturation];
+}
 /**
  * Returns the current value of the LED.
- * This method retrieves the current flowing through the LED
- * and returns it as an integer or an object.
  *
  * @return an integer corresponding to the current value of the LED
  *
- * On failure, throws an exception or returns YSpectralSensor.LEDCURRENT_INVALID.
+ * On failure, throws an exception or returns YColorSensor.LEDCURRENT_INVALID.
  */
 -(int) get_ledCurrent
 {
@@ -255,44 +366,50 @@
     rest_val = [NSString stringWithFormat:@"%d", newval];
     return [self _setAttr:@"ledCurrent" :rest_val];
 }
+/**
+ * Returns the LED current at calibration.
+ *
+ * @return an integer corresponding to the LED current at calibration
+ *
+ * On failure, throws an exception or returns YColorSensor.LEDCALIBRATION_INVALID.
+ */
+-(int) get_ledCalibration
+{
+    int res;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
+            return Y_LEDCALIBRATION_INVALID;
+        }
+    }
+    res = _ledCalibration;
+    return res;
+}
+
+
+-(int) ledCalibration
+{
+    return [self get_ledCalibration];
+}
 
 /**
- * Changes the resolution of the measured physical values. The resolution corresponds to the numerical precision
- * when displaying value. It does not change the precision of the measure itself.
+ * Sets the LED current for calibration.
  * Remember to call the saveToFlash() method of the module if the modification must be kept.
  *
- * @param newval : a floating point number corresponding to the resolution of the measured physical values
+ * @param newval : an integer
  *
  * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
--(int) set_resolution:(double) newval
+-(int) set_ledCalibration:(int) newval
 {
-    return [self setResolution:newval];
+    return [self setLedCalibration:newval];
 }
--(int) setResolution:(double) newval
+-(int) setLedCalibration:(int) newval
 {
     NSString* rest_val;
-    rest_val = [NSString stringWithFormat:@"%ld",(s64)floor(newval * 65536.0 + 0.5)];
-    return [self _setAttr:@"resolution" :rest_val];
-}
--(double) get_resolution
-{
-    double res;
-    if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
-            return Y_RESOLUTION_INVALID;
-        }
-    }
-    res = _resolution;
-    return res;
-}
-
-
--(double) resolution
-{
-    return [self get_resolution];
+    rest_val = [NSString stringWithFormat:@"%d", newval];
+    return [self _setAttr:@"ledCalibration" :rest_val];
 }
 /**
  * Returns the current integration time.
@@ -301,7 +418,7 @@
  *
  * @return an integer corresponding to the current integration time
  *
- * On failure, throws an exception or returns YSpectralSensor.INTEGRATIONTIME_INVALID.
+ * On failure, throws an exception or returns YColorSensor.INTEGRATIONTIME_INVALID.
  */
 -(int) get_integrationTime
 {
@@ -322,12 +439,13 @@
 }
 
 /**
- * Sets the integration time for data processing.
- * This method takes a parameter `val` and assigns it
+ * Changes the integration time for data processing.
+ * This method takes a parameter and assigns it
  * as the new integration time. This affects the duration
  * for which data is integrated before being processed.
+ * Remember to call the saveToFlash() method of the module if the modification must be kept.
  *
- * @param newval : an integer
+ * @param newval : an integer corresponding to the integration time for data processing
  *
  * @return YAPI.SUCCESS if the call succeeds.
  *
@@ -344,12 +462,12 @@
     return [self _setAttr:@"integrationTime" :rest_val];
 }
 /**
- * Retrieves the current gain.
+ * Returns the current gain.
  * This method updates the gain value.
  *
- * @return an integer
+ * @return an integer corresponding to the current gain
  *
- * On failure, throws an exception or returns YSpectralSensor.GAIN_INVALID.
+ * On failure, throws an exception or returns YColorSensor.GAIN_INVALID.
  */
 -(int) get_gain
 {
@@ -370,12 +488,13 @@
 }
 
 /**
- * Sets the gain for signal processing.
- * This method takes a parameter `val` and assigns it
+ * Changes the gain for signal processing.
+ * This method takes a parameter and assigns it
  * as the new gain. This affects the sensitivity and
  * intensity of the processed signal.
+ * Remember to call the saveToFlash() method of the module if the modification must be kept.
  *
- * @param newval : an integer
+ * @param newval : an integer corresponding to the gain for signal processing
  *
  * @return YAPI.SUCCESS if the call succeeds.
  *
@@ -392,85 +511,11 @@
     return [self _setAttr:@"gain" :rest_val];
 }
 /**
- * Returns the model for color estimation.
- *
- * @return either YSpectralSensor.ESTIMATIONMODEL_REFLECTION or
- * YSpectralSensor.ESTIMATIONMODEL_EMISSION, according to the model for color estimation
- *
- * On failure, throws an exception or returns YSpectralSensor.ESTIMATIONMODEL_INVALID.
- */
--(Y_ESTIMATIONMODEL_enum) get_estimationModel
-{
-    Y_ESTIMATIONMODEL_enum res;
-    if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
-            return Y_ESTIMATIONMODEL_INVALID;
-        }
-    }
-    res = _estimationModel;
-    return res;
-}
-
-
--(Y_ESTIMATIONMODEL_enum) estimationModel
-{
-    return [self get_estimationModel];
-}
-
-/**
- * Changes the model for color estimation.
- * Remember to call the saveToFlash() method of the module if the modification must be kept.
- *
- * @param newval : either YSpectralSensor.ESTIMATIONMODEL_REFLECTION or
- * YSpectralSensor.ESTIMATIONMODEL_EMISSION, according to the model for color estimation
- *
- * @return YAPI.SUCCESS if the call succeeds.
- *
- * On failure, throws an exception or returns a negative error code.
- */
--(int) set_estimationModel:(Y_ESTIMATIONMODEL_enum) newval
-{
-    return [self setEstimationModel:newval];
-}
--(int) setEstimationModel:(Y_ESTIMATIONMODEL_enum) newval
-{
-    NSString* rest_val;
-    rest_val = [NSString stringWithFormat:@"%d", newval];
-    return [self _setAttr:@"estimationModel" :rest_val];
-}
-/**
- * Returns the current saturation of the sensor.
- * This function updates the sensor's saturation value.
- *
- * @return an integer corresponding to the current saturation of the sensor
- *
- * On failure, throws an exception or returns YSpectralSensor.SATURATION_INVALID.
- */
--(int) get_saturation
-{
-    int res;
-    if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
-            return Y_SATURATION_INVALID;
-        }
-    }
-    res = _saturation;
-    return res;
-}
-
-
--(int) saturation
-{
-    return [self get_saturation];
-}
-/**
  * Returns the estimated color in RGB format (0xRRGGBB).
- * This method retrieves the estimated color values
- * and returns them as an RGB object or structure.
  *
  * @return an integer corresponding to the estimated color in RGB format (0xRRGGBB)
  *
- * On failure, throws an exception or returns YSpectralSensor.ESTIMATEDRGB_INVALID.
+ * On failure, throws an exception or returns YColorSensor.ESTIMATEDRGB_INVALID.
  */
 -(int) get_estimatedRGB
 {
@@ -491,12 +536,10 @@
 }
 /**
  * Returns the estimated color in HSL (Hue, Saturation, Lightness) format.
- * This method retrieves the estimated color values
- * and returns them as an HSL object or structure.
  *
  * @return an integer corresponding to the estimated color in HSL (Hue, Saturation, Lightness) format
  *
- * On failure, throws an exception or returns YSpectralSensor.ESTIMATEDHSL_INVALID.
+ * On failure, throws an exception or returns YColorSensor.ESTIMATEDHSL_INVALID.
  */
 -(int) get_estimatedHSL
 {
@@ -517,12 +560,10 @@
 }
 /**
  * Returns the estimated color in XYZ format.
- * This method retrieves the estimated color values
- * and returns them as an XYZ object or structure.
  *
  * @return a string corresponding to the estimated color in XYZ format
  *
- * On failure, throws an exception or returns YSpectralSensor.ESTIMATEDXYZ_INVALID.
+ * On failure, throws an exception or returns YColorSensor.ESTIMATEDXYZ_INVALID.
  */
 -(NSString*) get_estimatedXYZ
 {
@@ -543,12 +584,10 @@
 }
 /**
  * Returns the estimated color in OkLab format.
- * This method retrieves the estimated color values
- * and returns them as an OkLab object or structure.
  *
  * @return a string corresponding to the estimated color in OkLab format
  *
- * On failure, throws an exception or returns YSpectralSensor.ESTIMATEDOKLAB_INVALID.
+ * On failure, throws an exception or returns YColorSensor.ESTIMATEDOKLAB_INVALID.
  */
 -(NSString*) get_estimatedOkLab
 {
@@ -567,6 +606,13 @@
 {
     return [self get_estimatedOkLab];
 }
+/**
+ * Returns the estimated color in RAL format.
+ *
+ * @return a string corresponding to the estimated color in RAL format
+ *
+ * On failure, throws an exception or returns YColorSensor.NEARRAL1_INVALID.
+ */
 -(NSString*) get_nearRAL1
 {
     NSString* res;
@@ -584,6 +630,13 @@
 {
     return [self get_nearRAL1];
 }
+/**
+ * Returns the estimated color in RAL format.
+ *
+ * @return a string corresponding to the estimated color in RAL format
+ *
+ * On failure, throws an exception or returns YColorSensor.NEARRAL2_INVALID.
+ */
 -(NSString*) get_nearRAL2
 {
     NSString* res;
@@ -601,6 +654,13 @@
 {
     return [self get_nearRAL2];
 }
+/**
+ * Returns the estimated color in RAL format.
+ *
+ * @return a string corresponding to the estimated color in RAL format
+ *
+ * On failure, throws an exception or returns YColorSensor.NEARRAL3_INVALID.
+ */
 -(NSString*) get_nearRAL3
 {
     NSString* res;
@@ -618,6 +678,13 @@
 {
     return [self get_nearRAL3];
 }
+/**
+ * Returns the estimated HTML color .
+ *
+ * @return a string corresponding to the estimated HTML color
+ *
+ * On failure, throws an exception or returns YColorSensor.NEARHTMLCOLOR_INVALID.
+ */
 -(NSString*) get_nearHTMLColor
 {
     NSString* res;
@@ -636,13 +703,11 @@
     return [self get_nearHTMLColor];
 }
 /**
- * Returns the estimated color.
- * This method retrieves the estimated color values
- * and returns them as the color name.
+ * Returns the estimated color .
  *
  * @return a string corresponding to the estimated color
  *
- * On failure, throws an exception or returns YSpectralSensor.NEARSIMPLECOLOR_INVALID.
+ * On failure, throws an exception or returns YColorSensor.NEARSIMPLECOLOR_INVALID.
  */
 -(NSString*) get_nearSimpleColor
 {
@@ -661,136 +726,38 @@
 {
     return [self get_nearSimpleColor];
 }
--(int) get_ledCurrentAtPowerOn
+/**
+ * Returns the estimated color as an index.
+ *
+ * @return a value among YColorSensor.NEARSIMPLECOLORINDEX_BROWN,
+ * YColorSensor.NEARSIMPLECOLORINDEX_RED, YColorSensor.NEARSIMPLECOLORINDEX_ORANGE,
+ * YColorSensor.NEARSIMPLECOLORINDEX_YELLOW, YColorSensor.NEARSIMPLECOLORINDEX_WHITE,
+ * YColorSensor.NEARSIMPLECOLORINDEX_GRAY, YColorSensor.NEARSIMPLECOLORINDEX_BLACK,
+ * YColorSensor.NEARSIMPLECOLORINDEX_GREEN, YColorSensor.NEARSIMPLECOLORINDEX_BLUE,
+ * YColorSensor.NEARSIMPLECOLORINDEX_PURPLE and YColorSensor.NEARSIMPLECOLORINDEX_PINK corresponding
+ * to the estimated color as an index
+ *
+ * On failure, throws an exception or returns YColorSensor.NEARSIMPLECOLORINDEX_INVALID.
+ */
+-(Y_NEARSIMPLECOLORINDEX_enum) get_nearSimpleColorIndex
 {
-    int res;
+    Y_NEARSIMPLECOLORINDEX_enum res;
     if (_cacheExpiration <= [YAPI GetTickCount]) {
         if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
-            return Y_LEDCURRENTATPOWERON_INVALID;
+            return Y_NEARSIMPLECOLORINDEX_INVALID;
         }
     }
-    res = _ledCurrentAtPowerOn;
+    res = _nearSimpleColorIndex;
     return res;
 }
 
 
--(int) ledCurrentAtPowerOn
+-(Y_NEARSIMPLECOLORINDEX_enum) nearSimpleColorIndex
 {
-    return [self get_ledCurrentAtPowerOn];
-}
-
-/**
- * Sets the LED current at power-on.
- * This method takes a parameter `val` and assigns it to startupLumin, representing the LED current defined
- * at startup.
- * Remember to call the saveToFlash() method of the module if the modification must be kept.
- *
- * @param newval : an integer
- *
- * @return YAPI.SUCCESS if the call succeeds.
- *
- * On failure, throws an exception or returns a negative error code.
- */
--(int) set_ledCurrentAtPowerOn:(int) newval
-{
-    return [self setLedCurrentAtPowerOn:newval];
-}
--(int) setLedCurrentAtPowerOn:(int) newval
-{
-    NSString* rest_val;
-    rest_val = [NSString stringWithFormat:@"%d", newval];
-    return [self _setAttr:@"ledCurrentAtPowerOn" :rest_val];
+    return [self get_nearSimpleColorIndex];
 }
 /**
- * Retrieves the integration time at power-on.
- * This method updates the power-on integration time value.
- *
- * @return an integer
- *
- * On failure, throws an exception or returns YSpectralSensor.INTEGRATIONTIMEATPOWERON_INVALID.
- */
--(int) get_integrationTimeAtPowerOn
-{
-    int res;
-    if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
-            return Y_INTEGRATIONTIMEATPOWERON_INVALID;
-        }
-    }
-    res = _integrationTimeAtPowerOn;
-    return res;
-}
-
-
--(int) integrationTimeAtPowerOn
-{
-    return [self get_integrationTimeAtPowerOn];
-}
-
-/**
- * Sets the integration time at power-on.
- * This method takes a parameter `val` and assigns it to integrationTimeAtPowerOn, representing the
- * integration time
- * defined at startup.
- * Remember to call the saveToFlash() method of the module if the modification must be kept.
- *
- * @param newval : an integer
- *
- * @return YAPI.SUCCESS if the call succeeds.
- *
- * On failure, throws an exception or returns a negative error code.
- */
--(int) set_integrationTimeAtPowerOn:(int) newval
-{
-    return [self setIntegrationTimeAtPowerOn:newval];
-}
--(int) setIntegrationTimeAtPowerOn:(int) newval
-{
-    NSString* rest_val;
-    rest_val = [NSString stringWithFormat:@"%d", newval];
-    return [self _setAttr:@"integrationTimeAtPowerOn" :rest_val];
-}
--(int) get_gainAtPowerOn
-{
-    int res;
-    if (_cacheExpiration <= [YAPI GetTickCount]) {
-        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
-            return Y_GAINATPOWERON_INVALID;
-        }
-    }
-    res = _gainAtPowerOn;
-    return res;
-}
-
-
--(int) gainAtPowerOn
-{
-    return [self get_gainAtPowerOn];
-}
-
-/**
- * Sets the gain at power-on.
- * This method takes a parameter `val` and assigns it to startupGain, representing the gain defined at startup.
- * Remember to call the saveToFlash() method of the module if the modification must be kept.
- *
- * @param newval : an integer
- *
- * @return YAPI.SUCCESS if the call succeeds.
- *
- * On failure, throws an exception or returns a negative error code.
- */
--(int) set_gainAtPowerOn:(int) newval
-{
-    return [self setGainAtPowerOn:newval];
-}
--(int) setGainAtPowerOn:(int) newval
-{
-    NSString* rest_val;
-    rest_val = [NSString stringWithFormat:@"%d", newval];
-    return [self _setAttr:@"gainAtPowerOn" :rest_val];
-}
-/**
- * Retrieves a spectral sensor for a given identifier.
+ * Retrieves a color sensor for a given identifier.
  * The identifier can be specified using several formats:
  *
  * - FunctionLogicalName
@@ -800,11 +767,11 @@
  * - ModuleLogicalName.FunctionLogicalName
  *
  *
- * This function does not require that the spectral sensor is online at the time
+ * This function does not require that the color sensor is online at the time
  * it is invoked. The returned object is nevertheless valid.
- * Use the method YSpectralSensor.isOnline() to test if the spectral sensor is
+ * Use the method YColorSensor.isOnline() to test if the color sensor is
  * indeed online at a given time. In case of ambiguity when looking for
- * a spectral sensor by logical name, no error is notified: the first instance
+ * a color sensor by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
  *
@@ -812,18 +779,18 @@
  * you are certain that the matching device is plugged, make sure that you did
  * call registerHub() at application initialization time.
  *
- * @param func : a string that uniquely characterizes the spectral sensor, for instance
- *         MyDevice.spectralSensor.
+ * @param func : a string that uniquely characterizes the color sensor, for instance
+ *         MyDevice.colorSensor.
  *
- * @return a YSpectralSensor object allowing you to drive the spectral sensor.
+ * @return a YColorSensor object allowing you to drive the color sensor.
  */
-+(YSpectralSensor*) FindSpectralSensor:(NSString*)func
++(YColorSensor*) FindColorSensor:(NSString*)func
 {
-    YSpectralSensor* obj;
-    obj = (YSpectralSensor*) [YFunction _FindFromCache:@"SpectralSensor" :func];
+    YColorSensor* obj;
+    obj = (YColorSensor*) [YFunction _FindFromCache:@"ColorSensor" :func];
     if (obj == nil) {
-        obj = ARC_sendAutorelease([[YSpectralSensor alloc] initWith:func]);
-        [YFunction _AddToCache:@"SpectralSensor" :func :obj];
+        obj = ARC_sendAutorelease([[YColorSensor alloc] initWith:func]);
+        [YFunction _AddToCache:@"ColorSensor" :func :obj];
     }
     return obj;
 }
@@ -839,7 +806,7 @@
  *         the new advertised value.
  * @noreturn
  */
--(int) registerValueCallback:(YSpectralSensorValueCallback _Nullable)callback
+-(int) registerValueCallback:(YColorSensorValueCallback _Nullable)callback
 {
     NSString* val;
     if (callback != NULL) {
@@ -847,7 +814,7 @@
     } else {
         [YFunction _UpdateValueCallbackList:self :NO];
     }
-    _valueCallbackSpectralSensor = callback;
+    _valueCallbackColorSensor = callback;
     // Immediately invoke value callback with current value
     if (callback != NULL && [self isOnline]) {
         val = _advertisedValue;
@@ -860,54 +827,72 @@
 
 -(int) _invokeValueCallback:(NSString*)value
 {
-    if (_valueCallbackSpectralSensor != NULL) {
-        _valueCallbackSpectralSensor(self, value);
+    if (_valueCallbackColorSensor != NULL) {
+        _valueCallbackColorSensor(self, value);
     } else {
         [super _invokeValueCallback:value];
     }
     return 0;
 }
 
+/**
+ * Turns on the LEDs at the current used during calibration.
+ * On failure, throws an exception or returns Y_DATA_INVALID.
+ */
+-(int) turnLedOn
+{
+    return [self set_ledCurrent:[self get_ledCalibration]];
+}
 
--(YSpectralSensor*)   nextSpectralSensor
+/**
+ * Turns off the LEDs.
+ * On failure, throws an exception or returns Y_DATA_INVALID.
+ */
+-(int) turnLedOff
+{
+    return [self set_ledCurrent:0];
+}
+
+
+-(YColorSensor*)   nextColorSensor
 {
     NSString  *hwid;
 
     if(YISERR([self _nextFunction:&hwid]) || [hwid isEqualToString:@""]) {
         return NULL;
     }
-    return [YSpectralSensor FindSpectralSensor:hwid];
+    return [YColorSensor FindColorSensor:hwid];
 }
 
-+(YSpectralSensor *) FirstSpectralSensor
++(YColorSensor *) FirstColorSensor
 {
     NSMutableArray    *ar_fundescr;
     YDEV_DESCR        ydevice;
     NSString          *serial, *funcId, *funcName, *funcVal;
 
-    if(!YISERR([YapiWrapper getFunctionsByClass:@"SpectralSensor":0:&ar_fundescr:NULL]) && [ar_fundescr count] > 0){
+    if(!YISERR([YapiWrapper getFunctionsByClass:@"ColorSensor":0:&ar_fundescr:NULL]) && [ar_fundescr count] > 0){
         NSNumber*  ns_devdescr = [ar_fundescr objectAtIndex:0];
         if (!YISERR([YapiWrapper getFunctionInfo:[ns_devdescr intValue] :&ydevice :&serial :&funcId :&funcName :&funcVal :NULL])) {
-            return  [YSpectralSensor FindSpectralSensor:[NSString stringWithFormat:@"%@.%@",serial,funcId]];
+            return  [YColorSensor FindColorSensor:[NSString stringWithFormat:@"%@.%@",serial,funcId]];
         }
     }
     return nil;
 }
 
-//--- (end of YSpectralSensor public methods implementation)
+//--- (end of YColorSensor public methods implementation)
 @end
 
-//--- (YSpectralSensor functions)
+//--- (YColorSensor functions)
 
-YSpectralSensor *yFindSpectralSensor(NSString* func)
+YColorSensor *yFindColorSensor(NSString* func)
 {
-    return [YSpectralSensor FindSpectralSensor:func];
+    return [YColorSensor FindColorSensor:func];
 }
 
-YSpectralSensor *yFirstSpectralSensor(void)
+YColorSensor *yFirstColorSensor(void)
 {
-    return [YSpectralSensor FirstSpectralSensor];
+    return [YColorSensor FirstColorSensor];
 }
 
-//--- (end of YSpectralSensor functions)
+//--- (end of YColorSensor functions)
 

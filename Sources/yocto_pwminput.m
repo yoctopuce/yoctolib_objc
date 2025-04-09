@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_pwminput.m 63508 2024-11-28 10:46:01Z seb $
+ *  $Id: svn_id $
  *
  *  Implements the high-level API for PwmInput functions
  *
@@ -59,6 +59,7 @@
     _pulseTimer = Y_PULSETIMER_INVALID;
     _pwmReportMode = Y_PWMREPORTMODE_INVALID;
     _debouncePeriod = Y_DEBOUNCEPERIOD_INVALID;
+    _minFrequency = Y_MINFREQUENCY_INVALID;
     _bandwidth = Y_BANDWIDTH_INVALID;
     _edgesPerPeriod = Y_EDGESPERPERIOD_INVALID;
     _valueCallbackPwmInput = NULL;
@@ -117,6 +118,11 @@
     if(!strcmp(j->token, "debouncePeriod")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
         _debouncePeriod =  atoi(j->token);
+        return 1;
+    }
+    if(!strcmp(j->token, "minFrequency")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _minFrequency =  floor(atof(j->token) / 65.536 + 0.5) / 1000.0;
         return 1;
     }
     if(!strcmp(j->token, "bandwidth")) {
@@ -422,6 +428,51 @@
     rest_val = [NSString stringWithFormat:@"%d", newval];
     return [self _setAttr:@"debouncePeriod" :rest_val];
 }
+
+/**
+ * Changes the minimum detected frequency, in Hz. Slower signals will be consider as zero frequency.
+ * Remember to call the saveToFlash() method of the module if the modification must be kept.
+ *
+ * @param newval : a floating point number corresponding to the minimum detected frequency, in Hz
+ *
+ * @return YAPI.SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) set_minFrequency:(double) newval
+{
+    return [self setMinFrequency:newval];
+}
+-(int) setMinFrequency:(double) newval
+{
+    NSString* rest_val;
+    rest_val = [NSString stringWithFormat:@"%ld",(s64)floor(newval * 65536.0 + 0.5)];
+    return [self _setAttr:@"minFrequency" :rest_val];
+}
+/**
+ * Returns the minimum detected frequency, in Hz. Slower signals will be consider as zero frequency.
+ *
+ * @return a floating point number corresponding to the minimum detected frequency, in Hz
+ *
+ * On failure, throws an exception or returns YPwmInput.MINFREQUENCY_INVALID.
+ */
+-(double) get_minFrequency
+{
+    double res;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
+            return Y_MINFREQUENCY_INVALID;
+        }
+    }
+    res = _minFrequency;
+    return res;
+}
+
+
+-(double) minFrequency
+{
+    return [self get_minFrequency];
+}
 /**
  * Returns the input signal sampling rate, in kHz.
  *
@@ -609,7 +660,19 @@
 }
 
 /**
- * Returns the pulse counter value as well as its timer.
+ * Resets the periodicity detection algorithm.
+ *
+ * @return YAPI.SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) resetPeriodDetection
+{
+    return [self set_bandwidth:[self get_bandwidth]];
+}
+
+/**
+ * Resets the pulse counter value as well as its timer.
  *
  * @return YAPI.SUCCESS if the call succeeds.
  *

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_pwminput.h 59977 2024-03-18 15:02:32Z mvuilleu $
+ *  $Id: svn_id $
  *
  *  Declares yFindPwmInput(), the high-level API for PwmInput functions
  *
@@ -70,6 +70,7 @@ typedef enum {
 #define Y_PULSECOUNTER_INVALID          YAPI_INVALID_LONG
 #define Y_PULSETIMER_INVALID            YAPI_INVALID_LONG
 #define Y_DEBOUNCEPERIOD_INVALID        YAPI_INVALID_UINT
+#define Y_MINFREQUENCY_INVALID          YAPI_INVALID_DOUBLE
 #define Y_BANDWIDTH_INVALID             YAPI_INVALID_UINT
 #define Y_EDGESPERPERIOD_INVALID        YAPI_INVALID_UINT
 //--- (end of YPwmInput globals)
@@ -97,6 +98,7 @@ typedef enum {
     s64             _pulseTimer;
     Y_PWMREPORTMODE_enum _pwmReportMode;
     int             _debouncePeriod;
+    double          _minFrequency;
     int             _bandwidth;
     int             _edgesPerPeriod;
     YPwmInputValueCallback _valueCallbackPwmInput;
@@ -268,6 +270,30 @@ typedef enum {
 -(int)     setDebouncePeriod:(int) newval;
 
 /**
+ * Changes the minimum detected frequency, in Hz. Slower signals will be consider as zero frequency.
+ * Remember to call the saveToFlash() method of the module if the modification must be kept.
+ *
+ * @param newval : a floating point number corresponding to the minimum detected frequency, in Hz
+ *
+ * @return YAPI.SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     set_minFrequency:(double) newval;
+-(int)     setMinFrequency:(double) newval;
+
+/**
+ * Returns the minimum detected frequency, in Hz. Slower signals will be consider as zero frequency.
+ *
+ * @return a floating point number corresponding to the minimum detected frequency, in Hz
+ *
+ * On failure, throws an exception or returns YPwmInput.MINFREQUENCY_INVALID.
+ */
+-(double)     get_minFrequency;
+
+
+-(double) minFrequency;
+/**
  * Returns the input signal sampling rate, in kHz.
  *
  * @return an integer corresponding to the input signal sampling rate, in kHz
@@ -367,7 +393,16 @@ typedef enum {
 -(int)     _invokeTimedReportCallback:(YMeasure*)value;
 
 /**
- * Returns the pulse counter value as well as its timer.
+ * Resets the periodicity detection algorithm.
+ *
+ * @return YAPI.SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     resetPeriodDetection;
+
+/**
+ * Resets the pulse counter value as well as its timer.
  *
  * @return YAPI.SUCCESS if the call succeeds.
  *

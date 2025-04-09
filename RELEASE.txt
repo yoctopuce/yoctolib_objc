@@ -1,4 +1,3 @@
-Objective-C v1.10.64286
+Objective-C v1.11.654
 
-- Add saveLedsConfigAtPowerOn() methods to YColorLed class
-- Fix memory leak
+- test build version

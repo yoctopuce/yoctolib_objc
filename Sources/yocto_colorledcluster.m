@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_colorledcluster.m 64093 2025-01-08 10:53:52Z seb $
+ *  $Id: svn_id $
  *
  *  Implements the high-level API for ColorLedCluster functions
  *

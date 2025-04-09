@@ -37,6 +37,7 @@
 		B8A727A817E0CD3A00572449715e /* yocto_cellular.m in Sources */ = {isa = PBXBuildFile; fileRef = B8A727A817E0CD3A00572423d2ad /* yocto_cellular.m */; };
 		B8A727A817E0CD3A0057a439970 /* yocto_colorled.m in Sources */ = {isa = PBXBuildFile; fileRef = B8A727A817E0CD3A0057a293a83 /* yocto_colorled.m */; };
 		B8A727A817E0CD3A005784c907c7 /* yocto_colorledcluster.m in Sources */ = {isa = PBXBuildFile; fileRef = B8A727A817E0CD3A00579d552b2f /* yocto_colorledcluster.m */; };
+		B8A727A817E0CD3A0057e51dfbd6 /* yocto_colorsensor.m in Sources */ = {isa = PBXBuildFile; fileRef = B8A727A817E0CD3A00577ad25133 /* yocto_colorsensor.m */; };
 		B8A727A817E0CD3A0057ca785ec3 /* yocto_compass.m in Sources */ = {isa = PBXBuildFile; fileRef = B8A727A817E0CD3A0057a0dbadc3 /* yocto_compass.m */; };
 		B8A727A817E0CD3A0057a9e1010b /* yocto_current.m in Sources */ = {isa = PBXBuildFile; fileRef = B8A727A817E0CD3A0057c342f20b /* yocto_current.m */; };
 		B8A727A817E0CD3A00572cc45e6e /* yocto_currentloopoutput.m in Sources */ = {isa = PBXBuildFile; fileRef = B8A727A817E0CD3A005788bb52f5 /* yocto_currentloopoutput.m */; };
@@ -85,7 +86,6 @@
 		B8A727A817E0CD3A00573f289fde /* yocto_serialport.m in Sources */ = {isa = PBXBuildFile; fileRef = B8A727A817E0CD3A00574f66df98 /* yocto_serialport.m */; };
 		B8A727A817E0CD3A0057d04f8aaa /* yocto_servo.m in Sources */ = {isa = PBXBuildFile; fileRef = B8A727A817E0CD3A00576f25cdb2 /* yocto_servo.m */; };
 		B8A727A817E0CD3A0057d56b352e /* yocto_spectralchannel.m in Sources */ = {isa = PBXBuildFile; fileRef = B8A727A817E0CD3A0057ccf719c6 /* yocto_spectralchannel.m */; };
-		B8A727A817E0CD3A0057fc1be459 /* yocto_spectralsensor.m in Sources */ = {isa = PBXBuildFile; fileRef = B8A727A817E0CD3A0057c017dcf /* yocto_spectralsensor.m */; };
 		B8A727A817E0CD3A005735afd4a7 /* yocto_spiport.m in Sources */ = {isa = PBXBuildFile; fileRef = B8A727A817E0CD3A00575f0c27a7 /* yocto_spiport.m */; };
 		B8A727A817E0CD3A0057f8935eb1 /* yocto_steppermotor.m in Sources */ = {isa = PBXBuildFile; fileRef = B8A727A817E0CD3A0057286c87ec /* yocto_steppermotor.m */; };
 		B8A727A817E0CD3A0057b726534f /* yocto_temperature.m in Sources */ = {isa = PBXBuildFile; fileRef = B8A727A817E0CD3A005728e9f9aa /* yocto_temperature.m */; };
@@ -173,6 +173,8 @@
 		B8A727A817E0CD3A00577a43ce0c /* yocto_colorled.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yocto_colorled.h; path = ../../../Sources/yocto_colorled.h; sourceTree = "<group>"; };
 		B8A727A817E0CD3A00579d552b2f /* yocto_colorledcluster.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = yocto_colorledcluster.m; path = ../../../Sources/yocto_colorledcluster.m; sourceTree = "<group>"; };
 		B8A727A817E0CD3A0057ed3fdfa0 /* yocto_colorledcluster.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yocto_colorledcluster.h; path = ../../../Sources/yocto_colorledcluster.h; sourceTree = "<group>"; };
+		B8A727A817E0CD3A00577ad25133 /* yocto_colorsensor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = yocto_colorsensor.m; path = ../../../Sources/yocto_colorsensor.m; sourceTree = "<group>"; };
+		B8A727A817E0CD3A0057ab8a5bc /* yocto_colorsensor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yocto_colorsensor.h; path = ../../../Sources/yocto_colorsensor.h; sourceTree = "<group>"; };
 		B8A727A817E0CD3A0057a0dbadc3 /* yocto_compass.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = yocto_compass.m; path = ../../../Sources/yocto_compass.m; sourceTree = "<group>"; };
 		B8A727A817E0CD3A0057d0b1594c /* yocto_compass.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yocto_compass.h; path = ../../../Sources/yocto_compass.h; sourceTree = "<group>"; };
 		B8A727A817E0CD3A0057c342f20b /* yocto_current.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = yocto_current.m; path = ../../../Sources/yocto_current.m; sourceTree = "<group>"; };
@@ -269,8 +271,6 @@
 		B8A727A817E0CD3A00571f4f393d /* yocto_servo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yocto_servo.h; path = ../../../Sources/yocto_servo.h; sourceTree = "<group>"; };
 		B8A727A817E0CD3A0057ccf719c6 /* yocto_spectralchannel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = yocto_spectralchannel.m; path = ../../../Sources/yocto_spectralchannel.m; sourceTree = "<group>"; };
 		B8A727A817E0CD3A0057bc9ded49 /* yocto_spectralchannel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yocto_spectralchannel.h; path = ../../../Sources/yocto_spectralchannel.h; sourceTree = "<group>"; };
-		B8A727A817E0CD3A0057c017dcf /* yocto_spectralsensor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = yocto_spectralsensor.m; path = ../../../Sources/yocto_spectralsensor.m; sourceTree = "<group>"; };
-		B8A727A817E0CD3A00577c6b8940 /* yocto_spectralsensor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yocto_spectralsensor.h; path = ../../../Sources/yocto_spectralsensor.h; sourceTree = "<group>"; };
 		B8A727A817E0CD3A00575f0c27a7 /* yocto_spiport.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = yocto_spiport.m; path = ../../../Sources/yocto_spiport.m; sourceTree = "<group>"; };
 		B8A727A817E0CD3A00572f66d328 /* yocto_spiport.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yocto_spiport.h; path = ../../../Sources/yocto_spiport.h; sourceTree = "<group>"; };
 		B8A727A817E0CD3A0057286c87ec /* yocto_steppermotor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = yocto_steppermotor.m; path = ../../../Sources/yocto_steppermotor.m; sourceTree = "<group>"; };
@@ -390,6 +390,8 @@
 				B8A727A817E0CD3A00577a43ce0c /* yocto_colorled.h */,
 				B8A727A817E0CD3A00579d552b2f /* yocto_colorledcluster.m */,
 				B8A727A817E0CD3A0057ed3fdfa0 /* yocto_colorledcluster.h */,
+				B8A727A817E0CD3A00577ad25133 /* yocto_colorsensor.m */,
+				B8A727A817E0CD3A0057ab8a5bc /* yocto_colorsensor.h */,
 				B8A727A817E0CD3A0057a0dbadc3 /* yocto_compass.m */,
 				B8A727A817E0CD3A0057d0b1594c /* yocto_compass.h */,
 				B8A727A817E0CD3A0057c342f20b /* yocto_current.m */,
@@ -486,8 +488,6 @@
 				B8A727A817E0CD3A00571f4f393d /* yocto_servo.h */,
 				B8A727A817E0CD3A0057ccf719c6 /* yocto_spectralchannel.m */,
 				B8A727A817E0CD3A0057bc9ded49 /* yocto_spectralchannel.h */,
-				B8A727A817E0CD3A0057c017dcf /* yocto_spectralsensor.m */,
-				B8A727A817E0CD3A00577c6b8940 /* yocto_spectralsensor.h */,
 				B8A727A817E0CD3A00575f0c27a7 /* yocto_spiport.m */,
 				B8A727A817E0CD3A00572f66d328 /* yocto_spiport.h */,
 				B8A727A817E0CD3A0057286c87ec /* yocto_steppermotor.m */,
@@ -632,6 +632,7 @@
 				B8A727A817E0CD3A00572449715e /* yocto_cellular.m in Sources */,
 				B8A727A817E0CD3A0057a439970 /* yocto_colorled.m in Sources */,
 				B8A727A817E0CD3A005784c907c7 /* yocto_colorledcluster.m in Sources */,
+				B8A727A817E0CD3A0057e51dfbd6 /* yocto_colorsensor.m in Sources */,
 				B8A727A817E0CD3A0057ca785ec3 /* yocto_compass.m in Sources */,
 				B8A727A817E0CD3A0057a9e1010b /* yocto_current.m in Sources */,
 				B8A727A817E0CD3A00572cc45e6e /* yocto_currentloopoutput.m in Sources */,
@@ -680,7 +681,6 @@
 				B8A727A817E0CD3A00573f289fde /* yocto_serialport.m in Sources */,
 				B8A727A817E0CD3A0057d04f8aaa /* yocto_servo.m in Sources */,
 				B8A727A817E0CD3A0057d56b352e /* yocto_spectralchannel.m in Sources */,
-				B8A727A817E0CD3A0057fc1be459 /* yocto_spectralsensor.m in Sources */,
 				B8A727A817E0CD3A005735afd4a7 /* yocto_spiport.m in Sources */,
 				B8A727A817E0CD3A0057f8935eb1 /* yocto_steppermotor.m in Sources */,
 				B8A727A817E0CD3A0057b726534f /* yocto_temperature.m in Sources */,

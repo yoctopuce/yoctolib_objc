@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_oscontrol.h 61335 2024-06-10 14:24:20Z seb $
+ *  $Id: svn_id $
  *
  *  Declares yFindOsControl(), the high-level API for OsControl functions
  *

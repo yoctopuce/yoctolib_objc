@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_colorled.h 64080 2025-01-07 09:33:07Z seb $
+ *  $Id: svn_id $
  *
  *  Declares yFindColorLed(), the high-level API for ColorLed functions
  *

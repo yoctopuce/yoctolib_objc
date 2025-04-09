@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_digitalio.h 62273 2024-08-23 07:20:59Z seb $
+ *  $Id: svn_id $
  *
  *  Declares yFindDigitalIO(), the high-level API for DigitalIO functions
  *

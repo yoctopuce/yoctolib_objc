@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_motor.h 59977 2024-03-18 15:02:32Z mvuilleu $
+ *  $Id: svn_id $
  *
  *  Declares yFindMotor(), the high-level API for Motor functions
  *

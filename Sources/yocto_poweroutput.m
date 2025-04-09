@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_poweroutput.m 63508 2024-11-28 10:46:01Z seb $
+ *  $Id: svn_id $
  *
  *  Implements the high-level API for PowerOutput functions
  *

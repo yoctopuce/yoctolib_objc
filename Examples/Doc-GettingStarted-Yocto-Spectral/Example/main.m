@@ -2,9 +2,11 @@
  *
  *  $Id: svn_id $
  *
- *  Doc-GettingStarted-Yocto-Spectral-C example
+ *  An example that shows how to use a  Yocto-Spectral
  *
  *  You can find more information on our web site:
+ *   Yocto-Spectral documentation:
+ *      https://www.yoctopuce.com/EN/products/yocto-spectral/doc.html
  *   Objective-C API Reference:
  *      https://www.yoctopuce.com/EN/doc/reference/yoctolib-objc-EN.html
  *
@@ -12,7 +14,7 @@
 
 #import <Foundation/Foundation.h>
 #import "yocto_api.h"
-#import "yocto_spectralsensor.h"
+#import "yocto_colorsensor.h"
 
 int main(int argc, const char * argv[])
 {
@@ -24,22 +26,21 @@ int main(int argc, const char * argv[])
       NSLog(@"RegisterHub error: %@", [error localizedDescription]);
       return 1;
     }
-    YSpectralSensor *spectralSensor;
+    YColorSensor *colorSensor;
     if (argc > 1) {
       NSString     *target = [NSString stringWithUTF8String:argv[1]];
-      spectralSensor = [YSpectralSensor FindSpectralSensor:target];
+      colorSensor = [YColorSensor FindColorSensor:target];
     } else {
-      spectralSensor = [YSpectralSensor FirstSpectralSensor];
-      if (spectralSensor == NULL) {
+      colorSensor = [YColorSensor FirstColorSensor];
+      if (colorSensor == NULL) {
         NSLog(@"No module connected (check USB cable)");
         return 1;
       }
     }
-    [spectralSensor set_gain:6];
-    [spectralSensor set_integrationTime:150];
-    [spectralSensor set_ledCurrent:6];
-    NSLog(@"Near color : %@", [spectralSensor get_nearSimpleColor]);
-    NSLog(@"Color HEX : %x", [spectralSensor get_estimatedRGB]);
+    [colorSensor set_workingMode:0];
+    [colorSensor set_estimationModel:0];
+    NSLog(@"Near color : %@", [colorSensor get_nearSimpleColor]);
+    NSLog(@"Color HEX : %x", [colorSensor get_estimatedRGB]);
     
     [YAPI FreeAPI];
   }

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_network.h 62273 2024-08-23 07:20:59Z seb $
+ *  $Id: svn_id $
  *
  *  Declares yFindNetwork(), the high-level API for Network functions
  *

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_genericsensor.h 62273 2024-08-23 07:20:59Z seb $
+ *  $Id: svn_id $
  *
  *  Declares yFindGenericSensor(), the high-level API for GenericSensor functions
  *

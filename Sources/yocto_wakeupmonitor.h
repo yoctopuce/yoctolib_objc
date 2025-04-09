@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_wakeupmonitor.h 59977 2024-03-18 15:02:32Z mvuilleu $
+ *  $Id: svn_id $
  *
  *  Declares yFindWakeUpMonitor(), the high-level API for WakeUpMonitor functions
  *
@@ -54,6 +54,7 @@ typedef enum {
     Y_WAKEUPREASON_EXTSIG1 = 3,
     Y_WAKEUPREASON_SCHEDULE1 = 4,
     Y_WAKEUPREASON_SCHEDULE2 = 5,
+    Y_WAKEUPREASON_SCHEDULE3 = 6,
     Y_WAKEUPREASON_INVALID = -1,
 } Y_WAKEUPREASON_enum;
 #endif
@@ -182,8 +183,8 @@ typedef enum {
  *
  * @return a value among YWakeUpMonitor.WAKEUPREASON_USBPOWER, YWakeUpMonitor.WAKEUPREASON_EXTPOWER,
  * YWakeUpMonitor.WAKEUPREASON_ENDOFSLEEP, YWakeUpMonitor.WAKEUPREASON_EXTSIG1,
- * YWakeUpMonitor.WAKEUPREASON_SCHEDULE1 and YWakeUpMonitor.WAKEUPREASON_SCHEDULE2 corresponding to
- * the latest wake up reason
+ * YWakeUpMonitor.WAKEUPREASON_SCHEDULE1, YWakeUpMonitor.WAKEUPREASON_SCHEDULE2 and
+ * YWakeUpMonitor.WAKEUPREASON_SCHEDULE3 corresponding to the latest wake up reason
  *
  * On failure, throws an exception or returns YWakeUpMonitor.WAKEUPREASON_INVALID.
  */
