@@ -37,8 +37,8 @@ int main(int argc, const char * argv[])
         return 1;
       }
     }
-    [colorSensor set_workingMode:0];
-    [colorSensor set_estimationModel:0];
+    [colorSensor set_workingMode:Y_WORKINGMODE_AUTO];
+    [colorSensor set_estimationModel:Y_ESTIMATIONMODEL_REFLECTION];
     NSLog(@"Near color : %@", [colorSensor get_nearSimpleColor]);
     NSLog(@"Color HEX : %x", [colorSensor get_estimatedRGB]);
     
