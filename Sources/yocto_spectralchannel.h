@@ -47,6 +47,8 @@ NS_ASSUME_NONNULL_BEGIN
 typedef void (*YSpectralChannelValueCallback)(YSpectralChannel *func, NSString *functionValue);
 typedef void (*YSpectralChannelTimedReportCallback)(YSpectralChannel *func, YMeasure *measure);
 #define Y_RAWCOUNT_INVALID              YAPI_INVALID_INT
+#define Y_CHANNELNAME_INVALID           YAPI_INVALID_STRING
+#define Y_PEAKWAVELENGTH_INVALID        YAPI_INVALID_INT
 //--- (end of YSpectralChannel globals)
 
 //--- (YSpectralChannel class start)
@@ -63,6 +65,8 @@ typedef void (*YSpectralChannelTimedReportCallback)(YSpectralChannel *func, YMea
 @protected
 //--- (YSpectralChannel attributes declaration)
     int             _rawCount;
+    NSString*       _channelName;
+    int             _peakWavelength;
     YSpectralChannelValueCallback _valueCallbackSpectralChannel;
     YSpectralChannelTimedReportCallback _timedReportCallbackSpectralChannel;
 //--- (end of YSpectralChannel attributes declaration)
@@ -79,7 +83,7 @@ typedef void (*YSpectralChannelTimedReportCallback)(YSpectralChannel *func, YMea
 //--- (end of YSpectralChannel yapiwrapper declaration)
 //--- (YSpectralChannel public methods declaration)
 /**
- * Retrieves the raw cspectral intensity value as measured by the sensor, without any scaling or calibration.
+ * Retrieves the raw spectral intensity value as measured by the sensor, without any scaling or calibration.
  *
  * @return an integer
  *
@@ -89,6 +93,28 @@ typedef void (*YSpectralChannelTimedReportCallback)(YSpectralChannel *func, YMea
 
 
 -(int) rawCount;
+/**
+ * Returns the target spectral band name.
+ *
+ * @return a string corresponding to the target spectral band name
+ *
+ * On failure, throws an exception or returns YSpectralChannel.CHANNELNAME_INVALID.
+ */
+-(NSString*)     get_channelName;
+
+
+-(NSString*) channelName;
+/**
+ * Returns the target spectral band peak wavelenght, in nm.
+ *
+ * @return an integer corresponding to the target spectral band peak wavelenght, in nm
+ *
+ * On failure, throws an exception or returns YSpectralChannel.PEAKWAVELENGTH_INVALID.
+ */
+-(int)     get_peakWavelength;
+
+
+-(int) peakWavelength;
 /**
  * Retrieves a spectral analysis channel for a given identifier.
  * The identifier can be specified using several formats:

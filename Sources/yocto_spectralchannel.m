@@ -52,6 +52,8 @@
     _className = @"SpectralChannel";
 //--- (YSpectralChannel attributes initialization)
     _rawCount = Y_RAWCOUNT_INVALID;
+    _channelName = Y_CHANNELNAME_INVALID;
+    _peakWavelength = Y_PEAKWAVELENGTH_INVALID;
     _valueCallbackSpectralChannel = NULL;
     _timedReportCallbackSpectralChannel = NULL;
 //--- (end of YSpectralChannel attributes initialization)
@@ -63,6 +65,8 @@
 -(void)  dealloc
 {
 //--- (YSpectralChannel cleanup)
+    ARC_release(_channelName);
+    _channelName = nil;
     ARC_dealloc(super);
 //--- (end of YSpectralChannel cleanup)
 }
@@ -75,12 +79,24 @@
         _rawCount =  atoi(j->token);
         return 1;
     }
+    if(!strcmp(j->token, "channelName")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+       ARC_release(_channelName);
+        _channelName =  [self _parseString:j];
+        ARC_retain(_channelName);
+        return 1;
+    }
+    if(!strcmp(j->token, "peakWavelength")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _peakWavelength =  atoi(j->token);
+        return 1;
+    }
     return [super _parseAttr:j];
 }
 //--- (end of YSpectralChannel private methods implementation)
 //--- (YSpectralChannel public methods implementation)
 /**
- * Retrieves the raw cspectral intensity value as measured by the sensor, without any scaling or calibration.
+ * Retrieves the raw spectral intensity value as measured by the sensor, without any scaling or calibration.
  *
  * @return an integer
  *
@@ -102,6 +118,54 @@
 -(int) rawCount
 {
     return [self get_rawCount];
+}
+/**
+ * Returns the target spectral band name.
+ *
+ * @return a string corresponding to the target spectral band name
+ *
+ * On failure, throws an exception or returns YSpectralChannel.CHANNELNAME_INVALID.
+ */
+-(NSString*) get_channelName
+{
+    NSString* res;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
+            return Y_CHANNELNAME_INVALID;
+        }
+    }
+    res = _channelName;
+    return res;
+}
+
+
+-(NSString*) channelName
+{
+    return [self get_channelName];
+}
+/**
+ * Returns the target spectral band peak wavelenght, in nm.
+ *
+ * @return an integer corresponding to the target spectral band peak wavelenght, in nm
+ *
+ * On failure, throws an exception or returns YSpectralChannel.PEAKWAVELENGTH_INVALID.
+ */
+-(int) get_peakWavelength
+{
+    int res;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
+            return Y_PEAKWAVELENGTH_INVALID;
+        }
+    }
+    res = _peakWavelength;
+    return res;
+}
+
+
+-(int) peakWavelength
+{
+    return [self get_peakWavelength];
 }
 /**
  * Retrieves a spectral analysis channel for a given identifier.
