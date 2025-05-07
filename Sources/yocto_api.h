@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.h 62273 2024-08-23 07:20:59Z seb $
+ * $Id: yocto_api.h 66045 2025-04-24 09:38:34Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -62,7 +62,7 @@
 
 //extern NSMutableDictionary* YAPI_YFunctions;
 
-#define YOCTO_API_REVISION          "65971"
+#define YOCTO_API_REVISION          "66320"
 
 // yInitAPI argument
 #define Y_DETECT_NONE           0
@@ -434,7 +434,7 @@ int _ystrpos(NSString* haystack, NSString* needle);
 
 //--- (generated code: YHub class start)
 /**
- * YHub Class: Hub Interface
+ * YHub Class: YoctoHub or VirtualHub currently in use by the API.
  *
  *
  */

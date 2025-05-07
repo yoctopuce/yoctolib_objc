@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: ydef.h 56114 2023-08-16 09:30:43Z seb $
+ * $Id: ydef.h 66103 2025-05-02 06:55:47Z seb $
  *
  * Standard definitions common to all yoctopuce projects
  *
@@ -397,7 +397,9 @@ typedef enum {
     YAPI_SSL_ERROR        = -15,    // Error reported by mbedSSL
     YAPI_RFID_SOFT_ERROR  = -16,    // Recoverable error with RFID tag (eg. tag out of reach), check YRfidStatus for details
     YAPI_RFID_HARD_ERROR  = -17,    // Serious RFID error (eg. write-protected, out-of-boundary), check YRfidStatus for details
-    YAPI_BUFFER_TOO_SMALL = -18     // The buffer provided is too small
+    YAPI_BUFFER_TOO_SMALL = -18,    // The buffer provided is too small
+    YAPI_DNS_ERROR        = -19,    // Error during name resolutions (invalid hostname or dns communication error)
+    YAPI_SSL_UNK_CERT     = -20     // The certificate is not correctly signed by the trusted CA
 } YRETCODE;
 
 #define YISERR(retcode)   ((retcode) < 0)
