@@ -1020,7 +1020,7 @@
     if (msDuration > 1000) {
         msDuration = 1000;
     }
-    snapStart = ((-msDuration) / 2);
+    snapStart = (-msDuration / 2);
     snapUrl = [NSString stringWithFormat:@"snap.bin?t=%d&d=%d",snapStart,msDuration];
 
     snapData = [self _download:snapUrl];

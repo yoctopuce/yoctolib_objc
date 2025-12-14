@@ -1,8 +1,8 @@
 /*********************************************************************
  *
- *  $Id: main.m 32622 2018-10-10 13:11:04Z seb $
+ *  $Id: main.m 66423 2025-05-09 08:07:19Z seb $
  *
- *  An example that show how to use a  Yocto-Knob
+ *  An example that shows how to use a  Yocto-Knob
  *
  *  You can find more information on our web site:
  *   Yocto-Knob documentation:

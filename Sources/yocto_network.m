@@ -681,8 +681,7 @@
 -(int) setUserPassword:(NSString*) newval
 {
     NSString* rest_val;
-        if ([newval length] > YAPI_HASH_BUF_SIZE) {
-            [self _throw:YAPI_INVALID_ARGUMENT :[@"Password is too long :" stringByAppendingString:newval]];
+        if (![self _is_valid_pass:newval]) {
             return YAPI_INVALID_ARGUMENT;
         }
     rest_val = newval;
@@ -735,8 +734,7 @@
 -(int) setAdminPassword:(NSString*) newval
 {
     NSString* rest_val;
-        if ([newval length] > YAPI_HASH_BUF_SIZE) {
-            [self _throw:YAPI_INVALID_ARGUMENT :[@"Password is too long :" stringByAppendingString:newval]];
+        if (![self _is_valid_pass:newval]) {
             return YAPI_INVALID_ARGUMENT;
         }
     rest_val = newval;

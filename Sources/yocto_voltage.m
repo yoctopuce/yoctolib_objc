@@ -52,6 +52,7 @@
     _className = @"Voltage";
 //--- (YVoltage attributes initialization)
     _enabled = Y_ENABLED_INVALID;
+    _signalBias = Y_SIGNALBIAS_INVALID;
     _valueCallbackVoltage = NULL;
     _timedReportCallbackVoltage = NULL;
 //--- (end of YVoltage attributes initialization)
@@ -73,6 +74,11 @@
     if(!strcmp(j->token, "enabled")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
         _enabled =  (Y_ENABLED_enum)atoi(j->token);
+        return 1;
+    }
+    if(!strcmp(j->token, "signalBias")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _signalBias =  floor(atof(j->token) / 65.536 + 0.5) / 1000.0;
         return 1;
     }
     return [super _parseAttr:j];
@@ -128,6 +134,56 @@
     NSString* rest_val;
     rest_val = (newval ? @"1" : @"0");
     return [self _setAttr:@"enabled" :rest_val];
+}
+
+/**
+ * Changes the DC bias configured for zero shift adjustment.
+ * If your DC current reads positive when it should be zero, set up
+ * a positive signalBias of the same value to fix the zero shift.
+ * Remember to call the saveToFlash()
+ * method of the module if the modification must be kept.
+ *
+ * @param newval : a floating point number corresponding to the DC bias configured for zero shift adjustment
+ *
+ * @return YAPI.SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) set_signalBias:(double) newval
+{
+    return [self setSignalBias:newval];
+}
+-(int) setSignalBias:(double) newval
+{
+    NSString* rest_val;
+    rest_val = [NSString stringWithFormat:@"%ld",(s64)floor(newval * 65536.0 + 0.5)];
+    return [self _setAttr:@"signalBias" :rest_val];
+}
+/**
+ * Returns the DC bias configured for zero shift adjustment.
+ * A positive bias value is used to correct a positive DC bias,
+ * while a negative bias value is used to correct a negative DC bias.
+ *
+ * @return a floating point number corresponding to the DC bias configured for zero shift adjustment
+ *
+ * On failure, throws an exception or returns YVoltage.SIGNALBIAS_INVALID.
+ */
+-(double) get_signalBias
+{
+    double res;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
+            return Y_SIGNALBIAS_INVALID;
+        }
+    }
+    res = _signalBias;
+    return res;
+}
+
+
+-(double) signalBias
+{
+    return [self get_signalBias];
 }
 /**
  * Retrieves a voltage sensor for a given identifier.
@@ -240,6 +296,28 @@
         [super _invokeTimedReportCallback:value];
     }
     return 0;
+}
+
+/**
+ * Calibrate the device by adjusting signalBias so that the current
+ * input voltage is precisely seen as zero. Before calling this method, make
+ * sure to short the power source inputs as close as possible to the connector, and
+ * to disconnect the load to ensure the wires don't capture radiated noise.
+ * Remember to call the saveToFlash()
+ * method of the module if the modification must be kept.
+ *
+ * @return YAPI.SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) zeroAdjust
+{
+    double currSignal;
+    double bias;
+    currSignal = [self get_currentRawValue];
+    bias = [self get_signalBias] + currSignal;
+    if (!(bias > -0.5 && bias < 0.5)) {[self _throw:YAPI_INVALID_ARGUMENT:@"suspicious zeroAdjust, please ensure that the power source inputs are shorted"]; return YAPI_INVALID_ARGUMENT;}
+    return [self set_signalBias:bias];
 }
 
 

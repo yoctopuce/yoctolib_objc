@@ -144,9 +144,9 @@
     return [self get_channelName];
 }
 /**
- * Returns the target spectral band peak wavelenght, in nm.
+ * Returns the target spectral band peak wavelength, in nm.
  *
- * @return an integer corresponding to the target spectral band peak wavelenght, in nm
+ * @return an integer corresponding to the target spectral band peak wavelength, in nm
  *
  * On failure, throws an exception or returns YSpectralChannel.PEAKWAVELENGTH_INVALID.
  */

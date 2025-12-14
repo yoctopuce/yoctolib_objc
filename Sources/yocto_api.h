@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.h 66045 2025-04-24 09:38:34Z seb $
+ * $Id: yocto_api.h 70581 2025-12-08 08:24:58Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -62,7 +62,7 @@
 
 //extern NSMutableDictionary* YAPI_YFunctions;
 
-#define YOCTO_API_REVISION          "66320"
+#define YOCTO_API_REVISION          "70736"
 
 // yInitAPI argument
 #define Y_DETECT_NONE           0
@@ -582,7 +582,7 @@ int _ystrpos(NSString* haystack, NSString* needle);
  * Caution: You can't make any assumption about the order of returned hubs.
  *
  * @return a pointer to a YHub object, corresponding to
- *         the next hub currenlty in use, or a nil pointer
+ *         the next hub currently in use, or a nil pointer
  *         if there are no more hubs to enumerate.
  */
 -(YHub*)     nextHubInUse;
@@ -1361,6 +1361,8 @@ typedef void (*HTTPRequestCallback)(YDevice *device,NSMutableDictionary *context
 
 -(int)     _parserHelper;
 
+-(bool)     _is_valid_pass:(NSString*)passwd;
+
 
 /**
  * comment from .yc definition
@@ -2093,7 +2095,7 @@ NS_SWIFT_NAME(FirstFunction());
  *
  * @return a binary buffer with the file content
  *
- * On failure, throws an exception or returns  YAPI_INVALID_STRING.
+ * On failure, throws an exception or returns an empty content.
  */
 -(NSMutableData*)     download:(NSString*)pathname;
 
@@ -2102,7 +2104,7 @@ NS_SWIFT_NAME(FirstFunction());
  * exceeds 1536 bytes.
  *
  * @return a binary buffer with module icon, in png format.
- *         On failure, throws an exception or returns  YAPI_INVALID_STRING.
+ *         On failure, throws an exception or returns an empty content.
  */
 -(NSMutableData*)     get_icon2d;
 

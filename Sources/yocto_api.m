@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.m 64033 2025-01-06 15:30:13Z seb $
+ * $Id: yocto_api.m 70664 2025-12-09 10:19:48Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -765,7 +765,7 @@ int _ystrpos(NSString* haystack, NSString* needle)
  * Caution: You can't make any assumption about the order of returned hubs.
  *
  * @return a pointer to a YHub object, corresponding to
- *         the next hub currenlty in use, or a nil pointer
+ *         the next hub currently in use, or a nil pointer
  *         if there are no more hubs to enumerate.
  */
 -(YHub*) nextHubInUse
@@ -3350,6 +3350,25 @@ static const char* hexArray = "0123456789ABCDEF";
     return 0;
 }
 
+-(bool) _is_valid_pass:(NSString*)passwd
+{
+    NSString* tmp;
+    if ((int)[(passwd) length] > YAPI_HASH_BUF_SIZE) {
+        tmp = [NSString stringWithFormat:@"Password too long (max %d chars) :%@",YAPI_HASH_BUF_SIZE,passwd];
+        [self _throw:YAPI_INVALID_ARGUMENT :tmp];
+        return NO;
+    }
+    if (_ystrpos(passwd, @"@") >=0) {
+        [self _throw:YAPI_INVALID_ARGUMENT :@"Character @ is not allowed in password"];
+        return NO;
+    }
+    if (_ystrpos(passwd, @"/") >=0) {
+        [self _throw:YAPI_INVALID_ARGUMENT :@"Character / is not allowed in password"];
+        return NO;
+    }
+    return YES;
+}
+
 
 -(YFunction*)   nextFunction
 {
@@ -4050,8 +4069,7 @@ static const char* hexArray = "0123456789ABCDEF";
     if (res == Y_CURRENTVALUE_INVALID) {
         res = _currentValue;
     }
-    res = res * _iresol;
-    res = floor(res+0.5) / _iresol;
+    res = floor(res * _iresol+0.5) / _iresol;
     return res;
 }
 
@@ -4098,8 +4116,7 @@ static const char* hexArray = "0123456789ABCDEF";
             return Y_LOWESTVALUE_INVALID;
         }
     }
-    res = _lowestValue * _iresol;
-    res = floor(res+0.5) / _iresol;
+    res = floor(_lowestValue * _iresol+0.5) / _iresol;
     return res;
 }
 
@@ -4146,8 +4163,7 @@ static const char* hexArray = "0123456789ABCDEF";
             return Y_HIGHESTVALUE_INVALID;
         }
     }
-    res = _highestValue * _iresol;
-    res = floor(res+0.5) / _iresol;
+    res = floor(_highestValue * _iresol+0.5) / _iresol;
     return res;
 }
 
@@ -6829,7 +6845,7 @@ static const char* hexArray = "0123456789ABCDEF";
  *
  * @return a binary buffer with the file content
  *
- * On failure, throws an exception or returns  YAPI_INVALID_STRING.
+ * On failure, throws an exception or returns an empty content.
  */
 -(NSMutableData*) download:(NSString*)pathname
 {
@@ -6841,7 +6857,7 @@ static const char* hexArray = "0123456789ABCDEF";
  * exceeds 1536 bytes.
  *
  * @return a binary buffer with module icon, in png format.
- *         On failure, throws an exception or returns  YAPI_INVALID_STRING.
+ *         On failure, throws an exception or returns an empty content.
  */
 -(NSMutableData*) get_icon2d
 {
@@ -6860,6 +6876,9 @@ static const char* hexArray = "0123456789ABCDEF";
     NSMutableData* content;
 
     content = [self _download:@"logs.txt"];
+    if ((int)[content length] == 0) {
+        return YAPI_INVALID_STRING;
+    }
     return ARC_sendAutorelease([[NSString alloc] initWithData:content encoding:NSISOLatin1StringEncoding]);
 }
 

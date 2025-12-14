@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: ydef.h 66103 2025-05-02 06:55:47Z seb $
+ * $Id: ydef.h 66988 2025-05-26 19:37:52Z seb $
  *
  * Standard definitions common to all yoctopuce projects
  *
@@ -405,7 +405,7 @@ typedef enum {
 #define YISERR(retcode)   ((retcode) < 0)
 
 // Yoctopuce arbitrary constants
-#define YOCTO_API_VERSION_STR       "1.10"
+#define YOCTO_API_VERSION_STR       "1.11"
 #define YOCTO_API_VERSION_BCD       0x0110
 #include "yversion.h"
 #define YOCTO_DEFAULT_PORT          4444
