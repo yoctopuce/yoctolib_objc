@@ -24,7 +24,6 @@
 		B8DD8C3314A9370B008A9E8F /* ytcp.c in Sources */ = {isa = PBXBuildFile; fileRef = B8DD8C2614A9370B008A9E8F /* ytcp.c */; };
 		B8DD8BDB14A9360E008A9E8F /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B8DD8BDA14A9360E008A9E8F /* Foundation.framework */; };
 		B8F48A9314A93A3E008FBD0C /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B8F48A9214A93A3E008FBD0C /* IOKit.framework */; };
-
 		B8A727A817E0CD3A0057e51dfbd6 /* yocto_colorsensor.m in Sources */ = {isa = PBXBuildFile; fileRef = B8A727A817E0CD3A00577ad25133 /* yocto_colorsensor.m */; };
 		B8A727A817E0CD3A0057d56b352e /* yocto_spectralchannel.m in Sources */ = {isa = PBXBuildFile; fileRef = B8A727A817E0CD3A0057ccf719c6 /* yocto_spectralchannel.m */; };
 
@@ -75,7 +74,6 @@
 		B8DD8C2714A9370B008A9E8F /* ytcp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ytcp.h; path = ../../../Sources/yapi/ytcp.h; sourceTree = "<group>"; };
 		B8DD8C2814A9370B008A9E8F /* yversion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yversion.h; path = ../../../Sources/yapi/yversion.h; sourceTree = "<group>"; };
 		B8F48A9214A93A3E008FBD0C /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
-
 		B8A727A817E0CD3A00577ad25133 /* yocto_colorsensor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = yocto_colorsensor.m; path = ../../../Sources/yocto_colorsensor.m; sourceTree = "<group>"; };
 		B8A727A817E0CD3A0057ab8a5bc /* yocto_colorsensor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yocto_colorsensor.h; path = ../../../Sources/yocto_colorsensor.h; sourceTree = "<group>"; };
 		B8A727A817E0CD3A0057ccf719c6 /* yocto_spectralchannel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = yocto_spectralchannel.m; path = ../../../Sources/yocto_spectralchannel.m; sourceTree = "<group>"; };
@@ -146,7 +144,6 @@
 				B8DD8C1314A936F5008A9E8F /* yapi */,
 				B8DD8BEB14A936EF008A9E8F /* yocto_api.h */,
 				B8DD8BEC14A936EF008A9E8F /* yocto_api.m */,
-
 				B8A727A817E0CD3A00577ad25133 /* yocto_colorsensor.m */,
 				B8A727A817E0CD3A0057ab8a5bc /* yocto_colorsensor.h */,
 				B8A727A817E0CD3A0057ccf719c6 /* yocto_spectralchannel.m */,
@@ -254,7 +251,6 @@
 				B8DD8C3214A9370B008A9E8F /* ystream.c in Sources */,
 				B8DD8C3314A9370B008A9E8F /* ytcp.c in Sources */,
 				B845588F14DC315D00425F49 /* ythread.c in Sources */,
-
 				B8A727A817E0CD3A0057e51dfbd6 /* yocto_colorsensor.m in Sources */,
 				B8A727A817E0CD3A0057d56b352e /* yocto_spectralchannel.m in Sources */,
 

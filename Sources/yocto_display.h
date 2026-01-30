@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_display.h 59977 2024-03-18 15:02:32Z mvuilleu $
+ * $Id: yocto_display.h 71629 2026-01-29 15:08:26Z mvuilleu $
  *
  * Declares yFindDisplay(), the high-level API for Display functions
  *
@@ -65,6 +65,9 @@ typedef enum {
 } Y_ALIGN;
 
 #endif
+#define Y_NO_INK                        -1
+#define Y_BG_INK                        -2
+#define Y_FG_INK                        -3
 //--- (end of generated code: YDisplayLayer globals)
 
 //--- (generated code: YDisplay globals)
@@ -93,11 +96,14 @@ typedef enum {
     Y_DISPLAYTYPE_MONO = 0,
     Y_DISPLAYTYPE_GRAY = 1,
     Y_DISPLAYTYPE_RGB = 2,
+    Y_DISPLAYTYPE_EPAPER = 3,
     Y_DISPLAYTYPE_INVALID = -1,
 } Y_DISPLAYTYPE_enum;
 #endif
 #define Y_STARTUPSEQ_INVALID            YAPI_INVALID_STRING
 #define Y_BRIGHTNESS_INVALID            YAPI_INVALID_UINT
+#define Y_AUTOINVERTDELAY_INVALID       YAPI_INVALID_UINT
+#define Y_DISPLAYPANEL_INVALID          YAPI_INVALID_STRING
 #define Y_DISPLAYWIDTH_INVALID          YAPI_INVALID_UINT
 #define Y_DISPLAYHEIGHT_INVALID         YAPI_INVALID_UINT
 #define Y_LAYERWIDTH_INVALID            YAPI_INVALID_UINT
@@ -126,6 +132,8 @@ typedef enum {
     NSMutableString *_cmdbuff;
     bool   _hidden;
 //--- (generated code: YDisplayLayer attributes declaration)
+    int             _polyPrevX;
+    int             _polyPrevY;
 //--- (end of generated code: YDisplayLayer attributes declaration)
 
 }
@@ -167,8 +175,11 @@ typedef enum {
 -(int)     clear;
 
 /**
- * Selects the pen color for all subsequent drawing functions,
- * including text drawing. The pen color is provided as an RGB value.
+ * Selects the color to be used for all subsequent drawing functions,
+ * for filling as well as for line and text drawing.
+ * To select a different fill and outline color, use
+ * selectFillColor and selectLineColor.
+ * The pen color is provided as an RGB value.
  * For grayscale or monochrome displays, the value is
  * automatically converted to the proper range.
  *
@@ -182,7 +193,10 @@ typedef enum {
 
 /**
  * Selects the pen gray level for all subsequent drawing functions,
- * including text drawing. The gray level is provided as a number between
+ * for filling as well as for line and text drawing.
+ * To select a different fill and outline color, use
+ * selectFillColor and selectLineColor.
+ * The gray level is provided as a number between
  * 0 (black) and 255 (white, or whichever the lightest color is).
  * For monochrome displays (without gray levels), any value
  * lower than 128 is rendered as black, and any value equal
@@ -209,21 +223,56 @@ typedef enum {
 -(int)     selectEraser;
 
 /**
- * Enables or disables anti-aliasing for drawing oblique lines and circles.
- * Anti-aliasing provides a smoother aspect when looked from far enough,
- * but it can add fuzziness when the display is looked from very close.
- * At the end of the day, it is your personal choice.
- * Anti-aliasing is enabled by default on grayscale and color displays,
- * but you can disable it if you prefer. This setting has no effect
- * on monochrome displays.
+ * Selects the color to be used for filling rectangular bars,
+ * discs and polygons. The color is provided as an RGB value.
+ * For grayscale or monochrome displays, the value is
+ * automatically converted to the proper range.
+ * You can also use the constants FG_INK to use the
+ * default drawing colour, BG_INK to use the default
+ * background colour, and NO_INK to disable filling.
  *
- * @param mode : true to enable anti-aliasing, false to
- *         disable it.
+ * @param color : the desired drawing color, as a 24-bit RGB value,
+ *         or one of the constants NO_INK, FG_INK
+ *         or BG_INK
  *
  * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
+-(int)     selectFillColor:(int)color;
+
+/**
+ * Selects the color to be used for drawing the outline of rectangular
+ * bars, discs and polygons, as well as for drawing lines and text.
+ * The color is provided as an RGB value.
+ * For grayscale or monochrome displays, the value is
+ * automatically converted to the proper range.
+ * You can also use the constants FG_INK to use the
+ * default drawing colour, BG_INK to use the default
+ * background colour, and NO_INK to disable outline drawing.
+ *
+ * @param color : the desired drawing color, as a 24-bit RGB value,
+ *         or one of the constants NO_INK, FG_INK
+ *         or BG_INK
+ *
+ * @return YAPI.SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     selectLineColor:(int)color;
+
+/**
+ * Selects the line width for drawing the outline of rectangular
+ * bars, discs and polygons, as well as for drawing lines.
+ *
+ * @param width : the desired line width, in pixels
+ *
+ * @return YAPI.SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     selectLineWidth:(int)width;
+
 -(int)     setAntialiasingMode:(bool)mode;
 
 /**
@@ -333,10 +382,10 @@ typedef enum {
 -(int)     drawText:(int)x :(int)y :(Y_ALIGN)anchor :(NSString*)text;
 
 /**
- * Draws a GIF image at the specified position. The GIF image must have been previously
- * uploaded to the device built-in memory. If you experience problems using an image
- * file, check the device logs for any error message such as missing image file or bad
- * image file format.
+ * Draws an image previously uploaded to the device filesystem, at the specified position.
+ * At present time, GIF images are the only supported image format. If you experience
+ * problems using an image file, check the device logs for any error message such as
+ * missing image file or bad image file format.
  *
  * @param x : the distance from left of layer to the left of the image, in pixels
  * @param y : the distance from top of layer to the top of the image, in pixels
@@ -371,6 +420,21 @@ typedef enum {
 -(int)     drawBitmap:(int)x :(int)y :(int)w :(NSData*)bitmap :(int)bgcol;
 
 /**
+ * Draws a GIF image provided as a binary buffer at the specified position.
+ * If the image drawing must be included in an animation sequence, save it
+ * in the device filesystem first and use drawImage instead.
+ *
+ * @param x : the distance from left of layer to the left of the image, in pixels
+ * @param y : the distance from top of layer to the top of the image, in pixels
+ * @param gifimage : a binary object with the content of a GIF file
+ *
+ * @return YAPI.SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     drawGIF:(int)x :(int)y :(NSData*)gifimage;
+
+/**
  * Moves the drawing pointer of this layer to the specified position.
  *
  * @param x : the distance from left of layer, in pixels
@@ -395,6 +459,41 @@ typedef enum {
  * On failure, throws an exception or returns a negative error code.
  */
 -(int)     lineTo:(int)x :(int)y;
+
+/**
+ * Starts drawing a polygon with the first corner at the specified position.
+ *
+ * @param x : the distance from left of layer, in pixels
+ * @param y : the distance from top of layer, in pixels
+ *
+ * @return YAPI.SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     polygonStart:(int)x :(int)y;
+
+/**
+ * Adds a point to the currently open polygon, previously opened using
+ * polygonStart.
+ *
+ * @param x : the distance from left of layer to the new point, in pixels
+ * @param y : the distance from top of layer to the new point, in pixels
+ *
+ * @return YAPI.SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     polygonAdd:(int)x :(int)y;
+
+/**
+ * Close the currently open polygon, fill its content the fill color currently
+ * selected for the layer, and draw its outline using the selected line color.
+ *
+ * @return YAPI.SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     polygonEnd;
 
 /**
  * Outputs a message in the console area, and advances the console pointer accordingly.
@@ -576,7 +675,9 @@ typedef enum {
     Y_ENABLED_enum  _enabled;
     NSString*       _startupSeq;
     int             _brightness;
+    int             _autoInvertDelay;
     Y_ORIENTATION_enum _orientation;
+    NSString*       _displayPanel;
     int             _displayWidth;
     int             _displayHeight;
     Y_DISPLAYTYPE_enum _displayType;
@@ -682,6 +783,38 @@ typedef enum {
 -(int)     setBrightness:(int) newval;
 
 /**
+ * Returns the interval between automatic display inversions, or 0 if automatic
+ * inversion is disabled. Using the automatic inversion mechanism reduces the
+ * burn-in that occurs on OLED screens over long periods when the same content
+ * remains displayed on the screen.
+ *
+ * @return an integer corresponding to the interval between automatic display inversions, or 0 if automatic
+ *         inversion is disabled
+ *
+ * On failure, throws an exception or returns YDisplay.AUTOINVERTDELAY_INVALID.
+ */
+-(int)     get_autoInvertDelay;
+
+
+-(int) autoInvertDelay;
+/**
+ * Changes the interval between automatic display inversions.
+ * The parameter is the number of seconds, or 0 to disable automatic inversion.
+ * Using the automatic inversion mechanism reduces the burn-in that occurs on OLED
+ * screens over long periods when the same content remains displayed on the screen.
+ * Remember to call the saveToFlash() method of the module if the
+ * modification must be kept.
+ *
+ * @param newval : an integer corresponding to the interval between automatic display inversions
+ *
+ * @return YAPI.SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     set_autoInvertDelay:(int) newval;
+-(int)     setAutoInvertDelay:(int) newval;
+
+/**
  * Returns the currently selected display orientation.
  *
  * @return a value among YDisplay.ORIENTATION_LEFT, YDisplay.ORIENTATION_UP,
@@ -709,6 +842,33 @@ typedef enum {
 -(int)     setOrientation:(Y_ORIENTATION_enum) newval;
 
 /**
+ * Returns the exact model of the display panel.
+ *
+ * @return a string corresponding to the exact model of the display panel
+ *
+ * On failure, throws an exception or returns YDisplay.DISPLAYPANEL_INVALID.
+ */
+-(NSString*)     get_displayPanel;
+
+
+-(NSString*) displayPanel;
+/**
+ * Changes the model of display to match the connected display panel.
+ * This function has no effect if the module does not support the selected
+ * display panel.
+ * Remember to call the saveToFlash()
+ * method of the module if the modification must be kept.
+ *
+ * @param newval : a string corresponding to the model of display to match the connected display panel
+ *
+ * @return YAPI.SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     set_displayPanel:(NSString*) newval;
+-(int)     setDisplayPanel:(NSString*) newval;
+
+/**
  * Returns the display width, in pixels.
  *
  * @return an integer corresponding to the display width, in pixels
@@ -733,8 +893,9 @@ typedef enum {
 /**
  * Returns the display type: monochrome, gray levels or full color.
  *
- * @return a value among YDisplay.DISPLAYTYPE_MONO, YDisplay.DISPLAYTYPE_GRAY and
- * YDisplay.DISPLAYTYPE_RGB corresponding to the display type: monochrome, gray levels or full color
+ * @return a value among YDisplay.DISPLAYTYPE_MONO, YDisplay.DISPLAYTYPE_GRAY,
+ * YDisplay.DISPLAYTYPE_RGB and YDisplay.DISPLAYTYPE_EPAPER corresponding to the display type:
+ * monochrome, gray levels or full color
  *
  * On failure, throws an exception or returns YDisplay.DISPLAYTYPE_INVALID.
  */
@@ -837,6 +998,41 @@ typedef enum {
  * On failure, throws an exception or returns a negative error code.
  */
 -(int)     resetAll;
+
+/**
+ * Forces an ePaper screen to perform a regenerative update using the slow
+ * update method. Periodic use of the slow method (total panel update with
+ * multiple inversions) prevents ghosting effects and improves contrast.
+ *
+ * @return YAPI.SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     regenerateDisplay;
+
+/**
+ * Disables screen refresh for a short period of time. The combination of
+ * postponeRefresh and triggerRefresh can be used as an
+ * alternative to double-buffering to avoid flickering during display updates.
+ *
+ * @param duration : duration of deactivation in milliseconds (max. 30 seconds)
+ *
+ * @return YAPI.SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     postponeRefresh:(int)duration;
+
+/**
+ * Trigger an immediate screen refresh. The combination of
+ * postponeRefresh and triggerRefresh can be used as an
+ * alternative to double-buffering to avoid flickering during display updates.
+ *
+ * @return YAPI.SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     triggerRefresh;
 
 /**
  * Smoothly changes the brightness of the screen to produce a fade-in or fade-out
@@ -972,6 +1168,23 @@ typedef enum {
  * On failure, throws an exception or returns nil.
  */
 -(YDisplayLayer*)     get_displayLayer:(int)layerId;
+
+/**
+ * Returns a color image with the current content of the display.
+ * The image is returned as a binary object, where each byte represents a pixel,
+ * from left to right and from top to bottom. The palette used to map byte
+ * values to RGB colors is filled into the list provided as argument.
+ * In all cases, the first palette entry (value 0) corresponds to the
+ * screen default background color.
+ * The image dimensions are given by the display width and height.
+ *
+ * @param palette : a list to be filled with the image palette
+ *
+ * @return a binary object if the call succeeds.
+ *
+ * On failure, throws an exception or returns an empty binary object.
+ */
+-(NSMutableData*)     readDisplay:(NSMutableArray*)palette;
 
 
 /**

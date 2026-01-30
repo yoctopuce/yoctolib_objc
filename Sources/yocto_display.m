@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_display.m 63508 2024-11-28 10:46:01Z seb $
+ * $Id: yocto_display.m 71629 2026-01-29 15:08:26Z mvuilleu $
  *
  * Implements yFindDisplay(), the high-level API for Display functions
  *
@@ -53,6 +53,8 @@
     if(!(self = [super init]))
         return nil;
 //--- (generated code: YDisplayLayer attributes initialization)
+    _polyPrevX = 0;
+    _polyPrevY = 0;
 //--- (end of generated code: YDisplayLayer attributes initialization)
     _display =display;
     _id = layerid;
@@ -65,6 +67,8 @@
     if(!(self = [super init]))
         return nil;
 //--- (generated code: YDisplayLayer attributes initialization)
+    _polyPrevX = 0;
+    _polyPrevY = 0;
 //--- (end of generated code: YDisplayLayer attributes initialization)
     _display =display;
     _id = layerid;
@@ -156,8 +160,11 @@
 }
 
 /**
- * Selects the pen color for all subsequent drawing functions,
- * including text drawing. The pen color is provided as an RGB value.
+ * Selects the color to be used for all subsequent drawing functions,
+ * for filling as well as for line and text drawing.
+ * To select a different fill and outline color, use
+ * selectFillColor and selectLineColor.
+ * The pen color is provided as an RGB value.
  * For grayscale or monochrome displays, the value is
  * automatically converted to the proper range.
  *
@@ -174,7 +181,10 @@
 
 /**
  * Selects the pen gray level for all subsequent drawing functions,
- * including text drawing. The gray level is provided as a number between
+ * for filling as well as for line and text drawing.
+ * To select a different fill and outline color, use
+ * selectFillColor and selectLineColor.
+ * The gray level is provided as a number between
  * 0 (black) and 255 (white, or whichever the lightest color is).
  * For monochrome displays (without gray levels), any value
  * lower than 128 is rendered as black, and any value equal
@@ -207,21 +217,95 @@
 }
 
 /**
- * Enables or disables anti-aliasing for drawing oblique lines and circles.
- * Anti-aliasing provides a smoother aspect when looked from far enough,
- * but it can add fuzziness when the display is looked from very close.
- * At the end of the day, it is your personal choice.
- * Anti-aliasing is enabled by default on grayscale and color displays,
- * but you can disable it if you prefer. This setting has no effect
- * on monochrome displays.
+ * Selects the color to be used for filling rectangular bars,
+ * discs and polygons. The color is provided as an RGB value.
+ * For grayscale or monochrome displays, the value is
+ * automatically converted to the proper range.
+ * You can also use the constants FG_INK to use the
+ * default drawing colour, BG_INK to use the default
+ * background colour, and NO_INK to disable filling.
  *
- * @param mode : true to enable anti-aliasing, false to
- *         disable it.
+ * @param color : the desired drawing color, as a 24-bit RGB value,
+ *         or one of the constants NO_INK, FG_INK
+ *         or BG_INK
  *
  * @return YAPI.SUCCESS if the call succeeds.
  *
  * On failure, throws an exception or returns a negative error code.
  */
+-(int) selectFillColor:(int)color
+{
+    int r;
+    int g;
+    int b;
+    if (color==-1) {
+        return [self command_push:@"f_"];
+    }
+    if (color==-2) {
+        return [self command_push:@"f-"];
+    }
+    if (color==-3) {
+        return [self command_push:@"f."];
+    }
+    r = ((color >> 20) & 15);
+    g = ((color >> 12) & 15);
+    b = ((color >> 4) & 15);
+    return [self command_push:[NSString stringWithFormat:@"f%x%x%x",r,g,b]];
+}
+
+/**
+ * Selects the color to be used for drawing the outline of rectangular
+ * bars, discs and polygons, as well as for drawing lines and text.
+ * The color is provided as an RGB value.
+ * For grayscale or monochrome displays, the value is
+ * automatically converted to the proper range.
+ * You can also use the constants FG_INK to use the
+ * default drawing colour, BG_INK to use the default
+ * background colour, and NO_INK to disable outline drawing.
+ *
+ * @param color : the desired drawing color, as a 24-bit RGB value,
+ *         or one of the constants NO_INK, FG_INK
+ *         or BG_INK
+ *
+ * @return YAPI.SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) selectLineColor:(int)color
+{
+    int r;
+    int g;
+    int b;
+    if (color==-1) {
+        return [self command_push:@"l_"];
+    }
+    if (color==-2) {
+        return [self command_push:@"l-"];
+    }
+    if (color==-3) {
+        return [self command_push:@"l*"];
+    }
+    r = ((color >> 20) & 15);
+    g = ((color >> 12) & 15);
+    b = ((color >> 4) & 15);
+    return [self command_push:[NSString stringWithFormat:@"l%x%x%x",r,g,b]];
+}
+
+/**
+ * Selects the line width for drawing the outline of rectangular
+ * bars, discs and polygons, as well as for drawing lines.
+ *
+ * @param width : the desired line width, in pixels
+ *
+ * @return YAPI.SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) selectLineWidth:(int)width
+{
+    return [self command_push:[NSString stringWithFormat:@"t%d",width]];
+}
+
 -(int) setAntialiasingMode:(bool)mode
 {
     return [self command_push:[NSString stringWithFormat:@"a%d",mode]];
@@ -355,10 +439,10 @@
 }
 
 /**
- * Draws a GIF image at the specified position. The GIF image must have been previously
- * uploaded to the device built-in memory. If you experience problems using an image
- * file, check the device logs for any error message such as missing image file or bad
- * image file format.
+ * Draws an image previously uploaded to the device filesystem, at the specified position.
+ * At present time, GIF images are the only supported image format. If you experience
+ * problems using an image file, check the device logs for any error message such as
+ * missing image file or bad image file format.
  *
  * @param x : the distance from left of layer to the left of the image, in pixels
  * @param y : the distance from top of layer to the top of the image, in pixels
@@ -401,6 +485,26 @@
 }
 
 /**
+ * Draws a GIF image provided as a binary buffer at the specified position.
+ * If the image drawing must be included in an animation sequence, save it
+ * in the device filesystem first and use drawImage instead.
+ *
+ * @param x : the distance from left of layer to the left of the image, in pixels
+ * @param y : the distance from top of layer to the top of the image, in pixels
+ * @param gifimage : a binary object with the content of a GIF file
+ *
+ * @return YAPI.SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) drawGIF:(int)x :(int)y :(NSData*)gifimage
+{
+    NSString* destname;
+    destname = [NSString stringWithFormat:@"layer%d:G,-1@%d,%d",_id,x,y];
+    return [_display upload:destname :gifimage];
+}
+
+/**
  * Moves the drawing pointer of this layer to the specified position.
  *
  * @param x : the distance from left of layer, in pixels
@@ -430,6 +534,58 @@
 -(int) lineTo:(int)x :(int)y
 {
     return [self command_flush:[NSString stringWithFormat:@"-%d,%d",x,y]];
+}
+
+/**
+ * Starts drawing a polygon with the first corner at the specified position.
+ *
+ * @param x : the distance from left of layer, in pixels
+ * @param y : the distance from top of layer, in pixels
+ *
+ * @return YAPI.SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) polygonStart:(int)x :(int)y
+{
+    _polyPrevX = x;
+    _polyPrevY = y;
+    return [self command_push:[NSString stringWithFormat:@"[%d,%d",x,y]];
+}
+
+/**
+ * Adds a point to the currently open polygon, previously opened using
+ * polygonStart.
+ *
+ * @param x : the distance from left of layer to the new point, in pixels
+ * @param y : the distance from top of layer to the new point, in pixels
+ *
+ * @return YAPI.SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) polygonAdd:(int)x :(int)y
+{
+    int dx;
+    int dy;
+    dx = x - _polyPrevX;
+    dy = y - _polyPrevY;
+    _polyPrevX = x;
+    _polyPrevY = y;
+    return [self command_flush:[NSString stringWithFormat:@";%d,%d",dx,dy]];
+}
+
+/**
+ * Close the currently open polygon, fill its content the fill color currently
+ * selected for the layer, and draw its outline using the selected line color.
+ *
+ * @return YAPI.SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) polygonEnd
+{
+    return [self command_flush:@"]"];
 }
 
 /**
@@ -645,7 +801,9 @@
     _enabled = Y_ENABLED_INVALID;
     _startupSeq = Y_STARTUPSEQ_INVALID;
     _brightness = Y_BRIGHTNESS_INVALID;
+    _autoInvertDelay = Y_AUTOINVERTDELAY_INVALID;
     _orientation = Y_ORIENTATION_INVALID;
+    _displayPanel = Y_DISPLAYPANEL_INVALID;
     _displayWidth = Y_DISPLAYWIDTH_INVALID;
     _displayHeight = Y_DISPLAYHEIGHT_INVALID;
     _displayType = Y_DISPLAYTYPE_INVALID;
@@ -666,6 +824,8 @@
 //--- (generated code: YDisplay cleanup)
     ARC_release(_startupSeq);
     _startupSeq = nil;
+    ARC_release(_displayPanel);
+    _displayPanel = nil;
     ARC_release(_command);
     _command = nil;
     ARC_dealloc(super);
@@ -693,9 +853,21 @@
         _brightness =  atoi(j->token);
         return 1;
     }
+    if(!strcmp(j->token, "autoInvertDelay")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _autoInvertDelay =  atoi(j->token);
+        return 1;
+    }
     if(!strcmp(j->token, "orientation")) {
         if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
         _orientation =  atoi(j->token);
+        return 1;
+    }
+    if(!strcmp(j->token, "displayPanel")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+       ARC_release(_displayPanel);
+        _displayPanel =  [self _parseString:j];
+        ARC_retain(_displayPanel);
         return 1;
     }
     if(!strcmp(j->token, "displayWidth")) {
@@ -906,6 +1078,59 @@
     return [self _setAttr:@"brightness" :rest_val];
 }
 /**
+ * Returns the interval between automatic display inversions, or 0 if automatic
+ * inversion is disabled. Using the automatic inversion mechanism reduces the
+ * burn-in that occurs on OLED screens over long periods when the same content
+ * remains displayed on the screen.
+ *
+ * @return an integer corresponding to the interval between automatic display inversions, or 0 if automatic
+ *         inversion is disabled
+ *
+ * On failure, throws an exception or returns YDisplay.AUTOINVERTDELAY_INVALID.
+ */
+-(int) get_autoInvertDelay
+{
+    int res;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
+            return Y_AUTOINVERTDELAY_INVALID;
+        }
+    }
+    res = _autoInvertDelay;
+    return res;
+}
+
+
+-(int) autoInvertDelay
+{
+    return [self get_autoInvertDelay];
+}
+
+/**
+ * Changes the interval between automatic display inversions.
+ * The parameter is the number of seconds, or 0 to disable automatic inversion.
+ * Using the automatic inversion mechanism reduces the burn-in that occurs on OLED
+ * screens over long periods when the same content remains displayed on the screen.
+ * Remember to call the saveToFlash() method of the module if the
+ * modification must be kept.
+ *
+ * @param newval : an integer corresponding to the interval between automatic display inversions
+ *
+ * @return YAPI.SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) set_autoInvertDelay:(int) newval
+{
+    return [self setAutoInvertDelay:newval];
+}
+-(int) setAutoInvertDelay:(int) newval
+{
+    NSString* rest_val;
+    rest_val = [NSString stringWithFormat:@"%d", newval];
+    return [self _setAttr:@"autoInvertDelay" :rest_val];
+}
+/**
  * Returns the currently selected display orientation.
  *
  * @return a value among YDisplay.ORIENTATION_LEFT, YDisplay.ORIENTATION_UP,
@@ -952,6 +1177,54 @@
     NSString* rest_val;
     rest_val = [NSString stringWithFormat:@"%d", newval];
     return [self _setAttr:@"orientation" :rest_val];
+}
+/**
+ * Returns the exact model of the display panel.
+ *
+ * @return a string corresponding to the exact model of the display panel
+ *
+ * On failure, throws an exception or returns YDisplay.DISPLAYPANEL_INVALID.
+ */
+-(NSString*) get_displayPanel
+{
+    NSString* res;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
+            return Y_DISPLAYPANEL_INVALID;
+        }
+    }
+    res = _displayPanel;
+    return res;
+}
+
+
+-(NSString*) displayPanel
+{
+    return [self get_displayPanel];
+}
+
+/**
+ * Changes the model of display to match the connected display panel.
+ * This function has no effect if the module does not support the selected
+ * display panel.
+ * Remember to call the saveToFlash()
+ * method of the module if the modification must be kept.
+ *
+ * @param newval : a string corresponding to the model of display to match the connected display panel
+ *
+ * @return YAPI.SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) set_displayPanel:(NSString*) newval
+{
+    return [self setDisplayPanel:newval];
+}
+-(int) setDisplayPanel:(NSString*) newval
+{
+    NSString* rest_val;
+    rest_val = newval;
+    return [self _setAttr:@"displayPanel" :rest_val];
 }
 /**
  * Returns the display width, in pixels.
@@ -1004,8 +1277,9 @@
 /**
  * Returns the display type: monochrome, gray levels or full color.
  *
- * @return a value among YDisplay.DISPLAYTYPE_MONO, YDisplay.DISPLAYTYPE_GRAY and
- * YDisplay.DISPLAYTYPE_RGB corresponding to the display type: monochrome, gray levels or full color
+ * @return a value among YDisplay.DISPLAYTYPE_MONO, YDisplay.DISPLAYTYPE_GRAY,
+ * YDisplay.DISPLAYTYPE_RGB and YDisplay.DISPLAYTYPE_EPAPER corresponding to the display type:
+ * monochrome, gray levels or full color
  *
  * On failure, throws an exception or returns YDisplay.DISPLAYTYPE_INVALID.
  */
@@ -1222,6 +1496,50 @@
 }
 
 /**
+ * Forces an ePaper screen to perform a regenerative update using the slow
+ * update method. Periodic use of the slow method (total panel update with
+ * multiple inversions) prevents ghosting effects and improves contrast.
+ *
+ * @return YAPI.SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) regenerateDisplay
+{
+    return [self sendCommand:@"z"];
+}
+
+/**
+ * Disables screen refresh for a short period of time. The combination of
+ * postponeRefresh and triggerRefresh can be used as an
+ * alternative to double-buffering to avoid flickering during display updates.
+ *
+ * @param duration : duration of deactivation in milliseconds (max. 30 seconds)
+ *
+ * @return YAPI.SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) postponeRefresh:(int)duration
+{
+    return [self sendCommand:[NSString stringWithFormat:@"H%d",duration]];
+}
+
+/**
+ * Trigger an immediate screen refresh. The combination of
+ * postponeRefresh and triggerRefresh can be used as an
+ * alternative to double-buffering to avoid flickering during display updates.
+ *
+ * @return YAPI.SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) triggerRefresh
+{
+    return [self sendCommand:@"H0"];
+}
+
+/**
  * Smoothly changes the brightness of the screen to produce a fade-in or fade-out
  * effect.
  *
@@ -1409,6 +1727,197 @@
         }
     }
     return [_allDisplayLayers objectAtIndex:layerId];
+}
+
+/**
+ * Returns a color image with the current content of the display.
+ * The image is returned as a binary object, where each byte represents a pixel,
+ * from left to right and from top to bottom. The palette used to map byte
+ * values to RGB colors is filled into the list provided as argument.
+ * In all cases, the first palette entry (value 0) corresponds to the
+ * screen default background color.
+ * The image dimensions are given by the display width and height.
+ *
+ * @param palette : a list to be filled with the image palette
+ *
+ * @return a binary object if the call succeeds.
+ *
+ * On failure, throws an exception or returns an empty binary object.
+ */
+-(NSMutableData*) readDisplay:(NSMutableArray*)palette
+{
+    NSMutableData* zipmap;
+    int zipsize;
+    int zipwidth;
+    int zipheight;
+    int ziprotate;
+    int zipcolors;
+    int zipcol;
+    int zipbits;
+    int zipmask;
+    int srcpos;
+    int endrun;
+    int srcpat;
+    int srcbit;
+    int srcval;
+    int srcx;
+    int srcy;
+    int srci;
+    int incx;
+    NSMutableData* pixmap;
+    int pixcount;
+    int pixval;
+    int pixpos;
+    NSMutableData* rotmap;
+    pixmap = [NSMutableData dataWithLength:0];
+    // Check if the display firmware has autoInvertDelay and pixels.bin support
+
+    if ([self get_autoInvertDelay] < 0) {
+        // Old firmware, use uncompressed GIF output to rebuild pixmap
+        zipmap = [self _download:@"display.gif"];
+        zipsize = (int)[zipmap length];
+        if (zipsize == 0) {
+            return pixmap;
+        }
+        if (!(zipsize >= 32)) {[self _throw:YAPI_IO_ERROR:@"not a GIF image"]; return pixmap;}
+        if (!(((((u8*)([zipmap bytes]))[0]) == 71) && ((((u8*)([zipmap bytes]))[2]) == 70))) {[self _throw:YAPI_INVALID_ARGUMENT:@"not a GIF image"]; return pixmap;}
+        zipwidth = (((u8*)([zipmap bytes]))[6]) + 256 * (((u8*)([zipmap bytes]))[7]);
+        zipheight = (((u8*)([zipmap bytes]))[8]) + 256 * (((u8*)([zipmap bytes]))[9]);
+        [palette removeAllObjects];
+        zipcol = (((u8*)([zipmap bytes]))[13]) * 65536 + (((u8*)([zipmap bytes]))[14]) * 256 + (((u8*)([zipmap bytes]))[15]);
+        [palette addObject:[NSNumber numberWithLong:zipcol]];
+        zipcol = (((u8*)([zipmap bytes]))[16]) * 65536 + (((u8*)([zipmap bytes]))[17]) * 256 + (((u8*)([zipmap bytes]))[18]);
+        [palette addObject:[NSNumber numberWithLong:zipcol]];
+        pixcount = zipwidth * zipheight;
+        pixmap = [NSMutableData dataWithLength:pixcount];
+        pixpos = 0;
+        srcpos = 30;
+        zipsize = zipsize - 2;
+        while (srcpos < zipsize) {
+            // load next run size
+            endrun = srcpos + 1 + (((u8*)([zipmap bytes]))[srcpos]);
+            srcpos = srcpos + 1;
+            while (srcpos < endrun) {
+                srcval = (((u8*)([zipmap bytes]))[srcpos]);
+                srcpos = srcpos + 1;
+                srcbit = 8;
+                while (srcbit != 0) {
+                    if (srcbit < 3) {
+                        srcval = srcval + ((((u8*)([zipmap bytes]))[srcpos]) << srcbit);
+                        srcpos = srcpos + 1;
+                    }
+                    pixval = (srcval & 7);
+                    srcval = (srcval >> 3);
+                    if (!((pixval > 1) && (pixval != 4))) {[self _throw:YAPI_INVALID_ARGUMENT:@"unexpected encoding"]; return pixmap;}
+                    (((u8*)([pixmap mutableBytes]))[pixpos]) = pixval;
+                    pixpos = pixpos + 1;
+                    srcbit = srcbit - 3;
+                }
+            }
+        }
+        return pixmap;
+    }
+    // New firmware, use compressed pixels.bin
+    zipmap = [self _download:@"pixels.bin"];
+    zipsize = (int)[zipmap length];
+    if (zipsize == 0) {
+        return pixmap;
+    }
+    if (!(zipsize >= 16)) {[self _throw:YAPI_IO_ERROR:@"not a pixmap"]; return pixmap;}
+    if (!(((((u8*)([zipmap bytes]))[0]) == 80) && ((((u8*)([zipmap bytes]))[2]) == 88))) {[self _throw:YAPI_INVALID_ARGUMENT:@"not a pixmap"]; return pixmap;}
+    zipwidth = (((u8*)([zipmap bytes]))[4]) + 256 * (((u8*)([zipmap bytes]))[5]);
+    zipheight = (((u8*)([zipmap bytes]))[6]) + 256 * (((u8*)([zipmap bytes]))[7]);
+    ziprotate = (((u8*)([zipmap bytes]))[8]);
+    zipcolors = (((u8*)([zipmap bytes]))[9]);
+    [palette removeAllObjects];
+    srcpos = 10;
+    srci = 0;
+    while (srci < zipcolors) {
+        zipcol = (((u8*)([zipmap bytes]))[srcpos]) * 65536 + (((u8*)([zipmap bytes]))[srcpos+1]) * 256 + (((u8*)([zipmap bytes]))[srcpos+2]);
+        [palette addObject:[NSNumber numberWithLong:zipcol]];
+        srcpos = srcpos + 3;
+        srci = srci + 1;
+    }
+    zipbits = 1;
+    while ((1 << zipbits) < zipcolors) {
+        zipbits = zipbits + 1;
+    }
+    zipmask = (1 << zipbits) - 1;
+    pixcount = zipwidth * zipheight;
+    pixmap = [NSMutableData dataWithLength:pixcount];
+    srcx = 0;
+    srcy = 0;
+    incx = (8 / zipbits);
+    srcval = 0;
+    while (srcpos < zipsize) {
+        // load next compression pattern byte
+        srcpat = (((u8*)([zipmap bytes]))[srcpos]);
+        srcpos = srcpos + 1;
+        srcbit = 7;
+        while (srcbit >= 0) {
+            // get next bitmap byte
+            if ((srcpat & 128) != 0) {
+                srcval = (((u8*)([zipmap bytes]))[srcpos]);
+                srcpos = srcpos + 1;
+            }
+            srcpat = (srcpat << 1);
+            pixpos = srcy * zipwidth + srcx;
+            // produce 8 pixels (or 4, if bitmap uses 2 bits per pixel)
+            srci = 8 - zipbits;
+            while (srci >= 0) {
+                pixval = ((srcval >> srci) & zipmask);
+                (((u8*)([pixmap mutableBytes]))[pixpos]) = pixval;
+                pixpos = pixpos + 1;
+                srci = srci - zipbits;
+            }
+            srcy = srcy + 1;
+            if (srcy >= zipheight) {
+                srcy = 0;
+                srcx = srcx + incx;
+                // drop last bytes if image is not a multiple of 8
+                if (srcx >= zipwidth) {
+                    srcbit = 0;
+                }
+            }
+            srcbit = srcbit - 1;
+        }
+    }
+    // rotate pixmap to match display orientation
+    if (ziprotate == 0) {
+        return pixmap;
+    }
+    if ((ziprotate & 2) != 0) {
+        // rotate buffer 180 degrees by swapping pixels
+        srcpos = 0;
+        pixpos = pixcount - 1;
+        while (srcpos < pixpos) {
+            pixval = (((u8*)([pixmap bytes]))[srcpos]);
+            (((u8*)([pixmap mutableBytes]))[srcpos]) = (((u8*)([pixmap bytes]))[pixpos]);
+            (((u8*)([pixmap mutableBytes]))[pixpos]) = pixval;
+            srcpos = srcpos + 1;
+            pixpos = pixpos - 1;
+        }
+    }
+    if ((ziprotate & 1) == 0) {
+        return pixmap;
+    }
+    // rotate 90 ccw: first pixel is bottom left
+    rotmap = [NSMutableData dataWithLength:pixcount];
+    srcx = 0;
+    srcy = zipwidth - 1;
+    srcpos = 0;
+    while (srcpos < pixcount) {
+        pixval = (((u8*)([pixmap bytes]))[srcpos]);
+        pixpos = srcy * zipheight + srcx;
+        (((u8*)([rotmap mutableBytes]))[pixpos]) = pixval;
+        srcy = srcy - 1;
+        if (srcy < 0) {
+            srcx = srcx + 1;
+            srcy = zipwidth - 1;
+        }
+        srcpos = srcpos + 1;
+    }
+    return rotmap;
 }
 
 
