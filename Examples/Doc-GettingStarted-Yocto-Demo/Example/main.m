@@ -1,8 +1,8 @@
 /*********************************************************************
  *
- *  $Id: main.m 32622 2018-10-10 13:11:04Z seb $
+ *  $Id: main.m 72776 2026-04-17 08:24:26Z seb $
  *
- *  An example that show how to use a  Yocto-Demo
+ *  An example that shows how to use a  Yocto-Demo
  *
  *  You can find more information on our web site:
  *   Yocto-Demo documentation:

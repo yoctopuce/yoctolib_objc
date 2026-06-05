@@ -54,6 +54,12 @@ NS_ASSUME_NONNULL_BEGIN
 #define Y_IEC_14443_NTAG_215            8
 #define Y_IEC_14443_NTAG_216            9
 #define Y_IEC_14443_NTAG_424_DNA        10
+#define Y_IEC_15693_ST25DV              11
+#define Y_IEC_15693_ST25TV              12
+#define Y_IEC_15693_TAGIT_HFI           13
+#define Y_IEC_15693_MB89R               14
+#define Y_IEC_15693_ICODE_DNA           15
+#define Y_IEC_15693_ICODE_SLI           16
 //--- (end of generated code: YRfidTagInfo globals)
 
 //--- (generated code: YRfidTagInfo class start)
@@ -268,6 +274,14 @@ NS_ASSUME_NONNULL_BEGIN
 #define Y_INVALID_SIZE                  -154
 #define Y_BAD_PASSWORD_FORMAT           -155
 #define Y_RADIO_IS_OFF                  -156
+#define Y_NOT_AVAILABLE_ON_THIS_TAG     -157
+#define Y_PASSWORD_FEATURE_NOT_SUPPORTED -158
+#define Y_BAD_PASSWORD_LENGTH           -159
+#define Y_BAD_PASSWORD_TYPE             -160
+#define Y_BAD_PASSWORD                  -161
+#define Y_PASSWORD_REQUIRED             -162
+#define Y_MULTIWRITE_NOT_SUPPORTED      -163
+#define Y_MULTIREAD_NOT_SUPPORTED       -164
 //--- (end of generated code: YRfidStatus globals)
 
 //--- (generated code: YRfidStatus class start)
@@ -373,6 +387,13 @@ NS_ASSUME_NONNULL_BEGIN
 #define Y_NO_RFID_KEY                   0
 #define Y_MIFARE_KEY_A                  1
 #define Y_MIFARE_KEY_B                  2
+#define Y_ST25DV_CONFIG_PWD             3
+#define Y_ST25DV_PWD1                   4
+#define Y_ST25DV_PWD2                   5
+#define Y_ST25DV_PWD3                   6
+#define Y_ST25TV_CONFIG_PWD             7
+#define Y_ST25TV_PWD1                   8
+#define Y_ST25TV_PWD2                   9
 //--- (end of generated code: YRfidOptions globals)
 
 //--- (generated code: YRfidOptions class start)
@@ -601,9 +622,11 @@ typedef void (*YEventCallback)(YRfidReader *obj, double timestamp, NSString *eve
 
 /**
  * Registers the callback function that is invoked on every change of advertised value.
- * The callback is invoked only during the execution of ySleep or yHandleEvents.
- * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
- * one of these two functions periodically. To unregister a callback, pass a nil pointer as argument.
+ * The callback is then invoked only during the execution of ySleep or yHandleEvents.
+ * This provides control over the time when the callback is triggered. For good responsiveness,
+ * remember to call one of these two functions periodically. The callback is called once juste after beeing
+ * registered, passing the current advertised value  of the function, provided that it is not an empty string.
+ * To unregister a callback, pass a nil pointer as argument.
  *
  * @param callback : the callback function to call, or a nil pointer. The callback function should take two
  *         arguments: the function object of which the value has changed, and the character string describing
@@ -646,7 +669,11 @@ typedef void (*YEventCallback)(YRfidReader *obj, double timestamp, NSString *eve
  * Changes an RFID tag configuration to prevents any further write to
  * the selected blocks. This operation is definitive and irreversible.
  * Depending on the tag type and block index, adjascent blocks may become
- * read-only as well, based on the locking granularity.
+ * read-only as well, based on the locking granularity.  Note that some tags
+ * may allow only a few blocks to be locked, for instance ST25DVxxx  tags
+ * allows a lock on block 0 and 1 only.
+ *
+ *
  *
  * @param tagId : identifier of the tag to use
  * @param firstBlock : first block to lock
@@ -941,6 +968,80 @@ typedef void (*YEventCallback)(YRfidReader *obj, double timestamp, NSString *eve
  * happens, you can get more information from the status object.
  */
 -(int)     tagGetAFI:(NSString*)tagId :(YRfidOptions*)options :(YRfidStatus*)status;
+
+/**
+ * Reads a byte from the Tag configuration (ISO 15693 ST25DVxx only).
+ * This function is actually a call to the 0xA0 RFID command and is specific to
+ * ST25DVxx tags. Check ST25DVxx datasheet for more information about
+ * the data organisation of ST25DVxx tags configuration.
+ *
+ * @param tagId : identifier of the tag to use
+ * @param addr  : offset of the byte in the tag configuation
+ *
+ * @param options : an YRfidOptions object with the optional
+ *         command execution parameters, such as security key
+ *         if required
+ * @param status : an RfidStatus object that will contain
+ *         the detailled status of the operation
+ *
+ * @return the requested byte value (0...255)
+ *
+ * On failure, throws an exception or returns a negative error code. When it
+ * happens, you can get more information from the status object.
+ */
+-(int)     tagGetConfigByte:(NSString*)tagId :(int)addr :(YRfidOptions*)options :(YRfidStatus*)status;
+
+/**
+ * Changes a byte in the tag's configuration (ISO 15693 ST25DVxx only).
+ * Warning: modifing the tag configation may alter its behavior in a non-reversible way.
+ * This operation requires the CONFIG_PWD password to be set in the options,
+ * default value is "0000000000000000" (16 zeros). This function is actually
+ * a call to the 0xA1 RFID command and is specific to ST25DVxx tags. Check
+ * ST25DVxx datasheet for more information about the data organisation
+ * of ST25DVxx tags configuration.
+ *
+ * @param tagId : identifier of the tag to use
+ * @param addr  : address of the byte to write
+ * @param value : the value to write (0...255)
+ * @param options : an YRfidOptions object with the optional
+ *         command execution parameters, such as security key
+ *         if required
+ * @param status : an RfidStatus object that will contain
+ *         the detailled status of the operation
+ *
+ * @return YAPI.SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code. When it
+ * happens, you can get more information from the status object.
+ */
+-(int)     tagSetConfigByte:(NSString*)tagId :(int)addr :(int)value :(YRfidOptions*)options :(YRfidStatus*)status;
+
+/**
+ * Set a password that will be required to access the tag  (ISO 15693 ST25DVxx only).
+ * The password must be a string of characters representing 8 bytes in hexadecimal.
+ * There are several types of password for the same tag; please consult your tags
+ * documentation to understand their respective applications. Once the password
+ * has been configured, operations requiring this password must be initiated with
+ * the password defined in the KeyType and HexKey fields of the
+ * options parameter for the operations in question. It is not necessarily
+ * required to consistently provide the same password for every operation during the
+ * same session with a tag.
+ *
+ * @param tagId : identifier of the tag to use
+ * @param passwordType  : type of password to be set (YRfidOptions.ST25D_CONFIG_PWD,YRfidOptions.ST25D_PWD1,YRfidOptions.ST25D_PWD2..)
+ * @param password : the password (16 characters hex string encoding 8 bytes)
+ * @param options : an YRfidOptions object with the optional
+ *         command execution parameters, such as security key
+ *         if required
+ * @param status : an RfidStatus object that will contain
+ *         the detailled status of the operation
+ *
+ * @return YAPI.SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code. When it
+ * happens, you can get more information from the status object.
+ */
+-(int)     tagSetPassword:(NSString*)tagId :(int)passwordType :(NSString*)password :(YRfidOptions*)options :(YRfidStatus*)status;
 
 /**
  * Changes an RFID tag AFI byte (ISO 15693 only).

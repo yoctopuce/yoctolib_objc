@@ -1,8 +1,8 @@
 /*********************************************************************
  *
- *  $Id: main.m 52721 2023-01-10 09:53:45Z seb $
+ *  $Id: main.m 72776 2026-04-17 08:24:26Z seb $
  *
- *  An example that show how to use a  Yocto-Amp
+ *  An example that shows how to use a  Yocto-Amp
  *
  *  You can find more information on our web site:
  *   Yocto-Amp documentation:

@@ -190,6 +190,25 @@
     if (tagType == Y_IEC_14443_NTAG_424_DNA) {
         typeStr = @"NTAG 424 DNA";
     }
+    if (tagType == Y_IEC_15693_ST25DV) {
+        typeStr = @"ST25DVxx";
+    }
+    if (tagType == Y_IEC_15693_ST25TV) {
+        typeStr = @"ST25TVxx";
+    }
+    if (tagType == Y_IEC_15693_TAGIT_HFI) {
+        typeStr = @"TI TAGIT HFI";
+    }
+    if (tagType == Y_IEC_15693_MB89R) {
+        typeStr = @"MB89Rxx";
+    }
+    if (tagType == Y_IEC_15693_ICODE_DNA) {
+        typeStr = @"ICODE DNA";
+    }
+    if (tagType == Y_IEC_15693_ICODE_SLI) {
+        typeStr = @"ICODE SLI";
+    }
+
     _tagId = tagId;
     _tagType = tagType;
     _typeStr = typeStr;
@@ -377,7 +396,7 @@
             errMsg = @"Block / byte is already locked and thus cannot be locked again.";
         }
         if (errCode == Y_BLOCK_LOCKED) {
-            errMsg = @"Block / byte is locked and its content cannot be changed";
+            errMsg = @"Block / byte is either locked and its content cannot be changed or operation might require a password.";
         }
         if (errCode == Y_BLOCK_NOT_SUCESSFULLY_PROGRAMMED) {
             errMsg = @"Block was not successfully programmed";
@@ -637,6 +656,30 @@
         if (errCode == Y_RADIO_IS_OFF) {
             errMsg = @"Radio is OFF (refreshRate=0).";
         }
+        if (errCode == Y_NOT_AVAILABLE_ON_THIS_TAG) {
+            errMsg = @"Tag does not provide self feature.";
+        }
+        if (errCode == Y_PASSWORD_FEATURE_NOT_SUPPORTED) {
+            errMsg = @"Password feature not supported self tag.";
+        }
+        if (errCode == Y_BAD_PASSWORD_LENGTH) {
+            errMsg = @"Incorrect password length";
+        }
+        if (errCode == Y_BAD_PASSWORD_TYPE) {
+            errMsg = @"Bad password type.";
+        }
+        if (errCode == Y_BAD_PASSWORD) {
+            errMsg = @"Bad password.";
+        }
+        if (errCode == Y_PASSWORD_REQUIRED) {
+            errMsg = @"Operation requires a password";
+        }
+        if (errCode == Y_MULTIWRITE_NOT_SUPPORTED) {
+            errMsg = @"Multi block write unavailable on self tag.";
+        }
+        if (errCode == Y_MULTIREAD_NOT_SUPPORTED) {
+            errMsg = @"Multi block read unavailable on self tag.";
+        }
         if (errBlk >= 0) {
             errMsg = [NSString stringWithFormat:@"%@ (block %d)",errMsg,errBlk];
         }
@@ -876,9 +919,11 @@ static void yInternalEventCallback(YRfidReader *obj, NSString *value)
 
 /**
  * Registers the callback function that is invoked on every change of advertised value.
- * The callback is invoked only during the execution of ySleep or yHandleEvents.
- * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
- * one of these two functions periodically. To unregister a callback, pass a nil pointer as argument.
+ * The callback is then invoked only during the execution of ySleep or yHandleEvents.
+ * This provides control over the time when the callback is triggered. For good responsiveness,
+ * remember to call one of these two functions periodically. The callback is called once juste after beeing
+ * registered, passing the current advertised value  of the function, provided that it is not an empty string.
+ * To unregister a callback, pass a nil pointer as argument.
  *
  * @param callback : the callback function to call, or a nil pointer. The callback function should take two
  *         arguments: the function object of which the value has changed, and the character string describing
@@ -1023,7 +1068,11 @@ static void yInternalEventCallback(YRfidReader *obj, NSString *value)
  * Changes an RFID tag configuration to prevents any further write to
  * the selected blocks. This operation is definitive and irreversible.
  * Depending on the tag type and block index, adjascent blocks may become
- * read-only as well, based on the locking granularity.
+ * read-only as well, based on the locking granularity.  Note that some tags
+ * may allow only a few blocks to be locked, for instance ST25DVxxx  tags
+ * allows a lock on block 0 and 1 only.
+ *
+ *
  *
  * @param tagId : identifier of the tag to use
  * @param firstBlock : first block to lock
@@ -1504,6 +1553,117 @@ static void yInternalEventCallback(YRfidReader *obj, NSString *value)
         res = [status get_yapiError];
     }
     return res;
+}
+
+/**
+ * Reads a byte from the Tag configuration (ISO 15693 ST25DVxx only).
+ * This function is actually a call to the 0xA0 RFID command and is specific to
+ * ST25DVxx tags. Check ST25DVxx datasheet for more information about
+ * the data organisation of ST25DVxx tags configuration.
+ *
+ * @param tagId : identifier of the tag to use
+ * @param addr  : offset of the byte in the tag configuation
+ *
+ * @param options : an YRfidOptions object with the optional
+ *         command execution parameters, such as security key
+ *         if required
+ * @param status : an RfidStatus object that will contain
+ *         the detailled status of the operation
+ *
+ * @return the requested byte value (0...255)
+ *
+ * On failure, throws an exception or returns a negative error code. When it
+ * happens, you can get more information from the status object.
+ */
+-(int) tagGetConfigByte:(NSString*)tagId :(int)addr :(YRfidOptions*)options :(YRfidStatus*)status
+{
+    NSString* optstr;
+    NSString* url;
+    NSMutableData* json;
+    int res;
+    optstr = [options imm_getParams];
+    url = [NSString stringWithFormat:@"rfid.json?a=gcfg&t=%@&b=%d%@",tagId,addr,optstr];
+
+    json = [self _download:url];
+    [self _chkerror:tagId :json :status];
+    if ([status get_yapiError] == YAPI_SUCCESS) {
+        res = [[self _json_get_key:json :@"res"] intValue];
+    } else {
+        res = [status get_yapiError];
+    }
+    return res;
+}
+
+/**
+ * Changes a byte in the tag's configuration (ISO 15693 ST25DVxx only).
+ * Warning: modifing the tag configation may alter its behavior in a non-reversible way.
+ * This operation requires the CONFIG_PWD password to be set in the options,
+ * default value is "0000000000000000" (16 zeros). This function is actually
+ * a call to the 0xA1 RFID command and is specific to ST25DVxx tags. Check
+ * ST25DVxx datasheet for more information about the data organisation
+ * of ST25DVxx tags configuration.
+ *
+ * @param tagId : identifier of the tag to use
+ * @param addr  : address of the byte to write
+ * @param value : the value to write (0...255)
+ * @param options : an YRfidOptions object with the optional
+ *         command execution parameters, such as security key
+ *         if required
+ * @param status : an RfidStatus object that will contain
+ *         the detailled status of the operation
+ *
+ * @return YAPI.SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code. When it
+ * happens, you can get more information from the status object.
+ */
+-(int) tagSetConfigByte:(NSString*)tagId :(int)addr :(int)value :(YRfidOptions*)options :(YRfidStatus*)status
+{
+    NSString* optstr;
+    NSString* url;
+    NSMutableData* json;
+    optstr = [options imm_getParams];
+    url = [NSString stringWithFormat:@"rfid.json?a=scfg&t=%@&b=%d&v=%d%@",tagId,addr,value,optstr];
+
+    json = [self _download:url];
+    return [self _chkerror:tagId :json :status];
+}
+
+/**
+ * Set a password that will be required to access the tag  (ISO 15693 ST25DVxx only).
+ * The password must be a string of characters representing 8 bytes in hexadecimal.
+ * There are several types of password for the same tag; please consult your tags
+ * documentation to understand their respective applications. Once the password
+ * has been configured, operations requiring this password must be initiated with
+ * the password defined in the KeyType and HexKey fields of the
+ * options parameter for the operations in question. It is not necessarily
+ * required to consistently provide the same password for every operation during the
+ * same session with a tag.
+ *
+ * @param tagId : identifier of the tag to use
+ * @param passwordType  : type of password to be set (YRfidOptions.ST25D_CONFIG_PWD,YRfidOptions.ST25D_PWD1,YRfidOptions.ST25D_PWD2..)
+ * @param password : the password (16 characters hex string encoding 8 bytes)
+ * @param options : an YRfidOptions object with the optional
+ *         command execution parameters, such as security key
+ *         if required
+ * @param status : an RfidStatus object that will contain
+ *         the detailled status of the operation
+ *
+ * @return YAPI.SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code. When it
+ * happens, you can get more information from the status object.
+ */
+-(int) tagSetPassword:(NSString*)tagId :(int)passwordType :(NSString*)password :(YRfidOptions*)options :(YRfidStatus*)status
+{
+    NSString* optstr;
+    NSString* url;
+    NSMutableData* json;
+    optstr = [options imm_getParams];
+    url = [NSString stringWithFormat:@"rfid.json?a=spwd&t=%@&b=%d&p=%@%@",tagId,passwordType,password,optstr];
+
+    json = [self _download:url];
+    return [self _chkerror:tagId :json :status];
 }
 
 /**

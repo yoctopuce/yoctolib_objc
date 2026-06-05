@@ -1,10 +1,12 @@
 /*********************************************************************
  *
- *  $Id: main.m 59884 2024-03-14 13:28:06Z mvuilleu $
+ *  $Id: main.m 72776 2026-04-17 08:24:26Z seb $
  *
- *  Doc-GettingStarted-Yocto-SDI12 example
+ *  An example that shows how to use a  Yocto-SDI12
  *
  *  You can find more information on our web site:
+ *   Yocto-SDI12 documentation:
+ *      https://www.yoctopuce.com/EN/products/yocto-sdi12/doc.html
  *   Objective-C API Reference:
  *      https://www.yoctopuce.com/EN/doc/reference/yoctolib-objc-EN.html
  *

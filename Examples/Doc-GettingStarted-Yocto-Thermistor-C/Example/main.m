@@ -1,8 +1,8 @@
 /*********************************************************************
  *
- *  $Id: main.m 32622 2018-10-10 13:11:04Z seb $
+ *  $Id: main.m 72951 2026-04-24 08:11:25Z seb $
  *
- *  An example that show how to use a  Yocto-Thermistor-C
+ *  An example that shows how to use a  Yocto-Thermistor-C
  *
  *  You can find more information on our web site:
  *   Yocto-Thermistor-C documentation:

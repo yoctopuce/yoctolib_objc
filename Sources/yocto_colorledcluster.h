@@ -238,9 +238,11 @@ typedef enum {
 
 /**
  * Registers the callback function that is invoked on every change of advertised value.
- * The callback is invoked only during the execution of ySleep or yHandleEvents.
- * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
- * one of these two functions periodically. To unregister a callback, pass a nil pointer as argument.
+ * The callback is then invoked only during the execution of ySleep or yHandleEvents.
+ * This provides control over the time when the callback is triggered. For good responsiveness,
+ * remember to call one of these two functions periodically. The callback is called once juste after beeing
+ * registered, passing the current advertised value  of the function, provided that it is not an empty string.
+ * To unregister a callback, pass a nil pointer as argument.
  *
  * @param callback : the callback function to call, or a nil pointer. The callback function should take two
  *         arguments: the function object of which the value has changed, and the character string describing
@@ -344,6 +346,54 @@ typedef enum {
  * On failure, throws an exception or returns a negative error code.
  */
 -(int)     hsl_move:(int)ledIndex :(int)count :(int)hslValue :(int)delay;
+
+/**
+ * Changes the color displayed by the last LED and shifts all currently displayed colors
+ * toward the beginning of the RGB LED string. The new color is encoded as follows: 0xRRGGBB.
+ *
+ * @param rgbValue :  new color.
+ *
+ * @return YAPI.SUCCESS when the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     shl_rgb:(int)rgbValue;
+
+/**
+ * Changes the color displayed by the first LED and shifts all currently displayed colors
+ * toward the end of the RGB LED string. The new color is encoded as follows: 0xRRGGBB.
+ *
+ * @param rgbValue :  new color.
+ *
+ * @return YAPI.SUCCESS when the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     shr_rgb:(int)rgbValue;
+
+/**
+ * Changes the color displayed by the last LED and shifts all currently displayed colors
+ * toward the beginning of the RGB LED string. The new color is encoded as follows: 0xHHSSLL.
+ *
+ * @param hslValue :  new color.
+ *
+ * @return YAPI.SUCCESS when the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     shl_hsl:(int)hslValue;
+
+/**
+ * Changes the color displayed by the first LED and shifts all currently displayed colors
+ * toward the end of the RGB LED string. The new color is encoded as follows: 0xHHSSLL.
+ *
+ * @param hslValue :  new color.
+ *
+ * @return YAPI.SUCCESS when the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     shr_hsl:(int)hslValue;
 
 /**
  * Adds an RGB transition to a sequence. A sequence is a transition list, which can

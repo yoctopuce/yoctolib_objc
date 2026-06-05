@@ -1,8 +1,8 @@
 /*********************************************************************
  *
- *  $Id: main.m 54325 2023-05-02 06:48:49Z seb $
+ *  $Id: main.m 72776 2026-04-17 08:24:26Z seb $
  *
- *  An example that show how to use a  Yocto-RS485
+ *  An example that shows how to use a  Yocto-RS485
  *
  *  You can find more information on our web site:
  *   Yocto-RS485 documentation:

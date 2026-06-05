@@ -46,6 +46,16 @@ NS_ASSUME_NONNULL_BEGIN
 //--- (YOrientation globals)
 typedef void (*YOrientationValueCallback)(YOrientation *func, NSString *functionValue);
 typedef void (*YOrientationTimedReportCallback)(YOrientation *func, YMeasure *measure);
+#ifndef _Y_COUNTERCLOCKWISE_ENUM
+#define _Y_COUNTERCLOCKWISE_ENUM
+typedef enum {
+    Y_COUNTERCLOCKWISE_FALSE = 0,
+    Y_COUNTERCLOCKWISE_TRUE = 1,
+    Y_COUNTERCLOCKWISE_INVALID = -1,
+} Y_COUNTERCLOCKWISE_enum;
+#endif
+#define Y_COMMAND_INVALID               YAPI_INVALID_STRING
+#define Y_ZEROOFFSET_INVALID            YAPI_INVALID_DOUBLE
 //--- (end of YOrientation globals)
 
 //--- (YOrientation class start)
@@ -61,6 +71,9 @@ typedef void (*YOrientationTimedReportCallback)(YOrientation *func, YMeasure *me
 {
 @protected
 //--- (YOrientation attributes declaration)
+    Y_COUNTERCLOCKWISE_enum _counterClockwise;
+    NSString*       _command;
+    double          _zeroOffset;
     YOrientationValueCallback _valueCallbackOrientation;
     YOrientationTimedReportCallback _timedReportCallbackOrientation;
 //--- (end of YOrientation attributes declaration)
@@ -76,6 +89,66 @@ typedef void (*YOrientationTimedReportCallback)(YOrientation *func, YMeasure *me
 //--- (YOrientation yapiwrapper declaration)
 //--- (end of YOrientation yapiwrapper declaration)
 //--- (YOrientation public methods declaration)
+/**
+ * Returns a value indicating whether the sensor is operating in a counterclockwise direction.
+ *
+ * @return either YOrientation.COUNTERCLOCKWISE_FALSE or YOrientation.COUNTERCLOCKWISE_TRUE, according
+ * to a value indicating whether the sensor is operating in a counterclockwise direction
+ *
+ * On failure, throws an exception or returns YOrientation.COUNTERCLOCKWISE_INVALID.
+ */
+-(Y_COUNTERCLOCKWISE_enum)     get_counterClockwise;
+
+
+-(Y_COUNTERCLOCKWISE_enum) counterClockwise;
+/**
+ * Defines the operating direction of the sensor.
+ * Remember to call the saveToFlash() method of the module if the
+ * modification must be kept.
+ *
+ * @param newval : either YOrientation.COUNTERCLOCKWISE_FALSE or YOrientation.COUNTERCLOCKWISE_TRUE
+ *
+ * @return YAPI.SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     set_counterClockwise:(Y_COUNTERCLOCKWISE_enum) newval;
+-(int)     setCounterClockwise:(Y_COUNTERCLOCKWISE_enum) newval;
+
+-(NSString*)     get_command;
+
+
+-(NSString*) command;
+-(int)     set_command:(NSString*) newval;
+-(int)     setCommand:(NSString*) newval;
+
+/**
+ * Sets an offset between the orientation reported by the sensor and the actual orientation. This
+ * can typically be used  to compensate for mechanical offset. This offset can also be set
+ * automatically using the zero() method.
+ * Remember to call the saveToFlash() method of the module if the modification must be kept.
+ *
+ * @param newval : a floating point number
+ *
+ * @return YAPI.SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     set_zeroOffset:(double) newval;
+-(int)     setZeroOffset:(double) newval;
+
+/**
+ * Returns the Offset between the orientation reported by the sensor and the actual orientation.
+ *
+ * @return a floating point number corresponding to the Offset between the orientation reported by the
+ * sensor and the actual orientation
+ *
+ * On failure, throws an exception or returns YOrientation.ZEROOFFSET_INVALID.
+ */
+-(double)     get_zeroOffset;
+
+
+-(double) zeroOffset;
 /**
  * Retrieves an orientation sensor for a given identifier.
  * The identifier can be specified using several formats:
@@ -108,9 +181,11 @@ typedef void (*YOrientationTimedReportCallback)(YOrientation *func, YMeasure *me
 
 /**
  * Registers the callback function that is invoked on every change of advertised value.
- * The callback is invoked only during the execution of ySleep or yHandleEvents.
- * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
- * one of these two functions periodically. To unregister a callback, pass a nil pointer as argument.
+ * The callback is then invoked only during the execution of ySleep or yHandleEvents.
+ * This provides control over the time when the callback is triggered. For good responsiveness,
+ * remember to call one of these two functions periodically. The callback is called once juste after beeing
+ * registered, passing the current advertised value  of the function, provided that it is not an empty string.
+ * To unregister a callback, pass a nil pointer as argument.
  *
  * @param callback : the callback function to call, or a nil pointer. The callback function should take two
  *         arguments: the function object of which the value has changed, and the character string describing
@@ -135,6 +210,61 @@ typedef void (*YOrientationTimedReportCallback)(YOrientation *func, YMeasure *me
 -(int)     registerTimedReportCallback:(YOrientationTimedReportCallback _Nullable)callback;
 
 -(int)     _invokeTimedReportCallback:(YMeasure*)value;
+
+-(int)     sendCommand:(NSString*)command;
+
+/**
+ * Reset the sensor's zero to current position by automatically setting a new offset.
+ * Remember to call the saveToFlash() method of the module if the modification must be kept.
+ *
+ * @return YAPI.SUCCESS if the call succeeds.
+ *         On failure, throws an exception or returns a negative error code.
+ */
+-(int)     zero;
+
+/**
+ * Modifies the calibration of the MA600A sensor using an array of 32
+ * values representing the offset in degrees between the true values and
+ * those measured regularly every 11.25 degrees starting from zero. The calibration
+ * is applied immediately and is stored permanently in the MA600A sensor.
+ * Before calculating the offset values, remember to clear any previous
+ * calibration using the clearCalibration function and set
+ * the zero offset  to 0. After a calibration change, the sensor will stop
+ * measurements for about one second.
+ * Do not confuse this function with the generic calibrateFromPoints function,
+ * which works at the YSensor level and is not necessarily well suited to
+ * a sensor returning circular values.
+ *
+ * @param offsetValues : array of 32 floating point values in the [-11.25..+11.25] range
+ *
+ * @return YAPI.SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     set_calibration:(NSMutableArray*)offsetValues;
+
+/**
+ * Retrieves offset correction data points previously entered using the method
+ * set_calibration.
+ *
+ * @param offsetValues : array of 32 floating point numbers, that will be filled by the
+ *         function with the offset values for the correction points.
+ *
+ * @return YAPI.SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     get_Calibration:(NSMutableArray*)offsetValues;
+
+/**
+ * Cancels any calibration set with set_calibration. This function
+ * is equivalent to calling set_calibration with only zeros.
+ *
+ * @return YAPI.SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     clearCalibration;
 
 
 /**

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_i2cport.h 64093 2025-01-08 10:53:52Z seb $
+ *  $Id: yocto_i2cport.h 72057 2026-02-17 09:44:53Z mvuilleu $
  *
  *  Declares yFindI2cPort(), the high-level API for I2cPort functions
  *
@@ -451,9 +451,11 @@ typedef enum {
 
 /**
  * Registers the callback function that is invoked on every change of advertised value.
- * The callback is invoked only during the execution of ySleep or yHandleEvents.
- * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
- * one of these two functions periodically. To unregister a callback, pass a nil pointer as argument.
+ * The callback is then invoked only during the execution of ySleep or yHandleEvents.
+ * This provides control over the time when the callback is triggered. For good responsiveness,
+ * remember to call one of these two functions periodically. The callback is called once juste after beeing
+ * registered, passing the current advertised value  of the function, provided that it is not an empty string.
+ * To unregister a callback, pass a nil pointer as argument.
  *
  * @param callback : the callback function to call, or a nil pointer. The callback function should take two
  *         arguments: the function object of which the value has changed, and the character string describing

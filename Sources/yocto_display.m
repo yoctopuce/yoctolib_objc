@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_display.m 71629 2026-01-29 15:08:26Z mvuilleu $
+ * $Id: yocto_display.m 74506 2026-06-01 15:57:01Z seb $
  *
  * Implements yFindDisplay(), the high-level API for Display functions
  *
@@ -53,12 +53,13 @@
     if(!(self = [super init]))
         return nil;
 //--- (generated code: YDisplayLayer attributes initialization)
+    _cmdbuff = @"";
+    _hidden = false;
     _polyPrevX = 0;
     _polyPrevY = 0;
 //--- (end of generated code: YDisplayLayer attributes initialization)
     _display =display;
     _id = layerid;
-    _cmdbuff =[[NSMutableString alloc] init];
     return self;
 }
 
@@ -67,12 +68,13 @@
     if(!(self = [super init]))
         return nil;
 //--- (generated code: YDisplayLayer attributes initialization)
+    _cmdbuff = @"";
+    _hidden = false;
     _polyPrevX = 0;
     _polyPrevY = 0;
 //--- (end of generated code: YDisplayLayer attributes initialization)
     _display =display;
     _id = layerid;
-    _cmdbuff =[[NSMutableString alloc] init];
     return self;
 }
 
@@ -85,49 +87,63 @@
 }
 
 
--(int) flush_now
-{
-    int res = YAPI_SUCCESS;
-    if([_cmdbuff length] > 0) {
-        res = [_display sendCommand:_cmdbuff];
-        [_cmdbuff setString:@""];
-    }
-    return res;
-}
-
-
-// internal function to send a command for this layer
--(int) command_push:(NSString*)cmd
-{
-    int res = YAPI_SUCCESS;
-
-    if([_cmdbuff length] + [cmd length] >= 100) {
-        // force flush before, to prevent overflow
-        res = [self flush_now];
-    }
-    if([_cmdbuff length] == 0) {
-        // always prepend layer ID first
-        [_cmdbuff appendString: [NSString stringWithFormat:@"%d",_id]];
-    }
-    [_cmdbuff appendString:cmd];
-    return res;
-}
-
-// internal function to send a command for this layer
--(int) command_flush:(NSString*)cmd
-{
-    int  res = [self command_push:cmd];
-    if(_hidden) {
-        return res;
-    }
-    return [self flush_now];
-}
-
 //--- (generated code: YDisplayLayer private methods implementation)
 
 //--- (end of generated code: YDisplayLayer private methods implementation)
 
 //--- (generated code: YDisplayLayer public methods implementation)
+-(bool) must_be_flushed
+{
+    return (int)[(_cmdbuff) length] > 0;
+}
+
+-(int) resetHiddenFlag
+{
+    _hidden = NO;
+    return YAPI_SUCCESS;
+}
+
+-(int) flush_now
+{
+    int res;
+    res = YAPI_SUCCESS;
+    if ((int)[(_cmdbuff) length] > 0) {
+        res = [_display sendCommand:_cmdbuff];
+        _cmdbuff = @"";
+    }
+    return res;
+}
+
+-(int) command_push:(NSString*)cmd
+{
+    int res;
+    res = YAPI_SUCCESS;
+    if ((int)[(_cmdbuff) length] + (int)[(cmd) length] >= 100) {
+        // force flush before, to prevent overflow
+        [self flush_now];
+    }
+    if ((int)[(_cmdbuff) length] == 0) {
+        // always prepend layer ID first
+        _cmdbuff = [NSString stringWithFormat:@"%d",_id];
+    }
+    _cmdbuff = [NSString stringWithFormat:@"%@%@", _cmdbuff, cmd];
+    return res;
+}
+
+-(int) command_flush:(NSString*)cmd
+{
+    int res;
+
+    res = [self command_push:cmd];
+    if (_hidden) {
+        return res;
+    }
+    if ([_display isFrozen]) {
+        return res;
+    }
+    return [self flush_now];
+}
+
 /**
  * Reverts the layer to its initial state (fully transparent, default settings).
  * Reinitializes the drawing pointer to the upper left position,
@@ -774,12 +790,6 @@
     return [_display get_layerHeight];
 }
 
--(int) resetHiddenFlag
-{
-    _hidden = NO;
-    return YAPI_SUCCESS;
-}
-
 //--- (end of generated code: YDisplayLayer public methods implementation)
 
 @end
@@ -813,8 +823,8 @@
     _command = Y_COMMAND_INVALID;
     _valueCallbackDisplay = NULL;
     _allDisplayLayers = [NSMutableArray array];
+    _frozenUntil = 0;
 //--- (end of generated code: YDisplay attributes initialization)
-    _sequence = [[NSString alloc] init];
     return self;
 }
 
@@ -911,32 +921,6 @@
 }
 //--- (end of generated code: YDisplay private methods implementation)
 
-
--(int) flushLayers
-{
-    for(unsigned i = 0; i < [_allDisplayLayers count]; i++) {
-        [[_allDisplayLayers objectAtIndex:i] flush_now];
-    }
-    return YAPI_SUCCESS;
-
-}
-
--(void) resetHiddenLayerFlags
-{
-    for(unsigned i = 0; i < [_allDisplayLayers count]; i++) {
-        [[_allDisplayLayers objectAtIndex:i] resetHiddenFlag];
-    }
-}
-
--(int) sendCommand:(NSString*) cmd
-{
-    if(!_recording) {
-        return [self set_command:cmd];
-    }
-    _sequence = [_sequence stringByAppendingFormat:@"%@\n",cmd];
-    return YAPI_SUCCESS;
-
-}
 
 //--- (generated code: YDisplay public methods implementation)
 /**
@@ -1275,11 +1259,11 @@
     return [self get_displayHeight];
 }
 /**
- * Returns the display type: monochrome, gray levels or full color.
+ * Returns the display type: monochrome OLED, black and white ePaper, color ePaper, etc.
  *
- * @return a value among YDisplay.DISPLAYTYPE_MONO, YDisplay.DISPLAYTYPE_GRAY,
- * YDisplay.DISPLAYTYPE_RGB and YDisplay.DISPLAYTYPE_EPAPER corresponding to the display type:
- * monochrome, gray levels or full color
+ * @return a value among YDisplay.DISPLAYTYPE_MONO, YDisplay.DISPLAYTYPE_EPAPER_BW,
+ * YDisplay.DISPLAYTYPE_EPAPER_BWR and YDisplay.DISPLAYTYPE_EPAPER_BWRY corresponding to the display
+ * type: monochrome OLED, black and white ePaper, color ePaper, etc
  *
  * On failure, throws an exception or returns YDisplay.DISPLAYTYPE_INVALID.
  */
@@ -1441,9 +1425,11 @@
 
 /**
  * Registers the callback function that is invoked on every change of advertised value.
- * The callback is invoked only during the execution of ySleep or yHandleEvents.
- * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
- * one of these two functions periodically. To unregister a callback, pass a nil pointer as argument.
+ * The callback is then invoked only during the execution of ySleep or yHandleEvents.
+ * This provides control over the time when the callback is triggered. For good responsiveness,
+ * remember to call one of these two functions periodically. The callback is called once juste after beeing
+ * registered, passing the current advertised value  of the function, provided that it is not an empty string.
+ * To unregister a callback, pass a nil pointer as argument.
  *
  * @param callback : the callback function to call, or a nil pointer. The callback function should take two
  *         arguments: the function object of which the value has changed, and the character string describing
@@ -1479,6 +1465,45 @@
     return 0;
 }
 
+-(int) sendCommand:(NSString*)cmd
+{
+    if (!(_recording)) {
+        return [self set_command:cmd];
+    }
+    _sequence = [NSString stringWithFormat:@"%@%@\n",_sequence,cmd];
+    return YAPI_SUCCESS;
+}
+
+-(int) flushLayers
+{
+    for (YDisplayLayer* _each  in _allDisplayLayers) {
+        if ([((YDisplayLayer*)_each) must_be_flushed]) {
+            [((YDisplayLayer*)_each) flush_now];
+        }
+    }
+    return YAPI_SUCCESS;
+}
+
+-(int) resetHiddenLayerFlags
+{
+    for (YDisplayLayer* _each  in _allDisplayLayers) {
+        [((YDisplayLayer*)_each) resetHiddenFlag];
+    }
+    return YAPI_SUCCESS;
+}
+
+-(bool) isFrozen
+{
+    if (_frozenUntil == 0) {
+        return NO;
+    }
+    if (_frozenUntil <= [YAPI GetTickCount]) {
+        _frozenUntil = 0;
+        return NO;
+    }
+    return YES;
+}
+
 /**
  * Clears the display screen and resets all display layers to their default state.
  * Using this function in a sequence will kill the sequence play-back. Don't use that
@@ -1510,6 +1535,56 @@
 }
 
 /**
+ * Returns the current state of an ePaper display, specifically to
+ * determine whether an update is in progress or whether a
+ * configuration issue has been detected. If a display configuration
+ * error has been detected, the error message can be retrieved.
+ *
+ * @param errmsg : a string passed by reference to receive the error message.
+ *
+ * @return a value among the enumeration YDisplay.DISPLAYSTATE
+ *         (YDisplay.DISPLAYSTATE_FAILURE, YDisplay.DISPLAYSTATE_OFF,
+ *         YDisplay.DISPLAYSTATE_POWERING, YDisplay.DISPLAYSTATE_IDLE,
+ *         YDisplay.DISPLAYSTATE_REFRESHING)
+ *         corresponding to the current display state.
+ */
+-(Y_DISPLAYSTATE) get_ePaperState:(NSString*)errmsg
+{
+    NSMutableData* json;
+    NSString* jsonStr;
+    NSString* dispError;
+    int dispState;
+
+    if ([self get_displayType] == Y_DISPLAYTYPE_MONO) {
+        errmsg = @"Not an ePaper display";
+        return (Y_DISPLAYSTATE) 0;
+    }
+    json = [self _download:@"disp.json"];
+    if ((int)[json length] == 0) {
+        errmsg = [self get_errorMessage];
+        return (Y_DISPLAYSTATE) 0;
+    } else {
+        jsonStr = ARC_sendAutorelease([[NSString alloc] initWithData:json encoding:NSISOLatin1StringEncoding]);
+        dispError = [self _decode_json_string:[self _get_json_path:jsonStr :@"err"]];
+        errmsg = dispError;
+        if ((int)[(dispError) length] > 0) {
+            return (Y_DISPLAYSTATE) 0;
+        }
+        dispState = [[self _json_get_key:json :@"state"] intValue];
+        if (dispState > 10) {
+            return (Y_DISPLAYSTATE) 4;
+        }
+        if (dispState == 10) {
+            return (Y_DISPLAYSTATE) 3;
+        }
+        if (dispState > 0) {
+            return (Y_DISPLAYSTATE) 2;
+        }
+    }
+    return (Y_DISPLAYSTATE) 1;
+}
+
+/**
  * Disables screen refresh for a short period of time. The combination of
  * postponeRefresh and triggerRefresh can be used as an
  * alternative to double-buffering to avoid flickering during display updates.
@@ -1522,6 +1597,7 @@
  */
 -(int) postponeRefresh:(int)duration
 {
+    _frozenUntil = [YAPI GetTickCount] + duration;
     return [self sendCommand:[NSString stringWithFormat:@"H%d",duration]];
 }
 
@@ -1536,6 +1612,8 @@
  */
 -(int) triggerRefresh
 {
+    _frozenUntil = 0;
+    [self flushLayers];
     return [self sendCommand:@"H0"];
 }
 
@@ -1658,6 +1736,7 @@
  */
 -(int) upload:(NSString*)pathname :(NSData*)content
 {
+    [self flushLayers];
     return [self _upload:pathname :content];
 }
 
@@ -1763,7 +1842,6 @@
     int srcx;
     int srcy;
     int srci;
-    int incx;
     NSMutableData* pixmap;
     int pixcount;
     int pixval;
@@ -1847,7 +1925,6 @@
     pixmap = [NSMutableData dataWithLength:pixcount];
     srcx = 0;
     srcy = 0;
-    incx = (8 / zipbits);
     srcval = 0;
     while (srcpos < zipsize) {
         // load next compression pattern byte
@@ -1859,11 +1936,15 @@
             if ((srcpat & 128) != 0) {
                 srcval = (((u8*)([zipmap bytes]))[srcpos]);
                 srcpos = srcpos + 1;
+                if (zipbits > 1) {
+                    srcval = (srcval << 8) + (((u8*)([zipmap bytes]))[srcpos]);
+                    srcpos = srcpos + 1;
+                }
             }
             srcpat = (srcpat << 1);
             pixpos = srcy * zipwidth + srcx;
-            // produce 8 pixels (or 4, if bitmap uses 2 bits per pixel)
-            srci = 8 - zipbits;
+            // produce 8 pixels
+            srci = 7 * zipbits;
             while (srci >= 0) {
                 pixval = ((srcval >> srci) & zipmask);
                 (((u8*)([pixmap mutableBytes]))[pixpos]) = pixval;
@@ -1873,7 +1954,7 @@
             srcy = srcy + 1;
             if (srcy >= zipheight) {
                 srcy = 0;
-                srcx = srcx + incx;
+                srcx = srcx + 8;
                 // drop last bytes if image is not a multiple of 8
                 if (srcx >= zipwidth) {
                     srcbit = 0;

@@ -46,6 +46,15 @@ NS_ASSUME_NONNULL_BEGIN
 //--- (YCounter globals)
 typedef void (*YCounterValueCallback)(YCounter *func, NSString *functionValue);
 typedef void (*YCounterTimedReportCallback)(YCounter *func, YMeasure *measure);
+#ifndef _Y_DECIMALMODE_ENUM
+#define _Y_DECIMALMODE_ENUM
+typedef enum {
+    Y_DECIMALMODE_FALSE = 0,
+    Y_DECIMALMODE_TRUE = 1,
+    Y_DECIMALMODE_INVALID = -1,
+} Y_DECIMALMODE_enum;
+#endif
+#define Y_COMMAND_INVALID               YAPI_INVALID_STRING
 //--- (end of YCounter globals)
 
 //--- (YCounter class start)
@@ -61,6 +70,8 @@ typedef void (*YCounterTimedReportCallback)(YCounter *func, YMeasure *measure);
 {
 @protected
 //--- (YCounter attributes declaration)
+    Y_DECIMALMODE_enum _decimalMode;
+    NSString*       _command;
     YCounterValueCallback _valueCallbackCounter;
     YCounterTimedReportCallback _timedReportCallbackCounter;
 //--- (end of YCounter attributes declaration)
@@ -76,6 +87,39 @@ typedef void (*YCounterTimedReportCallback)(YCounter *func, YMeasure *measure);
 //--- (YCounter yapiwrapper declaration)
 //--- (end of YCounter yapiwrapper declaration)
 //--- (YCounter public methods declaration)
+/**
+ * Returns a value indicating if the senseur compute whole or fractional values.
+ *
+ * @return either YCounter.DECIMALMODE_FALSE or YCounter.DECIMALMODE_TRUE, according to a value
+ * indicating if the senseur compute whole or fractional values
+ *
+ * On failure, throws an exception or returns YCounter.DECIMALMODE_INVALID.
+ */
+-(Y_DECIMALMODE_enum)     get_decimalMode;
+
+
+-(Y_DECIMALMODE_enum) decimalMode;
+/**
+ * Changes the sensor's operating mode so that it computes integer or decimal values.
+ * Remember to call the saveToFlash() method of the module if the modification must be kept.
+ *
+ * @param newval : either YCounter.DECIMALMODE_FALSE or YCounter.DECIMALMODE_TRUE, according to the
+ * sensor's operating mode so that it computes integer or decimal values
+ *
+ * @return YAPI.SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     set_decimalMode:(Y_DECIMALMODE_enum) newval;
+-(int)     setDecimalMode:(Y_DECIMALMODE_enum) newval;
+
+-(NSString*)     get_command;
+
+
+-(NSString*) command;
+-(int)     set_command:(NSString*) newval;
+-(int)     setCommand:(NSString*) newval;
+
 /**
  * Retrieves a counter for a given identifier.
  * The identifier can be specified using several formats:
@@ -108,9 +152,11 @@ typedef void (*YCounterTimedReportCallback)(YCounter *func, YMeasure *measure);
 
 /**
  * Registers the callback function that is invoked on every change of advertised value.
- * The callback is invoked only during the execution of ySleep or yHandleEvents.
- * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
- * one of these two functions periodically. To unregister a callback, pass a nil pointer as argument.
+ * The callback is then invoked only during the execution of ySleep or yHandleEvents.
+ * This provides control over the time when the callback is triggered. For good responsiveness,
+ * remember to call one of these two functions periodically. The callback is called once juste after beeing
+ * registered, passing the current advertised value  of the function, provided that it is not an empty string.
+ * To unregister a callback, pass a nil pointer as argument.
  *
  * @param callback : the callback function to call, or a nil pointer. The callback function should take two
  *         arguments: the function object of which the value has changed, and the character string describing
@@ -135,6 +181,20 @@ typedef void (*YCounterTimedReportCallback)(YCounter *func, YMeasure *measure);
 -(int)     registerTimedReportCallback:(YCounterTimedReportCallback _Nullable)callback;
 
 -(int)     _invokeTimedReportCallback:(YMeasure*)value;
+
+-(int)     sendCommand:(NSString*)command;
+
+/**
+ * Reset the counter to zero.
+ *
+ * @return YAPI.SUCCESS if the call succeeds. Please note that this function only resets
+ *         the integer part of the counter. In CONTINUOUS mode, the decimal part is calculated
+ *         from the angle measured by the sensor. To set the decimal part of the sensor to zero,
+ *         the origin of the sensor must be changed with the YOrientation.zero().
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int)     zero;
 
 
 /**

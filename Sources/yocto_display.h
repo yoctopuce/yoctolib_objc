@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_display.h 71629 2026-01-29 15:08:26Z mvuilleu $
+ * $Id: yocto_display.h 73721 2026-05-22 17:28:09Z mvuilleu $
  *
  * Declares yFindDisplay(), the high-level API for Display functions
  *
@@ -94,11 +94,22 @@ typedef enum {
 #define _Y_DISPLAYTYPE_ENUM
 typedef enum {
     Y_DISPLAYTYPE_MONO = 0,
-    Y_DISPLAYTYPE_GRAY = 1,
-    Y_DISPLAYTYPE_RGB = 2,
-    Y_DISPLAYTYPE_EPAPER = 3,
+    Y_DISPLAYTYPE_EPAPER_BW = 1,
+    Y_DISPLAYTYPE_EPAPER_BWR = 2,
+    Y_DISPLAYTYPE_EPAPER_BWRY = 3,
     Y_DISPLAYTYPE_INVALID = -1,
 } Y_DISPLAYTYPE_enum;
+#endif
+#ifndef _Y_Y_DISPLAYSTATE
+#define _Y_Y_DISPLAYSTATE
+typedef enum {
+    Y_DISPLAYSTATE_FAILURE = 0 ,
+    Y_DISPLAYSTATE_OFF = 1 ,
+    Y_DISPLAYSTATE_POWERING = 2 ,
+    Y_DISPLAYSTATE_IDLE = 3 ,
+    Y_DISPLAYSTATE_REFRESHING = 4
+} Y_DISPLAYSTATE;
+
 #endif
 #define Y_STARTUPSEQ_INVALID            YAPI_INVALID_STRING
 #define Y_BRIGHTNESS_INVALID            YAPI_INVALID_UINT
@@ -129,9 +140,9 @@ typedef enum {
 @protected
     YDisplay *_display;
     int _id;
-    NSMutableString *_cmdbuff;
-    bool   _hidden;
 //--- (generated code: YDisplayLayer attributes declaration)
+    NSString*       _cmdbuff;
+    bool            _hidden;
     int             _polyPrevX;
     int             _polyPrevY;
 //--- (end of generated code: YDisplayLayer attributes declaration)
@@ -142,14 +153,19 @@ typedef enum {
 -(id)    initWith:(YDisplay*)display :(int)layerid;
 
 
-// internal function to send a command for this layer
--(int)   command_push:(NSString*)cmd;
--(int)   command_flush:(NSString*)cmd;
--(int)   flush_now;
-
 //--- (generated code: YDisplayLayer private methods declaration)
 //--- (end of generated code: YDisplayLayer private methods declaration)
 //--- (generated code: YDisplayLayer public methods declaration)
+-(bool)     must_be_flushed;
+
+-(int)     resetHiddenFlag;
+
+-(int)     flush_now;
+
+-(int)     command_push:(NSString*)cmd;
+
+-(int)     command_flush:(NSString*)cmd;
+
 /**
  * Reverts the layer to its initial state (fully transparent, default settings).
  * Reinitializes the drawing pointer to the upper left position,
@@ -639,8 +655,6 @@ typedef enum {
  */
 -(int)     get_layerHeight;
 
--(int)     resetHiddenFlag;
-
 
 //--- (end of generated code: YDisplayLayer public methods declaration)
 
@@ -687,9 +701,10 @@ typedef enum {
     NSString*       _command;
     YDisplayValueCallback _valueCallbackDisplay;
     NSMutableArray* _allDisplayLayers;
+    u64             _frozenUntil;
+    bool            _recording;
+    NSString*       _sequence;
 //--- (end of generated code: YDisplay attributes declaration)
-    bool             _recording;
-    NSString  *_sequence;
 }
 // Constructor is protected, use yFindDisplay factory function to instantiate
 -(id)    initWith:(NSString*) func;
@@ -699,12 +714,6 @@ typedef enum {
 -(int)             _parseAttr:(yJsonStateMachine*) j;
 
 //--- (end of generated code: YDisplay private methods declaration)
-
--(int) flushLayers;
-
--(void) resetHiddenLayerFlags;
-
--(int) sendCommand:(NSString*)cmd;
 
 //--- (generated code: YDisplay public methods declaration)
 /**
@@ -891,11 +900,11 @@ typedef enum {
 
 -(int) displayHeight;
 /**
- * Returns the display type: monochrome, gray levels or full color.
+ * Returns the display type: monochrome OLED, black and white ePaper, color ePaper, etc.
  *
- * @return a value among YDisplay.DISPLAYTYPE_MONO, YDisplay.DISPLAYTYPE_GRAY,
- * YDisplay.DISPLAYTYPE_RGB and YDisplay.DISPLAYTYPE_EPAPER corresponding to the display type:
- * monochrome, gray levels or full color
+ * @return a value among YDisplay.DISPLAYTYPE_MONO, YDisplay.DISPLAYTYPE_EPAPER_BW,
+ * YDisplay.DISPLAYTYPE_EPAPER_BWR and YDisplay.DISPLAYTYPE_EPAPER_BWRY corresponding to the display
+ * type: monochrome OLED, black and white ePaper, color ePaper, etc
  *
  * On failure, throws an exception or returns YDisplay.DISPLAYTYPE_INVALID.
  */
@@ -975,9 +984,11 @@ typedef enum {
 
 /**
  * Registers the callback function that is invoked on every change of advertised value.
- * The callback is invoked only during the execution of ySleep or yHandleEvents.
- * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
- * one of these two functions periodically. To unregister a callback, pass a nil pointer as argument.
+ * The callback is then invoked only during the execution of ySleep or yHandleEvents.
+ * This provides control over the time when the callback is triggered. For good responsiveness,
+ * remember to call one of these two functions periodically. The callback is called once juste after beeing
+ * registered, passing the current advertised value  of the function, provided that it is not an empty string.
+ * To unregister a callback, pass a nil pointer as argument.
  *
  * @param callback : the callback function to call, or a nil pointer. The callback function should take two
  *         arguments: the function object of which the value has changed, and the character string describing
@@ -987,6 +998,14 @@ typedef enum {
 -(int)     registerValueCallback:(YDisplayValueCallback _Nullable)callback;
 
 -(int)     _invokeValueCallback:(NSString*)value;
+
+-(int)     sendCommand:(NSString*)cmd;
+
+-(int)     flushLayers;
+
+-(int)     resetHiddenLayerFlags;
+
+-(bool)     isFrozen;
 
 /**
  * Clears the display screen and resets all display layers to their default state.
@@ -1009,6 +1028,22 @@ typedef enum {
  * On failure, throws an exception or returns a negative error code.
  */
 -(int)     regenerateDisplay;
+
+/**
+ * Returns the current state of an ePaper display, specifically to
+ * determine whether an update is in progress or whether a
+ * configuration issue has been detected. If a display configuration
+ * error has been detected, the error message can be retrieved.
+ *
+ * @param errmsg : a string passed by reference to receive the error message.
+ *
+ * @return a value among the enumeration YDisplay.DISPLAYSTATE
+ *         (YDisplay.DISPLAYSTATE_FAILURE, YDisplay.DISPLAYSTATE_OFF,
+ *         YDisplay.DISPLAYSTATE_POWERING, YDisplay.DISPLAYSTATE_IDLE,
+ *         YDisplay.DISPLAYSTATE_REFRESHING)
+ *         corresponding to the current display state.
+ */
+-(Y_DISPLAYSTATE)     get_ePaperState:(NSString*)errmsg;
 
 /**
  * Disables screen refresh for a short period of time. The combination of

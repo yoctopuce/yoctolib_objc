@@ -51,6 +51,8 @@
           return nil;
     _className = @"Counter";
 //--- (YCounter attributes initialization)
+    _decimalMode = Y_DECIMALMODE_INVALID;
+    _command = Y_COMMAND_INVALID;
     _valueCallbackCounter = NULL;
     _timedReportCallbackCounter = NULL;
 //--- (end of YCounter attributes initialization)
@@ -62,6 +64,8 @@
 -(void)  dealloc
 {
 //--- (YCounter cleanup)
+    ARC_release(_command);
+    _command = nil;
     ARC_dealloc(super);
 //--- (end of YCounter cleanup)
 }
@@ -69,10 +73,97 @@
 
 -(int) _parseAttr:(yJsonStateMachine*) j
 {
+    if(!strcmp(j->token, "decimalMode")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+        _decimalMode =  (Y_DECIMALMODE_enum)atoi(j->token);
+        return 1;
+    }
+    if(!strcmp(j->token, "command")) {
+        if(yJsonParse(j) != YJSON_PARSE_AVAIL) return -1;
+       ARC_release(_command);
+        _command =  [self _parseString:j];
+        ARC_retain(_command);
+        return 1;
+    }
     return [super _parseAttr:j];
 }
 //--- (end of YCounter private methods implementation)
 //--- (YCounter public methods implementation)
+/**
+ * Returns a value indicating if the senseur compute whole or fractional values.
+ *
+ * @return either YCounter.DECIMALMODE_FALSE or YCounter.DECIMALMODE_TRUE, according to a value
+ * indicating if the senseur compute whole or fractional values
+ *
+ * On failure, throws an exception or returns YCounter.DECIMALMODE_INVALID.
+ */
+-(Y_DECIMALMODE_enum) get_decimalMode
+{
+    Y_DECIMALMODE_enum res;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
+            return Y_DECIMALMODE_INVALID;
+        }
+    }
+    res = _decimalMode;
+    return res;
+}
+
+
+-(Y_DECIMALMODE_enum) decimalMode
+{
+    return [self get_decimalMode];
+}
+
+/**
+ * Changes the sensor's operating mode so that it computes integer or decimal values.
+ * Remember to call the saveToFlash() method of the module if the modification must be kept.
+ *
+ * @param newval : either YCounter.DECIMALMODE_FALSE or YCounter.DECIMALMODE_TRUE, according to the
+ * sensor's operating mode so that it computes integer or decimal values
+ *
+ * @return YAPI.SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) set_decimalMode:(Y_DECIMALMODE_enum) newval
+{
+    return [self setDecimalMode:newval];
+}
+-(int) setDecimalMode:(Y_DECIMALMODE_enum) newval
+{
+    NSString* rest_val;
+    rest_val = (newval ? @"1" : @"0");
+    return [self _setAttr:@"decimalMode" :rest_val];
+}
+-(NSString*) get_command
+{
+    NSString* res;
+    if (_cacheExpiration <= [YAPI GetTickCount]) {
+        if ([self load:[YAPI_yapiContext GetCacheValidity]] != YAPI_SUCCESS) {
+            return Y_COMMAND_INVALID;
+        }
+    }
+    res = _command;
+    return res;
+}
+
+
+-(NSString*) command
+{
+    return [self get_command];
+}
+
+-(int) set_command:(NSString*) newval
+{
+    return [self setCommand:newval];
+}
+-(int) setCommand:(NSString*) newval
+{
+    NSString* rest_val;
+    rest_val = newval;
+    return [self _setAttr:@"command" :rest_val];
+}
 /**
  * Retrieves a counter for a given identifier.
  * The identifier can be specified using several formats:
@@ -114,9 +205,11 @@
 
 /**
  * Registers the callback function that is invoked on every change of advertised value.
- * The callback is invoked only during the execution of ySleep or yHandleEvents.
- * This provides control over the time when the callback is triggered. For good responsiveness, remember to call
- * one of these two functions periodically. To unregister a callback, pass a nil pointer as argument.
+ * The callback is then invoked only during the execution of ySleep or yHandleEvents.
+ * This provides control over the time when the callback is triggered. For good responsiveness,
+ * remember to call one of these two functions periodically. The callback is called once juste after beeing
+ * registered, passing the current advertised value  of the function, provided that it is not an empty string.
+ * To unregister a callback, pass a nil pointer as argument.
  *
  * @param callback : the callback function to call, or a nil pointer. The callback function should take two
  *         arguments: the function object of which the value has changed, and the character string describing
@@ -184,6 +277,26 @@
         [super _invokeTimedReportCallback:value];
     }
     return 0;
+}
+
+-(int) sendCommand:(NSString*)command
+{
+    return [self set_command:command];
+}
+
+/**
+ * Reset the counter to zero.
+ *
+ * @return YAPI.SUCCESS if the call succeeds. Please note that this function only resets
+ *         the integer part of the counter. In CONTINUOUS mode, the decimal part is calculated
+ *         from the angle measured by the sensor. To set the decimal part of the sensor to zero,
+ *         the origin of the sensor must be changed with the YOrientation.zero().
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) zero
+{
+    return [self sendCommand:@"Z"];
 }
 
 

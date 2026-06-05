@@ -1,3 +1,3 @@
-Objective-C v1.11.11632
+Objective-C v1.11.14544
 
-- Add new DisplayLayer methods
+- Add support for new device firmware

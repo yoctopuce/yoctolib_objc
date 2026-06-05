@@ -1,8 +1,8 @@
 /*********************************************************************
  *
- *  $Id: main.m 55641 2023-07-26 09:43:42Z seb $
+ *  $Id: main.m 72776 2026-04-17 08:24:26Z seb $
  *
- *  An example that show how to use a  Yocto-Temperature-IR
+ *  An example that shows how to use a  Yocto-Temperature-IR
  *
  *  You can find more information on our web site:
  *   Yocto-Temperature-IR documentation:

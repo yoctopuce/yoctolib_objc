@@ -1,8 +1,8 @@
 /*********************************************************************
  *
- *  $Id: main.m 52781 2023-01-12 08:06:07Z seb $
+ *  $Id: main.m 72776 2026-04-17 08:24:26Z seb $
  *
- *  An example that show how to use a  Yocto-Buzzer
+ *  An example that shows how to use a  Yocto-Buzzer
  *
  *  You can find more information on our web site:
  *   Yocto-Buzzer documentation:
