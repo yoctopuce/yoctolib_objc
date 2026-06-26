@@ -1,3 +1,5 @@
-Objective-C v1.11.14699
+Objective-C v1.11.14927
 
-- Add support for new RFID tags
+- Add new YAirQuality class
+- Add support for error handling when sending SMS
+- Fix out-of-order execution of postponeRefresh vs bitmap uploads

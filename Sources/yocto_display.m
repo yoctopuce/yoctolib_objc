@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_display.m 74506 2026-06-01 15:57:01Z seb $
+ * $Id: yocto_display.m 74723 2026-06-12 13:11:34Z mvuilleu $
  *
  * Implements yFindDisplay(), the high-level API for Display functions
  *
@@ -54,7 +54,7 @@
         return nil;
 //--- (generated code: YDisplayLayer attributes initialization)
     _cmdbuff = @"";
-    _hidden = false;
+    _hidden = NO;
     _polyPrevX = 0;
     _polyPrevY = 0;
 //--- (end of generated code: YDisplayLayer attributes initialization)
@@ -69,7 +69,7 @@
         return nil;
 //--- (generated code: YDisplayLayer attributes initialization)
     _cmdbuff = @"";
-    _hidden = false;
+    _hidden = NO;
     _polyPrevX = 0;
     _polyPrevY = 0;
 //--- (end of generated code: YDisplayLayer attributes initialization)
