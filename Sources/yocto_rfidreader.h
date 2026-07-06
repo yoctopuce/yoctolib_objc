@@ -78,6 +78,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSString*       _tagId;
     int             _tagType;
     NSString*       _typeStr;
+    int             _nfcType;
     int             _size;
     int             _usable;
     int             _blksize;
@@ -113,6 +114,14 @@ NS_ASSUME_NONNULL_BEGIN
  * @return a string corresponding to the RFID tag type
  */
 -(NSString*)     get_tagTypeStr;
+
+/**
+ * Returns the type of NFC type usable on the RFID tag, between 1 and 5.
+ * If no known NFC type is know for the RFID tag, returns zero.
+ *
+ * @return an integer corresponding to the RFID tag type
+ */
+-(int)     get_tagNFCtype;
 
 /**
  * Returns the total memory size of the RFID tag, in bytes.
@@ -951,6 +960,72 @@ typedef void (*YEventCallback)(YRfidReader *obj, double timestamp, NSString *eve
  * happens, you can get more information from the status object.
  */
 -(int)     tagWriteStr:(NSString*)tagId :(int)firstBlock :(NSString*)text :(YRfidOptions*)options :(YRfidStatus*)status;
+
+/**
+ * Writes data provided as a binary object to an RFID tag, using NFC
+ * compatible encoding.
+ * The function will automatically create a NFC Capability Container,
+ * and encapsulate the content with the required NDEF header corresponding
+ * to the given content type.
+ *
+ * @param tagId : identifier of the tag to use
+ * @param ndefType : the content type, either "U" for a URL, or a
+ *         generic MIME type like "text/vcard"
+ * @param payload : the payload of the NDEF record
+ * @param options : an YRfidOptions object with the optional
+ *         command execution parameters, such as security key
+ *         if required
+ * @param status : an RfidStatus object that will contain
+ *         the detailled status of the operation
+ *
+ * @return YAPI.SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code. When it
+ * happens, you can get more information from the status object.
+ */
+-(int)     tagWriteBinNFC:(NSString*)tagId :(NSString*)ndefType :(NSData*)payload :(YRfidOptions*)options :(YRfidStatus*)status;
+
+/**
+ * Writes an URL to an RFID tag using NFC compatible encoding, so that
+ * mobile phones with NFC support automatically offer to open
+ * the URL when reading the tag.
+ *
+ * @param tagId : identifier of the tag to use
+ * @param url : the URL to write on the tag
+ * @param options : an YRfidOptions object with the optional
+ *         command execution parameters, such as security key
+ *         if required
+ * @param status : an RfidStatus object that will contain
+ *         the detailled status of the operation
+ *
+ * @return YAPI.SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code. When it
+ * happens, you can get more information from the status object.
+ */
+-(int)     tagWriteUrlNFC:(NSString*)tagId :(NSString*)url :(YRfidOptions*)options :(YRfidStatus*)status;
+
+/**
+ * Writes WiFi settings to an RFID tag using NFC compatible encoding, so that
+ * mobile phones with NFC support automatically offer to connect to this WiFi
+ * network.
+ *
+ * @param tagId : identifier of the tag to use
+ * @param ssid : the SSID of the WiFi network to connect to
+ * @param auth : the network authentication type (currently always "WPA2")
+ * @param secret : the network password
+ * @param options : an YRfidOptions object with the optional
+ *         command execution parameters, such as security key
+ *         if required
+ * @param status : an RfidStatus object that will contain
+ *         the detailled status of the operation
+ *
+ * @return YAPI.SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code. When it
+ * happens, you can get more information from the status object.
+ */
+-(int)     tagWriteWifiConfigNFC:(NSString*)tagId :(NSString*)ssid :(NSString*)auth :(NSString*)secret :(YRfidOptions*)options :(YRfidStatus*)status;
 
 /**
  * Reads an RFID tag AFI byte (ISO 15693 only).

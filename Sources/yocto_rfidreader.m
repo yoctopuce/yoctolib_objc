@@ -48,6 +48,7 @@
 {
 //--- (generated code: YRfidTagInfo attributes initialization)
     _tagType = 0;
+    _nfcType = 0;
     _size = 0;
     _usable = 0;
     _blksize = 0;
@@ -98,6 +99,17 @@
 -(NSString*) get_tagTypeStr
 {
     return _typeStr;
+}
+
+/**
+ * Returns the type of NFC type usable on the RFID tag, between 1 and 5.
+ * If no known NFC type is know for the RFID tag, returns zero.
+ *
+ * @return an integer corresponding to the RFID tag type
+ */
+-(int) get_tagNFCtype
+{
+    return _nfcType;
 }
 
 /**
@@ -159,6 +171,7 @@
 -(void) imm_init:(NSString*)tagId :(int)tagType :(int)size :(int)usable :(int)blksize :(int)fblk :(int)lblk
 {
     NSString* typeStr;
+    int nfcType;
     typeStr = @"unknown";
     if (tagType == Y_IEC_15693) {
         typeStr = @"IEC 15693";
@@ -208,9 +221,19 @@
     if (tagType == Y_IEC_15693_ICODE_SLI) {
         typeStr = @"ICODE SLI";
     }
-
+    nfcType = 0;
+    if ((tagType == Y_IEC_14443_MIFARE_ULTRALIGHT) || (tagType == Y_IEC_14443_MIFARE_CLASSIC1K) || (tagType == Y_IEC_14443_MIFARE_CLASSIC4K) || (tagType == Y_IEC_14443_NTAG_213) || (tagType == Y_IEC_14443_NTAG_215) || (tagType == Y_IEC_14443_NTAG_216) || (tagType == Y_IEC_14443_NTAG_424_DNA)) {
+        nfcType = 2;
+    }
+    if (tagType == Y_IEC_14443_MIFARE_DESFIRE) {
+        nfcType = 4;
+    }
+    if ((tagType == Y_IEC_15693) || (tagType == Y_IEC_15693_ST25DV) || (tagType == Y_IEC_15693_ST25TV) || (tagType == Y_IEC_15693_TAGIT_HFI) || (tagType == Y_IEC_15693_MB89R) || (tagType == Y_IEC_15693_ICODE_DNA) || (tagType == Y_IEC_15693_ICODE_SLI)) {
+        nfcType = 5;
+    }
     _tagId = tagId;
     _tagType = tagType;
+    _nfcType = nfcType;
     _typeStr = typeStr;
     _size = size;
     _usable = usable;
@@ -1519,6 +1542,282 @@ static void yInternalEventCallback(YRfidReader *obj, NSString *value)
     buff = [NSMutableData dataWithData:[text dataUsingEncoding:NSISOLatin1StringEncoding]];
 
     return [self tagWriteBin:tagId :firstBlock :buff :options :status];
+}
+
+/**
+ * Writes data provided as a binary object to an RFID tag, using NFC
+ * compatible encoding.
+ * The function will automatically create a NFC Capability Container,
+ * and encapsulate the content with the required NDEF header corresponding
+ * to the given content type.
+ *
+ * @param tagId : identifier of the tag to use
+ * @param ndefType : the content type, either "U" for a URL, or a
+ *         generic MIME type like "text/vcard"
+ * @param payload : the payload of the NDEF record
+ * @param options : an YRfidOptions object with the optional
+ *         command execution parameters, such as security key
+ *         if required
+ * @param status : an RfidStatus object that will contain
+ *         the detailled status of the operation
+ *
+ * @return YAPI.SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code. When it
+ * happens, you can get more information from the status object.
+ */
+-(int) tagWriteBinNFC:(NSString*)tagId :(NSString*)ndefType :(NSData*)payload :(YRfidOptions*)options :(YRfidStatus*)status
+{
+    YRfidTagInfo* tagInfo;
+    int nfcType;
+    int usableSize;
+    int nfcBlocks;
+    int ccLen;
+    int typeLen;
+    int payloadLen;
+    int srBit;
+    int ndefLen;
+    int tlvHdrLen;
+    int totalLen;
+    int absPos;
+    int idx;
+    NSMutableData* binType;
+    NSMutableData* buff;
+
+    tagInfo = [self get_tagInfo:tagId :status];
+    // for now, we only allow NFC Type 5 (T5T)
+    nfcType = [((YRfidTagInfo*)tagInfo) get_tagNFCtype];
+    if (!(nfcType == 5)) {[self _throw:YAPI_INVALID_ARGUMENT:@"no NFC support for self tag"]; return YAPI_INVALID_ARGUMENT;}
+    usableSize = [((YRfidTagInfo*)tagInfo) get_tagUsableSize];
+    ccLen = 4;
+    nfcBlocks = ((usableSize - ccLen) / 8);
+    if (nfcBlocks > 255) {
+        if (nfcType == 5) {
+            ccLen = 8;
+            nfcBlocks = ((usableSize - ccLen) / 8);
+        } else {
+            nfcBlocks = 255;
+        }
+    }
+    binType = [NSMutableData dataWithData:[ndefType dataUsingEncoding:NSISOLatin1StringEncoding]];
+    typeLen = (int)[binType length];
+    payloadLen = (int)[payload length];
+    // compute the total length of the NDEF record
+    ndefLen = 3 + typeLen + payloadLen;
+    srBit = 0x10;
+    if (payloadLen > 255) {
+        ndefLen = ndefLen + 3;
+        srBit = 0;
+    }
+    // compute the total length of the TLV record
+    tlvHdrLen = 2;
+    if (ndefLen > 254) {
+        tlvHdrLen = 4;
+    }
+    // make sure the content fits on the tag
+    if (!((tlvHdrLen + ndefLen + 1) <= (8 * nfcBlocks))) {[self _throw:YAPI_INVALID_ARGUMENT:@"content is too large"]; return YAPI_INVALID_ARGUMENT;}
+    totalLen = ccLen + tlvHdrLen + ndefLen + 1;
+    buff = [NSMutableData dataWithLength:totalLen];
+    // CC header
+    if (ccLen == 4) {
+        (((u8*)([buff mutableBytes]))[0]) = 0xE1;
+        if (nfcType == 5) {
+            (((u8*)([buff mutableBytes]))[1]) = 0x40;
+        } else {
+            (((u8*)([buff mutableBytes]))[1]) = 0x10;
+        }
+        (((u8*)([buff mutableBytes]))[2]) = nfcBlocks;
+        (((u8*)([buff mutableBytes]))[3]) = 0x00;
+    } else {
+        (((u8*)([buff mutableBytes]))[0]) = 0xE2;
+        (((u8*)([buff mutableBytes]))[1]) = 0x40;
+        (((u8*)([buff mutableBytes]))[2]) = 0x00;
+        (((u8*)([buff mutableBytes]))[3]) = 0x01;
+        (((u8*)([buff mutableBytes]))[4]) = 0x00;
+        (((u8*)([buff mutableBytes]))[5]) = 0x00;
+        (((u8*)([buff mutableBytes]))[6]) = (nfcBlocks / 256);
+        (((u8*)([buff mutableBytes]))[7]) = (nfcBlocks & 255);
+    }
+    // TLV header
+    (((u8*)([buff mutableBytes]))[ccLen]) = 3;
+    if (tlvHdrLen == 2) {
+        (((u8*)([buff mutableBytes]))[ccLen + 1]) = ndefLen;
+    } else {
+        (((u8*)([buff mutableBytes]))[ccLen + 1]) = 0xff;
+        (((u8*)([buff mutableBytes]))[ccLen + 2]) = (ndefLen / 256);
+        (((u8*)([buff mutableBytes]))[ccLen + 3]) = (ndefLen & 255);
+    }
+    absPos = ccLen + tlvHdrLen;
+    // NDEF record
+    if (typeLen <= 3) {
+        // NFC Forum type
+        (((u8*)([buff mutableBytes]))[absPos]) = 0xC1 + srBit;
+    } else {
+        // MIME type
+        (((u8*)([buff mutableBytes]))[absPos]) = 0xC2 + srBit;
+    }
+    if (srBit > 0) {
+        (((u8*)([buff mutableBytes]))[absPos + 1]) = typeLen;
+        (((u8*)([buff mutableBytes]))[absPos + 2]) = payloadLen;
+        absPos = absPos + 3;
+    } else {
+        (((u8*)([buff mutableBytes]))[absPos + 1]) = typeLen;
+        (((u8*)([buff mutableBytes]))[absPos + 2]) = 0;
+        (((u8*)([buff mutableBytes]))[absPos + 3]) = 0;
+        (((u8*)([buff mutableBytes]))[absPos + 4]) = (payloadLen / 256);
+        (((u8*)([buff mutableBytes]))[absPos + 5]) = (payloadLen & 255);
+        absPos = absPos + 6;
+    }
+    idx = 0;
+    while (idx < typeLen) {
+        (((u8*)([buff mutableBytes]))[absPos + idx]) = (((u8*)([binType bytes]))[idx]);
+        idx = idx + 1;
+    }
+    absPos = absPos + typeLen;
+    idx = 0;
+    while (idx < payloadLen) {
+        (((u8*)([buff mutableBytes]))[absPos + idx]) = (((u8*)([payload bytes]))[idx]);
+        idx = idx + 1;
+    }
+    absPos = absPos + payloadLen;
+    // TLV trailer
+    (((u8*)([buff mutableBytes]))[absPos]) = 0xfe;
+    idx = [((YRfidTagInfo*)tagInfo) get_tagFirstBlock];
+    return [self tagWriteBin:tagId :idx :buff :options :status];
+}
+
+/**
+ * Writes an URL to an RFID tag using NFC compatible encoding, so that
+ * mobile phones with NFC support automatically offer to open
+ * the URL when reading the tag.
+ *
+ * @param tagId : identifier of the tag to use
+ * @param url : the URL to write on the tag
+ * @param options : an YRfidOptions object with the optional
+ *         command execution parameters, such as security key
+ *         if required
+ * @param status : an RfidStatus object that will contain
+ *         the detailled status of the operation
+ *
+ * @return YAPI.SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code. When it
+ * happens, you can get more information from the status object.
+ */
+-(int) tagWriteUrlNFC:(NSString*)tagId :(NSString*)url :(YRfidOptions*)options :(YRfidStatus*)status
+{
+    int prefix;
+    NSMutableData* binUrl;
+    prefix = 0;
+    if ([[url substringWithRange:NSMakeRange(0, 8)] isEqualToString:@"https://"]) {
+        prefix = 4;
+        url = [url substringWithRange:NSMakeRange(8, (int)[(url) length] - 8)];
+    } else {
+        if ([[url substringWithRange:NSMakeRange(0, 8)] isEqualToString:@"http://"]) {
+            prefix = 3;
+            url = [url substringWithRange:NSMakeRange(7, (int)[(url) length] - 7)];
+        }
+    }
+    if ([[url substringWithRange:NSMakeRange(0, 8)] isEqualToString:@"www."]) {
+        prefix = prefix - 2;
+        url = [url substringWithRange:NSMakeRange(4, (int)[(url) length] - 4)];
+    }
+    binUrl = [NSMutableData dataWithData:[[NSString stringWithFormat:@"%@%@", @"_", url] dataUsingEncoding:NSISOLatin1StringEncoding]];
+    (((u8*)([binUrl mutableBytes]))[0]) = prefix;
+    return [self tagWriteBinNFC:tagId :@"U" :binUrl :options :status];
+}
+
+/**
+ * Writes WiFi settings to an RFID tag using NFC compatible encoding, so that
+ * mobile phones with NFC support automatically offer to connect to this WiFi
+ * network.
+ *
+ * @param tagId : identifier of the tag to use
+ * @param ssid : the SSID of the WiFi network to connect to
+ * @param auth : the network authentication type (currently always "WPA2")
+ * @param secret : the network password
+ * @param options : an YRfidOptions object with the optional
+ *         command execution parameters, such as security key
+ *         if required
+ * @param status : an RfidStatus object that will contain
+ *         the detailled status of the operation
+ *
+ * @return YAPI.SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code. When it
+ * happens, you can get more information from the status object.
+ */
+-(int) tagWriteWifiConfigNFC:(NSString*)tagId :(NSString*)ssid :(NSString*)auth :(NSString*)secret :(YRfidOptions*)options :(YRfidStatus*)status
+{
+    NSMutableData* ssidBin;
+    int ssidLen;
+    NSMutableData* secretBin;
+    int secretLen;
+    int payloadLen;
+    NSMutableData* payload;
+    int idx;
+    ssidBin = [NSMutableData dataWithData:[ssid dataUsingEncoding:NSISOLatin1StringEncoding]];
+    ssidLen = (int)[ssidBin length];
+    secretBin = [NSMutableData dataWithData:[secret dataUsingEncoding:NSISOLatin1StringEncoding]];
+    secretLen = (int)[secretBin length];
+    payloadLen = ssidLen + secretLen + 39;
+    payload = [NSMutableData dataWithLength:payloadLen];
+    // Credential header
+    (((u8*)([payload mutableBytes]))[0]) = 0x10;
+    (((u8*)([payload mutableBytes]))[1]) = 0x0e;
+    (((u8*)([payload mutableBytes]))[2]) = 0;
+    (((u8*)([payload mutableBytes]))[3]) = payloadLen - 4;
+    // Network index
+    (((u8*)([payload mutableBytes]))[4]) = 0x10;
+    (((u8*)([payload mutableBytes]))[5]) = 0x26;
+    (((u8*)([payload mutableBytes]))[6]) = 0;
+    (((u8*)([payload mutableBytes]))[7]) = 1;
+    (((u8*)([payload mutableBytes]))[8]) = 1;
+    // SSID
+    (((u8*)([payload mutableBytes]))[9]) = 0x10;
+    (((u8*)([payload mutableBytes]))[10]) = 0x45;
+    (((u8*)([payload mutableBytes]))[11]) = 0;
+    (((u8*)([payload mutableBytes]))[12]) = ssidLen;
+    idx = 0;
+    while (idx < ssidLen) {
+        (((u8*)([payload mutableBytes]))[13 + idx]) = (((u8*)([ssidBin bytes]))[idx]);
+        idx = idx + 1;
+    }
+    // Auth: WPA2-Personal
+    (((u8*)([payload mutableBytes]))[13 + ssidLen]) = 0x10;
+    (((u8*)([payload mutableBytes]))[14 + ssidLen]) = 0x03;
+    (((u8*)([payload mutableBytes]))[15 + ssidLen]) = 0;
+    (((u8*)([payload mutableBytes]))[16 + ssidLen]) = 2;
+    (((u8*)([payload mutableBytes]))[17 + ssidLen]) = 0;
+    (((u8*)([payload mutableBytes]))[18 + ssidLen]) = 32;
+    // Encryption: AES
+    (((u8*)([payload mutableBytes]))[19 + ssidLen]) = 0x10;
+    (((u8*)([payload mutableBytes]))[20 + ssidLen]) = 0x0f;
+    (((u8*)([payload mutableBytes]))[21 + ssidLen]) = 0;
+    (((u8*)([payload mutableBytes]))[22 + ssidLen]) = 2;
+    (((u8*)([payload mutableBytes]))[23 + ssidLen]) = 0;
+    (((u8*)([payload mutableBytes]))[24 + ssidLen]) = 8;
+    // Network key
+    (((u8*)([payload mutableBytes]))[25 + ssidLen]) = 0x10;
+    (((u8*)([payload mutableBytes]))[26 + ssidLen]) = 0x27;
+    (((u8*)([payload mutableBytes]))[27 + ssidLen]) = 0;
+    (((u8*)([payload mutableBytes]))[28 + ssidLen]) = secretLen;
+    idx = 0;
+    while (idx < secretLen) {
+        (((u8*)([payload mutableBytes]))[29 + ssidLen + idx]) = (((u8*)([secretBin bytes]))[idx]);
+        idx = idx + 1;
+    }
+    // MAC broadcast
+    (((u8*)([payload mutableBytes]))[29 + ssidLen + secretLen]) = 0x10;
+    (((u8*)([payload mutableBytes]))[30 + ssidLen + secretLen]) = 0x20;
+    (((u8*)([payload mutableBytes]))[31 + ssidLen + secretLen]) = 0;
+    (((u8*)([payload mutableBytes]))[32 + ssidLen + secretLen]) = 6;
+    idx = 0;
+    while (idx < 6) {
+        (((u8*)([payload mutableBytes]))[33 + ssidLen + secretLen + idx]) = 0xff;
+        idx = idx + 1;
+    }
+    return [self tagWriteBinNFC:tagId :@"application/vnd.wfa.wsc" :payload :options :status];
 }
 
 /**

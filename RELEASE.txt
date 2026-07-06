@@ -1,5 +1,3 @@
-Objective-C v1.11.14927
+Objective-C v1.11.15129
 
-- Add new YAirQuality class
-- Add support for error handling when sending SMS
-- Fix out-of-order execution of postponeRefresh vs bitmap uploads
+- Add NFC encoding support to YRfidReader class

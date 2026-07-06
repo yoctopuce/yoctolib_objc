@@ -25,6 +25,7 @@
 		B8DD8BDB14A9360E008A9E8F /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B8DD8BDA14A9360E008A9E8F /* Foundation.framework */; };
 		B8F48A9314A93A3E008FBD0C /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B8F48A9214A93A3E008FBD0C /* IOKit.framework */; };
 		B8A727A817E0CD3A00575b8a8cae /* yocto_accelerometer.m in Sources */ = {isa = PBXBuildFile; fileRef = B8A727A817E0CD3A00574e805e3e /* yocto_accelerometer.m */; };
+		B8A727A817E0CD3A00578dc83bcd /* yocto_airquality.m in Sources */ = {isa = PBXBuildFile; fileRef = B8A727A817E0CD3A0057fd867b8b /* yocto_airquality.m */; };
 		B8A727A817E0CD3A0057f9627190 /* yocto_altitude.m in Sources */ = {isa = PBXBuildFile; fileRef = B8A727A817E0CD3A0057f908d263 /* yocto_altitude.m */; };
 		B8A727A817E0CD3A00572b0ad650 /* yocto_anbutton.m in Sources */ = {isa = PBXBuildFile; fileRef = B8A727A817E0CD3A00572b6075a3 /* yocto_anbutton.m */; };
 		B8A727A817E0CD3A0057e3f2b272 /* yocto_angularspeed.m in Sources */ = {isa = PBXBuildFile; fileRef = B8A727A817E0CD3A0057330d6b2f /* yocto_angularspeed.m */; };
@@ -155,6 +156,8 @@
 		B8F48A9214A93A3E008FBD0C /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 		B8A727A817E0CD3A00574e805e3e /* yocto_accelerometer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = yocto_accelerometer.m; path = ../../../Sources/yocto_accelerometer.m; sourceTree = "<group>"; };
 		B8A727A817E0CD3A00573eeaaab1 /* yocto_accelerometer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yocto_accelerometer.h; path = ../../../Sources/yocto_accelerometer.h; sourceTree = "<group>"; };
+		B8A727A817E0CD3A0057fd867b8b /* yocto_airquality.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = yocto_airquality.m; path = ../../../Sources/yocto_airquality.m; sourceTree = "<group>"; };
+		B8A727A817E0CD3A00578dec8f04 /* yocto_airquality.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yocto_airquality.h; path = ../../../Sources/yocto_airquality.h; sourceTree = "<group>"; };
 		B8A727A817E0CD3A0057f908d263 /* yocto_altitude.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = yocto_altitude.m; path = ../../../Sources/yocto_altitude.m; sourceTree = "<group>"; };
 		B8A727A817E0CD3A0057896226ec /* yocto_altitude.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = yocto_altitude.h; path = ../../../Sources/yocto_altitude.h; sourceTree = "<group>"; };
 		B8A727A817E0CD3A00572b6075a3 /* yocto_anbutton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = yocto_anbutton.m; path = ../../../Sources/yocto_anbutton.m; sourceTree = "<group>"; };
@@ -383,6 +386,8 @@
 				B8DD8BEC14A936EF008A9E8F /* yocto_api.m */,
 				B8A727A817E0CD3A00574e805e3e /* yocto_accelerometer.m */,
 				B8A727A817E0CD3A00573eeaaab1 /* yocto_accelerometer.h */,
+				B8A727A817E0CD3A0057fd867b8b /* yocto_airquality.m */,
+				B8A727A817E0CD3A00578dec8f04 /* yocto_airquality.h */,
 				B8A727A817E0CD3A0057f908d263 /* yocto_altitude.m */,
 				B8A727A817E0CD3A0057896226ec /* yocto_altitude.h */,
 				B8A727A817E0CD3A00572b6075a3 /* yocto_anbutton.m */,
@@ -647,6 +652,7 @@
 				B8DD8C3314A9370B008A9E8F /* ytcp.c in Sources */,
 				B845588F14DC315D00425F49 /* ythread.c in Sources */,
 				B8A727A817E0CD3A00575b8a8cae /* yocto_accelerometer.m in Sources */,
+				B8A727A817E0CD3A00578dc83bcd /* yocto_airquality.m in Sources */,
 				B8A727A817E0CD3A0057f9627190 /* yocto_altitude.m in Sources */,
 				B8A727A817E0CD3A00572b0ad650 /* yocto_anbutton.m in Sources */,
 				B8A727A817E0CD3A0057e3f2b272 /* yocto_angularspeed.m in Sources */,
