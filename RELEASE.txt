@@ -1,3 +1,7 @@
-Objective-C v1.11.15129
+Objective-C v1.11.15681
 
-- Add NFC encoding support to YRfidReader class
+- Add support for large text commands via upload
+- Add methods to control ePaper fast refresh policy
+- Add XY-MODEM upload support
+- Fix handling of display dimensions when orientation is changed
+- Fix encoding for triggerForcedCalibration() argument

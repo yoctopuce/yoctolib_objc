@@ -46,7 +46,7 @@ NS_ASSUME_NONNULL_BEGIN
 //--- (YCarbonDioxide globals)
 typedef void (*YCarbonDioxideValueCallback)(YCarbonDioxide *func, NSString *functionValue);
 typedef void (*YCarbonDioxideTimedReportCallback)(YCarbonDioxide *func, YMeasure *measure);
-#define Y_ABCPERIOD_INVALID             YAPI_INVALID_UINT
+#define Y_ABCPERIOD_INVALID             YAPI_INVALID_INT
 #define Y_COMMAND_INVALID               YAPI_INVALID_STRING
 //--- (end of YCarbonDioxide globals)
 

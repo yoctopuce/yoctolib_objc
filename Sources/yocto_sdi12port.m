@@ -1628,7 +1628,8 @@
     reqlen = 1024;
     buff = [self readBin:reqlen];
     bufflen = (int)[buff length];
-    if (_rxptr == currpos+bufflen) {
+    if ((bufflen > 0) && (_rxptr == currpos+bufflen)) {
+        // up to 1024 bytes in buffer, all in direction Rx
         res = (((u8*)([buff bytes]))[0]);
         _rxptr = currpos+1;
         _rxbuffptr = currpos;
@@ -1640,7 +1641,8 @@
     reqlen = 16;
     buff = [self readBin:reqlen];
     bufflen = (int)[buff length];
-    if (_rxptr == currpos+bufflen) {
+    if ((bufflen > 0) && (_rxptr == currpos+bufflen)) {
+        // up to 16 bytes in buffer, all in direction Rx
         res = (((u8*)([buff bytes]))[0]);
         _rxptr = currpos+1;
         _rxbuffptr = currpos;

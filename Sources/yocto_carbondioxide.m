@@ -296,7 +296,7 @@
  */
 -(int) triggerForcedCalibration:(double)refVal
 {
-    return [self set_command:[NSString stringWithFormat:@"F%dC",(int) floor(1000*refVal+0.5)]];
+    return [self set_command:[NSString stringWithFormat:@"F%dC",(int) floor(refVal+0.5)]];
 }
 
 /**

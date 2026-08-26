@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.m 72340 2026-03-09 13:56:18Z seb $
+ * $Id: yocto_api.m 75351 2026-08-02 19:45:07Z mvuilleu $
  *
  * High-level programming interface, common to all modules
  *
@@ -3715,6 +3715,13 @@ static const char* hexArray = "0123456789ABCDEF";
 }
 
 
+// Internal method to force reloading even lazy attributes (eg. displayWidth, etc)
+-(void)    _clearLazyCache
+{
+    [self clearCache];
+    _cacheExpiration = 0;
+}
+
 /**
  * Gets the YModule object for the device on which the function is located.
  * If the function cannot be located on any module, the returned instance of
@@ -5765,7 +5772,12 @@ static const char* hexArray = "0123456789ABCDEF";
  */
 -(int) revertFromFlash
 {
-    return [self set_persistentSettings:Y_PERSISTENTSETTINGS_LOADED];
+    int res;
+
+    res = [self set_persistentSettings:Y_PERSISTENTSETTINGS_LOADED];
+    if (!(res==YAPI_SUCCESS)) {[self _throw:res:@"unable to trigger revert settings"]; return res;}
+    [self _clearLazyCache];
+    return res;
 }
 
 /**

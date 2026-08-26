@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_display.m 74723 2026-06-12 13:11:34Z mvuilleu $
+ * $Id: yocto_display.m 75525 2026-08-14 08:04:04Z mvuilleu $
  *
  * Implements yFindDisplay(), the high-level API for Display functions
  *
@@ -118,7 +118,7 @@
 {
     int res;
     res = YAPI_SUCCESS;
-    if ((int)[(_cmdbuff) length] + (int)[(cmd) length] >= 100) {
+    if ((int)[(_cmdbuff) length] + (int)[(cmd) length] >= 64) {
         // force flush before, to prevent overflow
         [self flush_now];
     }
@@ -451,6 +451,18 @@
  */
 -(int) drawText:(int)x :(int)y :(Y_ALIGN)anchor :(NSString*)text
 {
+    int textlen;
+    NSString* destname;
+    textlen = (int)[(text) length];
+    if (textlen > 60) {
+        if (textlen > 1000) {
+            [_display _throw:YAPI_INVALID_ARGUMENT :@"text too large (max 1000 characters)"];
+            return YAPI_INVALID_ARGUMENT;
+        }
+        [_display flushLayers];
+        destname = [NSString stringWithFormat:@"layer%d:T%d,%d,%d,",_id,x,y,anchor];
+        return [_display upload:destname :[NSMutableData dataWithData:[text dataUsingEncoding:NSISOLatin1StringEncoding]]];
+    }
     return [self command_flush:[NSString stringWithFormat:@"T%d,%d,%d,%@%c",x,y,anchor,text,27]];
 }
 
@@ -474,33 +486,6 @@
 }
 
 /**
- * Draws a bitmap at the specified position. The bitmap is provided as a binary object,
- * where each pixel maps to a bit, from left to right and from top to bottom.
- * The most significant bit of each byte maps to the leftmost pixel, and the least
- * significant bit maps to the rightmost pixel. Bits set to 1 are drawn using the
- * layer selected pen color. Bits set to 0 are drawn using the specified background
- * gray level, unless -1 is specified, in which case they are not drawn at all
- * (as if transparent).
- *
- * @param x : the distance from left of layer to the left of the bitmap, in pixels
- * @param y : the distance from top of layer to the top of the bitmap, in pixels
- * @param w : the width of the bitmap, in pixels
- * @param bitmap : a binary object
- * @param bgcol : the background gray level to use for zero bits (0 = black,
- *         255 = white), or -1 to leave the pixels unchanged
- *
- * @return YAPI.SUCCESS if the call succeeds.
- *
- * On failure, throws an exception or returns a negative error code.
- */
--(int) drawBitmap:(int)x :(int)y :(int)w :(NSData*)bitmap :(int)bgcol
-{
-    NSString* destname;
-    destname = [NSString stringWithFormat:@"layer%d:%d,%d@%d,%d",_id,w,bgcol,x,y];
-    return [_display upload:destname :bitmap];
-}
-
-/**
  * Draws a GIF image provided as a binary buffer at the specified position.
  * If the image drawing must be included in an animation sequence, save it
  * in the device filesystem first and use drawImage instead.
@@ -516,8 +501,64 @@
 -(int) drawGIF:(int)x :(int)y :(NSData*)gifimage
 {
     NSString* destname;
+    [_display flushLayers];
     destname = [NSString stringWithFormat:@"layer%d:G,-1@%d,%d",_id,x,y];
     return [_display upload:destname :gifimage];
+}
+
+/**
+ * Draws a bitmap at the specified position. The bitmap is provided as a binary object,
+ * where each pixel maps to a bit, from left to right and from top to bottom.
+ * The most significant bit of each byte maps to the leftmost pixel, and the least
+ * significant bit maps to the rightmost pixel. Bits set to 1 are drawn using the
+ * layer selected pen color. Bits set to 0 are drawn using the specified background
+ * color, unless NO_INK (-1) is specified, in which case they are not
+ * drawn at all (as if transparent).
+ *
+ * @param x : the distance from left of layer to the left of the bitmap, in pixels
+ * @param y : the distance from top of layer to the top of the bitmap, in pixels
+ * @param w : the width of the bitmap, in pixels
+ * @param bitmap : a binary object
+ * @param bgcol : the RGB background color to use for zero bits, as a 24-bit RGB value,
+ *         or one of the constants NO_INK, FG_INK or BG_INK
+ *
+ * @return YAPI.SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) drawBitmap:(int)x :(int)y :(int)w :(NSData*)bitmap :(int)bgcol
+{
+    NSString* destname;
+    int r;
+    int g;
+    int b;
+    NSString* rgbcol;
+    if ((w < 0) || (w > 512)) {
+        [_display _throw:YAPI_INVALID_ARGUMENT :@"bitmap width must be in range 1...512"];
+        return YAPI_INVALID_ARGUMENT;
+    }
+    [_display flushLayers];
+    if (bgcol <= 255) {
+        if (bgcol >= -1) {
+            // backward-compatible behaviour (gray level)
+            rgbcol = [NSString stringWithFormat:@"%d",bgcol];
+        } else {
+            // background color or foreground color
+            if (bgcol <= -3) {
+                rgbcol = @"#.";
+            } else {
+                rgbcol = @"#-";
+            }
+        }
+    } else {
+        // RGB color
+        r = ((bgcol >> 20) & 15);
+        g = ((bgcol >> 12) & 15);
+        b = ((bgcol >> 4) & 15);
+        rgbcol = [NSString stringWithFormat:@"#%x%x%x",r,g,b];
+    }
+    destname = [NSString stringWithFormat:@"layer%d:%d,%@@%d,%d",_id,w,rgbcol,x,y];
+    return [_display upload:destname :bitmap];
 }
 
 /**
@@ -592,7 +633,7 @@
 }
 
 /**
- * Close the currently open polygon, fill its content the fill color currently
+ * Closes the currently open polygon, fill its content the fill color currently
  * selected for the layer, and draw its outline using the selected line color.
  *
  * @return YAPI.SUCCESS if the call succeeds.
@@ -619,6 +660,18 @@
  */
 -(int) consoleOut:(NSString*)text
 {
+    int textlen;
+    NSString* destname;
+    textlen = (int)[(text) length];
+    if (textlen > 60) {
+        if (textlen > 1000) {
+            [_display _throw:YAPI_INVALID_ARGUMENT :@"text too large (max 1000 characters)"];
+            return YAPI_INVALID_ARGUMENT;
+        }
+        [_display flushLayers];
+        destname = [NSString stringWithFormat:@"layer%d:!",_id];
+        return [_display upload:destname :[NSMutableData dataWithData:[text dataUsingEncoding:NSISOLatin1StringEncoding]]];
+    }
     return [self command_flush:[NSString stringWithFormat:@"!%@%c",text,27]];
 }
 
@@ -995,11 +1048,11 @@
 }
 
 /**
- * Changes the name of the sequence to play when the displayed is powered on.
+ * Changes the name of the sequence to play when the display is powered on.
  * Remember to call the saveToFlash() method of the module if the
  * modification must be kept.
  *
- * @param newval : a string corresponding to the name of the sequence to play when the displayed is powered on
+ * @param newval : a string corresponding to the name of the sequence to play when the display is powered on
  *
  * @return YAPI.SUCCESS if the call succeeds.
  *
@@ -1115,7 +1168,10 @@
     return [self _setAttr:@"autoInvertDelay" :rest_val];
 }
 /**
- * Returns the currently selected display orientation.
+ * Returns the currently selected display orientation. The orientation is defined as the side of the
+ * screen where the
+ * USB connector (for OLED displays) or the ribbon cable (for ePaper panels) is located when the
+ * display is up straight.
  *
  * @return a value among YDisplay.ORIENTATION_LEFT, YDisplay.ORIENTATION_UP,
  * YDisplay.ORIENTATION_RIGHT and YDisplay.ORIENTATION_DOWN corresponding to the currently selected
@@ -1142,7 +1198,9 @@
 }
 
 /**
- * Changes the display orientation. Remember to call the saveToFlash()
+ * Changes the display orientation. he orientation is defined as the side of the screen where the
+ * USB connector (for OLED displays) or the ribbon cable (for ePaper panels) is located when the
+ * display is up straight. Remember to call the saveToFlash()
  * method of the module if the modification must be kept.
  *
  * @param newval : a value among YDisplay.ORIENTATION_LEFT, YDisplay.ORIENTATION_UP,
@@ -1190,8 +1248,7 @@
 /**
  * Changes the model of display to match the connected display panel.
  * This function has no effect if the module does not support the selected
- * display panel.
- * Remember to call the saveToFlash()
+ * display panel. Remember to call the saveToFlash()
  * method of the module if the modification must be kept.
  *
  * @param newval : a string corresponding to the model of display to match the connected display panel
@@ -1259,11 +1316,11 @@
     return [self get_displayHeight];
 }
 /**
- * Returns the display type: monochrome OLED, black and white ePaper, color ePaper, etc.
+ * Returns the display type: monochrome OLED, black and white ePaper, color ePaper, and so on.
  *
  * @return a value among YDisplay.DISPLAYTYPE_MONO, YDisplay.DISPLAYTYPE_EPAPER_BW,
  * YDisplay.DISPLAYTYPE_EPAPER_BWR and YDisplay.DISPLAYTYPE_EPAPER_BWRY corresponding to the display
- * type: monochrome OLED, black and white ePaper, color ePaper, etc
+ * type: monochrome OLED, black and white ePaper, color ePaper, and so on
  *
  * On failure, throws an exception or returns YDisplay.DISPLAYTYPE_INVALID.
  */
@@ -1505,8 +1562,125 @@
 }
 
 /**
+ * Returns the fast refresh usage policy in use (ePaper displays only).
+ * This setting is combined with the regenerate policy to determine when the screen
+ * should be updated using a fast update versus or regenerated using a slower,
+ * flickering full refresh.
+ *
+ * @return a value among the YDisplay.FASTREFRESH enumeration
+ *         (YDisplay.FASTREFRESH_WHENEVER_POSSIBLE,
+ *         YDisplay.FASTREFRESH_WHENEVER_SUPPORTED,
+ *         YDisplay.FASTREFRESH_NEVER).
+ *
+ * On failure, throws an exception or returns YDisplay.FASTREFRESH_INVALID.
+ */
+-(Y_FASTREFRESH) get_fastRefreshPolicy
+{
+    int combined;
+    int fmod;
+    combined = [self get_brightness];
+    if (combined < 0) {
+        return Y_FASTREFRESH_INVALID;
+    }
+    fmod = (combined / 25);
+    if (fmod >= 2) {
+        fmod = fmod - 2;
+    }
+    return (Y_FASTREFRESH) fmod;
+}
+
+/**
+ * Returns the display regeneration minimal frequency (ePaper displays only).
+ * This setting is combined with the fast refresh usage policy to determine
+ * when the screen should be updated using a fast update versus or regenerated
+ * using a slower, flickering full refresh. To change the display regeneration minimal
+ * frequency, use methode set_fastRefreshPolicy().
+ *
+ * @return a value among the YDisplay.REGENERATE enumeration
+ *         (YDisplay.REGENERATE_ON_REQUEST_ONLY,
+ *         YDisplay.REGENERATE_EVERY_DAY, YDisplay.REGENERATE_EVERY_12H,
+ *         YDisplay.REGENERATE_EVERY_6H, YDisplay.REGENERATE_EVERY_3H,
+ *         YDisplay.REGENERATE_EVERY_2H, YDisplay.REGENERATE_EVERY_HOUR,
+ *         YDisplay.REGENERATE_EVERY_30MIN, YDisplay.REGENERATE_EVERY_15MIN,
+ *         YDisplay.REGENERATE_EVERY_480, YDisplay.REGENERATE_EVERY_432,
+ *         YDisplay.REGENERATE_EVERY_360, YDisplay.REGENERATE_EVERY_288,
+ *         YDisplay.REGENERATE_EVERY_240, YDisplay.REGENERATE_EVERY_192,
+ *         YDisplay.REGENERATE_EVERY_144, YDisplay.REGENERATE_EVERY_96,
+ *         YDisplay.REGENERATE_EVERY_48, YDisplay.REGENERATE_EVERY_36,
+ *         YDisplay.REGENERATE_EVERY_24, YDisplay.REGENERATE_EVERY_12,
+ *         YDisplay.REGENERATE_EVERY_10, YDisplay.REGENERATE_EVERY_8,
+ *         YDisplay.REGENERATE_EVERY_6, YDisplay.REGENERATE_EVERY_4,
+ *         YDisplay.REGENERATE_ALWAYS).
+ *
+ * On failure, throws an exception or returns YDisplay.REGENERATE_INVALID.
+ */
+-(Y_REGENERATE) get_regeneratePolicy
+{
+    int combined;
+    int fval;
+    combined= [self get_brightness];
+    if (combined < 0) {
+        return Y_REGENERATE_INVALID;
+    }
+    if (combined >= 100) {
+        fval = 25;
+    } else {
+        fval = (combined % 25);
+    }
+    return (Y_REGENERATE) fval;
+}
+
+/**
+ * Changes the fast refresh usage policy and display regeneration minimal frequency
+ * (ePaper displays only). These settings jointly determine when the screen should be
+ * updated using a fast update versus or regenerated using a slower, flickering full
+ * refresh.
+ *
+ * @param fastRefresh : a value among the YDisplay.FASTREFRESH enumeration
+ *         (YDisplay.FASTREFRESH_WHENEVER_POSSIBLE,
+ *         YDisplay.FASTREFRESH_WHENEVER_SUPPORTED,
+ *         YDisplay.FASTREFRESH_NEVER),
+ *         corresponding to the policy for using fast refresh.
+ * @param regenerate : a value among the enumeration YRefFrame.REGENERATE
+ *         (YDisplay.REGENERATE_ON_REQUEST_ONLY,
+ *         YDisplay.REGENERATE_EVERY_DAY, YDisplay.REGENERATE_EVERY_12H,
+ *         YDisplay.REGENERATE_EVERY_6H, YDisplay.REGENERATE_EVERY_3H,
+ *         YDisplay.REGENERATE_EVERY_2H, YDisplay.REGENERATE_EVERY_HOUR,
+ *         YDisplay.REGENERATE_EVERY_30MIN, YDisplay.REGENERATE_EVERY_15MIN,
+ *         YDisplay.REGENERATE_EVERY_480, YDisplay.REGENERATE_EVERY_432,
+ *         YDisplay.REGENERATE_EVERY_360, YDisplay.REGENERATE_EVERY_288,
+ *         YDisplay.REGENERATE_EVERY_240, YDisplay.REGENERATE_EVERY_192,
+ *         YDisplay.REGENERATE_EVERY_144, YDisplay.REGENERATE_EVERY_96,
+ *         YDisplay.REGENERATE_EVERY_48, YDisplay.REGENERATE_EVERY_36,
+ *         YDisplay.REGENERATE_EVERY_24, YDisplay.REGENERATE_EVERY_12,
+ *         YDisplay.REGENERATE_EVERY_10, YDisplay.REGENERATE_EVERY_8,
+ *         YDisplay.REGENERATE_EVERY_6, YDisplay.REGENERATE_EVERY_4,
+ *         YDisplay.REGENERATE_ALWAYS),
+ *         corresponding to the display minimal regeneration frequency.
+ *
+ * Remember to call the saveToFlash()
+ * method of the module if the modification must be kept.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) set_fastRefreshPolicy:(Y_FASTREFRESH)fastRefresh :(Y_REGENERATE)regenerate
+{
+    int combined;
+    int fmod;
+    int fval;
+    fmod = fastRefresh;
+    fval = regenerate;
+    if ((fval == 25) || (fmod == 2)) {
+        combined = 100;
+    } else {
+        combined = 50 + fmod * 25 + fval;
+    }
+    return [self set_brightness:combined];
+}
+
+/**
  * Clears the display screen and resets all display layers to their default state.
- * Using this function in a sequence will kill the sequence play-back. Don't use that
+ * Using this function in a sequence will kill the sequence play-back. Do not use that
  * function to reset the display at sequence start-up.
  *
  * @return YAPI.SUCCESS if the call succeeds.
@@ -1602,7 +1776,7 @@
 }
 
 /**
- * Trigger an immediate screen refresh. The combination of
+ * Triggers an immediate screen refresh. The combination of
  * postponeRefresh and triggerRefresh can be used as an
  * alternative to double-buffering to avoid flickering during display updates.
  *

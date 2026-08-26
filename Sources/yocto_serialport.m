@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_serialport.m 72057 2026-02-17 09:44:53Z mvuilleu $
+ * $Id: yocto_serialport.m 75535 2026-08-14 13:51:52Z mvuilleu $
  *
  * Implements the high-level API for SerialPort functions
  *
@@ -185,6 +185,8 @@
     _rxbuffptr = 0;
     _eventPos = 0;
     _eventCallback = NULL;
+    _xytotal = 0;
+    _xysent = 0;
 //--- (end of generated code: YSerialPort attributes initialization)
     return self;
 }
@@ -1364,7 +1366,8 @@ static void yInternalEventCallback(YSerialPort *obj, NSString *value)
     reqlen = 1024;
     buff = [self readBin:reqlen];
     bufflen = (int)[buff length];
-    if (_rxptr == currpos+bufflen) {
+    if ((bufflen > 0) && (_rxptr == currpos+bufflen)) {
+        // up to 1024 bytes in buffer, all in direction Rx
         res = (((u8*)([buff bytes]))[0]);
         _rxptr = currpos+1;
         _rxbuffptr = currpos;
@@ -1376,7 +1379,8 @@ static void yInternalEventCallback(YSerialPort *obj, NSString *value)
     reqlen = 16;
     buff = [self readBin:reqlen];
     bufflen = (int)[buff length];
-    if (_rxptr == currpos+bufflen) {
+    if ((bufflen > 0) && (_rxptr == currpos+bufflen)) {
+        // up to 16 bytes in buffer, all in direction Rx
         res = (((u8*)([buff bytes]))[0]);
         _rxptr = currpos+1;
         _rxbuffptr = currpos;
@@ -2306,6 +2310,204 @@ static void yInternalEventCallback(YSerialPort *obj, NSString *value)
         regpos = regpos + 1;
     }
     return res;
+}
+
+-(int) _xymodemQueue:(NSString*)proto :(NSString*)fname :(NSData*)buff :(int)timeoutSec
+{
+    if ((int)[(_xyproto) length] > 0) {
+        [self _throw:YAPI_DEVICE_BUSY :@"file transfer already in progress"];
+        return YAPI_DEVICE_BUSY;
+    }
+    _xyproto = proto;
+    _xyfname = fname;
+    _xyfdata = [NSMutableData dataWithData:buff];
+    _xytotal = (int)[buff length];
+    _xysent = 0;
+    return [self _xymodemProcess:timeoutSec];
+}
+
+-(int) _xymodemProcess:(int)timeoutSec
+{
+    NSString* proto;
+    int blksize;
+    int cnt;
+    NSMutableData* datablock;
+    NSString* namesuffix;
+    NSString* fullproto;
+    NSMutableData* json;
+    NSString* jsonStr;
+    NSString* errStr;
+    int sentBytes;
+    NSMutableData* empty;
+    proto = _xyproto;
+    if ((int)[(proto) length] == 0) {
+        [self _throw:YAPI_INVALID_ARGUMENT :@"no file transfer in progress"];
+        return YAPI_INVALID_ARGUMENT;
+    }
+    // create a data block up to 1k
+    blksize = _xytotal - _xysent;
+    if (blksize > 1024) {
+        blksize = 1024;
+    }
+    datablock = [NSMutableData dataWithLength:blksize];
+    cnt = 0;
+    while (cnt < blksize) {
+        (((u8*)([datablock mutableBytes]))[cnt]) = (((u8*)([_xyfdata bytes]))[_xysent + cnt]);
+        cnt = cnt + 1;
+    }
+    namesuffix = @"";
+    if (_xysent == 0) {
+        if ([[proto substringWithRange:NSMakeRange(0, 6)] isEqualToString:@"ymodem"]) {
+            namesuffix = [NSString stringWithFormat:@":%@",_xyfname];
+        }
+    } else {
+        namesuffix = @"+";
+    }
+    if (_xytotal > _xysent + blksize) {
+        fullproto = [NSString stringWithFormat:@"%@-t%d-m%@",proto,timeoutSec,namesuffix];
+    } else {
+        fullproto = [NSString stringWithFormat:@"%@-t%d%@",proto,timeoutSec,namesuffix];
+    }
+
+    // backup _xyproto and clear it, to drop transfer in case of exception
+    _xyproto = @"";
+    json = [self _uploadEx:fullproto :datablock];
+    if ((int)[json length] == 0) {
+        [self _throw:YAPI_IO_ERROR :@"failed to receive result from device"];
+        return YAPI_IO_ERROR;
+    }
+    jsonStr = ARC_sendAutorelease([[NSString alloc] initWithData:json encoding:NSISOLatin1StringEncoding]);
+    errStr = [self _json_get_key:json :@"err"];
+    if ((int)[(errStr) length] > 0) {
+        [self _throw:YAPI_IO_ERROR :errStr];
+        return YAPI_IO_ERROR;
+    }
+    sentBytes = [[self _json_get_key:json :@"sent"] intValue];
+    if (sentBytes >= _xytotal) {
+        // done, free binary buffer
+        empty = [NSMutableData dataWithLength:0];
+        _xyfdata = empty;
+        return 100;
+    }
+    _xyproto = proto;
+    _xysent = sentBytes;
+    return ((100 * sentBytes) / _xytotal);
+}
+
+/**
+ * Initiates a buffer transmit to the serial port using the standard XMODEM protocol.
+ * The function will block until the XMODEM receiver triggers the transfer,
+ * up to the specified timeout.
+ * Once the transfer is started, the function returns the current percentage
+ * of completion. The caller should then invoke method
+ * xmodemUploadMore() until it returns 100 (percent).
+ *
+ * @param buff : the binary buffer to send
+ * @param timeoutSec : the timeout before aborting send (e.g. 60 sec)
+ *
+ * @return an integer in the range 0 to 100 (percentage of completion),
+ *         or a negative error code in case of failure.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) xmodemUpload:(NSData*)buff :(int)timeoutSec
+{
+    return [self _xymodemQueue:@"xmodem" :@"" :buff :timeoutSec];
+}
+
+/**
+ * Continues a standard XMODEM upload previously started with xmodemUpload.
+ * The function will block until the data sent has been acknowledged by receiver,
+ * up to the specified timeout, and return the current percentage of completion.
+ * It should be called continuously until it returns the 100 (percent).
+ *
+ * @param timeoutSec : the timeout before aborting send (e.g. 60 sec)
+ *
+ * @return an integer in the range 0 to 100 (percentage of completion),
+ *         or a negative error code in case of failure.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) xmodemUploadMore:(int)timeoutSec
+{
+    return [self _xymodemProcess:timeoutSec];
+}
+
+/**
+ * Initiates a buffer transmit to the serial port using the standard XMODEM-1k protocol.
+ * The function will block until the XMODEM receiver triggers the transfer,
+ * up to the specified timeout.
+ * Once the transfer is started, the function returns the current percentage
+ * of completion. The caller should then invoke method
+ * xmodem1kUploadMore() until it returns 100 (percent).
+ *
+ * @param buff : the binary buffer to send
+ * @param timeoutSec : the timeout before aborting send (e.g. 60 sec)
+ *
+ * @return YAPI.SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) xmodem1kUpload:(NSData*)buff :(int)timeoutSec
+{
+    return [self _xymodemQueue:@"xmodem-1k" :@"" :buff :timeoutSec];
+}
+
+/**
+ * Continues a XMODEM-1k upload previously started with xmodem1kUpload.
+ * The function will block until the data sent has been acknowledged by receiver,
+ * up to the specified timeout, and return the current percentage of completion.
+ * It should be called continuously until it returns the 100 (percent).
+ *
+ * @param timeoutSec : the timeout before aborting send (e.g. 60 sec)
+ *
+ * @return an integer in the range 0 to 100 (percentage of completion),
+ *         or a negative error code in case of failure.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) xmodem1kUploadMore:(int)timeoutSec
+{
+    return [self _xymodemProcess:timeoutSec];
+}
+
+/**
+ * Initiates a buffer transmit to the serial port using the standard YMODEM protocol.
+ * The function will block until the YMODEM receiver triggers the transfer,
+ * up to the specified timeout.
+ * Once the transfer is started, the function returns the current percentage
+ * of completion. The caller should then invoke method
+ * ymodemUploadMore() until it returns 100 (percent).
+ *
+ * @param filename : the filename associated with the data in the buffer
+ * @param buff : the binary buffer to send
+ * @param timeoutSec : the timeout before aborting send (e.g. 60 sec)
+ *
+ * @return YAPI.SUCCESS if the call succeeds.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) ymodemUpload:(NSString*)filename :(NSData*)buff :(int)timeoutSec
+{
+    return [self _xymodemQueue:@"ymodem" :filename :buff :timeoutSec];
+}
+
+/**
+ * Continues a YMODEM upload previously started with ymodemUpload.
+ * The function will block until the data sent has been acknowledged by receiver,
+ * up to the specified timeout, and return the current percentage of completion.
+ * It should be called continuously until it returns the 100 (percent).
+ *
+ * @param timeoutSec : the timeout before aborting send (e.g. 60 sec)
+ *
+ * @return an integer in the range 0 to 100 (percentage of completion),
+ *         or a negative error code in case of failure.
+ *
+ * On failure, throws an exception or returns a negative error code.
+ */
+-(int) ymodemUploadMore:(int)timeoutSec
+{
+    return [self _xymodemProcess:timeoutSec];
 }
 
 

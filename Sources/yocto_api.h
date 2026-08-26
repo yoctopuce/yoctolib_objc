@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.h 72340 2026-03-09 13:56:18Z seb $
+ * $Id: yocto_api.h 75351 2026-08-02 19:45:07Z mvuilleu $
  *
  * High-level programming interface, common to all modules
  *
@@ -62,7 +62,7 @@
 
 //extern NSMutableDictionary* YAPI_YFunctions;
 
-#define YOCTO_API_REVISION          "75129"
+#define YOCTO_API_REVISION          "75681"
 
 // yInitAPI argument
 #define Y_DETECT_NONE           0
@@ -1503,6 +1503,9 @@ NS_SWIFT_NAME(FirstFunction());
  * @noreturn
  */
 -(void)    clearCache;
+
+/* Internal method to force reloading even lazy attributes (eg. displayWidth, etc) */
+-(void)    _clearLazyCache;
 
 /**
  * Gets the YModule object for the device on which the function is located.

@@ -4541,7 +4541,7 @@ static int yapiCheckLogicalName_internal(const char *name)
 static u16 yapiGetAPIVersion_internal(const char **version, const char **apidate)
 {
     if (version)
-        *version = "1.11.15129";
+        *version = "1.11.15681";
     if (apidate)
         *apidate = YOCTO_API_BUILD_DATE;
 

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: yocto_spiport.m 72057 2026-02-17 09:44:53Z mvuilleu $
+ *  $Id: yocto_spiport.m 75483 2026-08-12 06:29:41Z mvuilleu $
  *
  *  Implements the high-level API for SpiPort functions
  *
@@ -1447,7 +1447,8 @@
     reqlen = 1024;
     buff = [self readBin:reqlen];
     bufflen = (int)[buff length];
-    if (_rxptr == currpos+bufflen) {
+    if ((bufflen > 0) && (_rxptr == currpos+bufflen)) {
+        // up to 1024 bytes in buffer, all in direction Rx
         res = (((u8*)([buff bytes]))[0]);
         _rxptr = currpos+1;
         _rxbuffptr = currpos;
@@ -1459,7 +1460,8 @@
     reqlen = 16;
     buff = [self readBin:reqlen];
     bufflen = (int)[buff length];
-    if (_rxptr == currpos+bufflen) {
+    if ((bufflen > 0) && (_rxptr == currpos+bufflen)) {
+        // up to 16 bytes in buffer, all in direction Rx
         res = (((u8*)([buff bytes]))[0]);
         _rxptr = currpos+1;
         _rxbuffptr = currpos;
