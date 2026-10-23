@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: ypkt_win.c 51520 2022-11-07 10:03:28Z seb $
+ * $Id:ypkt_win.c version 1.11.16635 (build 76635) $
  *
  * OS-specific USB packet layer, Windows version
  *

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: svn_id $
+ *  $Id: yocto_accelerometer.h Fri, 23 Oct 2026 10:30:35 +0000 generated $
  *
  *  Declares yFindAccelerometer(), the high-level API for Accelerometer functions
  *

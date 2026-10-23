@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: svn_id $
+ *  $Id: yocto_groundspeed.h Fri, 23 Oct 2026 10:30:39 +0000 generated $
  *
  *  Declares yFindGroundSpeed(), the high-level API for GroundSpeed functions
  *

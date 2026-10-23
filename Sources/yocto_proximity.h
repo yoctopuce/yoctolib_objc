@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: svn_id $
+ *  $Id: yocto_proximity.h Fri, 23 Oct 2026 10:30:39 +0000 generated $
  *
  *  Declares yFindProximity(), the high-level API for Proximity functions
  *

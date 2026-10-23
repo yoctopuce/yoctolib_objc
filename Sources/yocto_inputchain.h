@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: svn_id $
+ *  $Id: yocto_inputchain.h Fri, 23 Oct 2026 10:30:39 +0000 generated $
  *
  *  Declares yFindInputChain(), the high-level API for InputChain functions
  *

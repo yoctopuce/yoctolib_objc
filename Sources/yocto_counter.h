@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: svn_id $
+ *  $Id: yocto_counter.h Fri, 23 Oct 2026 10:30:38 +0000 generated $
  *
  *  Declares yFindCounter(), the high-level API for Counter functions
  *

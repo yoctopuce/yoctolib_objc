@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: svn_id $
+ *  $Id: yocto_hubport.m Fri, 23 Oct 2026 10:30:39 +0000 generated $
  *
  *  Implements the high-level API for HubPort functions
  *

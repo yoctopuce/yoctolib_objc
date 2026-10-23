@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: svn_id $
+ *  $Id: yocto_segmenteddisplay.h Fri, 23 Oct 2026 10:30:39 +0000 generated $
  *
  *  Declares yFindSegmentedDisplay(), the high-level API for SegmentedDisplay functions
  *

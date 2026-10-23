@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: svn_id $
+ *  $Id: yocto_airquality.h Fri, 23 Oct 2026 10:30:35 +0000 generated $
  *
  *  Declares yFindAirQuality(), the high-level API for AirQuality functions
  *
@@ -63,7 +63,7 @@ typedef enum {
  * YAirQuality Class: air quality sensor control interface
  *
  * The YAirQuality class allows you to read and configure Yoctopuce air quality sensors.
- * It inherits from YSensor class the core functions to read measurements,
+ * It inherits from the YSensor class the core functions to read measures,
  * to register callback functions, and to access the autonomous datalogger.
  */
 @interface YAirQuality : YSensor
@@ -142,7 +142,7 @@ typedef enum {
 -(int)     setAqiMode:(Y_AQIMODE_enum) newval;
 
 /**
- * Retrieves a air quality sensor for a given identifier.
+ * Retrieves an air quality sensor for a given identifier.
  * The identifier can be specified using several formats:
  *
  * - FunctionLogicalName
@@ -156,7 +156,7 @@ typedef enum {
  * it is invoked. The returned object is nevertheless valid.
  * Use the method YAirQuality.isOnline() to test if the air quality sensor is
  * indeed online at a given time. In case of ambiguity when looking for
- * a air quality sensor by logical name, no error is notified: the first instance
+ * an air quality sensor by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
  *
@@ -207,11 +207,11 @@ typedef enum {
 /**
  * Continues the enumeration of air quality sensors started using yFirstAirQuality().
  * Caution: You can't make any assumption about the returned air quality sensors order.
- * If you want to find a specific a air quality sensor, use AirQuality.findAirQuality()
+ * If you want to find a specific an air quality sensor, use AirQuality.findAirQuality()
  * and a hardwareID or a logical name.
  *
  * @return a pointer to a YAirQuality object, corresponding to
- *         a air quality sensor currently online, or a nil pointer
+ *         an air quality sensor currently online, or a nil pointer
  *         if there are no more air quality sensors to enumerate.
  */
 -(nullable YAirQuality*) nextAirQuality
@@ -233,7 +233,7 @@ NS_SWIFT_NAME(FirstAirQuality());
 
 //--- (YAirQuality functions declaration)
 /**
- * Retrieves a air quality sensor for a given identifier.
+ * Retrieves an air quality sensor for a given identifier.
  * The identifier can be specified using several formats:
  *
  * - FunctionLogicalName
@@ -247,7 +247,7 @@ NS_SWIFT_NAME(FirstAirQuality());
  * it is invoked. The returned object is nevertheless valid.
  * Use the method YAirQuality.isOnline() to test if the air quality sensor is
  * indeed online at a given time. In case of ambiguity when looking for
- * a air quality sensor by logical name, no error is notified: the first instance
+ * an air quality sensor by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
  *

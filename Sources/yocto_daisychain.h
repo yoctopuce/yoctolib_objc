@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: svn_id $
+ *  $Id: yocto_daisychain.h Fri, 23 Oct 2026 10:30:38 +0000 generated $
  *
  *  Declares yFindDaisyChain(), the high-level API for DaisyChain functions
  *

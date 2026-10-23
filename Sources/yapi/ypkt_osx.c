@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: ypkt_osx.c 44962 2021-05-10 08:32:59Z web $
+ * $Id:ypkt_osx.c version 1.11.16635 (build 76635) $
  *
  * OS-specific USB packet layer, Mac OS X version
  *

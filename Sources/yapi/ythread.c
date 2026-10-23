@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: ythread.c 59662 2024-03-08 09:33:37Z seb $
+ * $Id:ythread.c version 1.11.16635 (build 76635) $
  *
  * OS-independent thread and synchronization library
  *

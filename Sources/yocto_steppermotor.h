@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: svn_id $
+ *  $Id: yocto_steppermotor.h Fri, 23 Oct 2026 10:30:40 +0000 generated $
  *
  *  Declares yFindStepperMotor(), the high-level API for StepperMotor functions
  *

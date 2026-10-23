@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: svn_id $
+ *  $Id: yocto_arithmeticsensor.h Fri, 23 Oct 2026 10:30:36 +0000 generated $
  *
  *  Declares yFindArithmeticSensor(), the high-level API for ArithmeticSensor functions
  *

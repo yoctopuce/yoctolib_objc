@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_files.m 72057 2026-02-17 09:44:53Z mvuilleu $
+ * $Id: yocto_files.m 76529 2026-10-19 16:34:41Z mvuilleu $
  *
  * Implements yFindFiles(), the high-level API for Files functions
  *
@@ -404,6 +404,19 @@
  */
 -(NSMutableData*) download:(NSString*)pathname
 {
+    int idx;
+    int plen;
+    NSMutableData* res;
+    plen = (int)[(pathname) length];
+    idx = 0;
+    while ((idx < plen) && [[pathname substringWithRange:NSMakeRange(idx, 1)] isEqualToString:@"/"]) {
+        idx = idx + 1;
+    }
+    if ((idx < plen) && [[pathname substringWithRange:NSMakeRange(idx, 1)] isEqualToString:@"."]) {
+        [self _throw:YAPI_INVALID_ARGUMENT :@"Remote file access forbidden"];
+        res = [NSMutableData dataWithLength:0];
+        return res;
+    }
     return [self _download:pathname];
 }
 

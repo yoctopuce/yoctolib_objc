@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: svn_id $
+ *  $Id: yocto_colorled.m Fri, 23 Oct 2026 10:30:38 +0000 generated $
  *
  *  Implements the high-level API for ColorLed functions
  *

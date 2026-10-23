@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yocto_api.m 75351 2026-08-02 19:45:07Z mvuilleu $
+ * $Id: yocto_api.m 76529 2026-10-19 16:34:41Z mvuilleu $
  *
  * High-level programming interface, common to all modules
  *
@@ -6041,7 +6041,7 @@ static const char* hexArray = "0123456789ABCDEF";
         sep = @"";
         for (NSString* _each  in filelist) {
             name = [self _json_get_key:[NSMutableData dataWithData:[_each dataUsingEncoding:NSISOLatin1StringEncoding]] :@"name"];
-            if (((int)[(name) length] > 0) && !([name isEqualToString:@"startupConf.json"])) {
+            if (((int)[(name) length] > 0) && !([name isEqualToString:@"startupConf.json"]) && !([[name substringWithRange:NSMakeRange(0, 1)] isEqualToString:@"."])) {
                 file_data_bin = [self _download:[self _escapeAttr:name]];
                 file_data = [YAPI _bin2HexStr:file_data_bin];
                 item = [NSString stringWithFormat:@"%@{\"name\":\"%@\", \"data\":\"%@\"}\n",sep,name,file_data];

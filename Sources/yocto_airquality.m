@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: svn_id $
+ *  $Id: yocto_airquality.m Fri, 23 Oct 2026 10:30:35 +0000 generated $
  *
  *  Implements the high-level API for AirQuality functions
  *
@@ -191,7 +191,7 @@
     return [self _setAttr:@"aqiMode" :rest_val];
 }
 /**
- * Retrieves a air quality sensor for a given identifier.
+ * Retrieves an air quality sensor for a given identifier.
  * The identifier can be specified using several formats:
  *
  * - FunctionLogicalName
@@ -205,7 +205,7 @@
  * it is invoked. The returned object is nevertheless valid.
  * Use the method YAirQuality.isOnline() to test if the air quality sensor is
  * indeed online at a given time. In case of ambiguity when looking for
- * a air quality sensor by logical name, no error is notified: the first instance
+ * an air quality sensor by logical name, no error is notified: the first instance
  * found is returned. The search is performed first by hardware name,
  * then by logical name.
  *

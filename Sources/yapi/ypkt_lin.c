@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: ypkt_lin.c 39066 2020-01-03 15:49:30Z seb $
+ * $Id:ypkt_lin.c version 1.11.16635 (build 76635) $
  *
  * OS-specific USB packet layer, Linux version
  *

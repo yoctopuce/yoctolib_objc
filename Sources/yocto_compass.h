@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: svn_id $
+ *  $Id: yocto_compass.h Fri, 23 Oct 2026 10:30:38 +0000 generated $
  *
  *  Declares yFindCompass(), the high-level API for Compass functions
  *

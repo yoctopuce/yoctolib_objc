@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: svn_id $
+ *  $Id: yocto_colorledcluster.h Fri, 23 Oct 2026 10:30:38 +0000 generated $
  *
  *  Declares yFindColorLedCluster(), the high-level API for ColorLedCluster functions
  *

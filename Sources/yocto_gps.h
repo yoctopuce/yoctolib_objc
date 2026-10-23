@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: svn_id $
+ *  $Id: yocto_gps.h Fri, 23 Oct 2026 10:30:38 +0000 generated $
  *
  *  Declares yFindGps(), the high-level API for Gps functions
  *

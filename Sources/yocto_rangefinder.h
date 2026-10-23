@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: svn_id $
+ *  $Id: yocto_rangefinder.h Fri, 23 Oct 2026 10:30:39 +0000 generated $
  *
  *  Declares yFindRangeFinder(), the high-level API for RangeFinder functions
  *

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: svn_id $
+ *  $Id: yocto_altitude.h Fri, 23 Oct 2026 10:30:35 +0000 generated $
  *
  *  Declares yFindAltitude(), the high-level API for Altitude functions
  *

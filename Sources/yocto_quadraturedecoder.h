@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: svn_id $
+ *  $Id: yocto_quadraturedecoder.h Fri, 23 Oct 2026 10:30:39 +0000 generated $
  *
  *  Declares yFindQuadratureDecoder(), the high-level API for QuadratureDecoder functions
  *

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: svn_id $
+ *  $Id: yocto_hubport.h Fri, 23 Oct 2026 10:30:39 +0000 generated $
  *
  *  Declares yFindHubPort(), the high-level API for HubPort functions
  *

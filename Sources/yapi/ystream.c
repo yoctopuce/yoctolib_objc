@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: ystream.c 54099 2023-04-18 08:02:26Z seb $
+ * $Id:ystream.c version 1.11.16635 (build 76635) $
  *
  * USB stream implementation
  *
@@ -2089,6 +2089,17 @@ static int yDispatchReceive(yPrivDeviceSt* dev, u64 blockUntilTime, char* errmsg
         case YSTREAM_REPORT_V2:
             yDispatchReportV2(dev, data, size);
             break;
+        case YSTREAM_TCP_ACK:
+        {
+            USB_TCP_ACK* ack_ptr = (USB_TCP_ACK*) data;
+            dev->pendingIO.flags |= YIO_USE_WINDOW;
+            FROM_SAFE_U16(ack_ptr->window, dev->pendingIO.window_size);
+            dev->pendingIO.pos_last_ack = ack_ptr->abs[0] + (ack_ptr->abs[1] << 8) + (ack_ptr->abs[2] << 16) + (ack_ptr->abs[3] << 24);
+#ifdef DEBUG_USB_CONGESTION
+            dbglog("USB_ack: dev %s pos=%d avail=%d (max = %d)\n",  dev->infos.serial, dev->pendingIO.pos_last_ack, dev->pendingIO.window_size, dev->pendingIO.pos_last_ack + dev->pendingIO.window_size);
+#endif
+            break;
+        }
         case YSTREAM_EMPTY:
         default:
             //packet droped
@@ -2767,8 +2778,6 @@ int yUsbSetIOAsync(YIOHDL_internal* ioghdl, yapiRequestAsyncCallback callback, v
 
     return res;
 }
-
-
 int yUsbWrite(YIOHDL_internal* ioghdl, const char* buffer, int writelen, char* errmsg)
 {
     yPrivDeviceSt* p;
@@ -2799,8 +2808,45 @@ int yUsbWrite(YIOHDL_internal* ioghdl, const char* buffer, int writelen, char* e
     while (writelen) {
         while (writelen && yStreamGetTxBuff(p, &pktdata, &maxpktlen) == 1) {
             u8 pktlen = (maxpktlen < writelen ? maxpktlen : writelen);
+            if (p->pendingIO.flags & YIO_USE_WINDOW) {
+                u32 max_pos_dev = p->pendingIO.pos_last_ack + p->pendingIO.window_size;              
+                u32 max_pos_os = p->pendingIO.pos_already_sent + pktlen;              
+                if (max_pos_os > max_pos_dev) {
+                    if (max_pos_dev > p->pendingIO.pos_already_sent && (max_pos_dev - p->pendingIO.pos_already_sent) < pktlen) {
+                        u32 transmit_window = max_pos_dev - p->pendingIO.pos_already_sent;
+#ifdef DEBUG_USB_CONGESTION
+                        dbglog("reduce write dev %s  %d -> %d (os=%d + %d = %d)  dev=%d + %d = %d)\n", p->infos.serial, pktlen, transmit_window & 0xff, 
+                                    p->pendingIO.pos_already_sent, pktlen,  max_pos_os,
+                                    p->pendingIO.pos_last_ack, p->pendingIO.window_size, max_pos_dev);
+#endif
+                        pktlen = transmit_window & 0xff;
+                    } else {
+                        // short write due to USB congestion
+                        if (max_pos_dev != p->pendingIO.last_short_write_log) {
+                            dbglog("Pause USB trafic for device %s until it process last packet\n", p->infos.serial);
+#ifdef DEBUG_USB_CONGESTION
+                            dbglog("short write dev %s (os=%d + %d = %d  dev=%d + %d = %d)\n", p->infos.serial, 
+                                        p->pendingIO.pos_already_sent, pktlen, max_pos_os,
+                                        p->pendingIO.pos_last_ack, p->pendingIO.window_size, max_pos_dev);
+#endif
+                            p->pendingIO.last_short_write_log = max_pos_dev;
+                        }
+                        if (YISERR(res=yStreamFlush(p,errmsg))) {
+                            devReportError(PUSH_LOCATION p, errmsg);
+                            YPERF_LEAVE(yUsbWrite);
+                            return res;
+                        }
+                        res = devPauseIO(PUSH_LOCATION p, errmsg);
+                        YPERF_LEAVE(yUsbWrite);
+                        return totalsend;
+                    }
+                }
+            }
             memcpy(pktdata, buffer, pktlen);
-            if (YISERR(res=yStreamTransmit(p,YSTREAM_TCP,pktlen,errmsg))) {
+#ifdef DEBUG_USB_CONGESTION
+            dbglog("write dev %s pos = %d (pktsize=%d)\n", p->infos.serial,p->pendingIO.pos_already_sent, pktlen);
+#endif
+            if (YISERR(res=yStreamTransmit(p, YSTREAM_TCP, pktlen, errmsg))) {
                 devReportError(PUSH_LOCATION p, errmsg);
                 YPERF_LEAVE(yUsbWrite);
                 return res;
@@ -2808,6 +2854,7 @@ int yUsbWrite(YIOHDL_internal* ioghdl, const char* buffer, int writelen, char* e
             buffer += pktlen;
             writelen -= pktlen;
             totalsend += pktlen;
+            p->pendingIO.pos_already_sent += pktlen;
         }
         if (YISERR(res=yStreamFlush(p,errmsg))) {
             devReportError(PUSH_LOCATION p, errmsg);
@@ -2960,7 +3007,7 @@ int yUsbClose(YIOHDL_internal* ioghdl, char* errmsg)
         YPERF_LEAVE(yUsbClose);
         return YERR(YAPI_DEVICE_NOT_FOUND);
     }
-    //dbglog("* yUsbClose for %d, httpstate=%d\n",p->iohdl,p->httpstate);
+    //dbglog("* yUsbClose for %d, httpstate=%d\n",p->pendingIO.hdl,p->httpstate);
     if (p->httpstate == YHTTP_CLOSED || p->httpstate == YHTTP_CLOSE_BY_API) {
         dbglog("yUsb double-close");
         YPERF_LEAVE(yUsbClose);

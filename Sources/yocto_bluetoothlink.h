@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: svn_id $
+ *  $Id: yocto_bluetoothlink.h Fri, 23 Oct 2026 10:30:36 +0000 generated $
  *
  *  Declares yFindBluetoothLink(), the high-level API for BluetoothLink functions
  *

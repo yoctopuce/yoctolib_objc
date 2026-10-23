@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: svn_id $
+ *  $Id: yocto_wakeupmonitor.h Fri, 23 Oct 2026 10:30:40 +0000 generated $
  *
  *  Declares yFindWakeUpMonitor(), the high-level API for WakeUpMonitor functions
  *

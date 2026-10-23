@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: svn_id $
+ *  $Id: yocto_virtualsensor.h Fri, 23 Oct 2026 10:30:40 +0000 generated $
  *
  *  Declares yFindVirtualSensor(), the high-level API for VirtualSensor functions
  *

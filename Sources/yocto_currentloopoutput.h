@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: svn_id $
+ *  $Id: yocto_currentloopoutput.h Fri, 23 Oct 2026 10:30:38 +0000 generated $
  *
  *  Declares yFindCurrentLoopOutput(), the high-level API for CurrentLoopOutput functions
  *

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: svn_id $
+ *  $Id: yocto_orientation.h Fri, 23 Oct 2026 10:30:39 +0000 generated $
  *
  *  Declares yFindOrientation(), the high-level API for Orientation functions
  *

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yproto.h 54296 2023-05-01 13:02:44Z seb $
+ * $Id:yproto.h version 1.11.16635 (build 76635) $
  *
  * Definitions and prototype common to all supported OS
  *
@@ -263,6 +263,7 @@ int ymemfind(const u8* haystack, u32 haystack_len, const u8* needle, u32 needle_
 //#define DEBUG_WEBSOCKET
 //#define TRACE_REQUESTS
 //#define DEBUG_MISSING_PACKET
+//#define DEBUG_USB_CONGESTION
 
 #define MSC_VS2003 1310
 
@@ -668,10 +669,15 @@ void freeDevYdxInfos(int devYdx);
 
 
 #define YIO_REMOTE_CLOSE 1u
+#define YIO_USE_WINDOW   2u
 
 typedef struct {
     u8 flags;
     u64 timeout;
+    u32 window_size;
+    u32 pos_last_ack;
+    u32 pos_already_sent;
+    u32 last_short_write_log;
     YUSBIO hdl;
     yapiRequestAsyncCallback callback;
     void* context;

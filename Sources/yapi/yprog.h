@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: yprog.h 58576 2023-12-18 11:02:20Z seb $
+ * $Id:yprog.h version 1.11.16635 (build 76635) $
  *
  * Declaration of firmware upgrade functions
  *

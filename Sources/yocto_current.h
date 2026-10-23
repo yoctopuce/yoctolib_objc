@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: svn_id $
+ *  $Id: yocto_current.h Fri, 23 Oct 2026 10:30:38 +0000 generated $
  *
  *  Declares yFindCurrent(), the high-level API for Current functions
  *

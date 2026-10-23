@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: svn_id $
+ *  $Id: yocto_audioin.h Fri, 23 Oct 2026 10:30:36 +0000 generated $
  *
  *  Declares yFindAudioIn(), the high-level API for AudioIn functions
  *

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: svn_id $
+ *  $Id: yocto_pwminput.h Fri, 23 Oct 2026 10:30:39 +0000 generated $
  *
  *  Declares yFindPwmInput(), the high-level API for PwmInput functions
  *

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: ykey.c 56516 2023-09-11 16:47:06Z seb $
+ * $Id:ykey.c version 1.11.16635 (build 76635) $
  *
  * Implementation of standard key computations
  *

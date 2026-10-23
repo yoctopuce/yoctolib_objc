@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: svn_id $
+ *  $Id: yocto_weighscale.m Fri, 23 Oct 2026 10:30:40 +0000 generated $
  *
  *  Implements the high-level API for WeighScale functions
  *

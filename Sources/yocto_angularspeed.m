@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: svn_id $
+ *  $Id: yocto_angularspeed.m Fri, 23 Oct 2026 10:30:36 +0000 generated $
  *
  *  Implements the high-level API for AngularSpeed functions
  *

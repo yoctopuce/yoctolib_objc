@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * $Id: ykey.h 51520 2022-11-07 10:03:28Z seb $
+ * $Id:ykey.h version 1.11.16635 (build 76635) $
  *
  * Declaration of standard key computations
  *

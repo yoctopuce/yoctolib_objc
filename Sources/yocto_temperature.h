@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- *  $Id: svn_id $
+ *  $Id: yocto_temperature.h Fri, 23 Oct 2026 10:30:40 +0000 generated $
  *
  *  Declares yFindTemperature(), the high-level API for Temperature functions
  *
